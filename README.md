@@ -1,82 +1,104 @@
 # Dakinis Systems — raíz del ecosistema (`D:\dakinis-systems`)
 
-**Contenedor de trabajo** (no es un repositorio Git): agrupa la **plataforma** (`platform/`), las **aplicaciones** (`apps/`), **infraestructura** compartida (`infrastructure/`) y **documentación** (`docs/`). Cada producto o paquete principal vive en su propio clon con `origin` propio, salvo `docs/` e `infrastructure/`, que no tienen `.git`.
+Repositorio remoto: [github.com/dakinissystems/dakinis-systems](https://github.com/dakinissystems/dakinis-systems).
+
+## Control repo + product repos
+
+La raíz del workspace es un **repositorio Git ligero** (stack, gateway, docs, scripts, compose) con [`.gitignore`](./.gitignore) que **excluye** `apps/` y `platform/` — esos directorios siguen siendo **clones con su propio `.git` y remoto**; no se duplica su código en el historial del control repo.
+
+| Qué se versiona en la raíz | Qué no (cada equipo en su repo) |
+|----------------------------|----------------------------------|
+| `docker/`, `gateway/`, `docs/`, `infrastructure/`, `scripts/`, `README.md` | Código bajo `apps/*` y `platform/*` |
+
+Tras clonar este repo, crea `apps/` y `platform/` en el mismo nivel que conviene a tu máquina y clona ahí auth, core, shared, landing, etc. (ver [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)). En el mantenedor, el árbol completo suele vivir bajo `D:\dakinis-systems\`; las rutas de documentación asumen ese layout salvo que indiques lo contrario.
+
+**Arranque local en un comando:** [`scripts/dev.ps1`](./scripts/dev.ps1) (fusiona `compose.full.yml` + `compose.dev.yml`).
 
 ## Modelo mental
 
 ```
-Dakinis Systems (contenedor multi-repo)
-├── Core platform  →  platform/
-│   ├── auth       →  identidad JWT multi-tenant (dakinis-auth)
-│   ├── shared     →  monorepo pnpm + Turborepo @dakinis/* (sdk, auth-client, config, ui)
-│   └── core       →  negocio compartido (npm workspaces: api, web, shared)
-├── Apps           →  apps/
-│   ├── streamautomator   Dakinis StreamAutomator (apps/api Express, apps/web React)
-│   ├── akoenet           Dakinis AkoeNet — Server/ y Client/ (cada uno, repo Git propio)
-│   └── landing           marketing (Vite)
-└── Infraestructura →  infrastructure/
-    ├── docker/    compose y servicios locales
-    ├── nginx/     configuración de proxy / gateway
-    └── scripts/   migración, Git safe.directory, junctions
+Dakinis Systems
+├── Control (Git raíz)     docker/  gateway/  docs/  infrastructure/  scripts/
+├── Core platform  →  platform/   (clones ignorados por el control repo)
+│   ├── auth       →  JWT multi-tenant (dakinis-auth)
+│   ├── shared     →  pnpm + Turborepo @dakinis/*
+│   └── core       →  npm workspaces api, web, shared
+├── Apps           →  apps/       (clones ignorados)
+│   ├── streamautomator   Express API + React web
+│   ├── akoenet           Client/ y Server/ — repo Git cada uno
+│   └── landing           Vite
+└── Borde HTTP     →  gateway/    Nginx: nginx.conf + routes/ (+ middleware/ futuro)
 ```
 
 ## Estado del árbol (mayo 2026)
 
 | Ruta | Estado |
 |------|--------|
-| Raíz `dakinis-systems` | **Sin `.git`** — solo organiza clones; ver [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md). |
-| `platform/auth` | **Repo real** — servicio Express, JWT `sub`, `tenantId`, `role`. |
-| `platform/shared` | **Repo real (canónico)** — `pnpm`, Turborepo, paquetes `packages/*`. |
-| `platform/core` | **Repo real** — workspace npm (`api`, `web`, `shared`); CRM, scheduling, WhatsApp, etc. |
-| `apps/streamautomator` | **Repo real** — raíz npm `dakinis-streamautomator`; subproyectos `apps/api` y `apps/web`. |
-| `apps/akoenet` | **Carpeta agrupadora** — **sin** `.git` en la raíz; repos en `Client/` y `Server/`. |
-| `apps/landing` | **Repo real** — sitio marketing Vite. |
-| `docs/` | Documentación del ecosistema (sin Git). |
-| `infrastructure/` | Docker, nginx, scripts PowerShell (sin Git). |
+| Raíz del workspace | **Control repo Git** — versiona stack + gateway + docs; ver `.gitignore`. |
+| `platform/*`, `apps/*` | **Repos propios** — no van al control repo. |
+| `docker/` | Compose modular: `compose.full.yml` + `compose.dev.yml` (entrada típica), `compose.db.yml` (solo DB/cache). |
+| `gateway/` | Config **activa** del contenedor `gateway` (Nginx). |
+| `scripts/` | [`dev.ps1`](./scripts/dev.ps1) y utilidades. |
+| `docs/` | Incluye [`docs/contracts/`](./docs/contracts/) (contratos entre servicios). |
+| `infrastructure/` | Scripts PowerShell, notas; `infrastructure/nginx/` solo referencia (el borde real es `gateway/`). |
 
 **Mantenimiento ocasional**
 
-- Restos de migración o junction roto (p. ej. StreamAutomator): [`infrastructure/scripts/finish-pending-moves.ps1`](./infrastructure/scripts/finish-pending-moves.ps1); recrear junction solo si hace falta: [`infrastructure/scripts/recreate-layout.ps1`](./infrastructure/scripts/recreate-layout.ps1).
-- *Dubious ownership* en Git bajo Windows: [`infrastructure/scripts/setup-git-safe-directories.ps1`](./infrastructure/scripts/setup-git-safe-directories.ps1).
+- Migración física / junctions: [`infrastructure/scripts/finish-pending-moves.ps1`](./infrastructure/scripts/finish-pending-moves.ps1), [`infrastructure/scripts/recreate-layout.ps1`](./infrastructure/scripts/recreate-layout.ps1).
+- *Dubious ownership* (Git en Windows): [`infrastructure/scripts/setup-git-safe-directories.ps1`](./infrastructure/scripts/setup-git-safe-directories.ps1).
+
+## Stack ↔ código en cloud (mayo 2026)
+
+| Capa cloud | Proveedor | Región / tamaño | Producto | Rutas en el workspace |
+| --- | --- | --- | --- | --- |
+| Base de datos / backend gestionado | **Supabase** | (proyecto **AkoeNet**) | Dakinis **AkoeNet** — Postgres, auth opcional, pooler | Código que habla con la DB: `apps/akoenet/Server` (ver `Server/.env.example`, migraciones). Cliente: `apps/akoenet/Client`. |
+| Cómputo | **AWS** | **`eu-west-1`**, **nano** | **Streamer Schedule** (marca: **Dakinis StreamAutomator**, repo `dakinis-streamautomator`) | `apps/streamautomator` (`apps/api`, `apps/web`) |
+| Cómputo | **AWS** | **`eu-west-1`**, **nano** | **AkoeNet** — API / servicios Node (capa de aplicación; la DB sigue en Supabase) | `apps/akoenet/Server` (y front según despliegue: `apps/akoenet/Client`) |
+
+**Nano** = instancia / plan de cómputo mínimo en AWS (p. ej. Lightsail nano o equivalente).
+
+### Resumen en una línea
+
+- **Supabase `AkoeNet`** → datos y servicios gestionados de AkoeNet; implementación principal en `apps/akoenet/Server`.
+- **Primer nano `eu-west-1`** → StreamAutomator (Streamer Schedule) en `apps/streamautomator`.
+- **Segundo nano `eu-west-1`** → AkoeNet (app) en `apps/akoenet/`.
+
+Si clonas solo este repo de orquestación, clona también los productos bajo `apps/…` siguiendo el mapa anterior.
 
 ## Mapa rápido por carpeta
 
 | Ruta | Contenido principal |
 |------|---------------------|
-| `apps/streamautomator` | API Express + frontend React; scripts en la raíz del repo. |
-| `apps/akoenet/Client` | Cliente (repo Git). |
-| `apps/akoenet/Server` | Backend (repo Git). |
+| `docker/` | Stack local; ver [`docker/README.md`](./docker/README.md). |
+| `gateway/` | API gateway Nginx (`nginx.conf`, `routes/`, `middleware/`). |
+| `scripts/dev.ps1` | `docker compose -f compose.full.yml -f compose.dev.yml up --build` + `.env` / `.env.dev` autocreados si faltan. |
+| `apps/streamautomator` | API + web (repo Git). |
+| `apps/akoenet/Client`, `Server` | Repos Git separados. |
 | `apps/landing/` | Marketing Vite. |
-| `platform/auth/` | Auth HTTP / JWT. |
-| `platform/shared/` | `packages/sdk`, `auth-client`, `config`, `ui`. |
-| `platform/core/` | `api/`, `web/`, `shared/`. |
-| `infrastructure/docker/` | Compose y entorno local. |
-| `infrastructure/nginx/` | Configuración nginx. |
-| `infrastructure/scripts/` | Automatización de layout y Git. |
+| `platform/auth/`, `shared/`, `core/` | Plataforma (repos Git). |
+| `docs/contracts/` | Contratos de rutas/prefijos entre servicios. |
+| `infrastructure/scripts/` | Layout, `safe.directory`, etc. |
 
 ### Naming público
 
 | Código / histórico | Marca |
 |--------------------|--------|
-| streamer-scheduler | **Dakinis StreamAutomator** (`dakinis-streamautomator` en la raíz del repo) |
+| streamer-scheduler | **Dakinis StreamAutomator** (`dakinis-streamautomator`) |
 | AkoeNet | **Dakinis AkoeNet** |
 
 ## Integración
 
-- **Auth:** `platform/auth` → JWT con `sub`, `tenantId`, `role`.
-- **Cliente:** `platform/shared` → `@dakinis/sdk`, `@dakinis/auth-client`, `@dakinis/config` (y `@dakinis/ui` donde aplique).
-- **AkoeNet ↔ StreamAutomator:** integración pública con `service: "streamautomator"` donde esté definido en el contrato.
+- **Auth:** `platform/auth` → JWT `sub`, `tenantId`, `role`.
+- **Cliente:** `platform/shared` → `@dakinis/sdk`, `@dakinis/auth-client`, `@dakinis/config`, `@dakinis/ui`.
+- **Contratos gateway:** [`docs/contracts/`](./docs/contracts/).
+- **AkoeNet ↔ StreamAutomator:** `service: "streamautomator"` donde esté definido en el contrato.
 
 ## Documentación y scripts
 
-- Estrategia multi-repo / monorepo y checklist operativo: [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)
-- Capas y mapa post-migración: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
-- Git en Windows (`safe.directory`): [`infrastructure/scripts/setup-git-safe-directories.ps1`](./infrastructure/scripts/setup-git-safe-directories.ps1)
-- Migración física pendiente: [`infrastructure/scripts/finish-pending-moves.ps1`](./infrastructure/scripts/finish-pending-moves.ps1)
-- Junction StreamAutomator (excepcional): [`infrastructure/scripts/recreate-layout.ps1`](./infrastructure/scripts/recreate-layout.ps1)
+- Estrategia workspace / control repo: [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)
+- Arquitectura: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
+- Docker y entornos: [`docker/README.md`](./docker/README.md)
 
 ## Docker / gateway
 
-**Stack completo (Auth, Core API, StreamAutomator API, AkoeNet backend, Postgres, Redis, Nginx):** [`docker/`](./docker/) — desde esa carpeta ejecuta `docker compose up --build`. Gateway en `http://localhost` con rutas `/auth/`, `/core/`, `/streamautomator/`, `/akoenet/` (ver [`docker/README.md`](./docker/README.md)).
-
-[`infrastructure/docker/`](./infrastructure/docker/) — compose **esqueleto** (solo Postgres/Redis con perfiles) conservado para desarrollo parcial; la referencia de arquitectura sigue en [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) y [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md).
+Stack completo: `scripts/dev.ps1` o desde `docker/`: `docker compose -f compose.full.yml -f compose.dev.yml up --build`. Solo DB/cache: `docker compose -f compose.db.yml up -d`. Detalle: [`docker/README.md`](./docker/README.md).
