@@ -1,0 +1,17 @@
+# --- Control repo: no versionar clones de producto / platform (tienen su propio remoto) ---
+/apps/
+/platform/
+
+# --- Secretos locales del stack Docker ---
+/docker/.env
+/docker/.env.dev
+/docker/.env.prod
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*~

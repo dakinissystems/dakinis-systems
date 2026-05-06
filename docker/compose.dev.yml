@@ -1,0 +1,9 @@
+# Overlays de desarrollo — fusionar con compose.full.yml:
+#   docker compose -f compose.full.yml -f compose.dev.yml up --build
+# Añade aquí puertos extra, variables de debug, volúmenes de hot-reload, etc.
+
+services:
+  gateway:
+    labels:
+      - "dakinis.stack=full"
+      - "dakinis.environment=development"

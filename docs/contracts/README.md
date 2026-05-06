@@ -1,0 +1,12 @@
+# Contratos entre servicios
+
+Referencias **ligeras** (legibles por humanos y CI) para rutas y nombres expuestos tras el gateway. No sustituyen OpenAPI de cada servicio; sirven para alinear equipos y detectar cambios rompedores.
+
+| Archivo | Servicio tras el gateway |
+|---------|---------------------------|
+| [`auth.json`](./auth.json) | `/auth/` → `platform/auth` |
+| [`core-api.json`](./core-api.json) | `/core/` → `platform/core` API |
+| [`streamautomator-api.json`](./streamautomator-api.json) | `/streamautomator/` → StreamAutomator API |
+| [`akoenet-backend.json`](./akoenet-backend.json) | `/akoenet/` → AkoeNet Server |
+
+Actualiza estos JSON cuando cambies prefijos en [`gateway/routes/`](../../gateway/routes/) o contratos públicos de las APIs.

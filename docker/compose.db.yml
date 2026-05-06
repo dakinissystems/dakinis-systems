@@ -1,0 +1,40 @@
+# Solo datos en local — Postgres + Redis (misma red `dakinis` que el stack completo).
+# Uso: docker compose -f compose.db.yml up -d
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: dakinis-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dakinis
+      POSTGRES_PASSWORD: dakinis
+      POSTGRES_DB: dakinis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dakinis -d dakinis"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - dakinis
+
+  redis:
+    image: redis:7
+    container_name: dakinis-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - dakinis
+
+volumes:
+  postgres_data:
+
+networks:
+  dakinis:
+    driver: bridge

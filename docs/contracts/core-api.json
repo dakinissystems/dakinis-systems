@@ -1,0 +1,8 @@
+{
+  "service": "core-api",
+  "gatewayPrefix": "/core/",
+  "upstreamContainer": "core-api:4001",
+  "description": "API de negocio compartido; el gateway reescribe /core/* al origen del servicio.",
+  "publicRoutePrefixes": ["/core/"],
+  "examplePaths": ["/core/api/health"]
+}

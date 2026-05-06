@@ -1,0 +1,8 @@
+{
+  "service": "streamautomator-api",
+  "gatewayPrefix": "/streamautomator/",
+  "upstreamContainer": "streamautomator-api:4002",
+  "description": "API StreamAutomator; prefijo público bajo /streamautomator/.",
+  "publicRoutePrefixes": ["/streamautomator/"],
+  "examplePaths": ["/streamautomator/api/health/live"]
+}

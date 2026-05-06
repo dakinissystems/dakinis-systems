@@ -1,0 +1,8 @@
+{
+  "service": "akoenet-backend",
+  "gatewayPrefix": "/akoenet/",
+  "upstreamContainer": "akoenet-backend:4003",
+  "description": "Backend AkoeNet; incluye HTTP y Socket.IO; Swagger suele estar bajo /docs.",
+  "publicRoutePrefixes": ["/akoenet/"],
+  "examplePaths": ["/akoenet/docs/", "/akoenet/docs"]
+}

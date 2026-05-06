@@ -1,0 +1,147 @@
+# Stack completo — desde docker/:
+#   docker compose -f compose.full.yml -f compose.dev.yml up --build
+#   (solo full) docker compose -f compose.full.yml up --build
+#
+# Rutas relativas a docker/ → ../platform, ../apps, ../gateway.
+# Interpolación: docker/.env debe definir ENV (dev|prod) para resolver env_file de servicios.
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: dakinis-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dakinis
+      POSTGRES_PASSWORD: dakinis
+      POSTGRES_DB: dakinis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dakinis -d dakinis"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks:
+      - dakinis
+
+  redis:
+    image: redis:7
+    container_name: dakinis-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - dakinis
+
+  auth:
+    build:
+      context: ../platform/auth
+      dockerfile: Dockerfile
+    container_name: dakinis-auth
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      DATABASE_URL: postgres://dakinis:dakinis@postgres:5432/dakinis
+      PORT: "4000"
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - dakinis
+
+  core-api:
+    build:
+      context: ../platform/core
+      dockerfile: Dockerfile.api
+    container_name: dakinis-core-api
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      PORT: "4001"
+      SQLITE_PATH: /app/data/dakinis.db
+    ports:
+      - "4001:4001"
+    volumes:
+      - core_sqlite:/app/data
+    networks:
+      - dakinis
+
+  streamautomator-api:
+    build:
+      context: ../apps/streamautomator/apps/api
+      dockerfile: Dockerfile
+    container_name: dakinis-streamautomator-api
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      PORT: "4002"
+      DATABASE_URL: postgres://dakinis:dakinis@postgres:5432/dakinis_stream
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "4002:4002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      auth:
+        condition: service_started
+    networks:
+      - dakinis
+
+  akoenet-backend:
+    build:
+      context: ../apps/akoenet/Server
+      dockerfile: Dockerfile
+    container_name: dakinis-akoenet-backend
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      PORT: "4003"
+      DATABASE_URL: postgres://dakinis:dakinis@postgres:5432/akoenet
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "4003:4003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      auth:
+        condition: service_started
+    networks:
+      - dakinis
+
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: dakinis-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ../gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../gateway/routes:/etc/nginx/routes:ro
+    depends_on:
+      - auth
+      - core-api
+      - streamautomator-api
+      - akoenet-backend
+    networks:
+      - dakinis
+
+volumes:
+  postgres_data:
+  core_sqlite:
+
+networks:
+  dakinis:
+    driver: bridge
