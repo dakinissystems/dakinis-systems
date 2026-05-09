@@ -2,7 +2,13 @@
   "service": "streamautomator-api",
   "gatewayPrefix": "/streamautomator/",
   "upstreamContainer": "streamautomator-api:4002",
-  "description": "API StreamAutomator; prefijo público bajo /streamautomator/.",
-  "publicRoutePrefixes": ["/streamautomator/"],
-  "examplePaths": ["/streamautomator/api/health/live"]
+  "description": "Tras auth_request (/auth/verify), el gateway reenvía X-User-Id, X-Tenant-Id y X-User-Role. Con TRUST_GATEWAY_IDENTITY_HEADERS=true el API puede alinear tenant con el gateway además del claim tenantId en el JWT StreamAutomator. Contenidos, uploads (tabla uploads), auditoría y pagos admiten tenant_id (tablas SaaS); membership en public.memberships da el tenant por defecto en login.",
+  "requiresJwtViaGateway": "partial — solo fuera de las excepciones documentadas en el gateway",
+  "examplePaths": [
+    "/streamautomator/api/health/live",
+    "/streamautomator/api/integration/akoenet",
+    "/streamautomator/api/streamer/demo/upcoming",
+    "/streamautomator/api/user/tenants",
+    "/streamautomator/api/user/tenant/active"
+  ]
 }

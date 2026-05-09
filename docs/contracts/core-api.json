@@ -2,7 +2,7 @@
   "service": "core-api",
   "gatewayPrefix": "/core/",
   "upstreamContainer": "core-api:4001",
-  "description": "API de negocio compartido; el gateway reescribe /core/* al origen del servicio.",
+  "description": "API de negocio compartido; /core/* exige JWT en el gateway y recibe X-User-Id, X-Tenant-Id, X-User-Role (sin re-parsear JWT). Health directo: :4001/api/health.",
   "publicRoutePrefixes": ["/core/"],
   "examplePaths": ["/core/api/health"]
 }

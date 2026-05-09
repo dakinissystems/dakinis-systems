@@ -4,11 +4,11 @@ Repositorio remoto: [github.com/dakinissystems/dakinis-systems](https://github.c
 
 ## Control repo + product repos
 
-La raíz del workspace es un **repositorio Git ligero** (stack, gateway, docs, scripts, compose) con [`.gitignore`](./.gitignore) que **excluye** `apps/` y `platform/` — esos directorios siguen siendo **clones con su propio `.git` y remoto**; no se duplica su código en el historial del control repo.
+La raíz del workspace es un **repositorio Git ligero** (stack, gateway, docs, CI, scripts, compose) con [`.gitignore`](./.gitignore) que **excluye** `apps/` y `platform/` — esos directorios siguen siendo **clones con su propio `.git` y remoto**; no se duplica su código en el historial del control repo.
 
 | Qué se versiona en la raíz | Qué no (cada equipo en su repo) |
 |----------------------------|----------------------------------|
-| `docker/`, `gateway/`, `docs/`, `infrastructure/`, `scripts/`, `README.md` | Código bajo `apps/*` y `platform/*` |
+| `docker/`, `gateway/`, `docs/`, `.github/`, `infrastructure/`, `scripts/`, `README.md` | Código bajo `apps/*` y `platform/*` |
 
 Tras clonar este repo, crea `apps/` y `platform/` en el mismo nivel que conviene a tu máquina y clona ahí auth, core, shared, landing, etc. (ver [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)). En el mantenedor, el árbol completo suele vivir bajo `D:\dakinis-systems\`; las rutas de documentación asumen ese layout salvo que indiques lo contrario.
 
@@ -18,7 +18,7 @@ Tras clonar este repo, crea `apps/` y `platform/` en el mismo nivel que conviene
 
 ```
 Dakinis Systems
-├── Control (Git raíz)     docker/  gateway/  docs/  infrastructure/  scripts/
+├── Control (Git raíz)     docker/  gateway/  docs/  .github/  infrastructure/  scripts/
 ├── Core platform  →  platform/   (clones ignorados por el control repo)
 │   ├── auth       →  JWT multi-tenant (dakinis-auth)
 │   ├── shared     →  pnpm + Turborepo @dakinis/*
@@ -27,7 +27,7 @@ Dakinis Systems
 │   ├── streamautomator   Express API + React web
 │   ├── akoenet           Client/ y Server/ — repo Git cada uno
 │   └── landing           Vite
-└── Borde HTTP     →  gateway/    Nginx: nginx.conf + routes/ (+ middleware/ futuro)
+└── API Gateway    →  gateway/    Nginx: `nginx.conf` + `routes/` (+ `middleware/` futuro)
 ```
 
 ## Estado del árbol (mayo 2026)
@@ -37,9 +37,10 @@ Dakinis Systems
 | Raíz del workspace | **Control repo Git** — versiona stack + gateway + docs; ver `.gitignore`. |
 | `platform/*`, `apps/*` | **Repos propios** — no van al control repo. |
 | `docker/` | Compose modular: `compose.full.yml` + `compose.dev.yml` (entrada típica), `compose.db.yml` (solo DB/cache). |
-| `gateway/` | Config **activa** del contenedor `gateway` (Nginx). |
+| `gateway/` | **API Gateway** Nginx del stack (`auth_request`, cache de verify, rate limit, logs `gateway_main` con `user`/`tenant` donde aplique). Ver [`gateway/README.md`](./gateway/README.md). |
+| `.github/workflows/` | CI en `main` / PR: validación de Compose + `nginx -t` sobre `gateway/`. |
 | `scripts/` | [`dev.ps1`](./scripts/dev.ps1) y utilidades. |
-| `docs/` | Incluye [`docs/contracts/`](./docs/contracts/) (contratos entre servicios). |
+| `docs/` | Incluye [`docs/contracts/`](./docs/contracts/) y [`docs/rules.md`](./docs/rules.md) (cambios en rutas, CORS producción, operativa del gateway). |
 | `infrastructure/` | Scripts PowerShell, notas; `infrastructure/nginx/` solo referencia (el borde real es `gateway/`). |
 
 **Mantenimiento ocasional**
@@ -70,7 +71,7 @@ Si clonas solo este repo de orquestación, clona también los productos bajo `ap
 | Ruta | Contenido principal |
 |------|---------------------|
 | `docker/` | Stack local; ver [`docker/README.md`](./docker/README.md). |
-| `gateway/` | API gateway Nginx (`nginx.conf`, `routes/`, `middleware/`). |
+| `gateway/` | Borde HTTP / API Gateway — [`gateway/README.md`](./gateway/README.md) (`nginx.conf`, `routes/`, rate limit, cache de auth, CORS documentado). |
 | `scripts/dev.ps1` | `docker compose -f compose.full.yml -f compose.dev.yml up --build` + `.env` / `.env.dev` autocreados si faltan. |
 | `apps/streamautomator` | API + web (repo Git). |
 | `apps/akoenet/Client`, `Server` | Repos Git separados. |
@@ -88,17 +89,24 @@ Si clonas solo este repo de orquestación, clona también los productos bajo `ap
 
 ## Integración
 
-- **Auth:** `platform/auth` → JWT `sub`, `tenantId`, `role`.
+- **Auth:** `platform/auth` → JWT `sub`, `tenantId`, `role`; el gateway delega en `/auth/verify` y reenvía identidad (`X-User-Id`, `X-Tenant-Id`) en rutas protegidas.
 - **Cliente:** `platform/shared` → `@dakinis/sdk`, `@dakinis/auth-client`, `@dakinis/config`, `@dakinis/ui`.
-- **Contratos gateway:** [`docs/contracts/`](./docs/contracts/).
+- **Contratos y cambios en el borde:** [`docs/contracts/`](./docs/contracts/) + [`docs/rules.md`](./docs/rules.md) (obligatorio para prefijos, CORS en producción y política de cache/rate limit).
 - **AkoeNet ↔ StreamAutomator:** `service: "streamautomator"` donde esté definido en el contrato.
+
+## Modelo de cobro (actual)
+
+- **Dakinis StreamAutomator (Scheduler):** cobro online con Stripe.
+- **Resto de productos (core, auth, akoenet, etc.):** cobro por transferencia fuera de la plataforma.
 
 ## Documentación y scripts
 
 - Estrategia workspace / control repo: [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)
+- Reglas operativas (rutas públicas / contratos): [`docs/rules.md`](./docs/rules.md)
 - Arquitectura: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
 - Docker y entornos: [`docker/README.md`](./docker/README.md)
 
-## Docker / gateway
+## Docker y gateway
 
-Stack completo: `scripts/dev.ps1` o desde `docker/`: `docker compose -f compose.full.yml -f compose.dev.yml up --build`. Solo DB/cache: `docker compose -f compose.db.yml up -d`. Detalle: [`docker/README.md`](./docker/README.md).
+- **Arranque:** stack completo con [`scripts/dev.ps1`](./scripts/dev.ps1) o desde `docker/`: `docker compose -f compose.full.yml -f compose.dev.yml up --build`. Solo DB/cache: `docker compose -f compose.db.yml up -d`. Detalle: [`docker/README.md`](./docker/README.md).
+- **Gateway:** el contenedor `gateway` monta [`gateway/`](./gateway/); cualquier cambio de rutas o cabeceras es **contrato** — revisar [`docs/rules.md`](./docs/rules.md) y abrir PR (CI valida Compose + `nginx -t`).

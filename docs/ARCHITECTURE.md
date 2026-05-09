@@ -55,6 +55,9 @@ dakinis-systems/
 
 Gateway único, tenant isolation + billing, posible `pnpm`/Turborepo en la raíz del ecosistema — ver [`WORKSPACE-STRATEGY.md`](./WORKSPACE-STRATEGY.md) y el [`README.md`](../README.md) raíz.
 
+> Modelo actual de cobro: **solo Dakinis StreamAutomator (Scheduler)** usa pasarela online (Stripe).  
+> El resto de productos del ecosistema operan cobro por **transferencia fuera de plataforma**.
+
 ## 6. GitHub
 
 - [dakinis-shared](https://github.com/dakinissystems/dakinis-shared)  

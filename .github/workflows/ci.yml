@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare compose env (stub)
+        run: |
+          cp docker/.env.example docker/.env
+          cp docker/.env.dev.example docker/.env.dev
+
+      - name: Validate docker compose
+        working-directory: docker
+        run: docker compose -f compose.full.yml config
+
+      - name: Lint nginx config
+        run: |
+          # Resolución stub: nginx -t resuelve upstreams a tiempo de carga; sin red Docker
+          # deben existir nombres (p. ej. auth) o falla. --add-host evita el falso negativo.
+          docker run --rm \
+            --add-host=auth:127.0.0.1 \
+            --add-host=core-api:127.0.0.1 \
+            --add-host=streamautomator-api:127.0.0.1 \
+            --add-host=akoenet-backend:127.0.0.1 \
+            -v "${{ github.workspace }}/gateway/nginx.conf:/etc/nginx/nginx.conf:ro" \
+            -v "${{ github.workspace }}/gateway/routes:/etc/nginx/routes:ro" \
+            nginx:1.27-alpine nginx -t
+
+      - name: Build stack images (full workspace only)
+        working-directory: docker
+        run: |
+          if [ -d ../platform/auth ] && [ -d ../apps/streamautomator ] && [ -d ../platform/core ]; then
+            docker compose -f compose.full.yml build
+          else
+            echo 'Skipping docker compose build: platform/ and apps/ are not in this checkout (control-repo layout).'
+          fi
+
+      - name: AkoeNet Client — Vite build (scripts + invite invariants)
+        if: hashFiles('apps/akoenet/Client/package.json') != ''
+        working-directory: apps/akoenet/Client
+        run: |
+          npm ci
+          npm run build
