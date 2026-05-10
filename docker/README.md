@@ -22,7 +22,7 @@ Puertos directos (sin gateway): `4000` auth, `4001` core, `4002` streamautomator
 ## Entorno
 
 1. Copia `.env.example` a `.env` si aún no existe (`docker/.env` está en `.gitignore`) y fija `ENV=dev`/`prod`.
-2. Copia `.env.dev.example` a `.env.dev` y rellena secretos; ese archivo alimenta **auth, core-api, streamautomator y akoenet** vía `env_file`. `compose.full.yml` fija además por servicio puertos, Postgres/Redis internos, **`FRONTEND_URL` distinto por producto** (StreamAutomator `:3000`, AkoeNet/Core `:5173`) y **`SCHEDULER_API_BASE_URL`** de AkoeNet hacia el hostname Docker de StreamAutomator.
+2. Copia `.env.dev.example` a `.env.dev` y rellena secretos; ese archivo alimenta **auth, core-api, streamautomator y akoenet** vía `env_file`. Para **Twitch con credenciales distintas** por producto usa `TWITCH_CLIENT_ID_STREAMAUTOMATOR` / `TWITCH_CLIENT_SECRET_STREAMAUTOMATOR` y `TWITCH_CLIENT_ID_AKOENET` / `TWITCH_CLIENT_SECRET_AKOENET` (`compose.full.yml` las inyecta sólo en el servicio correspondiente). `compose.full.yml` fija además puertos, Postgres/Redis internos, **`FRONTEND_URL` distinto por producto** (StreamAutomator `:3000`, AkoeNet/Core `:5173`) y **`SCHEDULER_API_BASE_URL`** de AkoeNet hacia StreamAutomator.
 3. En producción, usa secretos fuertes y no subas `.env.dev`.
 
 ## Postgres

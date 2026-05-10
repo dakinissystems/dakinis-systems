@@ -1,0 +1,20 @@
+{
+  "service": "fitness-platform-api",
+  "gatewayPrefix": "/fitness/",
+  "auth_model": {
+    "note": "En demo, JWT emitido por el propio fitness-api (`POST /api/auth/login`). El gateway `/fitness/` NO usa `auth_request` (similar a `/akoenet/`); la app debe enviar Bearer. Futuro: alinear JWT con platform/auth.",
+    "public_paths": [
+      "/fitness/api/health/live"
+    ]
+  },
+  "endpoints_demo": [
+    "POST /fitness/api/auth/login",
+    "GET /fitness/api/auth/me",
+    "GET /fitness/api/admin/clients — roles OWNER/TRAINER",
+    "GET /fitness/api/admin/exercises — biblioteca ejercicios (videoUrl opcional)",
+    "PATCH /fitness/api/admin/exercises/:id — actualizar videoUrl (YouTube/Vimeo u otra URL https)",
+    "POST /fitness/api/admin/exercises/:id/media — multipart campo file (video/mp4, video/webm, video/quicktime)",
+    "GET /fitness/api/media/:tenantId/:fileName — descarga vídeo tenant (JWT CLIENT/TRAINER/OWNER/STAFF mismo tenant)",
+    "GET /fitness/api/client/dashboard — role CLIENT"
+  ]
+}

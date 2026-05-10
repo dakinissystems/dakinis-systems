@@ -30,6 +30,7 @@ jobs:
             --add-host=core-api:127.0.0.1 \
             --add-host=streamautomator-api:127.0.0.1 \
             --add-host=akoenet-backend:127.0.0.1 \
+            --add-host=fitness-platform-api:127.0.0.1 \
             -v "${{ github.workspace }}/gateway/nginx.conf:/etc/nginx/nginx.conf:ro" \
             -v "${{ github.workspace }}/gateway/routes:/etc/nginx/routes:ro" \
             nginx:1.27-alpine nginx -t

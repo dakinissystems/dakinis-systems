@@ -56,7 +56,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    networks: [dakinis]
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-auth.railway.internal
 
   core-api:
     build:
@@ -82,7 +85,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    networks: [dakinis]
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-core.railway.internal
 
   streamautomator-api:
     build:
@@ -98,6 +104,9 @@ services:
       REDIS_URL: redis://redis:6379
       TRUST_GATEWAY_IDENTITY_HEADERS: "true"
       FRONTEND_URL: http://localhost:3000
+      # Twitch del Scheduler (prioridad sobre TWITCH_* genéricos del env_file).
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID_STREAMAUTOMATOR:-${TWITCH_CLIENT_ID:-}}
+      TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET_STREAMAUTOMATOR:-${TWITCH_CLIENT_SECRET:-}}
     ports:
       - "4002:4002"
     depends_on:
@@ -113,7 +122,10 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
-    networks: [dakinis]
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-streamautomator.railway.internal
 
   akoenet-backend:
     build:
@@ -131,6 +143,9 @@ services:
       FRONTEND_URL: http://localhost:5173
       # Server→server dentro de la red Docker (no usar localhost desde el contenedor).
       SCHEDULER_API_BASE_URL: http://streamautomator-api:4002
+      # Twitch de AkoeNet (prioridad sobre TWITCH_* genéricos del env_file).
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID_AKOENET:-${TWITCH_CLIENT_ID:-}}
+      TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET_AKOENET:-${TWITCH_CLIENT_SECRET:-}}
     ports:
       - "4003:4003"
     depends_on:
@@ -146,7 +161,35 @@ services:
       timeout: 5s
       retries: 5
       start_period: 40s
-    networks: [dakinis]
+    networks:
+      dakinis:
+        aliases:
+          - akoenet-backend.railway.internal
+
+  fitness-platform-api:
+    build:
+      context: ../apps/fitness-platform/api
+      dockerfile: Dockerfile
+    container_name: dakinis-fitness-platform-api
+    restart: unless-stopped
+    environment:
+      PORT: "4010"
+      DATABASE_URL: file:/app/data/dev.db
+      FITNESS_UPLOAD_ROOT: /app/data/uploads
+    ports:
+      - "4010:4010"
+    volumes:
+      - fitness_sqlite:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:4010/api/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+    networks:
+      dakinis:
+        aliases:
+          - fitness-platform-api.railway.internal
 
   gateway:
     image: nginx:1.27-alpine
@@ -168,11 +211,14 @@ services:
         condition: service_healthy
       akoenet-backend:
         condition: service_healthy
+      fitness-platform-api:
+        condition: service_healthy
     networks: [dakinis]
 
 volumes:
   postgres_data:
   core_sqlite:
+  fitness_sqlite:
 
 networks:
   dakinis:

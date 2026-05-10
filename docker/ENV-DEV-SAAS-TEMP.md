@@ -93,7 +93,7 @@
     | `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` | [Twitch Developer Console](https://dev.twitch.tv/console/apps) | ID / secreto |
     | `TWITCH_OAUTH_REDIRECT_BASE_URL` | Igual criterio que `BACKEND_URL` si usas path distinto | Pública |
     | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google Cloud Console → OAuth | ID / secreto |
-    | `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` / `DISCORD_BOT_TOKEN` | Discord Developer Portal | Secretos |
+    | `DISCORD_CLIENT_ID` / `DISCORD_PUBLIC_KEY` / `DISCORD_CLIENT_SECRET` / `DISCORD_BOT_TOKEN` | Discord Developer Portal — `DISCORD_PUBLIC_KEY` es la “clave pública” de la aplicación (hex) para verificación de interacciones | Secretos |
     | `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` | Stripe Dashboard | **Secretos**. Aplican **solo** a Dakinis StreamAutomator (Scheduler). |
     | `TOKEN_ENCRYPTION_KEY` | Generar y fijar (idealmente 32+ bytes); si falta se deriva de `JWT_SECRET` | **Secreta** |
     | `REDIS_URL` | Ya en compose; override solo si Redis externo | Cadena de conexión |
