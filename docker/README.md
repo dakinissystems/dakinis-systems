@@ -45,6 +45,12 @@ La primera vez, con Postgres ya en marcha:
 docker compose -f compose.full.yml -f compose.dev.yml run --rm akoenet-backend npm run migrate
 ```
 
+## StreamAutomator y el repo upstream (Stream-Schedule)
+
+El código público de referencia es [ChristianDVillar/Stream-Schedule](https://github.com/ChristianDVillar/Stream-Schedule) (`backend/`, `frontend/` en la raíz del repo).
+
+En el workspace Dakinis, el mismo producto suele vivir en **`../apps/streamautomator`** con layout **monorepo**: API en **`apps/streamautomator/apps/api`** (Compose: `streamautomator-api` → `context: ../apps/streamautomator/apps/api`) y web en **`apps/streamautomator/apps/web`**. El servicio HTTP debe escuchar en **`0.0.0.0`** y **`PORT`** (p. ej. `4002` en este stack) para Docker, Railway y el gateway.
+
 ## Rutas de build
 
 Los `Dockerfile` viven en cada repo (`platform/auth`, `platform/core`, etc.); los contextos en `compose.full.yml` son relativos a esta carpeta (`../platform/...`, `../apps/...`).

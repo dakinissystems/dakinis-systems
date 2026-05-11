@@ -89,7 +89,7 @@ Si clonas solo este repo de orquestación, clona también los productos bajo `ap
 
 | Código / histórico | Marca |
 |--------------------|--------|
-| streamer-scheduler | **Dakinis StreamAutomator** (`dakinis-streamautomator`) |
+| streamer-scheduler / [Stream-Schedule](https://github.com/ChristianDVillar/Stream-Schedule) | **Dakinis StreamAutomator** (workspace: `apps/streamautomator` → `apps/api`, `apps/web`) |
 | AkoeNet | **Dakinis AkoeNet** |
 
 ## Integración
