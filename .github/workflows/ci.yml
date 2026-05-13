@@ -69,11 +69,10 @@ jobs:
             path: apps/fitness-platform
           - name: landing
             path: apps/landing
-          - name: streamautomator-api
-            path: apps/streamautomator/apps/api
-            optional: true
           - name: streamautomator-web
             path: apps/streamautomator/apps/web
+          - name: streamautomator-api
+            path: apps/streamautomator/apps/api
             optional: true
 
     steps:
