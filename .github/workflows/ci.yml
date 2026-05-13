@@ -50,3 +50,51 @@ jobs:
         run: |
           npm ci
           npm run build
+
+  security-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: akoenet-client
+            path: apps/akoenet/Client
+          - name: akoenet-server
+            path: apps/akoenet/Server
+          - name: dakinis-auth
+            path: platform/auth
+          - name: dakinis-core
+            path: platform/core
+          - name: fitness-platform
+            path: apps/fitness-platform
+          - name: landing
+            path: apps/landing
+          - name: streamautomator-api
+            path: apps/streamautomator/apps/api
+            optional: true
+          - name: streamautomator-web
+            path: apps/streamautomator/apps/web
+            optional: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: npm audit (${{ matrix.name }})
+        working-directory: ${{ matrix.path }}
+        continue-on-error: ${{ matrix.optional == true }}
+        run: |
+          if [ ! -f package.json ]; then
+            echo "skip: no package.json"
+            exit 0
+          fi
+          if [ -f package-lock.json ]; then
+            npm ci --omit=dev
+          else
+            npm i --package-lock-only --omit=dev
+            npm ci --omit=dev
+          fi
+          npm audit --omit=dev --audit-level=high
