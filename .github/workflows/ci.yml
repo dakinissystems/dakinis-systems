@@ -83,13 +83,14 @@ jobs:
           node-version: "22"
 
       - name: npm audit (${{ matrix.name }})
-        working-directory: ${{ matrix.path }}
         continue-on-error: ${{ matrix.optional == true }}
         run: |
-          if [ ! -f package.json ]; then
-            echo "skip: no package.json"
+          # apps/ and platform/ are not in the control-repo checkout (.gitignore); skip missing paths.
+          if [ ! -f "${{ matrix.path }}/package.json" ]; then
+            echo "skip: ${{ matrix.path }} not present in this repository (clone the product repo for a full audit)."
             exit 0
           fi
+          cd "${{ matrix.path }}"
           if [ -f package-lock.json ]; then
             npm ci --omit=dev
           else
