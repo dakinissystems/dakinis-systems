@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/Akoenet.png" />
+    <link rel="apple-touch-icon" href="/Akoenet.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AkoeNet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="/assets/index-Cd8evxCb.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-Dw2cE7zH.js">
+    <link rel="modulepreload" crossorigin href="/assets/capacitor-D5e2ZyY9.js">
+    <link rel="modulepreload" crossorigin href="/assets/api-CKjjl2Q1.js">
+    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-CURdG15W.js">
+    <link rel="modulepreload" crossorigin href="/assets/AuthContext-00hQRwhI.js">
+    <link rel="modulepreload" crossorigin href="/assets/useTranslation-B3KnysST.js">
+    <link rel="modulepreload" crossorigin href="/assets/useLandingLocale-DOUA9sA0.js">
+    <link rel="modulepreload" crossorigin href="/assets/landingContent-BSMdabLT.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-DWYGIm4G.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
