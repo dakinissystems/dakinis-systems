@@ -16,20 +16,7 @@ Tras clonar este repo, crea `apps/` y `platform/` en el mismo nivel que conviene
 
 ## Modelo mental
 
-```
-Dakinis Systems
-├── Control (Git raíz)     docker/  gateway/  docs/  .github/  infrastructure/  scripts/
-├── Core platform  →  platform/   (clones ignorados por el control repo)
-│   ├── auth       →  JWT multi-tenant (dakinis-auth)
-│   ├── shared     →  pnpm + Turborepo @dakinis/*
-│   └── core       →  npm workspaces api, web, shared
-├── Apps           →  apps/       (clones ignorados)
-│   ├── streamautomator   Express API + React web (Dakinis StreamAutomator)
-│   ├── akoenet           Client/ y Server/ — repo Git cada uno
-│   ├── landing           Vite
-│   └── fitness-platform  API Express + SPAs admin/cliente — demo multi-tenant JWT + SQLite (ver `apps/fitness-platform/README.md`)
-└── API Gateway    →  gateway/    Nginx: nginx.conf + routes/ (+ middleware/ futuro)
-```
+Repositorio de **orquestación** (Docker, gateway, documentación compartida) y **productos en repos Git separados** (auth, core, StreamAutomator, AkoeNet, etc.). El código de cada producto no se duplica en el historial de esta raíz; clona cada repo en tu workspace local según [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md).
 
 **Prefijos HTTP vía gateway (`localhost:80` en dev):** `/auth/`, `/core/`, `/streamautomator/`, `/akoenet/`, `/fitness/` (fitness-platform API; JWT del propio demo, ver contrato).
 
@@ -70,20 +57,15 @@ Dakinis Systems
 
 Si clonas solo este repo de orquestación, clona también los productos bajo `apps/…` siguiendo el mapa anterior cuando vayas a construir imágenes o a usar el gateway con todos los servicios.
 
-## Mapa rápido por carpeta
+## Componentes (sin detalle de carpetas internas)
 
-| Ruta | Contenido principal |
-|------|---------------------|
-| `docker/` | Stack local; entorno `docker/.env` + secretos en `docker/.env.dev` (gitignored); ver [`docker/README.md`](./docker/README.md). |
-| `gateway/` | Borde HTTP / API Gateway — [`gateway/README.md`](./gateway/README.md) (`nginx.conf`, `routes/`, rate limit, cache de auth, CORS documentado). |
-| `scripts/dev.ps1` | `docker compose -f compose.full.yml -f compose.dev.yml up --build` + `.env` / `.env.dev` autocreados si faltan. |
-| `apps/streamautomator` | API + web (repo Git). |
-| `apps/akoenet/Client`, `Server` | Repos Git separados. |
-| `apps/landing/` | Marketing Vite. |
-| `apps/fitness-platform/` | Demo SaaS fitness — API + admin + cliente web; [`apps/fitness-platform/README.md`](./apps/fitness-platform/README.md). |
-| `platform/auth/`, `shared/`, `core/` | Plataforma (repos Git). |
-| `docs/contracts/` | Contratos de rutas/prefijos entre servicios (StreamAutomator, AkoeNet, fitness, …). |
-| `infrastructure/scripts/` | Layout, `safe.directory`, etc. |
+| Área | Rol |
+|------|-----|
+| **Docker / gateway** | Stack local y borde HTTP — ver [`docker/README.md`](./docker/README.md), [`gateway/README.md`](./gateway/README.md). |
+| **StreamAutomator** | Repo propio — API + web. |
+| **AkoeNet** | Repos propios **akoenet-client** y **akoenet-backend** (web + API en producción). |
+| **Plataforma** | Auth, core, shared — repos propios bajo `platform/`. |
+| **Contratos** | [`docs/contracts/`](./docs/contracts/) — prefijos y rutas entre servicios. |
 
 ### Naming público
 
