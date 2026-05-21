@@ -1,0 +1,19 @@
+{
+  "legalName": "Christian Villar",
+  "tradingName": "Dakinis Systems",
+  "jurisdiction": "España",
+  "countryCode": "ES",
+  "contacts": {
+    "general": "contacto@dakinis-systems.com",
+    "legal": "legal@dakinis-systems.com",
+    "privacy": "privacy@dakinis-systems.com"
+  },
+  "sites": {
+    "corporate": "https://dakinissystems.com/",
+    "core": "https://core.dakinissystems.com/",
+    "streamautomator": "https://streamautomator.com/",
+    "akoenet": "https://akoenet.dakinissystems.com/"
+  },
+  "lastUpdated": "2026-05-19",
+  "notes": "Datos registrales (NIF/CIF, domicilio social) — completar en aviso legal cuando estén disponibles para publicación."
+}
