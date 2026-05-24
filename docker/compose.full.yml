@@ -75,6 +75,7 @@ services:
       DATABASE_URL: ${DATABASE_URL_CORE:-}
       DB_DRIVER: ${DB_DRIVER_CORE:-sqlite}
       SQLITE_PATH: /app/data/dakinis.db
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       # Mismo SPA Vite habitual; evita clash de FRONTEND_URL compartido vía env_file.
       FRONTEND_URL: http://localhost:5173
       CORS_ORIGIN: http://localhost:5173
