@@ -71,6 +71,9 @@ services:
       - .env.${ENV:-dev}
     environment:
       PORT: "4001"
+      # PostgreSQL (recomendado prod): DATABASE_URL + DB_DRIVER=postgres
+      DATABASE_URL: ${DATABASE_URL_CORE:-}
+      DB_DRIVER: ${DB_DRIVER_CORE:-sqlite}
       SQLITE_PATH: /app/data/dakinis.db
       # Mismo SPA Vite habitual; evita clash de FRONTEND_URL compartido vía env_file.
       FRONTEND_URL: http://localhost:5173

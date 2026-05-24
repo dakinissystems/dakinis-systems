@@ -44,12 +44,26 @@ jobs:
             echo 'Skipping docker compose build: platform/ and apps/ are not in this checkout (control-repo layout).'
           fi
 
-      - name: AkoeNet Client — Vite build (scripts + invite invariants)
+      - name: AkoeNet Client — Vite build
         if: hashFiles('apps/akoenet/Client/package.json') != ''
         working-directory: apps/akoenet/Client
         run: |
           npm ci
           npm run build
+
+      - name: Core — API build smoke
+        if: hashFiles('platform/core/package.json') != ''
+        working-directory: platform/core
+        run: |
+          npm install
+          npm run build
+
+      - name: Auth — syntax check
+        if: hashFiles('platform/auth/package.json') != ''
+        working-directory: platform/auth
+        run: |
+          npm install --omit=dev
+          node --check src/app.js
 
   security-audit:
     runs-on: ubuntu-latest

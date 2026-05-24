@@ -92,6 +92,7 @@ Si clonas solo este repo de orquestación, clona también los productos bajo `ap
 - Estrategia workspace / control repo: [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)
 - Reglas operativas (rutas públicas / contratos): [`docs/rules.md`](./docs/rules.md)
 - Arquitectura: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
+- Decisiones y roadmap: [`docs/ARCHITECTURE-DECISIONS.md`](./docs/ARCHITECTURE-DECISIONS.md)
 - Docker, env y Twitch por servicio: [`docker/README.md`](./docker/README.md)
 - Seguridad Supabase (RLS): [`docs/SUPABASE-SECURITY.md`](./docs/SUPABASE-SECURITY.md)
 
