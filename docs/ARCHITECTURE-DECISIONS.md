@@ -48,7 +48,9 @@ DATABASE_URL_CORE=postgres://dakinis:dakinis@postgres:5432/dakinis?options=-c%20
 | **Express** | Ecosistema enorme, ya usado en auth/SA/AkoeNet | Menos performance que Fastify |
 | **Fastify** | Rápido, schema validation nativa | Migrar Core (HTTP nativo) y SA |
 
-**Decisión recomendada:** **Express** para servicios nuevos; migrar Core API a Express en fase 2 (hoy HTTP nativo funciona).
+**Decisión recomendada:** **Express** para servicios nuevos; migrar Core API a **Fastify** en fase 2 (opt-in `USE_FASTIFY=true` ya disponible).
+
+Ver comparativa en [`DAKINIS-ESTRUCTURA-TEMP.md`](./DAKINIS-ESTRUCTURA-TEMP.md) §14.
 
 ---
 

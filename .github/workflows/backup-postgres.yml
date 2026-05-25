@@ -12,20 +12,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Backup note
-        run: |
-          echo "Scheduled backup runs against your Postgres host."
-          echo "Configure BACKUP_DATABASE_URL secret and uncomment pg_dump step when ready."
-          echo "Local dev: .\\scripts\\backup-postgres.ps1"
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      # Descomentar cuando BACKUP_DATABASE_URL esté en GitHub Secrets:
-      # - name: pg_dump to artifact
-      #   env:
-      #     DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
-      #   run: |
-      #     pg_dump "$DATABASE_URL" | gzip > backup.sql.gz
-      # - uses: actions/upload-artifact@v4
-      #   with:
-      #     name: postgres-backup-${{ github.run_id }}
-      #     path: backup.sql.gz
-      #     retention-days: 14
+      - name: pg_dump to artifact
+        env:
+          DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::warning::BACKUP_DATABASE_URL not set. Use scripts/backup-postgres.ps1 locally."
+            exit 0
+          fi
+          pg_dump "$DATABASE_URL" --no-owner --no-acl | gzip > backup.sql.gz
+          ls -lh backup.sql.gz
+
+      - uses: actions/upload-artifact@v4
+        if: hashFiles('backup.sql.gz') != ''
+        with:
+          name: postgres-backup-${{ github.run_id }}
+          path: backup.sql.gz
+          retention-days: 14
+
+      - name: Restore test reminder
+        run: echo "Monthly: run scripts/restore-postgres-test.ps1 against a downloaded backup."
