@@ -34,4 +34,5 @@ jobs:
           retention-days: 14
 
       - name: Restore test reminder
-        run: echo "Monthly: run scripts/restore-postgres-test.ps1 against a downloaded backup."
+        run: |
+          echo "Monthly: run scripts/restore-postgres-test.ps1 against a downloaded backup."
