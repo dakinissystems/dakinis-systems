@@ -89,12 +89,12 @@ Si clonas solo este repo de orquestación, clona también los productos bajo `ap
 
 ## Documentación y scripts
 
-- Estrategia workspace / control repo: [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)
-- Reglas operativas (rutas públicas / contratos): [`docs/rules.md`](./docs/rules.md)
-- Arquitectura: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
-- Decisiones y roadmap: [`docs/ARCHITECTURE-DECISIONS.md`](./docs/ARCHITECTURE-DECISIONS.md)
-- Docker, env y Twitch por servicio: [`docker/README.md`](./docker/README.md)
-- Seguridad Supabase (RLS): [`docs/SUPABASE-SECURITY.md`](./docs/SUPABASE-SECURITY.md)
+- **Índice de docs:** [`docs/README.md`](./docs/README.md)
+- Workspace / control repo: [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)
+- Gateway y contratos: [`docs/rules.md`](./docs/rules.md) + [`docs/contracts/`](./docs/contracts/)
+- Arquitectura: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) · ADRs: [`docs/adr/`](./docs/adr/)
+- Prod: [`docs/supabase/SETUP.md`](./docs/supabase/SETUP.md) · [`docs/PRODUCTION-CHECKLIST-TEMP.md`](./docs/PRODUCTION-CHECKLIST-TEMP.md)
+- Docker local: [`docker/README.md`](./docker/README.md)
 
 ## Docker y gateway
 

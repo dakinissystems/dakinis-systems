@@ -1,64 +1,65 @@
 # Arquitectura — Dakinis Systems
 
-Referencia viva bajo `D:\dakinis-systems`: **control repo** (Docker + **gateway** + docs) + **Core platform** (`platform/`) + **productos** (`apps/`).
+**Control repo** (`dakinis-systems`): Docker, gateway, docs. **Código de producto:** repos bajo `apps/` y `platform/` (ignorados en Git de la raíz). Ver [`WORKSPACE-STRATEGY.md`](./WORKSPACE-STRATEGY.md).
 
-## 1. Plataforma multi-producto
+## Productos
 
-| Capa | Rol |
-|------|-----|
-| Identity | `platform/auth` — JWT multi-tenant |
-| Shared | `platform/shared` — `@dakinis/sdk`, `@dakinis/auth-client`, `@dakinis/config`, `@dakinis/ui` |
-| Core | `platform/core` — negocio compartido |
-| Apps | StreamAutomator, AkoeNet, landing |
-| Marketing | `apps/landing` |
-| Borde HTTP | `gateway/` — Nginx frente a los backends (evolución hacia API gateway) |
+```
+Dakinis Systems
+├── Dakinis One (Core)     → restaurantes / negocio local
+├── AkoeNet                → comunidades, voz, sockets
+└── StreamAutomator (SA)   → scheduler Twitch, Stripe online
+```
 
-## 2. Mapa de carpetas
+| Capa | Repo / carpeta |
+|------|----------------|
+| IdP | `platform/auth` |
+| Paquetes FE | `platform/shared` (`@dakinis/*`) |
+| Core | `platform/core` |
+| SA | `apps/streamautomator` |
+| AkoeNet | `apps/akoenet/Client`, `apps/akoenet/Server` |
+| Borde HTTP | `gateway/` |
+
+## Mapa de carpetas
 
 ```
 dakinis-systems/
-├── docker/              → compose modular: compose.full.yml + compose.dev.yml; compose.db.yml
-├── gateway/             → nginx.conf, routes/, middleware/ (futuro rate limit, auth_request, …)
-├── scripts/             → dev.ps1 (entrypoint DX)
-├── docs/
-│   ├── contracts/       → contratos ligeros entre servicios (prefijos / rutas)
-│   ├── ARCHITECTURE.md
-│   └── WORKSPACE-STRATEGY.md
-├── infrastructure/      → scripts PowerShell; notas (nginx legacy → ver gateway/)
-├── apps/
-│   ├── streamautomator/
-│   ├── akoenet/         → Client/ y Server/ — cada uno repo Git
-│   └── landing/
-└── platform/
-    ├── auth/
-    ├── shared/
-    └── core/
+├── docker/       compose local
+├── gateway/      nginx
+├── docs/         índice: README.md
+├── apps/         productos (git ignorado en raíz)
+└── platform/     auth, core, shared
 ```
 
-`apps/` y `platform/` se ignoran en el **control repo** de la raíz; su código vive en otros remotos.
+## Datos y despliegue (prod)
 
-## 3. Nombres de producto
+| Pieza | Tecnología |
+|-------|------------|
+| PostgreSQL | **Supabase** (pooler **6543**) — guía [`supabase/SETUP.md`](./supabase/SETUP.md) |
+| Compute | **Railway** |
+| Cache / eventos | **Redis** (Railway) |
+| Checklist | [`PRODUCTION-CHECKLIST-TEMP.md`](./PRODUCTION-CHECKLIST-TEMP.md) |
 
-- **Dakinis StreamAutomator** — código histórico `streamer-scheduler`.
-- **Dakinis AkoeNet** — `apps/akoenet` agrupa `Client` y `Server` (repos Git separados).
+## Contratos HTTP
 
-## 4. Integración
+Cambios en rutas públicas: [`rules.md`](./rules.md) + [`contracts/`](./contracts/).
 
-| Pieza | Ubicación |
-|-------|-----------|
-| Auth | `platform/auth` |
-| Cliente HTTP / auth FE | `@dakinis/sdk`, `@dakinis/auth-client` desde `platform/shared` |
-| Config / rutas `/auth/*` | `@dakinis/config`, `DAKINIS_AUTH_HTTP` |
-| Contratos públicos tras el gateway | [`docs/contracts/`](./contracts/) |
+## Decisiones (resumen)
 
-## 5. Roadmap y estrategia de repo
+| Tema | Decisión |
+|------|----------|
+| DB Core | PostgreSQL + schema `dakinis_core_prod` + `business_id` en filas |
+| Auth | IdP central `dakinis-auth`; productos migran a exchange |
+| Framework API | Express hoy; Fastify opt-in en Core más adelante |
+| Observabilidad | JSON logs + Sentry |
 
-Gateway único, tenant isolation + billing, posible `pnpm`/Turborepo en la raíz del ecosistema — ver [`WORKSPACE-STRATEGY.md`](./WORKSPACE-STRATEGY.md) y el [`README.md`](../README.md) raíz.
+Detalle formal: [`adr/`](./adr/) (ADR-001 Postgres, ADR-002 event bus, ADR-003 Fastify).
 
-> Modelo actual de cobro: **solo Dakinis StreamAutomator (Scheduler)** usa pasarela online (Stripe).  
-> El resto de productos del ecosistema operan cobro por **transferencia fuera de plataforma**.
+## Cobro
 
-## 6. GitHub
+Solo **StreamAutomator** usa Stripe en plataforma. Resto: transferencia externa.
 
-- [dakinis-shared](https://github.com/dakinissystems/dakinis-shared)  
-- [dakinis-auth](https://github.com/dakinissystems/dakinis-auth)  
+## GitHub
+
+- [dakinis-shared](https://github.com/dakinissystems/dakinis-shared)
+- [dakinis-auth](https://github.com/dakinissystems/dakinis-auth)

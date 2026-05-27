@@ -2,7 +2,16 @@
   "service": "core-api",
   "gatewayPrefix": "/core/",
   "upstreamContainer": "core-api:4001",
-  "description": "API de negocio compartido; /core/* exige JWT en el gateway y recibe X-User-Id, X-Tenant-Id, X-User-Role (sin re-parsear JWT). Health directo: :4001/api/health.",
-  "publicRoutePrefixes": ["/core/"],
-  "examplePaths": ["/core/api/health"]
+  "description": "API de negocio compartido; el gateway NO hace auth_request IdP en /core/ (JWT Core iss=dakinis-core). Core valida Authorization Bearer + X-Business-Id. Rutas públicas en gateway: health, auth/login, auth/exchange, public/*.",
+  "publicRoutePrefixes": [
+    "/core/api/health",
+    "/core/api/auth/login",
+    "/core/api/auth/exchange",
+    "/core/api/public/"
+  ],
+  "examplePaths": [
+    "/core/api/health",
+    "/core/api/auth/login",
+    "/core/api/public/restaurant/{slug}/allergies"
+  ]
 }

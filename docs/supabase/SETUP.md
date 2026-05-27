@@ -1,148 +1,163 @@
-# Supabase + Railway — configuración real
+# Supabase + Railway — guía única
 
-**Arquitectura:** Railway (compute) + **Supabase PostgreSQL** (datos) + Railway Redis (eventos/cache).
+**Arquitectura:** Railway (compute) + **Supabase PostgreSQL** (datos) + Railway **Redis** (eventos/cache).  
+**No** uses el plugin Postgres de Railway para Auth/Core (solo Supabase).
 
-No uses el plugin Postgres de Railway como base principal si ya tienes Supabase.
-
----
-
-## 1. Obtener connection string (pooler)
-
-Supabase → **Project Settings** → **Database** → **Connection string** → **URI** → modo **Transaction** (puerto **6543**).
-
-Ejemplo:
-
-```
-postgresql://postgres.xxxxx:[PASSWORD]@aws-0-eu-central-1.pooler.supabase.com:6543/postgres
-```
-
-Opcional (recomendado para `pg`):
-
-```
-?pgbouncer=true
-```
-
-**No uses** Supabase Auth ni tablas `auth.users` de Supabase — solo PostgreSQL. Tu IdP es `dakinis-auth`.
+| Producto | Abrev. | Qué es |
+|----------|--------|--------|
+| **StreamAutomator** | **SA** | App en `apps/streamautomator` — scheduler Twitch, API + workers en Railway |
+| **AkoeNet** | — | Comunidad/voz — proyecto Railway aparte |
+| **Core** | — | ERP restaurante (`platform/core`) |
+| **dakinis-auth** | IdP | Login central (`platform/auth`) |
 
 ---
 
-## 2. Ejecutar schemas (orden)
+## 1. SQL en Supabase (orden único)
 
-En **SQL Editor** de Supabase, ejecuta en orden:
+Ejecutar en **SQL Editor**, una vez por entorno:
 
-| # | Archivo |
-|---|---------|
+| Paso | Archivo |
+|------|---------|
 | 1 | [`schemas/00-bootstrap-schemas.sql`](./schemas/00-bootstrap-schemas.sql) |
 | 2 | [`schemas/01-dakinis-auth.sql`](./schemas/01-dakinis-auth.sql) |
 | 3 | [`schemas/02-dakinis-core-prod.sql`](./schemas/02-dakinis-core-prod.sql) |
+| 4 | [`004-rls-lockdown-all.sql`](./004-rls-lockdown-all.sql) |
+| 5 | [`006-rls-policies-deny-api.sql`](./006-rls-policies-deny-api.sql) |
+| 6 | [`005-advisor-functions-storage.sql`](./005-advisor-functions-storage.sql) (opcional) |
 
-Staging: copia `02-dakinis-core-prod.sql` cambiando `dakinis_core_prod` → `dakinis_core_dev` y ejecuta.
+**Staging:** copia `02-dakinis-core-prod.sql` cambiando `dakinis_core_prod` → `dakinis_core_dev` (no hace falta un tercer archivo en repo).
+
+**Diagnóstico:** [`diagnostic.sql`](./diagnostic.sql) (solo lectura).
+
+RLS no afecta Auth/Core en Railway (conexión rol `postgres` vía pooler **6543**); bloquea PostgREST `anon`/`authenticated`.
+
+**Supabase Auth (dashboard):** si el advisor pide “leaked passwords”, es GoTrue del panel Supabase, no tu IdP — activar en Authentication → Email → leaked password protection.
 
 ---
 
-## 3. Variables Railway — proyecto `dakinis-platform`
+## 2. `DATABASE_URL` y `?pgbouncer=true`
 
-### Servicio **Core Back** (`dakinis-core-api`)
+**Transaction pooler (prod APIs):** puerto **6543**, host `*.pooler.supabase.com`.
+
+Añade el query al **final** de la misma variable `DATABASE_URL` en Railway (Core Back y dakinis-auth):
+
+```
+postgresql://postgres.PROJECT_REF:PASSWORD@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+```
+
+Ejemplo con contraseña URL-encoded (`%21` = `!`):
+
+```
+postgresql://postgres.omdosutakaefpowscagp:%21Omunculo_42%21@aws-1-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true
+```
+
+| Dónde | Variable |
+|-------|----------|
+| **Core Back** | `DATABASE_URL` (con o sin `?pgbouncer=true`) |
+| **dakinis-auth** | `DATABASE_URL` (misma URI) |
+| **GitHub backup** | `BACKUP_DATABASE_URL` — preferir conexión **directa 5432** para `pg_dump` |
+
+**Opcional:** si `/api/health` ya muestra `databasePooler: true` y todo va bien, puedes dejar la URI **sin** `?pgbouncer=true` (solo quita el warning del validador).
+
+---
+
+## 3. `DB_DRIVER=postgres` (solo Core Back)
+
+| Servicio | `DB_DRIVER` |
+|----------|-------------|
+| **Core Back** (`dakinis-core-api`) | `postgres` **obligatorio** en prod |
+| **dakinis-auth** | No usa `DB_DRIVER` (siempre Postgres si hay `DATABASE_URL`) |
+
+Sin `DB_DRIVER=postgres`, Core puede arrancar en SQLite y `/api/health` devuelve `"db":"sqlite"`.
+
+---
+
+## 4. Variables Railway — `dakinis-platform`
+
+Plantilla: [`../railway.env.example`](../railway.env.example)
+
+### Core Back
 
 ```env
-NODE_ENV=production
-PORT=4001
 DB_DRIVER=postgres
-DATABASE_URL=postgresql://postgres.xxx:[PASSWORD]@aws-0-eu-central-1.pooler.supabase.com:6543/postgres
+DATABASE_URL=postgresql://...@....pooler.supabase.com:6543/postgres?pgbouncer=true
 DATABASE_SSL=true
 POSTGRES_SCHEMA=dakinis_core_prod
 CORE_SEED_DEMO=false
-JWT_SECRET=<mismo que dakinis-auth>
-CORS_ORIGIN=https://core.dakinissystems.com
+JWT_SECRET=<igual que dakinis-auth>
 REDIS_URL=${{Redis.REDIS_URL}}
-DAKINIS_EVENT_BUS=redis
-TRUST_PROXY=true
 ```
 
-### Servicio **dakinis-auth**
+### dakinis-auth
 
 ```env
-NODE_ENV=production
-PORT=4000
-DATABASE_URL=<misma URI Supabase pooler 6543>
+DATABASE_URL=<misma URI Supabase 6543>
 DATABASE_SSL=true
 AUTH_SCHEMA=dakinis_auth
-JWT_SECRET=<secreto largo>
-JWT_ACCESS_TTL=15m
-JWT_REFRESH_DAYS=30
-JWT_LEGACY_LONG_TTL=false
+JWT_SECRET=<mismo que Core>
 REDIS_URL=${{Redis.REDIS_URL}}
-CORS_ORIGINS=https://core.dakinissystems.com,https://akoenet.dakinissystems.com,https://streamautomator.com,https://www.streamautomator.com
-AUTH_ISSUER=https://auth.dakinissystems.com
-```
-
-### Servicio **Redis** (ya en Railway)
-
-Referencia `${{Redis.REDIS_URL}}` en Core y Auth.
-
-### **dakinis-gateway**
-
-Upstream interno a servicios Railway (no expongas Core directo a largo plazo).
-
----
-
-## 4. Verificación
-
-```bash
-curl https://core.dakinissystems.com/api/health
-```
-
-Esperado:
-
-```json
-{
-  "data": {
-    "status": "up",
-    "db": "postgres",
-    "postgresSchema": "dakinis_core_prod",
-    "databaseHost": "pooler.supabase.com"
-  }
-}
-```
-
-Logs Core Back al arrancar:
-
-```
-[db] PostgreSQL connected schema=dakinis_core_prod pooler=true
 ```
 
 ---
 
-## 5. Backups
+## 5. Verificación
 
-- Supabase: snapshots + PITR (según plan).
-- Además: GitHub secret `BACKUP_DATABASE_URL` = **misma URI** (preferir conexión directa 5432 para `pg_dump` si Supabase lo permite en Database → Connection string → Direct).
+```http
+GET /api/health
+```
 
----
+Esperado: `"db":"postgres"`, `"postgresSchema":"dakinis_core_prod"`, `"databaseProvider":"supabase"`, `"databasePort":6543`.
 
-## 6. AkoeNet (proyecto separado Railway)
+Tenant (Postman): login → Bearer + header `X-Business-Id: restaurante-demo` → 200 en:
 
-AkoeNet suele tener **su propio** Supabase/proyecto. No mezcles tablas `public.Users` con Core.
+- `/api/tenant/supply/alerts`
+- `/api/tenant/supply/deliveries`
+- `/api/tenant/restaurant/kitchen`
 
-Variables Client:
+### Gateway (`dakinis-gateway`)
+
+| Ruta pública | Backend |
+|--------------|---------|
+| `/auth/` | dakinis-auth |
+| `/core/` | Core Back (JWT Core; sin `auth_request` IdP en tenant) |
+| `/akoenet/` | akoenet-backend (proyecto AkoeNet) |
+
+Upstreams: `*.railway.internal` en `gateway/routes/default.conf`. Cambios de rutas → [`../rules.md`](../rules.md).
+
+### AkoeNet (proyecto Railway aparte)
+
+**Client** (build Vite):
 
 ```env
-VITE_DAKINIS_AUTH_URL=https://auth.dakinissystems.com/auth
+VITE_DAKINIS_AUTH_URL=https://api.dakinissystems.com/auth
 ```
 
-(o URL del gateway: `https://api.dakinissystems.com/auth` cuando esté configurado)
+**Backend:** suele tener **otro** Supabase — no mezclar con `dakinis_core_prod`.
+
+### Staging Core (opcional)
+
+```env
+POSTGRES_SCHEMA=dakinis_core_dev
+CORE_SEED_DEMO=true
+```
+
+SQL: copia de `02` con schema `dakinis_core_dev`.
+
+### Qué NO hacer
+
+- Mezclar Supabase Auth con `dakinis-auth`
+- Plugin Postgres de Railway para Auth/Core
+- `CORE_SEED_DEMO=true` en producción
+- CORS `*` con credenciales en prod
 
 ---
 
 ## Mapa schemas
 
-| Lógico | Schema físico | Servicio |
-|--------|---------------|----------|
-| auth | `dakinis_auth` | dakinis-auth |
-| core prod | `dakinis_core_prod` | Core Back |
-| core dev | `dakinis_core_dev` | staging |
-| docker local | `dakinis_core` | compose |
+| Schema | Servicio |
+|--------|----------|
+| `dakinis_auth` | dakinis-auth |
+| `dakinis_core_prod` | Core Back (prod) |
+| `dakinis_core_dev` | staging (opcional) |
 
----
-
-Ver paso a paso Railway: [`../RAILWAY-PRODUCTION.md`](../RAILWAY-PRODUCTION.md)
+Checklist operativo: [`../PRODUCTION-CHECKLIST-TEMP.md`](../PRODUCTION-CHECKLIST-TEMP.md)

@@ -12,7 +12,7 @@ docker run -d --restart=always -p 3001:3001 -v uptime-kuma:/app/data louislam/up
 |--------|-----|
 | Gateway | `https://<tu-gateway>/health` |
 | Auth | `https://<auth>/auth/health` |
-| Core API | `https://core.dakinissystems.com/api/health` |
+| Core API | `https://api.dakinissystems.com/core/api/health` (o Railway directo `/api/health`) |
 | AkoeNet API | `https://api.akoenet.dakinissystems.com/health` |
 | StreamAutomator | `https://streamautomator.com/api/health/live` |
 
