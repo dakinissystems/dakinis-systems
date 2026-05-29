@@ -1,11 +1,12 @@
 -- Dakinis One Core — PRODUCCIÓN (Supabase)
--- Ejecutar tras 00-bootstrap-schemas.sql
+-- Proyecto: Supabase de Core (mismo DATABASE_URL que Railway), NO AkoeNet.
+-- Ejecutar tras 00-bootstrap-schemas.sql (mismo proyecto que Railway Core)
 -- Railway Core Back: POSTGRES_SCHEMA=dakinis_core_prod  CORE_SEED_DEMO=false
+-- Tablas con schema explícito (el SQL Editor de Supabase no aplica SET search_path de forma fiable).
 
 CREATE SCHEMA IF NOT EXISTS dakinis_core_prod;
-SET search_path TO dakinis_core_prod, public;
 
-CREATE TABLE IF NOT EXISTS business (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.business (
   id TEXT PRIMARY KEY,
   slug TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
@@ -15,16 +16,16 @@ CREATE TABLE IF NOT EXISTS business (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS tenant_api_keys (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_api_keys (
   key_value TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
   role TEXT NOT NULL CHECK (role IN ('full-access', 'read-only'))
 );
-CREATE INDEX IF NOT EXISTS idx_tenant_api_keys_business ON tenant_api_keys(business_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_api_keys_business ON dakinis_core_prod.tenant_api_keys(business_id);
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.users (
   id TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
   email TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'admin',
@@ -33,42 +34,42 @@ CREATE TABLE IF NOT EXISTS users (
   platform_user_id TEXT UNIQUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_users_business ON users(business_id);
+CREATE INDEX IF NOT EXISTS idx_users_business ON dakinis_core_prod.users(business_id);
 
-CREATE TABLE IF NOT EXISTS tenant_records (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_records (
   id TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
   entity TEXT NOT NULL,
   payload TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_tenant_records_business_entity ON tenant_records(business_id, entity);
+CREATE INDEX IF NOT EXISTS idx_tenant_records_business_entity ON dakinis_core_prod.tenant_records(business_id, entity);
 
-CREATE TABLE IF NOT EXISTS tenant_supply_deliveries (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_supply_deliveries (
   id TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
   supplier TEXT NOT NULL,
   arrival_window TEXT NOT NULL,
   contents TEXT NOT NULL DEFAULT '',
   status TEXT NOT NULL DEFAULT 'Programado',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_supply_deliveries_business ON tenant_supply_deliveries(business_id);
+CREATE INDEX IF NOT EXISTS idx_supply_deliveries_business ON dakinis_core_prod.tenant_supply_deliveries(business_id);
 
-CREATE TABLE IF NOT EXISTS tenant_supply_alerts (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_supply_alerts (
   id TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
   title TEXT NOT NULL,
   product_ref TEXT NOT NULL DEFAULT '',
   condition_text TEXT NOT NULL,
   severity TEXT NOT NULL DEFAULT 'info' CHECK (severity IN ('info', 'warning', 'critical')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_supply_alerts_business ON tenant_supply_alerts(business_id);
+CREATE INDEX IF NOT EXISTS idx_supply_alerts_business ON dakinis_core_prod.tenant_supply_alerts(business_id);
 
-CREATE TABLE IF NOT EXISTS tenant_stock_items (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_stock_items (
   id TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
   slug TEXT NOT NULL,
   name TEXT NOT NULL,
   unit TEXT NOT NULL DEFAULT 'u',
@@ -77,11 +78,11 @@ CREATE TABLE IF NOT EXISTS tenant_stock_items (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (business_id, slug)
 );
-CREATE INDEX IF NOT EXISTS idx_stock_items_business ON tenant_stock_items(business_id);
+CREATE INDEX IF NOT EXISTS idx_stock_items_business ON dakinis_core_prod.tenant_stock_items(business_id);
 
-CREATE TABLE IF NOT EXISTS tenant_recipes (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_recipes (
   id TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
   slug TEXT NOT NULL,
   name TEXT NOT NULL,
   output_label TEXT NOT NULL DEFAULT '',
@@ -91,42 +92,41 @@ CREATE TABLE IF NOT EXISTS tenant_recipes (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (business_id, slug)
 );
-CREATE INDEX IF NOT EXISTS idx_recipes_business ON tenant_recipes(business_id);
+CREATE INDEX IF NOT EXISTS idx_recipes_business ON dakinis_core_prod.tenant_recipes(business_id);
 
-CREATE TABLE IF NOT EXISTS tenant_production_batches (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_production_batches (
   id TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
   label TEXT NOT NULL DEFAULT '',
   plan_json TEXT NOT NULL,
   outputs_json TEXT NOT NULL DEFAULT '[]',
   notes TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_production_batches_business ON tenant_production_batches(business_id);
+CREATE INDEX IF NOT EXISTS idx_production_batches_business ON dakinis_core_prod.tenant_production_batches(business_id);
 
-CREATE TABLE IF NOT EXISTS tenant_stock_movements (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_stock_movements (
   id TEXT PRIMARY KEY,
-  business_id TEXT NOT NULL REFERENCES business(id),
-  stock_item_id TEXT NOT NULL REFERENCES tenant_stock_items(id),
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  stock_item_id TEXT NOT NULL REFERENCES dakinis_core_prod.tenant_stock_items(id),
   delta DOUBLE PRECISION NOT NULL,
   reason TEXT NOT NULL DEFAULT '',
   reference_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_stock_movements_business ON tenant_stock_movements(business_id);
+CREATE INDEX IF NOT EXISTS idx_stock_movements_business ON dakinis_core_prod.tenant_stock_movements(business_id);
 
-CREATE TABLE IF NOT EXISTS tenant_restaurant_profile (
-  business_id TEXT PRIMARY KEY REFERENCES business(id),
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_restaurant_profile (
+  business_id TEXT PRIMARY KEY REFERENCES dakinis_core_prod.business(id),
   public_token TEXT UNIQUE NOT NULL,
   venue_name TEXT NOT NULL DEFAULT '',
   allergies_json TEXT NOT NULL DEFAULT '[]',
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Auditoría (logs estructurados también en Railway; tabla para consultas)
-CREATE TABLE IF NOT EXISTS tenant_audit_logs (
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_audit_logs (
   id TEXT PRIMARY KEY,
-  business_id TEXT REFERENCES business(id),
+  business_id TEXT REFERENCES dakinis_core_prod.business(id),
   actor_user_id TEXT,
   action TEXT NOT NULL,
   resource_type TEXT,
@@ -134,4 +134,4 @@ CREATE TABLE IF NOT EXISTS tenant_audit_logs (
   metadata_json TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS idx_audit_logs_business ON tenant_audit_logs(business_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_business ON dakinis_core_prod.tenant_audit_logs(business_id, created_at DESC);

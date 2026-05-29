@@ -1,0 +1,8 @@
+-- Dumpling House — actualización hongos (UDON / Pad Thai / Noodles)
+-- NO ejecutar este archivo entero en Supabase (el editor avisa por ";" dentro del JSON).
+--
+-- Ejecutar en orden, cada uno con Run:
+--   1) 05a-dumpling-house-config-update.sql
+--   2) 05b-dumpling-house-allergies-update.sql
+--
+-- Alternativa: node platform/core/api/scripts/seed-dumpling-house.mjs

@@ -29,6 +29,10 @@ Ejecutar en **SQL Editor**, una vez por entorno:
 
 **Diagnóstico:** [`diagnostic.sql`](./diagnostic.sql) (solo lectura).
 
+**Tenants reales (ej. Dumpling House):** [`seeds/README.md`](./seeds/README.md) → `seeds/04-tenant-dumpling-house.sql`.
+
+**Schemas en proyecto equivocado (ej. AkoeNet):** [`scripts/drop-dakinis-schemas-wrong-project.sql`](./scripts/drop-dakinis-schemas-wrong-project.sql) — solo en ese Supabase, nunca en el de Core.
+
 RLS no afecta Auth/Core en Railway (conexión rol `postgres` vía pooler **6543**); bloquea PostgREST `anon`/`authenticated`.
 
 **Supabase Auth (dashboard):** si el advisor pide “leaked passwords”, es GoTrue del panel Supabase, no tu IdP — activar en Authentication → Email → leaked password protection.
