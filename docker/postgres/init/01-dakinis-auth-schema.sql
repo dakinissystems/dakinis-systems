@@ -1,4 +1,4 @@
--- dakinis (POSTGRES_DB): schema for platform/auth (see platform/auth/docs/supabase-schema.sql).
+-- dakinis (POSTGRES_DB): schema IdP — fuente canónica: docs/supabase/schemas/01-dakinis-auth.sql
 CREATE SCHEMA IF NOT EXISTS dakinis_auth;
 
 CREATE TABLE IF NOT EXISTS dakinis_auth.users (

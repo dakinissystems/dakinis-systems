@@ -26,8 +26,9 @@ export function dumplingMushroomsLabel() {
   return DUMPLING_HOUSE_MUSHROOMS.join(", ");
 }
 
-export function dumplingNoodleMushroomNote() {
-  return `Hongos que pueden estar presentes: ${dumplingMushroomsLabel()}. Aplica a UDON, Pad Thai y Noodles.`;
+export function dumplingNoodleMushroomNote(selected = DUMPLING_HOUSE_MUSHROOMS) {
+  if (!selected?.length) return "";
+  return `Hongos que pueden estar presentes: ${selected.join(", ")}. Aplica a UDON, Pad Thai y Noodles.`;
 }
 
 export function dumplingIsNoodlePdfKey(pdfKey) {
@@ -80,64 +81,13 @@ export const DUMPLING_HOUSE_PDF_ALLERGENS = {
   "PATO ASADO CON ARROZ SALTEADO": ["Huevo", "Sésamo", "Soja", "Gluten"]
 };
 
-const PDF = DUMPLING_HOUSE_PDF_ALLERGENS;
+import { dakinisDumplingResolvePdfKey } from "../../../platform/core/shared/catalog/dumpling-pdf-aliases.js";
+import {
+  dakinisFormatPublicDishName,
+  dakinisPreferPublicDishLabel
+} from "../../../platform/core/shared/catalog/restaurant-allergens.js";
 
-/** Menú carta: nombre en foto → clave PDF */
-const PDF_KEY = {
-  "ENSALADA CHINA": "ENSALADA CHINA",
-  EDAMAME: "EDAMAME",
-  WAKAME: "WAKAME",
-  "ROLLITO VEGETAL": "ROLLITO VEGETAL 2UDS",
-  "2 ROLLITO VEGETAL": "ROLLITO VEGETAL 2UDS",
-  "2 ROLLITOS VEGETAL": "ROLLITO VEGETAL 2UDS",
-  "ROLLITO LANGOSTINO MANGO": "ROLLITO LANGOSTINO Y MANGO",
-  "ROLLITO VIETNAMITA POLLO": "ROLLITO VIETNAMITA 2 UDS",
-  "TEMPURA LANGOSTINO": "TEMPURA LANGOSTINO 4 UDS",
-  "TEMPURA DE LANGOSTINOS": "TEMPURA LANGOSTINO 4 UDS",
-  "PATO Y BOLETUS": "GYOZA DE PATO CON BOLETUS 6UDS",
-  "GYOZAS POLLO VAPOR": "GYOZA DE POLLO Y VERDURA AL VAPO",
-  "8 GYOZAS DE POLLO": "GYOZA DE POLLO Y VERDURA 8UDS",
-  "GYOZAS POLLO FRITAS": "GYOZA FRITO DE POLLO Y VERDURAS",
-  "GYOZAS CERDO FRITAS": "GYOZA FRITO DE CERDO Y VERDURA",
-  "GYOZAS CARNE VAPOR": "GYOZA DE CARNE Y VERDURA AL VAPOR",
-  VEGETAL: "GYOZA VEGETAL 8UDS",
-  "GYOZA ENTRANTE POLLO": "GYOZA DE POLLO Y VERDURA 8UDS",
-  "GYOZA ENTRANTE CERDO": "GYOZA DE CERDO Y VERDURAS 8UDS",
-  "DUMPLING TERNERA": "GYOZA DE TERNERA Y VERDURAS",
-  "DUMPLING CERDO": "GYOZA DE CERDO Y VERDURAS 8UDS",
-  SHAOMAI: "SIUMAI DE CERDO 4 UDS",
-  "SHAOMAI CERDO": "SIUMAI DE CERDO 4 UDS",
-  "SHA MAI": "SIUMAI DE CARNE FRITO 4 UDS",
-  "SIUMAI CARNE FRITO": "SIUMAI DE CARNE FRITO 4 UDS",
-  "MINIPAN CHINO FRITO": "MINI PAN CHINO FRITO 4 UDS",
-  "WAN TUM": "WANTUN FRITO 6UDS",
-  "HAKAO LANGOSTINO": "HAKAO LANGOSTINO 4UDS",
-  "BAO SHANGAI": "MINI BAO SHANGHAI 4 UDS",
-  "BAO CERDO Y VERDURAS": "BAO DE CERDO Y VERDURA 1UDS",
-  "BAO RELLENO CREMA HUEVO": "BAO CREMA DE HUEVO 2UDS",
-  "MINIPAN CHINO VAPOR": "MINI PAN CHINO AL VAPOR 2UDS",
-  "PANBAO TERNERA": "PANBAO DE TERNERA",
-  "PANBAO POLLO": "PANBAO DE POLLO FRITO",
-  "PANBAO PATO": "PANBAO DE PATO",
-  "MO XIAN": "MO XIAN PRODUCTO TEMPORAL",
-  "MOXIAN DE CARNE": "MO XIAN PRODUCTO TEMPORAL",
-  "ARROZ BLANCO": "ARROZ BLANCO",
-  "ARROZ FRITO": "ARROZ SALTEADO CON HUEVO Y VERDURAS",
-  "PAD THAI POLLO": "PADTHAI CON POLLO Y VERDURAS",
-  "UDON GAMBAS": "UDON CON GAMBAS Y VERDURAS",
-  "NOODLES VEGETAL": "NOODLES VEGETAL",
-  "POLLO CURRY CON ARROZ BLANCO": "POLLO AL CURRY CON ARROZ BLANCO",
-  "POLLO GONBAO": "POLLO SALSA GONGBAO CON ARROZ BLANCO",
-  "TERNERA GONBAO": "TERNERA CON SALSA GONBAO Y ARROZ BLANCO",
-  "TERNERA SALSA GONBAO CON ARROZ BLANCO": "TERNERA CON SALSA GONBAO Y ARROZ BLANCO",
-  "POLLO AGRIDULCE": "POLLO AGRIDULCE CON ARROZ BLANCO",
-  "POLLO FRITO": "POLLO FRITO CON ARROZ SALTEADO",
-  "TERNERA SALSA OSTRAS": "TERNERA CON SALSA OSTRAS Y ARROZ BLANCO",
-  CERDO: "CERDO AGRIDULCE CON ARROZ BLANCO",
-  "CERDO ENTRANTE": "GYOZA DE CERDO Y VERDURAS 8UDS",
-  PATO: "PATO ASADO CON ARROZ SALTEADO",
-  "PATO ASADO CON ARROZ BLANCO": "PATO ASADO CON ARROZ SALTEADO"
-};
+const PDF = DUMPLING_HOUSE_PDF_ALLERGENS;
 
 /** @type {Array<{ name: string, category: string, priceEur: number | null, pdfKey?: string, comboNumber?: number, comboIncludes?: string[] }>} */
 export const DUMPLING_HOUSE_MENU_ITEMS = [
@@ -149,11 +99,10 @@ export const DUMPLING_HOUSE_MENU_ITEMS = [
   { name: "Combo 6", category: "combo", priceEur: 14.95, comboNumber: 6, comboIncludes: ["TEMPURA LANGOSTINO", "PATO ASADO CON ARROZ BLANCO", "REFRESCO/AGUA"] },
   { name: "TERNERA GONBAO", category: "plato", priceEur: 10.5, pdfKey: "TERNERA GONBAO" },
   { name: "POLLO GONBAO", category: "plato", priceEur: 10.5, pdfKey: "POLLO GONBAO" },
-  { name: "PATO", category: "plato", priceEur: 11.5, pdfKey: "PATO" },
+  { name: "PATO CON ARROZ FRITO", category: "plato", priceEur: 11.5, pdfKey: "PATO" },
   { name: "POLLO FRITO", category: "plato", priceEur: 9.95, pdfKey: "POLLO FRITO" },
-  { name: "CERDO", category: "plato", priceEur: 10.5, pdfKey: "CERDO" },
+  { name: "CERDO AGRIDULCE", category: "plato", priceEur: 10.5, pdfKey: "CERDO" },
   { name: "TERNERA SALSA OSTRAS", category: "plato", priceEur: 10.5, pdfKey: "TERNERA SALSA OSTRAS" },
-  { name: "POLLO", category: "plato", priceEur: 10.5, pdfKey: "POLLO GONBAO" },
   { name: "POLLO AGRIDULCE", category: "plato", priceEur: 10.5, pdfKey: "POLLO AGRIDULCE" },
   { name: "MO XIAN", category: "entrante", priceEur: 5.5, pdfKey: "MO XIAN" },
   { name: "PANBAO TERNERA", category: "entrante", priceEur: null, pdfKey: "PANBAO TERNERA" },
@@ -169,8 +118,8 @@ export const DUMPLING_HOUSE_MENU_ITEMS = [
   { name: "HAKAO LANGOSTINO", category: "entrante", priceEur: 6.5, pdfKey: "HAKAO LANGOSTINO" },
   { name: "BAO SHANGAI", category: "entrante", priceEur: 5.95, pdfKey: "BAO SHANGAI" },
   { name: "BAO CERDO Y VERDURAS", category: "entrante", priceEur: 2.95, pdfKey: "BAO CERDO Y VERDURAS" },
-  { name: "TERNERA", category: "entrante", priceEur: 7.95, pdfKey: "DUMPLING TERNERA" },
-  { name: "CERDO", category: "entrante", priceEur: 6.95, pdfKey: "CERDO ENTRANTE" },
+  { name: "GYOZAS TERNERA", category: "entrante", priceEur: 7.95, pdfKey: "DUMPLING TERNERA" },
+  { name: "GYOZAS CERDO", category: "entrante", priceEur: 6.95, pdfKey: "CERDO ENTRANTE" },
   { name: "GYOZAS POLLO FRITAS", category: "entrante", priceEur: 7.5, pdfKey: "GYOZAS POLLO FRITAS" },
   { name: "SHA MAI", category: "entrante", priceEur: 5.5, pdfKey: "SHA MAI" },
   { name: "TEMPURA DE LANGOSTINOS", category: "entrante", priceEur: 6.5, pdfKey: "TEMPURA DE LANGOSTINOS" },
@@ -180,8 +129,8 @@ export const DUMPLING_HOUSE_MENU_ITEMS = [
   { name: "GYOZAS POLLO VAPOR", category: "entrante", priceEur: 6.95, pdfKey: "GYOZAS POLLO VAPOR" },
   { name: "GYOZAS CARNE VAPOR", category: "entrante", priceEur: 6.95, pdfKey: "GYOZAS CARNE VAPOR" },
   { name: "MINIPAN CHINO VAPOR", category: "entrante", priceEur: 1.5, pdfKey: "MINIPAN CHINO VAPOR" },
-  { name: "VEGETAL", category: "entrante", priceEur: 6.95, pdfKey: "VEGETAL" },
-  { name: "POLLO", category: "entrante", priceEur: 6.95, pdfKey: "GYOZA ENTRANTE POLLO" },
+  { name: "GYOZAS VEGETAL", category: "entrante", priceEur: 6.95, pdfKey: "VEGETAL" },
+  { name: "GYOZAS POLLO", category: "entrante", priceEur: 6.95, pdfKey: "GYOZA ENTRANTE POLLO" },
   { name: "PATO Y BOLETUS", category: "entrante", priceEur: 8.5, pdfKey: "PATO Y BOLETUS" },
   { name: "ROLLITO LANGOSTINO MANGO", category: "entrante", priceEur: 6.5, pdfKey: "ROLLITO LANGOSTINO MANGO" },
   { name: "ROLLITO VIETNAMITA POLLO", category: "entrante", priceEur: 3.95, pdfKey: "ROLLITO VIETNAMITA POLLO" },
@@ -223,7 +172,71 @@ export const DUMPLING_HOUSE_TENANT = {
 };
 
 export function dumplingResolvePdfKey(menuNameOrKey) {
-  return PDF_KEY[menuNameOrKey] || menuNameOrKey;
+  return dakinisDumplingResolvePdfKey(menuNameOrKey);
+}
+
+function dumplingCatLabel(c) {
+  return { combo: "Combo", entrante: "Entrante", plato: "Plato principal", arroz: "Arroz", noodle: "Noodles" }[
+    c
+  ] || c;
+}
+
+/**
+ * Platos únicos para allergies_json (una fila por ficha PDF, sin duplicar combo + carta + PDF).
+ * @param {typeof DUMPLING_ALLERGEN_ES_TO_CATALOG} allergenMap
+ */
+export function dumplingBuildDedupedDishRows(allergenMap = DUMPLING_ALLERGEN_ES_TO_CATALOG) {
+  const dishByPdf = new Map();
+  const catalogHits = new Map();
+
+  function addDish(displayName, category, pdfKeyInput) {
+    const canonicalKey = dumplingResolvePdfKey(pdfKeyInput);
+    const allergens = dumplingAllergensForPdfKey(canonicalKey);
+    const notes = dumplingDishAllergenNotes(canonicalKey);
+    const entry = {
+      id: `dish_${canonicalKey.replace(/\s+/g, "_").toLowerCase().slice(0, 48)}`,
+      name: displayName,
+      canonicalKey,
+      category: dumplingCatLabel(category),
+      present: true,
+      severity: allergens.length ? "alta" : "info",
+      notes
+    };
+
+    const prev = dishByPdf.get(canonicalKey);
+    if (!prev || dakinisPreferPublicDishLabel(displayName, prev.name)) {
+      dishByPdf.set(canonicalKey, entry);
+    }
+
+    const label = dishByPdf.get(canonicalKey).name;
+    for (const es of allergens) {
+      const catalogId = allergenMap[es];
+      if (!catalogId) continue;
+      const list = catalogHits.get(catalogId) || new Set();
+      list.add(label);
+      catalogHits.set(catalogId, list);
+    }
+  }
+
+  for (const item of DUMPLING_HOUSE_MENU_ITEMS) {
+    if (item.category === "combo") {
+      for (const part of item.comboIncludes || []) {
+        if (/REFRESCO|AGUA/i.test(part)) continue;
+        addDish(part, "combo", part);
+      }
+      continue;
+    }
+    addDish(item.name, item.category, item.pdfKey || item.name);
+  }
+
+  for (const pdfName of Object.keys(DUMPLING_HOUSE_PDF_ALLERGENS)) {
+    const canonicalKey = dumplingResolvePdfKey(pdfName);
+    if (dishByPdf.has(canonicalKey)) continue;
+    if (!DUMPLING_HOUSE_PDF_ALLERGENS[pdfName].length) continue;
+    addDish(dakinisFormatPublicDishName(pdfName), "entrante", pdfName);
+  }
+
+  return { dishRows: [...dishByPdf.values()], catalogHits };
 }
 
 export function dumplingAllergensForPdfKey(pdfKey) {
@@ -261,13 +274,16 @@ export function dumplingBuildConfigJson() {
 }
 
 /** Fila extra en perfil QR (cartel). */
-export function dumplingMushroomCustomAllergenRow() {
+export function dumplingMushroomCustomAllergenRow(selected = DUMPLING_HOUSE_MUSHROOMS) {
   return {
     id: "custom_hongos_noodles",
     name: "Hongos",
     category: "Ingredientes",
-    present: true,
+    present: selected.length > 0,
     severity: "info",
-    notes: `${dumplingMushroomsLabel()}. Pueden estar presentes en UDON, Pad Thai y Noodles.`
+    mushroomTypes: [...selected],
+    notes: selected.length
+      ? `${selected.join(", ")}. Pueden estar presentes en UDON, Pad Thai y Noodles.`
+      : ""
   };
 }
