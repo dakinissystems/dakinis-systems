@@ -7,6 +7,7 @@
 | `privacy-base.md` | Plantilla privacidad corporativa |
 | `cookies-base.md` | Plantilla cookies (sin analítica) |
 | `terms-base.md` | Plantilla términos sitio corporativo |
+| `whatsapp-meta-business-tools-base.md` | Resumen WhatsApp / Meta Business Tools (ES+EN) |
 
 **Implementación en apps (2026-05-19):**
 

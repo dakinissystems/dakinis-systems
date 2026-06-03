@@ -16,7 +16,9 @@ El sitio puede usar almacenamiento local mínimo (por ejemplo preferencia de idi
 
 ## Si contactas por email
 
-Al usar enlaces `mailto:` o WhatsApp, sales del sitio y aplican las políticas de tu proveedor de correo o de mensajería.
+Al usar enlaces `mailto:` o WhatsApp (wa.me), aplican las políticas de tu proveedor de correo o de WhatsApp/Meta.
+
+Si usas **Dakinis One** con **WhatsApp Business API**, aplican además las [Condiciones de las herramientas empresariales de Meta](https://www.facebook.com/legal/terms/businesstools) y la política de privacidad de Core (véase `whatsapp-meta-business-tools-base.md`).
 
 ## Más información
 

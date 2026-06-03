@@ -40,6 +40,10 @@ Ver la política de cookies del sitio. En el sitio corporativo no usamos cookies
 
 Cada producto (Dakinis One, StreamAutomator, AkoeNet) tiene su propia política en su dominio. El tratamiento allí se rige por ese documento.
 
-## 9. Cambios
+## 9. WhatsApp y Meta (Dakinis One)
+
+Si el cliente usa **WhatsApp Business API** u otras **Herramientas empresariales de Meta** desde Dakinis One, aplican las [Condiciones de las herramientas empresariales de Meta](https://www.facebook.com/legal/terms/businesstools) y la política de privacidad de Core (secciones Comunicaciones / Meta). Ver [`whatsapp-meta-business-tools-base.md`](./whatsapp-meta-business-tools-base.md).
+
+## 10. Cambios
 
 Publicaremos la versión vigente en esta página con la fecha de actualización.

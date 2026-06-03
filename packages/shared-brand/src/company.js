@@ -1,9 +1,15 @@
+import { dakinisPickLocaleString } from "./i18n.js";
+
 /** Fuente de verdad de marca (sincronizar con docs/legal/company.json). */
-export default {
+const company = {
   legalName: "Christian Villar",
   tradingName: "Dakinis Systems",
   productLineName: "Dakinis One",
   tagline: "Transformamos negocios mediante software.",
+  taglineI18n: {
+    es: "Transformamos negocios mediante software.",
+    en: "We transform businesses through software."
+  },
   jurisdiction: "España",
   countryCode: "ES",
   contacts: {
@@ -20,3 +26,10 @@ export default {
   },
   lastUpdated: "2026-05-19"
 };
+
+/** @param {"es"|"en"} [locale] */
+export function dakinisCompanyTagline(locale = "es") {
+  return dakinisPickLocaleString(company.taglineI18n ?? company.tagline, locale);
+}
+
+export default company;

@@ -5,6 +5,13 @@
     "role": "flagship",
     "status": "active",
     "summary": "Gestión empresarial modular: CRM, citas, inventario, restaurante, WhatsApp e integraciones.",
+    "i18n": {
+      "name": { "es": "Dakinis One", "en": "Dakinis One" },
+      "summary": {
+        "es": "Gestión empresarial modular: CRM, citas, inventario, restaurante, WhatsApp e integraciones.",
+        "en": "Modular business management: CRM, appointments, inventory, restaurant, WhatsApp and integrations."
+      }
+    },
     "landingPath": "/productos/dakinis-one",
     "corePath": "/hub",
     "external": false,
@@ -16,6 +23,13 @@
     "role": "product",
     "status": "active",
     "summary": "Automatización y programación de contenido para creadores y marcas.",
+    "i18n": {
+      "name": { "es": "StreamAutomator", "en": "StreamAutomator" },
+      "summary": {
+        "es": "Automatización y programación de contenido para creadores y marcas.",
+        "en": "Content scheduling and automation for creators and brands."
+      }
+    },
     "urlKey": "streamautomator",
     "landingPath": "/productos/streamautomator",
     "external": true,
@@ -32,6 +46,13 @@
     "role": "product",
     "status": "active",
     "summary": "Comunidades, voz y experiencias en tiempo real.",
+    "i18n": {
+      "name": { "es": "AkoeNet", "en": "AkoeNet" },
+      "summary": {
+        "es": "Comunidades, voz y experiencias en tiempo real.",
+        "en": "Communities, voice and real-time experiences."
+      }
+    },
     "urlKey": "akoenet",
     "landingPath": "/productos/akoenet",
     "external": true,
@@ -48,6 +69,13 @@
     "role": "services",
     "status": "active",
     "summary": "Desarrollo, integraciones e infraestructura sobre la base Dakinis.",
+    "i18n": {
+      "name": { "es": "Soluciones a medida", "en": "Custom solutions" },
+      "summary": {
+        "es": "Desarrollo, integraciones e infraestructura sobre la base Dakinis.",
+        "en": "Development, integrations and infrastructure on the Dakinis stack."
+      }
+    },
     "landingPath": "/servicios",
     "external": false
   }

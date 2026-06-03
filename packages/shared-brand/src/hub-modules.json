@@ -1,40 +1,54 @@
 [
   {
     "id": "crm",
+    "sortOrder": 10,
     "label": "CRM",
     "description": "Clientes, leads y seguimiento comercial.",
+    "i18n": {
+      "label": { "es": "CRM", "en": "CRM" },
+      "description": {
+        "es": "Clientes, leads y seguimiento comercial.",
+        "en": "Customers, leads and sales follow-up."
+      }
+    },
     "kind": "core",
     "path": "/app/crm",
     "moduleKey": "crm",
     "requiresAuth": true,
     "status": "active",
-    "highlight": false
+    "highlight": true
   },
   {
     "id": "whatsapp",
+    "sortOrder": 15,
     "label": "WhatsApp",
-    "description": "Mensajes, plantillas y automatizaciones para tu negocio.",
+    "description": "Conversaciones, contactos, plantillas, automatizaciones e IA.",
+    "i18n": {
+      "label": { "es": "WhatsApp", "en": "WhatsApp" },
+      "description": {
+        "es": "Conversaciones, contactos, plantillas, automatizaciones e IA.",
+        "en": "Conversations, contacts, templates, automations and AI."
+      }
+    },
     "kind": "core",
-    "path": "/app/messages",
+    "path": "/app/whatsapp",
     "moduleKey": "whatsapp",
     "requiresAuth": true,
     "status": "active",
     "highlight": true
   },
   {
-    "id": "inventory",
-    "label": "Inventario",
-    "description": "Stock, alertas y escaneo (restaurante y verticales).",
-    "kind": "core",
-    "path": "/sistema/restaurante",
-    "requiresAuth": true,
-    "status": "active",
-    "highlight": true
-  },
-  {
     "id": "reservations",
+    "sortOrder": 30,
     "label": "Reservas",
     "description": "Agenda, citas y recordatorios.",
+    "i18n": {
+      "label": { "es": "Reservas", "en": "Reservations" },
+      "description": {
+        "es": "Agenda, citas y recordatorios.",
+        "en": "Schedule, appointments and reminders."
+      }
+    },
     "kind": "core",
     "path": "/app/dashboard",
     "moduleKey": "agenda",
@@ -43,19 +57,17 @@
     "highlight": false
   },
   {
-    "id": "billing",
-    "label": "Facturación",
-    "description": "Presupuestos y facturas (roadmap).",
-    "kind": "core",
-    "path": "/app/settings",
-    "requiresAuth": true,
-    "status": "roadmap",
-    "highlight": false
-  },
-  {
-    "id": "my-business",
-    "label": "Mi negocio",
-    "description": "Operativa diaria por vertical.",
+    "id": "inventory",
+    "sortOrder": 40,
+    "label": "Inventario",
+    "description": "Stock, alertas y escaneo (restaurante y verticales).",
+    "i18n": {
+      "label": { "es": "Inventario", "en": "Inventory" },
+      "description": {
+        "es": "Stock, alertas y escaneo (restaurante y verticales).",
+        "en": "Stock, alerts and scanning (restaurant and other verticals)."
+      }
+    },
     "kind": "core",
     "path": "/sistema/restaurante",
     "requiresAuth": true,
@@ -63,9 +75,53 @@
     "highlight": true
   },
   {
+    "id": "my-business",
+    "sortOrder": 50,
+    "label": "Mi negocio",
+    "description": "Operativa diaria por vertical.",
+    "i18n": {
+      "label": { "es": "Mi negocio", "en": "My business" },
+      "description": {
+        "es": "Operativa diaria por vertical.",
+        "en": "Daily operations for your business vertical."
+      }
+    },
+    "kind": "core",
+    "path": "/sistema/restaurante",
+    "requiresAuth": true,
+    "status": "active",
+    "highlight": true
+  },
+  {
+    "id": "billing",
+    "sortOrder": 60,
+    "label": "Facturación",
+    "description": "Presupuestos y facturas (roadmap).",
+    "i18n": {
+      "label": { "es": "Facturación", "en": "Billing" },
+      "description": {
+        "es": "Presupuestos y facturas (roadmap).",
+        "en": "Quotes and invoices (roadmap)."
+      }
+    },
+    "kind": "core",
+    "path": "/app/settings",
+    "requiresAuth": true,
+    "status": "roadmap",
+    "highlight": false
+  },
+  {
     "id": "analytics",
+    "sortOrder": 70,
     "label": "Analytics",
     "description": "Ventas, ocupación y rentabilidad (roadmap).",
+    "i18n": {
+      "label": { "es": "Analytics", "en": "Analytics" },
+      "description": {
+        "es": "Ventas, ocupación y rentabilidad (roadmap).",
+        "en": "Sales, occupancy and profitability (roadmap)."
+      }
+    },
     "kind": "core",
     "path": "/hub",
     "requiresAuth": true,
@@ -74,8 +130,16 @@
   },
   {
     "id": "ai",
+    "sortOrder": 80,
     "label": "IA empresarial",
     "description": "Asistente con datos de tu negocio (roadmap).",
+    "i18n": {
+      "label": { "es": "IA empresarial", "en": "Business AI" },
+      "description": {
+        "es": "Asistente con datos de tu negocio (roadmap).",
+        "en": "Assistant powered by your business data (roadmap)."
+      }
+    },
     "kind": "core",
     "path": "/hub",
     "requiresAuth": true,

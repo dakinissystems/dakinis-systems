@@ -1,4 +1,5 @@
-export { default as company } from "./company.js";
+export { default as company, dakinisCompanyTagline } from "./company.js";
+export * from "./i18n.js";
 export * from "./product-urls.js";
 export * from "./products.js";
 export * from "./hub-modules.js";
