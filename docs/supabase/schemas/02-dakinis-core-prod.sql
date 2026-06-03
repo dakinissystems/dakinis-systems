@@ -135,3 +135,10 @@ CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_audit_logs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_audit_logs_business ON dakinis_core_prod.tenant_audit_logs(business_id, created_at DESC);
+
+-- Catálogo Hub/Landing editable desde panel plataforma (GET/PUT /api/platform/catalog)
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.platform_kv (
+  key TEXT PRIMARY KEY,
+  value_json TEXT NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

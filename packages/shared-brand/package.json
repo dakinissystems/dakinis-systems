@@ -1,0 +1,22 @@
+{
+  "name": "@dakinis/shared-brand",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Marca, URLs, productos y Hub — consumido por Landing y Core",
+  "exports": {
+    ".": "./src/index.js",
+    "./company": "./src/company.js",
+    "./product-urls": "./src/product-urls.js",
+    "./products": "./src/products.js",
+    "./hub-modules": "./src/hub-modules.js",
+    "./colors": "./src/colors.js",
+    "./typography": "./src/typography.js",
+    "./social-links": "./src/social-links.js",
+    "./pricing-links": "./src/pricing-links.js",
+    "./analytics": "./src/analytics.js",
+    "./sso": "./src/sso.js",
+    "./products.json": "./src/products.json",
+    "./hub-modules.json": "./src/hub-modules.json"
+  }
+}

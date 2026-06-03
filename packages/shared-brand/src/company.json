@@ -1,6 +1,8 @@
 {
   "legalName": "Christian Villar",
   "tradingName": "Dakinis Systems",
+  "productLineName": "Dakinis One",
+  "tagline": "Transformamos negocios mediante software.",
   "jurisdiction": "España",
   "countryCode": "ES",
   "contacts": {
@@ -15,6 +17,5 @@
     "streamautomator": "https://streamautomator.com/",
     "akoenet": "https://akoenet.dakinissystems.com/"
   },
-  "lastUpdated": "2026-05-19",
-  "notes": "Datos registrales (NIF/CIF, domicilio social) — completar en aviso legal cuando estén disponibles para publicación."
+  "lastUpdated": "2026-05-19"
 }

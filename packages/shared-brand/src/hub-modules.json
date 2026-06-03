@@ -1,0 +1,85 @@
+[
+  {
+    "id": "crm",
+    "label": "CRM",
+    "description": "Clientes, leads y seguimiento comercial.",
+    "kind": "core",
+    "path": "/app/crm",
+    "moduleKey": "crm",
+    "requiresAuth": true,
+    "status": "active",
+    "highlight": false
+  },
+  {
+    "id": "whatsapp",
+    "label": "WhatsApp",
+    "description": "Mensajes, plantillas y automatizaciones para tu negocio.",
+    "kind": "core",
+    "path": "/app/messages",
+    "moduleKey": "whatsapp",
+    "requiresAuth": true,
+    "status": "active",
+    "highlight": true
+  },
+  {
+    "id": "inventory",
+    "label": "Inventario",
+    "description": "Stock, alertas y escaneo (restaurante y verticales).",
+    "kind": "core",
+    "path": "/sistema/restaurante",
+    "requiresAuth": true,
+    "status": "active",
+    "highlight": true
+  },
+  {
+    "id": "reservations",
+    "label": "Reservas",
+    "description": "Agenda, citas y recordatorios.",
+    "kind": "core",
+    "path": "/app/dashboard",
+    "moduleKey": "agenda",
+    "requiresAuth": true,
+    "status": "active",
+    "highlight": false
+  },
+  {
+    "id": "billing",
+    "label": "Facturación",
+    "description": "Presupuestos y facturas (roadmap).",
+    "kind": "core",
+    "path": "/app/settings",
+    "requiresAuth": true,
+    "status": "roadmap",
+    "highlight": false
+  },
+  {
+    "id": "my-business",
+    "label": "Mi negocio",
+    "description": "Operativa diaria por vertical.",
+    "kind": "core",
+    "path": "/sistema/restaurante",
+    "requiresAuth": true,
+    "status": "active",
+    "highlight": true
+  },
+  {
+    "id": "analytics",
+    "label": "Analytics",
+    "description": "Ventas, ocupación y rentabilidad (roadmap).",
+    "kind": "core",
+    "path": "/hub",
+    "requiresAuth": true,
+    "status": "roadmap",
+    "highlight": false
+  },
+  {
+    "id": "ai",
+    "label": "IA empresarial",
+    "description": "Asistente con datos de tu negocio (roadmap).",
+    "kind": "core",
+    "path": "/hub",
+    "requiresAuth": true,
+    "status": "roadmap",
+    "highlight": false
+  }
+]

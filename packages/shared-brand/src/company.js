@@ -1,0 +1,22 @@
+/** Fuente de verdad de marca (sincronizar con docs/legal/company.json). */
+export default {
+  legalName: "Christian Villar",
+  tradingName: "Dakinis Systems",
+  productLineName: "Dakinis One",
+  tagline: "Transformamos negocios mediante software.",
+  jurisdiction: "España",
+  countryCode: "ES",
+  contacts: {
+    general: "contacto@dakinis-systems.com",
+    legal: "legal@dakinis-systems.com",
+    privacy: "privacy@dakinis-systems.com"
+  },
+  sites: {
+    corporate: "https://dakinissystems.com/",
+    core: "https://core.dakinissystems.com/",
+    hub: "https://core.dakinissystems.com/hub",
+    streamautomator: "https://streamautomator.com/",
+    akoenet: "https://akoenet.dakinissystems.com/"
+  },
+  lastUpdated: "2026-05-19"
+};

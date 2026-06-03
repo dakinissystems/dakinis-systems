@@ -1,0 +1,54 @@
+[
+  {
+    "id": "dakinis-one",
+    "name": "Dakinis One",
+    "role": "flagship",
+    "status": "active",
+    "summary": "Gestión empresarial modular: CRM, citas, inventario, restaurante, WhatsApp e integraciones.",
+    "landingPath": "/productos/dakinis-one",
+    "corePath": "/hub",
+    "external": false,
+    "sso": { "mode": "core-session", "productKey": "one" }
+  },
+  {
+    "id": "streamautomator",
+    "name": "StreamAutomator",
+    "role": "product",
+    "status": "active",
+    "summary": "Automatización y programación de contenido para creadores y marcas.",
+    "urlKey": "streamautomator",
+    "landingPath": "/productos/streamautomator",
+    "external": true,
+    "sso": {
+      "mode": "idp-exchange",
+      "productKey": "streamautomator",
+      "ssoReady": true,
+      "hubSsoPath": "/auth/hub-sso"
+    }
+  },
+  {
+    "id": "akoenet",
+    "name": "AkoeNet",
+    "role": "product",
+    "status": "active",
+    "summary": "Comunidades, voz y experiencias en tiempo real.",
+    "urlKey": "akoenet",
+    "landingPath": "/productos/akoenet",
+    "external": true,
+    "sso": {
+      "mode": "idp-exchange",
+      "productKey": "akoenet",
+      "ssoReady": true,
+      "hubSsoPath": "/auth/hub-sso"
+    }
+  },
+  {
+    "id": "custom",
+    "name": "Soluciones a medida",
+    "role": "services",
+    "status": "active",
+    "summary": "Desarrollo, integraciones e infraestructura sobre la base Dakinis.",
+    "landingPath": "/servicios",
+    "external": false
+  }
+]
