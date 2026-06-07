@@ -1,5 +1,7 @@
 # Observabilidad — Dakinis Systems
 
+> **Audiencia:** control interno. Telemetría producto (adopción, scores): [`OPERATIONS.md`](../OPERATIONS.md) §9.
+
 Guía mínima para pasar de logs en consola a stack observable.
 
 ## Ya implementado

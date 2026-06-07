@@ -1,21 +1,18 @@
 # Documentación — índice
 
-Solo lo necesario para operar y cambiar el ecosistema.
+Documentación del **control repo** (`dakinis-systems`). Separación clara:
 
-| Documento | Cuándo usarlo |
-|-----------|----------------|
-| [**PRODUCTION-CHECKLIST-TEMP.md**](./PRODUCTION-CHECKLIST-TEMP.md) | Estado prod y pendientes (borrar cuando estable) |
-| [**supabase/SETUP.md**](./supabase/SETUP.md) | Supabase SQL, `DATABASE_URL`, Railway variables |
-| [**railway.env.example**](./railway.env.example) | Plantilla env (sin secretos) |
-| [**ARCHITECTURE.md**](./ARCHITECTURE.md) | Mapa de carpetas, productos, integración |
-| [**WORKSPACE-STRATEGY.md**](./WORKSPACE-STRATEGY.md) | Control repo vs multi-repo, clones |
-| [**rules.md**](./rules.md) | **Obligatorio** al cambiar rutas del gateway |
-| [**contracts/**](./contracts/) | Prefijos HTTP públicos por servicio |
-| [**observability/SENTRY-SETUP.md**](./observability/SENTRY-SETUP.md) | Sentry por servicio |
-| [**observability/uptime-kuma.md**](./observability/uptime-kuma.md) | URLs de health para monitoreo |
-| [**adr/**](./adr/) | Decisiones formales (Postgres, event bus, Fastify) |
-| [**legal/**](./legal/) | Textos legales base por producto |
+| Tipo | Documentos |
+|------|------------|
+| **Control interno (operador)** | [`OPERATIONS.md`](./OPERATIONS.md) — único doc de estado, prod, tenants, precios BOS |
+| **Infra y datos** | [`supabase/SETUP.md`](./supabase/SETUP.md) · [`railway.env.example`](./railway.env.example) |
+| **Arquitectura** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`WORKSPACE-STRATEGY.md`](./WORKSPACE-STRATEGY.md) · [`LANDING-CORE-STRUCTURE.md`](./LANDING-CORE-STRUCTURE.md) |
+| **Contratos y gateway** | [`rules.md`](./rules.md) · [`contracts/`](./contracts/) |
+| **Producto (integraciones)** | [`WHATSAPP-INTEGRATION.md`](./WHATSAPP-INTEGRATION.md) · [`I18N-ECOSYSTEM.md`](./I18N-ECOSYSTEM.md) |
+| **Observabilidad** | [`observability/`](./observability/) |
+| **Decisiones** | [`adr/`](./adr/) |
+| **Cliente (legal)** | [`legal/`](./legal/) — privacidad, términos, avisos; no mezclar con OPERATIONS |
 
-**SQL Supabase:** `supabase/schemas/` + `004` / `006` / `005` — orden en [SETUP.md](./supabase/SETUP.md).
+**SQL Supabase:** `supabase/schemas/` (`00`→`09`) + `004` / `006` / `006b` — orden en [SETUP.md](./supabase/SETUP.md).
 
-**Eliminados** (contenido absorbido): `RAILWAY-PRODUCTION.md`, `ARCHITECTURE-DECISIONS.md`, `DAKINIS-ESTRUCTURA-TEMP.md`, `SUPABASE-SECURITY.md`.
+**Fusionados en OPERATIONS.md (eliminados):** `CORE-TENANTS-TEMP.md`, `PRODUCTION-CHECKLIST-TEMP.md`, `DAKINIS-HUB-VISION.md`, `RAILWAY-PRODUCTION.md`, `ARCHITECTURE-DECISIONS.md`, `DAKINIS-ESTRUCTURA-TEMP.md`, `SUPABASE-SECURITY.md`.

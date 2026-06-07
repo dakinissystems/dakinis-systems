@@ -1,476 +1,400 @@
-# Producción y visión Dakinis Systems (TEMP)
+# Checklist producción — temp
 
-> **Actualizado:** 4 junio 2026  
-> **Dos capas:** (1) checklist operativo deploy/prod · (2) posicionamiento y roadmap de producto.  
-> Guías: [`supabase/SETUP.md`](./supabase/SETUP.md) · [`DAKINIS-HUB-VISION.md`](./DAKINIS-HUB-VISION.md) · [`LANDING-CORE-STRUCTURE.md`](./LANDING-CORE-STRUCTURE.md) · [`WHATSAPP-ROADMAP.md`](./WHATSAPP-ROADMAP.md) · [`WHATSAPP-INTEGRATION.md`](./WHATSAPP-INTEGRATION.md)
+> **Audiencia:** operador (uso interno).  
+> **Actualizado:** 19 junio 2026  
+> **Fuente canónica:** [`OPERATIONS.md`](./OPERATIONS.md) §5 — copia de trabajo marcable. Borrar o archivar cuando el deploy esté cerrado.
 
----
+**Orden recomendado:** código → sync → SQL → variables → deploy → smoke → pilotos.
 
-## Posicionamiento: ya no es un ERP
-
-El mayor cambio pendiente **no es solo técnico**, sino de **posicionamiento**.
-
-### Inventario actual (lo que ya existe)
-
-| Capa | Componentes |
-|------|-------------|
-| **Marca y ventas** | Landing corporativa |
-| **Entrada ecosistema** | Dakinis Hub |
-| **Producto core** | Dakinis One (multi-tenant) |
-| **Identidad** | SSO · Auth centralizado |
-| **Operativa** | Inventario · Restaurante · **WhatsApp** (API + webhook en código) |
-| **Productos externos** | AkoeNet · StreamAutomator |
-| **Plataforma** | Analytics base · Catálogo dinámico (`platform_kv`, Hub tiles) |
-
-**Conclusión:** no se está construyendo un ERP monolítico. Se está construyendo una **plataforma empresarial modular**.
-
-### Cimientos ya construidos (ventaja competitiva)
-
-- Hub como punto de entrada  
-- Auth centralizado + SSO entre productos  
-- Catálogo dinámico (admin + `GET /api/public/catalog`)  
-- Módulos por vertical y multiempresa (tenant)  
-- Ecosistema AkoeNet + StreamAutomator enlazado  
-
-El **siguiente salto de valor** no está en añadir más pantallas sueltas, sino en **unificar** alrededor de:
-
-**CRM + Comunicaciones + Automatizaciones + Facturación**
-
-Eso convierte Dakinis en una plataforma completa y no en un conjunto de aplicaciones separadas.
+**Progreso (jun 2026):** §0 ✅ · Core Back vars §2 ✅ · Supabase §1 ⬜ · Auth §3 ⬜ · Front §4 ⬜ · Redeploy §6 ⬜
 
 ---
 
-## Lo que falta para parecer un producto «serio»
+## 0. Pre-deploy (local) ✅
 
-Referencia de mercado: Microsoft 365 · Zoho One · Odoo Apps.
-
-### 1. Centro de aplicaciones (evolución del Hub)
-
-**Hoy:** Hub con secciones **Aplicaciones** y **Marketplace** + dashboard de bienvenida.
-
-**Objetivo — Dakinis Hub:**
-
-```
-Aplicaciones (Dakinis One)
-────────────────────────
-✓ CRM          ✓ Inventario    ✓ Restaurante
-✓ WhatsApp     ✓ Reservas      ✓ Analytics
-○ Facturación  (roadmap)
-
-Marketplace
-────────────────────────
-✓ AkoeNet      ✓ StreamAutomator
-○ Futuras apps (terceros)
-```
-
-| Estado | Notas |
-|--------|-------|
-| Tiles + catálogo JSON | ✅ |
-| Secciones «Aplicaciones» vs «Marketplace» en UI | ✅ |
-| Tile Hub **WhatsApp** → `/app/whatsapp` | ✅ |
-| Activación/desactivación por plan | 🟡 `plan-modules` |
-| i18n tiles ES/EN | ✅ |
-
-### 2. CRM como núcleo
-
-**Hoy (P1 en código):** tablas `tenant_crm_contacts`, `tenant_crm_companies`, `tenant_crm_activities`, `tenant_whatsapp_conversations`; API `/api/v1/crm/*`; UI `/app/crm` con lista + ficha + timeline; WhatsApp inbound enlaza **Contacto → Conversación → Mensaje**.
-
-**Objetivo:** todo gira alrededor del **Cliente**:
-
-```
-Cliente → Reserva → Pedido → Factura → WhatsApp → Seguimiento
-```
-
-**Modelo de datos:**
-
-| Tabla | Rol |
-|-------|-----|
-| `tenant_crm_contacts` | Personas |
-| `tenant_crm_companies` | Organizaciones |
-| `tenant_crm_activities` | Llamadas, notas, WhatsApp, reservas… |
-| `tenant_whatsapp_conversations` | Hilo WA por contacto |
-| `deals` | Oportunidades / pipeline (P3, pendiente) |
-
-| Estado | Notas |
-|--------|-------|
-| CRM en Hub + `/app/crm` | ✅ |
-| SQL Supabase [`04-crm-core.sql`](./supabase/schemas/04-crm-core.sql) | 🟡 ejecutar en prod |
-| Migración SQLite local (`schema-crm-migrate.sql`) | ✅ al arrancar API |
-| API contacts / companies / activities / timeline | ✅ |
-| WhatsApp → contacto + `contact_id` en mensajes | ✅ |
-| Evento `crm.whatsapp.inbound` con `contactId` | ✅ |
-| Enlace reservas/pedidos/factura → contacto | ⬜ |
-| Deals / pipeline | ⬜ P3 |
-
-### 3. Centro de comunicación — *Dakinis Communications / WhatsApp*
-
-**Hoy:** módulo **WhatsApp** en Hub (`/app/whatsapp/*`), no solo un tile suelto.
-
-```
-Hub → WhatsApp
-  ├── Conversaciones   (hilos + envío API)
-  ├── Contactos
-  ├── Plantillas       (preview)
-  ├── Automatizaciones (reglas)
-  └── IA               (roadmap fase 5)
-```
-
-Canales futuros: Email · Telegram · Discord · SMS · Push.
-
-| Estado | Notas |
-|--------|-------|
-| Reglas + preview API | ✅ |
-| Envío Cloud API `POST /api/v1/whatsapp/send` | ✅ código |
-| Webhook `GET/POST /webhooks/whatsapp` | ✅ código |
-| Tablas Postgres WhatsApp | 🟡 SQL [`03-whatsapp-messages.sql`](./supabase/schemas/03-whatsapp-messages.sql) — ejecutar en Supabase |
-| Legales Meta (Core §§10–12) | ✅ |
-| Inbox omnicanal | ⬜ |
-| Otros canales | ⬜ |
-
-### 4. Motor de automatización (estilo Zapier)
-
-Ejemplos de reglas:
-
-| SI | ENTONCES |
-|----|----------|
-| Reserva creada | Enviar WhatsApp |
-| Stock bajo | Crear orden de compra |
-| Cliente cumple años | Enviar promoción |
-
-| Estado | Notas |
-|--------|-------|
-| Event bus in-process (Core) | ✅ base |
-| Handlers WhatsApp (`DAKINIS_WHATSAPP_AUTO_SEND`) | 🟡 dry-run por defecto |
-| UI reglas + motor genérico SI/ENTONCES | ⬜ |
-
-### 5. Constructor visual de procesos
-
-Diferenciador frente a SaaS pequeños:
-
-```
-[Reserva] → [WhatsApp] → [Factura] → [Encuesta]
-```
-
-| Estado | Notas |
-|--------|-------|
-| Diseño / POC | ⬜ |
-
-### 6. Dakinis AI (contextual al tenant)
-
-No un chatbot genérico. IA con acceso a datos del negocio.
-
-| Estado | Notas |
-|--------|-------|
-| Pestaña IA en `/app/whatsapp/ai` (roadmap copy) | ✅ UI |
-| RAG / OpenAI + CRM | ⬜ fase 5 |
-
-### 7. Portal del cliente (B2B2C)
-
-| Estado | Notas |
-|--------|-------|
-| Portal cliente | ⬜ |
-
-### 8. Facturación SaaS (cobrar el software)
-
-| Estado | Notas |
-|--------|-------|
-| Planes en tenant / catálogo | 🟡 parcial |
-| Stripe Billing | ⬜ |
-
-### 9. Observabilidad comercial (panel cliente)
-
-| Estado | Notas |
-|--------|-------|
-| `/api/health` + `whatsappConfigured` | ✅ |
-| Sentry | 🟡 |
-| GA4 / dataLayer | 🟡 |
-| Panel uso por tenant | ⬜ |
-
-### 10. Marketplace real
-
-| Estado | Notas |
-|--------|-------|
-| Enlaces productos propios | ✅ |
-| API catálogo + admin JSON | ✅ |
-| SDK / onboarding terceros | ⬜ |
+- [x] `cd D:\dakinis-systems\platform\core`
+- [x] `npm ci` (si falla el lock → `npm install`)
+- [x] `npm run build -w @dakinis/web`
+- [x] `npm run start -w @dakinis/api` — arranca sin error
+- [x] `npm test -w @dakinis/api` — **37/37** tests OK
+- [x] `node scripts/sync-shared-brand.mjs` (desde `platform/core`)
+- [x] Push a `dakinissystems/dakinis-core` con:
+  - seguridad (master key, plan gating, bcrypt API keys, AppGuard)
+  - onboarding por email (contraseña temporal + reset)
+  - credenciales usuario (`10-user-credentials`)
 
 ---
 
-## Roadmap CTO (visión 2026–2028)
+## 1. Supabase (SQL Editor)
 
-### 2026 — Consolidar plataforma
+**Proyecto:** el de Dakinis Core/Auth (mismo `DATABASE_URL` que Railway Core Back). **No** el de AkoeNet.
 
-| Prioridad | Entregable | Estado |
-|-----------|------------|--------|
-| P0 | SSO completo (Hub → AkoeNet, SA, Core) | 🟡 |
-| P0 | WhatsApp Business API en prod | 🟡 código listo; env + SQL + deploy |
-| P1 | CRM núcleo (`contacts`, `companies`, `activities`) | 🟡 código; SQL Supabase + deploy |
-| P3 | Deals / pipeline | ⬜ |
-| P1 | Stripe (plan → suscripción → pago) | ⬜ |
-| P1 | Portal cliente (MVP) | ⬜ |
-| Ops | Deploy prod estable (Landing, Core Back, Core Front) | 🟡 ver Railway |
+**Dónde:** [Supabase Dashboard](https://supabase.com/dashboard) → tu proyecto → **SQL Editor** → New query → pegar script → **Run**.
 
-### 2027–2028
+### ¿Qué ejecutar?
 
-Sin cambio de visión: automatizaciones, IA, reservas maduras, facturación operativa, Hub como «SO pymes».
+| Situación | Qué correr |
+|-----------|------------|
+| **Prod ya tenía `00`–`09`** (tenants demo, CRM, etc.) | Solo filas **10** → **004** → **006b** → **99** |
+| **Instalación nueva** (schema vacío) | Todas las filas **1**–**17** en orden |
+
+### Orden archivo por archivo
+
+Copia cada archivo desde `docs/supabase/` en el repo local. Marca al ejecutar:
+
+| # | Archivo | Qué crea / hace | Hecho |
+|---|---------|-----------------|-------|
+| 1 | `schemas/00-bootstrap-schemas.sql` | Schemas `dakinis_auth`, `dakinis_core_prod`, … | ⬜ |
+| 2 | `schemas/01-dakinis-auth.sql` | IdP: `users`, `refresh_tokens` | ⬜ |
+| 3 | `schemas/02-dakinis-core-prod.sql` | Core base: `business`, `users`, stock, … | ⬜ |
+| 4 | `schemas/03-whatsapp-messages.sql` | `tenant_whatsapp_*` | ⬜ |
+| 5 | `schemas/04-crm-core.sql` | CRM + conversaciones WA | ⬜ |
+| 6 | `schemas/05-tenant-intelligence.sql` | branches, módulos, webhooks | ⬜ |
+| 7 | `schemas/06-tenant-intelligence-v2.sql` | deals, goals, finance, red | ⬜ |
+| 8 | `schemas/07-bos-platform.sql` | subscriptions, billing, portal | ⬜ |
+| 9 | `schemas/08-telemetry.sql` | `tenant_feature_usage` | ⬜ |
+| 10 | `schemas/09-feature-events.sql` | `tenant_feature_events` | ⬜ |
+| 11 | **`schemas/10-user-credentials.sql`** | columnas reset/onboarding en `users` | ⬜ |
+| 12 | `004-rls-lockdown-all.sql` | RLS + FORCE en todas las tablas | ⬜ |
+| 13 | `006b-rls-policies-missing-tables.sql` | Políticas deny anon/authenticated | ⬜ |
+| 14 | `005-advisor-functions-storage.sql` | *(opcional)* advisor Storage | ⬜ |
+| 15 | **`schemas/99-verify-all-tables.sql`** | Diagnóstico — debe devolver **0 filas** × 3 | ⬜ |
+
+> **006 vs 006b:** 1ª vez en el proyecto → `006-rls-policies-deny-api.sql` también vale. Si ya corriste `006` antes y solo añadiste tablas `03`–`10` → `006b`.
+
+### Conexión Railway ↔ Supabase (ya en Core Back ✅)
+
+- [x] `POSTGRES_SCHEMA=dakinis_core_prod`
+- [x] `DB_DRIVER=postgres`
+- [x] `DATABASE_URL` configurada (comprueba pooler **6543**; opcional `?pgbouncer=true`)
+- [ ] `/api/health` en prod muestra `"db":"postgres"` y `"postgresSchema":"dakinis_core_prod"`
+
+### Tras ejecutar SQL
+
+- [x] `99-verify-all-tables.sql` → **0 filas** (tablas faltantes)
+- [x] Misma query → **0 filas** (columnas `contact_id` / `conversation_id` en WA)
+- [x] Misma query → **0 filas** (RLS sin política)
+- [x] Supabase **Security Advisor** → **0** «RLS Enabled No Policy»
+- [x] Redeploy Core Back (por si health aún no refleja tablas nuevas)
+
+> Core Back aplica `10` al arrancar (`ALTER … IF NOT EXISTS`), pero **ejecuta `10` en SQL Editor** igualmente y corre `99` para confirmar.
+
+Guía: [`supabase/SETUP.md`](./supabase/SETUP.md) · Índice tablas: [`supabase/schemas/README.md`](./supabase/schemas/README.md)
 
 ---
 
-## Implementado en código (requiere deploy / push)
+## 2. Variables Railway — Core Back
 
-| Área | Estado | Detalle |
-|------|--------|---------|
-| **`@dakinis/shared-brand`** | ✅ | company, URLs, `products.json`, `hub-modules.json`, i18n, analytics, SSO |
-| **Core `packages/shared-brand` vendoreado** | 🟡 | Para Railway; sync con [`platform/core/scripts/sync-shared-brand.mjs`](../platform/core/scripts/sync-shared-brand.mjs) |
-| **Landing = ventas** | ✅ | `/`, `/productos/*`, `/servicios`, `/hub` → Core |
-| **Landing deploy standalone** | 🟡 | `apps/landing/packages/shared-brand`; push pendiente |
-| **Core = producto SaaS** | ✅ | `/login`, `/hub`, `/sistema/*`, `/app/*` |
-| **Hub UI** | ✅ | Aplicaciones / Marketplace, dashboard, i18n tiles |
-| **WhatsApp módulo** | ✅ | `/app/whatsapp/*`, API, webhook, legales |
-| **CRM persistido (P1)** | 🟡 | `/app/crm`, `/api/v1/crm/*`, `04-crm-core.sql`, enlace WA |
-| **Core Back `restaurant-floor` export** | ✅ | Export en `@dakinis/shared` |
-| **Auth + SSO base** | 🟡 | Exchange IdP; prod env pendiente |
-| **Catálogo dinámico** | ✅ | API + `/admin` + `platform_kv` |
-| **i18n ES/EN** | ✅ | Core, Landing, shared-brand JSON |
+| Variable | Obligatoria | Hecho | Notas |
+|----------|-------------|-------|-------|
+| `NODE_ENV` | ✅ | ✅ | `production` |
+| `JWT_SECRET` | ✅ | ✅ | Misma en auth y Core |
+| `DATABASE_URL` | ✅ | ✅ | Supabase pooler 6543 |
+| `DB_DRIVER` | ✅ | ✅ | `postgres` |
+| `POSTGRES_SCHEMA` | ✅ | ✅ | `dakinis_core_prod` |
+| `DAKINIS_MASTER_API_KEY` | ✅ | ✅ | ≥24 chars, ≠ `dakinis-dev-key` |
+| `CORS_ORIGIN` | ✅ | ✅ | `https://core.dakinissystems.com` |
+| `CORE_WEB_URL` | ✅ | ✅ | enlaces reset en emails |
+| `RESEND_API_KEY` | ✅ | ✅ | Onboarding + reset |
+| `RESEND_FROM` | ✅ | ✅ | dominio verificado en Resend |
+| `WHATSAPP_ACCESS_TOKEN` | ✅ | ✅ | Meta |
+| `WHATSAPP_PHONE_NUMBER_ID` | ✅ | ✅ | Meta |
+| `WHATSAPP_VERIFY_TOKEN` | ✅ | ✅ | Webhook GET |
+| `WHATSAPP_APP_SECRET` | ✅ | ✅ | Firma POST webhook |
+| `WHATSAPP_DEFAULT_BUSINESS_ID` | ✅ | ✅ | Tenant por defecto WA |
+| `O1PENAI_API_KEY` | 🟡 | ⬜ | Solo si usas Copilot/IA |
+| `STRIPE_SECRET_KEY` | 🔜 | ⬜ | Post-pilotos |
+| `STRIPE_WEBHOOK_SECRET` | 🔜 | ⬜ | Post-pilotos |
 
-### Dominios
+**Webhook Meta:** `https://api.dakinissystems.com/core/webhooks/whatsapp`
 
-| URL | Rol |
-|-----|-----|
-| `https://dakinissystems.com` | Landing corporativa |
-| `https://core.dakinissystems.com` | Dakinis One + Hub |
-| `https://api.dakinissystems.com` | Gateway (`/auth/`, `/core/`, …) |
+**Sin `RESEND_*`:** el alta de negocio en `/admin` sigue funcionando; el panel muestra contraseña temporal y enlace de reset para copiar manualmente.
 
-### Flujo usuario actual
+Plantilla: [`railway.env.example`](./railway.env.example)
 
+---
+
+## 3. Auth — Railway (`dakinis-auth`)
+
+**Servicio:** IdP central (`platform/auth`). **Proyecto Railway:** `dakinis-platform` (mismo que Core).
+
+**Supabase previo:** fila **#2** del §1 — `schemas/01-dakinis-auth.sql` (schema `dakinis_auth`).
+
+### Configuración del servicio
+
+| Campo | Valor | Hecho |
+|-------|-------|-------|
+| Repositorio | Repo del IdP (`platform/auth` — según tu despliegue Railway) | ⬜ |
+| Root Directory | Raíz del paquete auth (donde está `package.json` de `dakinis-auth`) | ⬜ |
+| Start Command | `npm start` → `node src/app.js` | ⬜ |
+| Build | `npm install` (incluye `express-rate-limit` — **obligatorio** tras último push seguridad) | ⬜ |
+
+### Variables (pestaña Variables)
+
+| Variable | Obligatoria | Hecho | Valor / notas |
+|----------|-------------|-------|----------------|
+| `NODE_ENV` | ✅ | ⬜ | `production` |
+| `PORT` | ✅ | ⬜ | `4000` (Railway asigna `PORT` automático; puede omitirse) |
+| `JWT_SECRET` | ✅ | ⬜ | **Mismo valor exacto** que Core Back §2 |
+| `DATABASE_URL` | ✅ | ⬜ | Misma URI Supabase pooler **6543** que Core Back |
+| `DATABASE_SSL` | ✅ | ⬜ | `true` |
+| `AUTH_SCHEMA` | ✅ | ⬜ | `dakinis_auth` |
+| `CORS_ORIGINS` | ✅ | ⬜ | `https://core.dakinissystems.com,https://akoenet.dakinissystems.com` *(ajusta productos)* |
+| `JWT_ACCESS_TTL` | 🟡 | ⬜ | `15m` (default) |
+| `JWT_LEGACY_LONG_TTL` | 🟡 | ⬜ | `false` en prod |
+| `REDIS_URL` | 🟡 | ⬜ | `${{Redis.REDIS_URL}}` si usas refresh/cache |
+| `SENTRY_DSN` | 🟡 | ⬜ | Opcional |
+
+- [ ] Tras cambiar vars → **Redeploy** `dakinis-auth`
+- [ ] Gateway expone auth: `https://auth.dakinissystems.com/auth` o `https://api.dakinissystems.com/auth/` (según `gateway/routes/default.conf`)
+
+### Verificación Auth
+
+```bash
+curl -sS https://auth.dakinissystems.com/auth/health
+# o vía gateway:
+curl -sS https://api.dakinissystems.com/auth/health
 ```
-Landing → Login (Core) o Hub
-       → Hub (sesión Core)
-       → Dakinis One / AkoeNet / StreamAutomator
-       → WhatsApp (/app/whatsapp/conversations)
+
+| Prueba | Esperado | Hecho |
+|--------|----------|-------|
+| `GET /auth/health` | `200` | ⬜ |
+| `POST /auth/login` × 6 en 15 min | Rate limit `429` tras 5 intentos | ⬜ |
+| `JWT_SECRET` = Core Back | Login IdP + exchange en Core sin error de firma | ⬜ |
+
+---
+
+## 4. Core Front — Railway
+
+**Servicio:** SPA React + proxy `/api` → Core Back (`web/serve-production.mjs`). **Repo:** `dakinissystems/dakinis-core` (mismo monorepo, **servicio separado** del API).
+
+### Configuración del servicio
+
+| Campo | Valor | Hecho |
+|-------|-------|-------|
+| Repositorio | `dakinissystems/dakinis-core` | ⬜ |
+| Root Directory | *(vacío — raíz monorepo)* | ⬜ |
+| Build Command | `npm install && npm run build -w @dakinis/web` | ⬜ |
+| Start Command | `npm run start:web` → `node web/serve-production.mjs` | ⬜ |
+| Dominio público | `core.dakinissystems.com` | ⬜ |
+
+### Variables runtime (servidor Node — **no** solo build)
+
+| Variable | Obligatoria | Hecho | Valor / notas |
+|----------|-------------|-------|----------------|
+| `API_UPSTREAM` | ✅ | ⬜ | URL del Core Back, ej. `https://dakinis-core-production.up.railway.app` *(sin barra final)* |
+| `PORT` | ✅ | ⬜ | Lo asigna Railway automáticamente |
+
+`serve-production.mjs` reenvía las peticiones del navegador a `/api/*` hacia `API_UPSTREAM`. Sin esto, login y panel fallan con «Failed to fetch» aunque el build sea correcto.
+
+**Alternativa Railway:** referencia al servicio API, ej. `https://${{dakinis-core-production.RAILWAY_PUBLIC_DOMAIN}}` si el nombre del servicio coincide.
+
+### Variables build Vite (redeploy obligatorio si cambian)
+
+| Variable | Obligatoria | Hecho | Valor / notas |
+|----------|-------------|-------|----------------|
+| `VITE_DAKINIS_AUTH_URL` | 🟡 | ⬜ | `https://auth.dakinissystems.com/auth` — solo si usas botón **SSO IdP** en login |
+| `VITE_API_BASE_URL` | 🟡 | ⬜ | Opcional si usas proxy `/api` en el mismo host (`core.dakinissystems.com`) |
+| `VITE_SENTRY_DSN` | 🟡 | ⬜ | Opcional |
+
+> Login **local Core** (`POST /api/auth/login`) funciona **sin** `VITE_DAKINIS_AUTH_URL`. El SSO IdP/AkoeNet sí lo necesita.
+
+- [ ] **Redeploy** Core Front tras vars (build + start)
+- [ ] Rutas nuevas accesibles: `/login`, `/forgot-password`, `/reset-password`, `/admin`
+
+### Verificación Core Front
+
+| Prueba | URL | Esperado | Hecho |
+|--------|-----|----------|-------|
+| Hub carga | `https://core.dakinissystems.com/hub` | `200` | ⬜ |
+| Login UI | `/login` | Formulario + enlace «¿Olvidaste la contraseña?» | ⬜ |
+| Reset UI | `/reset-password` | Formulario (con `?token=` del email) | ⬜ |
+| API vía proxy | `/api/health` en el mismo host | JSON con `"db":"postgres"` | ⬜ |
+| Login real | `/login` → credenciales tenant | Redirige a `/hub` o a forgot si `mustChangePassword` | ⬜ |
+
+```bash
+curl -sS https://core.dakinissystems.com/api/health
 ```
 
 ---
 
-## Railway — configuración obligatoria
+## 5. Landing (opcional ahora)
 
-Aplica a **Core Back** y **Core Front**:
+| Variable | Hecho |
+|----------|-------|
+| `VITE_HUB_URL` | ⬜ |
+| `VITE_CONTACT_WHATSAPP_*` | ⬜ |
 
-| Campo | Valor |
-|--------|--------|
-| **Repositorio** | `dakinissystems/dakinis-core` |
-| **Root Directory** | *(vacío — raíz del monorepo)* |
-| **NO usar** | `dakinis-systems` ni root `platform/core` (carpeta ignorada en control repo) |
-| **NO usar** | Root `web` o `api` (rompe workspaces y lockfile) |
-
-Build: **Railpack** (`railpack.json` / `railpack.web.json`). Install: **`npm install`** (no depender de `npm ci` en el layer de Railpack).
-
-Verificación local antes de push:
+- [ ] Sync brand → landing:
 
 ```powershell
-cd D:\dakinis-systems\platform\core
-npm ci
-npm run build -w @dakinis/web
-npm run start -w @dakinis/api   # Back, otro terminal
-```
-
----
-
-## Incidentes Railway (jun 2026)
-
-### dakinis-landing
-
-| Síntoma | Fix |
-|---------|-----|
-| `npm ci` + `file:../../packages/shared-brand` | Vendor `./packages/shared-brand` + `package-lock.json` |
-| Footer incompleto | Legal + mailto + contacto |
-| WhatsApp placeholder `wa.me/549…` | `VITE_CONTACT_WHATSAPP_*` |
-
-**Acción:** push `dakinissystems/dakinis-landing` → redeploy.
-
-### Core Back / Core Front
-
-| Síntoma | Causa | Fix |
-|---------|--------|-----|
-| `npm ci` — no `package-lock.json` | Railpack copia archivos pero `npm ci` no ve el lock en el layer | **`npm install`** en `railpack.json` / `railpack.web.json` |
-| Mismo error tras COPY explícito del lock | Limitación Railpack + workspaces | Igual: `npm install` |
-| `file:../../../packages/shared-brand` | Path fuera del repo `dakinis-core` en Railway | Vendor **`platform/core/packages/shared-brand`** |
-| `ERR_PACKAGE_PATH_NOT_EXPORTED` | `restaurant-floor.js` | Export en `shared/package.json` ✅ |
-| Healthcheck fallido | Env / DB / puerto | `JWT_SECRET`, `DATABASE_URL`, no fijar `PORT` manual |
-
-**Commits recientes en `dakinis-core` (referencia):**
-
-- `413b82c` — WhatsApp Cloud API + Hub UI  
-- `54db578` — Railpack COPY lock (insuficiente solo)  
-- `c07eb95` — sync `packages/shared-brand` vendoreado  
-
-**Pendiente push local (si `git status` muestra cambios):**
-
-- `railpack.json` / `railpack.web.json` → `npm install`  
-- `web/package.json` + `vite.config.js` → `file:../packages/shared-brand`  
-- `package-lock.json` regenerado  
-- `scripts/sync-shared-brand.mjs`  
-
-```powershell
-cd D:\dakinis-systems\platform\core
-git add railpack.json railpack.web.json web/package.json web/vite.config.js package-lock.json scripts/
-git commit -m "fix(railway): npm install in Railpack and vendored shared-brand paths"
-git push origin main
-```
-
-Redeploy **Core Back** y **Core Front**.
-
----
-
-## Pendiente — operaciones
-
-### Backups
-
-| Acción | Estado |
-|--------|--------|
-| Workflow [`backup-postgres.yml`](../.github/workflows/backup-postgres.yml) | ✅ |
-| Secret `BACKUP_DATABASE_URL` (5432 directo) | ⬜ |
-| Primer backup verificado en Actions | ⬜ |
-| Restore mensual [`restore-postgres-test.ps1`](../scripts/restore-postgres-test.ps1) | ⬜ |
-
-### Deploy (repos)
-
-| Repo / servicio | Estado | Notas |
-|-----------------|--------|-------|
-| `dakinissystems/dakinis-core` | 🟡 | Push fix Railpack + lock; redeploy Back/Front |
-| `dakinissystems/dakinis-landing` | 🟡 | Footer, vendor shared-brand |
-| `dakinissystems/dakinis-systems` | ⬜ | Docs, SQL WhatsApp, shared-brand fuente |
-| `dakinis-auth`, AkoeNet, StreamAutomator | ⬜ / 🟡 | Verificar env |
-
-### Base de datos Core (prod)
-
-| Acción | Estado |
-|--------|--------|
-| [`02-dakinis-core-prod.sql`](./supabase/schemas/02-dakinis-core-prod.sql) | ⬜ verificar ejecutado |
-| [`03-whatsapp-messages.sql`](./supabase/schemas/03-whatsapp-messages.sql) | ⬜ **ejecutar en Supabase** antes de mensajes WhatsApp en prod |
-| `POSTGRES_SCHEMA=dakinis_core_prod` en Core Back | ⬜ |
-
-### Variables de entorno (prod)
-
-| Variable | Servicio | Estado |
-|----------|----------|--------|
-| `JWT_SECRET` + issuer/audience | auth, Core Back | ⬜ |
-| `DATABASE_URL` + `DB_DRIVER=postgres` | Core Back | ⬜ |
-| `VITE_DAKINIS_AUTH_URL` | Core Front, AkoeNet | ⬜ |
-| `VITE_HUB_URL`, `VITE_GA_MEASUREMENT_ID` | Landing | ⬜ |
-| `VITE_CONTACT_WHATSAPP_URL` o `_PHONE` | Landing | ⬜ |
-| `API_UPSTREAM` | Core Front | ⬜ |
-| `WHATSAPP_ACCESS_TOKEN` | Core Back | ⬜ **rotar si se filtró en chat** |
-| `WHATSAPP_PHONE_NUMBER_ID` | Core Back | ⬜ |
-| `WHATSAPP_BUSINESS_ACCOUNT_ID` | Core Back | ⬜ |
-| `WHATSAPP_VERIFY_TOKEN` | Core Back | ⬜ token aleatorio largo; mismo valor en Meta webhook |
-| `WHATSAPP_APP_SECRET` | Core Back | ⬜ App Secret de Meta (firma webhook) |
-| `WHATSAPP_DEFAULT_BUSINESS_ID` | Core Back | ⬜ `business.id` o slug del tenant |
-| `WHATSAPP_GRAPH_API_VERSION` | Core Back | opcional (`v22.0`) |
-| `DAKINIS_WHATSAPP_AUTO_SEND` | Core Back | opcional `false` |
-
-**Webhook Meta (producción):**
-
-```
-https://api.dakinissystems.com/core/webhooks/whatsapp
-```
-
-(Ajustar host si el API gateway usa otra ruta; alias en Core: `/webhooks/whatsapp`, `/api/webhooks/whatsapp`.)
-
-Plantillas: [`railway.env.example`](./railway.env.example) · [`platform/core/api/.env.example`](../platform/core/api/.env.example) · [`apps/landing/.env.example`](../apps/landing/.env.example)
-
-### Sync `shared-brand` (dos copias vendoreadas)
-
-| Destino | Cuándo |
-|---------|--------|
-| `apps/landing/packages/shared-brand` | Cambios catálogo / contacto landing |
-| `platform/core/packages/shared-brand` | Cambios Hub tiles / productos Core + deploy Railway |
-
-```powershell
-# Desde dakinis-systems (fuente)
 robocopy packages\shared-brand apps\landing\packages\shared-brand /E /XD node_modules
-
-# Desde platform/core
-node scripts/sync-shared-brand.mjs
 ```
+
+- [ ] Push `dakinis-landing` + redeploy
 
 ---
 
-## Corto plazo técnico (jun 2026)
+## 6. Railway — mapa de servicios y redeploy
 
-| Bloque | Estado | Referencia |
-|--------|--------|------------|
-| Railway Core Back + Front verdes | 🟡 | § Railway |
-| SSO Hub → AkoeNet / SA | 🟡 | § Roadmap 2026 |
-| WhatsApp fases 1–4 | 🟡 | [`WHATSAPP-ROADMAP.md`](./WHATSAPP-ROADMAP.md) |
-| WhatsApp fase 5 (CRM + OpenAI) | ⬜ | `crm.whatsapp.inbound` |
-| CRM persistido (contacts, deals) | ⬜ | § CRM |
-| GA4 en Railway | 🟡 | Landing env |
-| Stripe billing SaaS | ⬜ | § Facturación |
+**Proyecto:** `dakinis-platform` (o equivalente). **Compute:** Railway. **Datos:** Supabase (no plugin Postgres Railway).
+
+### Servicios del ecosistema Core
+
+| Servicio Railway | Código | Start / Build | Dominio público | Estado |
+|------------------|--------|---------------|-----------------|--------|
+| **Core Back** (API) | `dakinissystems/dakinis-core` · root vacío | Build: `npm install` · Start: `npm run start -w @dakinis/api` | `dakinis-core-production.up.railway.app` + gateway `/core/` | Vars ✅ |
+| **Core Front** (web) | mismo repo · **servicio aparte** | Build: `npm install && npm run build -w @dakinis/web` · Start: `npm run start:web` | `core.dakinissystems.com` | ⬜ §4 |
+| **dakinis-auth** (IdP) | `platform/auth` | Build: `npm install` · Start: `npm start` | `auth.dakinissystems.com` o gateway `/auth/` | ⬜ §3 |
+| **dakinis-gateway** | repo `dakinis-systems` | nginx | `api.dakinissystems.com` | ⬜ revisar |
+| **Redis** | plugin Railway | — | interno | 🟡 opcional |
+
+### Reglas de despliegue
+
+| Regla | Detalle |
+|-------|---------|
+| **NO** desplegar desde `dakinis-systems` | Solo docs/SQL/gateway — el producto va en `dakinis-core` |
+| **NO** Root `web/` o `api/` sueltos | Monorepo raíz con workspaces |
+| Build | `npm install` (no `npm ci` roto en Railpack) |
+| `shared-brand` | Vendoreado en `platform/core/packages/shared-brand`; sync antes de push |
+| Mismo `JWT_SECRET` | Core Back + Auth + cualquier servicio que verifique JWT |
+| Misma `DATABASE_URL` | Core Back + Auth → Supabase pooler 6543 |
+
+### Orden de redeploy recomendado
+
+Ejecutar **después** de Supabase §1:
+
+| # | Acción | Hecho |
+|---|--------|-------|
+| 1 | **Core Back** — redeploy (vars ya configuradas §2) | ⬜ |
+| 2 | **dakinis-auth** — `npm install` + vars §3 + redeploy | ⬜ |
+| 3 | **Core Front** — `API_UPSTREAM` §4 + redeploy (build incluye rutas reset) | ⬜ |
+| 4 | **Gateway** — solo si cambiaste rutas en `gateway/routes/default.conf` | ⬜ |
+
+### URLs públicas (referencia)
+
+| Ruta | Destino |
+|------|---------|
+| `https://core.dakinissystems.com` | Core Front |
+| `https://core.dakinissystems.com/api/*` | Proxy front → Core Back |
+| `https://api.dakinissystems.com/core/*` | Gateway → Core Back |
+| `https://api.dakinissystems.com/auth/*` | Gateway → dakinis-auth |
+| `https://auth.dakinissystems.com/auth/*` | Auth IdP (si DNS directo) |
+
+### Incidentes conocidos
+
+- `npm ci` sin lock en layer → usar `npm install`
+- Front sin `API_UPSTREAM` → login falla aunque el API esté bien
+- Cambiar `VITE_*` sin redeploy → build antiguo en caché
+- Tras cambiar `business.plan` → usuario debe **logout + login**
+- `shared-brand` vendoreado en `platform/core/packages/shared-brand`
 
 ---
 
-## Estructura workspace
+## 7. Backups
 
-```
-dakinis-systems/              control repo (NO despliega platform/ en git)
-├── packages/shared-brand/    fuente de verdad catálogo/marca
-├── gateway/
-└── docs/
-
-platform/core/                → repo dakinis-core (Railway Core Back/Front)
-├── packages/shared-brand/    copia vendoreada para deploy
-├── railpack.json             Core Back
-├── railpack.web.json         Core Front
-└── scripts/sync-shared-brand.mjs
-
-apps/landing/                   → repo dakinis-landing
-```
+- [ ] Workflow `backup-postgres.yml` activo
+- [ ] Secret `BACKUP_DATABASE_URL` configurado
+- [ ] Probar que genera backup
 
 ---
 
-## Smoke rápido
+## 8. Smoke test (tras deploy)
 
 ```bash
 curl -sS https://api.dakinissystems.com/core/api/health
 curl -sS https://api.dakinissystems.com/core/api/public/catalog | head -c 200
-curl -sS -o /dev/null -w "landing:%{http_code}\n" https://dakinissystems.com/
 curl -sS -o /dev/null -w "core:%{http_code}\n" https://core.dakinissystems.com/hub
 ```
 
-| Prueba manual | Esperado |
-|---------------|----------|
-| `/api/health` | `whatsappConfigured: true` si env WhatsApp en Back |
-| Landing footer + `#contacto` | Legal, mailto, WhatsApp (env) |
-| Core `/hub` | Tile **WhatsApp** → `/app/whatsapp` |
-| Core `/app/whatsapp/conversations` | Hilos / envío (con sesión + plan Pro) |
-| Webhook Meta | Verify token + POST mensajes |
-| Core Back logs | `listening on port` sin errores de módulo |
+| Prueba manual | Esperado | Hecho |
+|---------------|----------|-------|
+| `https://core.dakinissystems.com/#precios` | Planes 29 / 79 / 149 € + implantación | ⬜ |
+| `/app/settings` | Facturación híbrida + adopción | ⬜ |
+| `/admin` (platform_admin) | Telemetría pilotos | ⬜ |
+| `GET /api/v1/tenant/billing/summary` | Plan + excesos estimados | ⬜ |
+| Login 6 veces seguidas (auth) | Rate limit tras 5 intentos | ⬜ |
+| Supabase advisor | 0 «RLS Enabled No Policy» | ⬜ |
+| `99-verify-all-tables.sql` | 0 tablas/columnas/RLS faltantes | ⬜ |
+
+### Onboarding y contraseñas (nuevo)
+
+| Prueba | Esperado | Hecho |
+|--------|----------|-------|
+| `/admin` → crear negocio con **solo email** propietario | Mensaje «credenciales enviadas» o fallback con temp + enlace | ⬜ |
+| Bandeja email propietario | Correo con contraseña temporal + enlace `/reset-password?token=…` | ⬜ |
+| Abrir enlace reset | Formulario nueva contraseña → éxito → login OK | ⬜ |
+| `/login` → «¿Olvidaste la contraseña?» | `POST /api/auth/forgot-password` → email con enlace | ⬜ |
+| `/admin` → usuarios → **Editar email** | `PATCH /api/platform/users/:id` | ⬜ |
+| `/admin` → usuarios → **Reenviar reset** | `POST /api/platform/users/:id/resend-password-reset` | ⬜ |
+| `/app/settings` → Equipo → reenviar reset (owner/manager) | `POST /api/tenant/users/:id/resend-password-reset` | ⬜ |
 
 ---
 
-## i18n (ES / EN)
+## 9. Pilotos (cuando smoke OK)
 
-| Capa | Estado |
+- [ ] Alta tenant en `/admin` con email propietario real (no `.local`)
+- [ ] Propietario confirma negocio vía email (reset contraseña)
+- [ ] Cambio de plan en `/admin` → propietario **logout + login**
+- [ ] Probar WhatsApp end-to-end
+- [ ] Medir adopción 30 días (`tenant_feature_usage` / `tenant_feature_events`) antes de ampliar scope
+
+---
+
+## 10. Stripe (después de pilotos)
+
+- [ ] `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` en Core Back
+- [ ] SDK de cobro *(aún no implementado — tablas `07` listas)*
+
+---
+
+## Bloqueadores actuales
+
+Lo que impide pilotos reales hoy:
+
+1. **SQL Supabase §1** — mínimo `10` + `004` + `006b` + `99` (o todo `00`–`10` si es nuevo)
+2. ~~Vars Core Back §2~~ ✅
+3. **Auth §3** — vars + redeploy (`express-rate-limit`, `JWT_SECRET` = Core)
+4. **Core Front §4** — `API_UPSTREAM` + redeploy (rutas reset)
+5. **Redeploy orden §6** — Back → Auth → Front → smoke §8
+
+Stripe (§10) y backups (§7) pueden ir en paralelo o justo después.
+
+---
+
+## Ya en código (no requiere más dev)
+
+### Seguridad
+
+| Item | Estado |
 |------|--------|
-| `@dakinis/shared-brand` JSON `i18n` | ✅ productos, hub-modules, tagline |
-| Core `locales/es.js` ↔ `en.js` | ✅ paridad (incl. `app.whatsapp.*`) |
-| Landing `translations.js` + legal | ✅ |
-| StreamAutomator `es.json` ↔ `en.json` | ✅ |
-| Verificación | `node scripts/check-locale-parity.mjs` |
+| Master API key fail en prod | ✅ |
+| Plan gating BOS | ✅ |
+| Rate limit Auth IdP | ✅ |
+| Docker solo gateway en prod | ✅ |
+| Tests integración (**37/37**) | ✅ |
+| AppGuard `/app/*` | ✅ |
+| API keys bcrypt | ✅ |
+| Webhook WA exige secret en prod | ✅ |
 
-Detalle: [`I18N-ECOSYSTEM.md`](./I18N-ECOSYSTEM.md)
+### Onboarding y credenciales
 
----
+| Item | Estado |
+|------|--------|
+| Alta negocio → contraseña temporal (auto o manual) | ✅ |
+| Email bienvenida con temp + enlace reset (Resend) | ✅ |
+| `POST /api/auth/forgot-password` + `reset-password` | ✅ |
+| Admin: editar email + reenviar reset | ✅ |
+| Tenant owner/manager: editar email + reenviar reset | ✅ |
+| UI `/forgot-password`, `/reset-password` | ✅ |
+| SQL `10-user-credentials` + migración SQLite/Postgres | ✅ |
 
-## Referencias
+### Pendiente operador (no código)
 
-- [`WHATSAPP-ROADMAP.md`](./WHATSAPP-ROADMAP.md)  
-- [`WHATSAPP-INTEGRATION.md`](./WHATSAPP-INTEGRATION.md)  
-- [`legal/whatsapp-meta-business-tools-base.md`](./legal/whatsapp-meta-business-tools-base.md)  
-- [`I18N-ECOSYSTEM.md`](./I18N-ECOSYSTEM.md)  
-- [`DAKINIS-HUB-VISION.md`](./DAKINIS-HUB-VISION.md)  
-- [`supabase/schemas/03-whatsapp-messages.sql`](./supabase/schemas/03-whatsapp-messages.sql)  
-- [`packages/shared-brand/`](../packages/shared-brand/)  
-- [`observability/SENTRY-SETUP.md`](./observability/SENTRY-SETUP.md)  
-- [`railway.env.example`](./railway.env.example)
+| Item | Acción |
+|------|--------|
+| Supabase SQL §1 | Ejecutar scripts (mín. `10`→`006b`→`99`) |
+| Railway Auth §3 | Vars + redeploy + rate limit |
+| Railway Front §4 | `API_UPSTREAM` + redeploy |
+| Railway §6 | Orden Back → Auth → Front |
+| Resend | Probar envío real (alta negocio en `/admin`) |

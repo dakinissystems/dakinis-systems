@@ -84,8 +84,9 @@ Si clonas solo este repo de orquestación, clona también los productos bajo `ap
 
 ## Modelo de cobro (actual)
 
-- **Dakinis StreamAutomator (Scheduler):** cobro online con Stripe.
-- **Resto de productos (core, auth, akoenet, etc.):** cobro por transferencia fuera de la plataforma.
+- **Dakinis One (Core):** planes BOS **29 / 79 / 149 €/mes** + implantación + servicios (Stripe 🔜). Detalle interno: [`docs/OPERATIONS.md`](./docs/OPERATIONS.md).
+- **Dakinis StreamAutomator:** cobro online con Stripe.
+- **AkoeNet y otros:** según producto; ver contratos y OPERATIONS.
 
 ## Documentación y scripts
 
@@ -93,7 +94,7 @@ Si clonas solo este repo de orquestación, clona también los productos bajo `ap
 - Workspace / control repo: [`docs/WORKSPACE-STRATEGY.md`](./docs/WORKSPACE-STRATEGY.md)
 - Gateway y contratos: [`docs/rules.md`](./docs/rules.md) + [`docs/contracts/`](./docs/contracts/)
 - Arquitectura: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) · ADRs: [`docs/adr/`](./docs/adr/)
-- Prod: [`docs/supabase/SETUP.md`](./docs/supabase/SETUP.md) · [`docs/PRODUCTION-CHECKLIST-TEMP.md`](./docs/PRODUCTION-CHECKLIST-TEMP.md)
+- Operaciones / prod: [`docs/OPERATIONS.md`](./docs/OPERATIONS.md) · [`docs/supabase/SETUP.md`](./docs/supabase/SETUP.md)
 - Docker local: [`docker/README.md`](./docker/README.md)
 
 ## Docker y gateway

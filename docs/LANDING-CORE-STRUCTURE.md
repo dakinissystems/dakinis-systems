@@ -1,9 +1,10 @@
 # Estructura Landing vs Core — unificación
 
+> **Audiencia:** control interno (operador). No publicar a clientes.  
 > **Actualizado:** 19 mayo 2026  
-> Comparativa de `apps/landing` (corporativo) y `platform/core/web` (Dakinis One) para decidir si conviene unificar y cómo.
+> Comparativa de `apps/landing` (corporativo) y `platform/core/web` (Dakinis One).
 
-Referencias: [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`docs/legal/README.md`](./legal/README.md) · [`DAKINIS-HUB-VISION.md`](./DAKINIS-HUB-VISION.md)
+Referencias: [`OPERATIONS.md`](./OPERATIONS.md) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`legal/README.md`](./legal/README.md)
 
 ---
 

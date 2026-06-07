@@ -1,12 +1,14 @@
 # Arquitectura — Dakinis Systems
 
+> **Audiencia:** control interno. Estado operativo y checklist: [`OPERATIONS.md`](./OPERATIONS.md).
+
 **Control repo** (`dakinis-systems`): Docker, gateway, docs. **Código de producto:** repos bajo `apps/` y `platform/` (ignorados en Git de la raíz). Ver [`WORKSPACE-STRATEGY.md`](./WORKSPACE-STRATEGY.md).
 
 ## Productos
 
 ```
 Dakinis Systems
-├── Dakinis One (Core)     → restaurantes / negocio local
+├── Dakinis One (Core)     → BOS multi-tenant (restaurante, clínica, retail…)
 ├── AkoeNet                → comunidades, voz, sockets
 └── StreamAutomator (SA)   → scheduler Twitch, Stripe online
 ```
@@ -38,7 +40,7 @@ dakinis-systems/
 | PostgreSQL | **Supabase** (pooler **6543**) — guía [`supabase/SETUP.md`](./supabase/SETUP.md) |
 | Compute | **Railway** |
 | Cache / eventos | **Redis** (Railway) |
-| Checklist | [`PRODUCTION-CHECKLIST-TEMP.md`](./PRODUCTION-CHECKLIST-TEMP.md) |
+| Operaciones / checklist | [`OPERATIONS.md`](./OPERATIONS.md) |
 
 ## Contratos HTTP
 

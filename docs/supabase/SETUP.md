@@ -1,5 +1,7 @@
 # Supabase + Railway — guía única
 
+> **Audiencia:** control interno. Checklist prod y tenants: [`OPERATIONS.md`](../OPERATIONS.md).
+
 **Arquitectura:** Railway (compute) + **Supabase PostgreSQL** (datos) + Railway **Redis** (eventos/cache).  
 **No** uses el plugin Postgres de Railway para Auth/Core (solo Supabase).
 
@@ -7,7 +9,7 @@
 |----------|--------|--------|
 | **StreamAutomator** | **SA** | App en `apps/streamautomator` — scheduler Twitch, API + workers en Railway |
 | **AkoeNet** | — | Comunidad/voz — proyecto Railway aparte |
-| **Core** | — | ERP restaurante (`platform/core`) |
+| **Core** | — | Dakinis One BOS (`platform/core`) |
 | **dakinis-auth** | IdP | Login central (`platform/auth`) |
 
 ---
@@ -21,9 +23,22 @@ Ejecutar en **SQL Editor**, una vez por entorno:
 | 1 | [`schemas/00-bootstrap-schemas.sql`](./schemas/00-bootstrap-schemas.sql) |
 | 2 | [`schemas/01-dakinis-auth.sql`](./schemas/01-dakinis-auth.sql) |
 | 3 | [`schemas/02-dakinis-core-prod.sql`](./schemas/02-dakinis-core-prod.sql) |
-| 4 | [`004-rls-lockdown-all.sql`](./004-rls-lockdown-all.sql) |
-| 5 | [`006-rls-policies-deny-api.sql`](./006-rls-policies-deny-api.sql) |
-| 6 | [`005-advisor-functions-storage.sql`](./005-advisor-functions-storage.sql) (opcional) |
+| 4 | [`schemas/03-whatsapp-messages.sql`](./schemas/03-whatsapp-messages.sql) |
+| 5 | [`schemas/04-crm-core.sql`](./schemas/04-crm-core.sql) |
+| 6 | [`schemas/05-tenant-intelligence.sql`](./schemas/05-tenant-intelligence.sql) |
+| 7 | [`schemas/06-tenant-intelligence-v2.sql`](./schemas/06-tenant-intelligence-v2.sql) |
+| 8 | [`schemas/07-bos-platform.sql`](./schemas/07-bos-platform.sql) |
+| 9 | [`schemas/08-telemetry.sql`](./schemas/08-telemetry.sql) |
+| 10 | [`schemas/09-feature-events.sql`](./schemas/09-feature-events.sql) |
+| 11 | [`schemas/10-user-credentials.sql`](./schemas/10-user-credentials.sql) |
+| 12 | [`004-rls-lockdown-all.sql`](./004-rls-lockdown-all.sql) |
+| 13 | [`006-rls-policies-deny-api.sql`](./006-rls-policies-deny-api.sql) (1ª vez) **o** [`006b-rls-policies-missing-tables.sql`](./006b-rls-policies-missing-tables.sql) |
+| 14 | [`005-advisor-functions-storage.sql`](./005-advisor-functions-storage.sql) (opcional) |
+| 15 | [`schemas/99-verify-all-tables.sql`](./schemas/99-verify-all-tables.sql) (diagnóstico) |
+
+Índice completo de tablas: [`schemas/README.md`](./schemas/README.md).
+
+**Tras migraciones Core nuevas** (`03`–`09` en [`schemas/`](./schemas/)): ejecutar de nuevo [`004-rls-lockdown-all.sql`](./004-rls-lockdown-all.sql) (habilita RLS en tablas nuevas) y luego [`006b-rls-policies-missing-tables.sql`](./006b-rls-policies-missing-tables.sql) (corrige advisor **RLS Enabled No Policy**). Alternativa: re-ejecutar `006` completo.
 
 **Staging:** copia `02-dakinis-core-prod.sql` cambiando `dakinis_core_prod` → `dakinis_core_dev` (no hace falta un tercer archivo en repo).
 
@@ -164,4 +179,4 @@ SQL: copia de `02` con schema `dakinis_core_dev`.
 | `dakinis_core_prod` | Core Back (prod) |
 | `dakinis_core_dev` | staging (opcional) |
 
-Checklist operativo: [`../PRODUCTION-CHECKLIST-TEMP.md`](../PRODUCTION-CHECKLIST-TEMP.md)
+Checklist operativo: [`../OPERATIONS.md`](../OPERATIONS.md)

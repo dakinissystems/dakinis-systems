@@ -3,7 +3,11 @@
 Desde **`D:\dakinis-systems\docker`** (esta carpeta):
 
 ```powershell
+# Desarrollo (puertos directos 4000–4003 + gateway :80)
 docker compose -f compose.full.yml -f compose.dev.yml up --build
+
+# Producción local (solo gateway :80 y :443)
+docker compose -f compose.full.yml -f compose.prod.yml up --build
 ```
 
 ## URLs (gateway Nginx en puerto 80)
@@ -11,13 +15,13 @@ docker compose -f compose.full.yml -f compose.dev.yml up --build
 | Prefijo | Servicio | Nota |
 | --- | --- | --- |
 | `/auth/` | `platform/auth` | Login, registro, `GET /auth/verify` (también usado por Nginx). |
-| `/core/` | `platform/core` API | **Requiere** `Authorization: Bearer <JWT>` (validación en el gateway). |
+| `/core/` | `platform/core` API | JWT validado en **Core** (Node), no en gateway. |
 | `/streamautomator/` | StreamAutomator API | JWT + rate limit en el borde; **múltiples rutas públicas** (webhooks, OAuth, streamer público, etc.) en [`gateway/routes/default.conf`](../gateway/routes/default.conf). |
 | `/akoenet/` | AkoeNet Server | Sin `auth_request` (Socket.IO y rutas abiertas vía gateway). |
 
 Ejemplos: `http://localhost/auth/login`, `http://localhost/core/api/...` (con token), `http://localhost:4001/api/health` (puerto directo, sin JWT).
 
-Puertos directos (sin gateway): `4000` auth, `4001` core, `4002` streamautomator, `4003` akoenet.
+Puertos directos al host: solo con overlay **`compose.dev.yml`** (`4000` auth, `4001` core, `4002` SA, `4003` akoenet). En **`compose.prod.yml`** solo se publican `80`/`443` del gateway.
 
 ## Entorno
 

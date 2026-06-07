@@ -32,6 +32,10 @@ CREATE TABLE IF NOT EXISTS dakinis_core_prod.users (
   totp_secret TEXT,
   totp_enabled BOOLEAN NOT NULL DEFAULT false,
   platform_user_id TEXT UNIQUE,
+  must_change_password BOOLEAN NOT NULL DEFAULT false,
+  password_reset_token_hash TEXT,
+  password_reset_expires_at TIMESTAMPTZ,
+  confirmed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_users_business ON dakinis_core_prod.users(business_id);

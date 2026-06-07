@@ -1,5 +1,7 @@
 # WhatsApp Business API en Dakinis One
 
+> **Audiencia:** control interno. Plan Pro, cuotas WA y exceso: [`OPERATIONS.md`](./OPERATIONS.md) §3.
+
 ## Seguridad
 
 - **Nunca** commitear `WHATSAPP_ACCESS_TOKEN` ni pegarlo en issues/chat.

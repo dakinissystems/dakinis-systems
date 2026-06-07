@@ -14,8 +14,8 @@ services:
       POSTGRES_USER: dakinis
       POSTGRES_PASSWORD: dakinis
       POSTGRES_DB: dakinis
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/init:/docker-entrypoint-initdb.d:ro
@@ -30,8 +30,8 @@ services:
     image: redis:7
     container_name: dakinis-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     networks: [dakinis]
 
   auth:
@@ -45,8 +45,8 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL_AUTH:-postgres://dakinis:dakinis@postgres:5432/dakinis}
       PORT: "4000"
-    ports:
-      - "4000:4000"
+    expose:
+      - "4000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,8 +79,8 @@ services:
       # Mismo SPA Vite habitual; evita clash de FRONTEND_URL compartido vía env_file.
       FRONTEND_URL: http://localhost:5173
       CORS_ORIGIN: http://localhost:5173
-    ports:
-      - "4001:4001"
+    expose:
+      - "4001"
     volumes:
       - core_sqlite:/app/data
     healthcheck:
@@ -111,8 +111,8 @@ services:
       # Twitch del Scheduler (prioridad sobre TWITCH_* genéricos del env_file).
       TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID_STREAMAUTOMATOR:-${TWITCH_CLIENT_ID:-}}
       TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET_STREAMAUTOMATOR:-${TWITCH_CLIENT_SECRET:-}}
-    ports:
-      - "4002:4002"
+    expose:
+      - "4002"
     depends_on:
       postgres:
         condition: service_healthy
@@ -150,8 +150,8 @@ services:
       # Twitch de AkoeNet (prioridad sobre TWITCH_* genéricos del env_file).
       TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID_AKOENET:-${TWITCH_CLIENT_ID:-}}
       TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET_AKOENET:-${TWITCH_CLIENT_SECRET:-}}
-    ports:
-      - "4003:4003"
+    expose:
+      - "4003"
     depends_on:
       postgres:
         condition: service_healthy
@@ -180,8 +180,8 @@ services:
       PORT: "4010"
       DATABASE_URL: file:/app/data/dev.db
       FITNESS_UPLOAD_ROOT: /app/data/uploads
-    ports:
-      - "4010:4010"
+    expose:
+      - "4010"
     volumes:
       - fitness_sqlite:/app/data
     healthcheck:
@@ -199,8 +199,8 @@ services:
     image: nginx:1.27-alpine
     container_name: dakinis-gateway
     restart: unless-stopped
-    ports:
-      - "80:80"
+    expose:
+      - "80"
     tmpfs:
       - /var/cache/nginx/auth
     volumes:

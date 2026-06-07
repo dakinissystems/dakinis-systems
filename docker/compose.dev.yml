@@ -1,9 +1,40 @@
 # Overlays de desarrollo — fusionar con compose.full.yml:
 #   docker compose -f compose.full.yml -f compose.dev.yml up --build
-# Añade aquí puertos extra, variables de debug, volúmenes de hot-reload, etc.
+#
+# Publica puertos en el host para depurar servicios sin pasar por el gateway.
 
 services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  auth:
+    ports:
+      - "4000:4000"
+
+  core-api:
+    ports:
+      - "4001:4001"
+
+  streamautomator-api:
+    ports:
+      - "4002:4002"
+
+  akoenet-backend:
+    ports:
+      - "4003:4003"
+
+  fitness-platform-api:
+    ports:
+      - "4010:4010"
+
   gateway:
     labels:
       - "dakinis.stack=full"
       - "dakinis.environment=development"
+    ports:
+      - "80:80"

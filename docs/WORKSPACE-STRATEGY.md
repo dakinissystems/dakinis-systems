@@ -1,5 +1,7 @@
 # Estrategia de workspace — multi-repo vs monorepo
 
+> **Audiencia:** control interno. Deploy y checklist: [`OPERATIONS.md`](./OPERATIONS.md).
+
 Este documento describe el estado del ecosistema bajo `D:\dakinis-systems`, las decisiones de diseño y los pasos operativos para mantener el árbol coherente.
 
 ## 1. Estado actual (control repo + multi-repo)
