@@ -3,7 +3,7 @@ import company from "./company.js";
 export const DAKINIS_CONTACT_EMAIL = company.contacts.general;
 
 /** E.164 sin + (override en build: VITE_CONTACT_WHATSAPP_PHONE). */
-const DAKINIS_WHATSAPP_PHONE_DEFAULT = "34600000000";
+const DAKINIS_WHATSAPP_PHONE_DEFAULT = "34637169174";
 
 /**
  * URL wa.me para la landing (y otros frontends Vite).

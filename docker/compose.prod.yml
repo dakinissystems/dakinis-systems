@@ -1,0 +1,8 @@
+# Overlay producción — solo expone el gateway (80/443).
+# Uso: docker compose -f compose.full.yml -f compose.prod.yml up -d
+
+services:
+  gateway:
+    ports:
+      - "80:80"
+      - "443:443"
