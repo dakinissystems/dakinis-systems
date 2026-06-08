@@ -1,5 +1,5 @@
 -- Verificación post-migración (solo lectura)
--- Ejecutar tras 00 → 09 (+ 004 + 006b). Debe devolver 0 filas en "FALTAN".
+-- Ejecutar tras 00 → 11 (+ 004 + 006b). Debe devolver 0 filas en "FALTAN".
 
 WITH expected AS (
   SELECT * FROM (VALUES
@@ -43,7 +43,9 @@ WITH expected AS (
     ('dakinis_core_prod', 'tenant_portal_settings'),
     ('dakinis_core_prod', 'tenant_knowledge_chunks'),
     ('dakinis_core_prod', 'tenant_feature_usage'),
-    ('dakinis_core_prod', 'tenant_feature_events')
+    ('dakinis_core_prod', 'tenant_feature_events'),
+    ('dakinis_core_prod', 'tenant_stock_locations'),
+    ('dakinis_core_prod', 'tenant_stock_lots')
   ) AS t(schema_name, table_name)
 ),
 present AS (

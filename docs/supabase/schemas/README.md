@@ -19,6 +19,7 @@
 | 08 | [`08-telemetry.sql`](./08-telemetry.sql) | `dakinis_core_prod` | `tenant_feature_usage` |
 | 09 | [`09-feature-events.sql`](./09-feature-events.sql) | `dakinis_core_prod` | `tenant_feature_events` |
 | 10 | [`10-user-credentials.sql`](./10-user-credentials.sql) | `dakinis_core_prod` | columnas `users`: reset, `must_change_password`, `confirmed_at` |
+| 11 | [`11-inventory-lots.sql`](./11-inventory-lots.sql) | `dakinis_core_prod` | `tenant_stock_locations`, `tenant_stock_lots`; columnas `tenant_stock_movements.lot_id`, `tenant_stock_items.barcode` |
 | 99 | [`99-verify-all-tables.sql`](./99-verify-all-tables.sql) | — | Diagnóstico (solo lectura) |
 
 ## Tablas `dakinis_core_prod` (39)
@@ -33,6 +34,7 @@
 | 07 | `tenant_subscriptions`, `tenant_invoices`, `tenant_usage`, `tenant_ai_usage_log`, `tenant_pending_actions`, `tenant_automation_rules`, `tenant_network_orders`, `tenant_portal_settings`, `tenant_knowledge_chunks` |
 | 08 | `tenant_feature_usage` |
 | 09 | `tenant_feature_events` |
+| 11 | `tenant_stock_locations`, `tenant_stock_lots` |
 
 ## Cobertura vs Core API
 
