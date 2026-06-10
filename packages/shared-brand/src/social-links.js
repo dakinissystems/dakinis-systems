@@ -7,19 +7,22 @@ const DAKINIS_WHATSAPP_PHONE_DEFAULT = "34637169174";
 
 /**
  * URL wa.me para la landing (y otros frontends Vite).
- * Prioridad: VITE_CONTACT_WHATSAPP_URL (URL completa) → teléfono + texto según idioma.
+ * Prioridad: `options.text` → VITE_CONTACT_WHATSAPP_URL (sin texto custom) → teléfono + texto según idioma.
  * @param {"es"|"en"} [locale]
+ * @param {{ text?: string }} [options]
  */
-export function dakinisContactWhatsappUrl(locale = "es") {
+export function dakinisContactWhatsappUrl(locale = "es", options = {}) {
+  const customText = String(options?.text || "").trim();
   const full = String(import.meta.env?.VITE_CONTACT_WHATSAPP_URL || "").trim();
-  if (full) return full;
+  if (full && !customText) return full;
 
   const phone = String(import.meta.env?.VITE_CONTACT_WHATSAPP_PHONE || DAKINIS_WHATSAPP_PHONE_DEFAULT).replace(
     /\D/g,
     ""
   );
   const text =
-    locale === "en" ? "Hello, I'd like to contact Dakinis Systems" : "Hola, quiero contactar con Dakinis Systems";
+    customText ||
+    (locale === "en" ? "Hello, I'd like to contact Dakinis Systems" : "Hola, quiero contactar con Dakinis Systems");
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 }
 
