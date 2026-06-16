@@ -1,18 +1,26 @@
-# Documentación — índice
+# Documentación Dakinis Systems
 
-Documentación del **control repo** (`dakinis-systems`). Separación clara:
+Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legales). El código de producto vive en repos separados (`dakinis-core`, `dakinis-landing`, etc.).
 
-| Tipo | Documentos |
-|------|------------|
-| **Control interno (operador)** | [`OPERATIONS.md`](./OPERATIONS.md) — único doc de estado, prod, tenants, precios BOS |
-| **Infra y datos** | [`supabase/SETUP.md`](./supabase/SETUP.md) · [`railway.env.example`](./railway.env.example) |
-| **Arquitectura** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`WORKSPACE-STRATEGY.md`](./WORKSPACE-STRATEGY.md) · [`LANDING-CORE-STRUCTURE.md`](./LANDING-CORE-STRUCTURE.md) |
-| **Contratos y gateway** | [`rules.md`](./rules.md) · [`contracts/`](./contracts/) |
-| **Producto (integraciones)** | [`WHATSAPP-INTEGRATION.md`](./WHATSAPP-INTEGRATION.md) · [`I18N-ECOSYSTEM.md`](./I18N-ECOSYSTEM.md) |
-| **Observabilidad** | [`observability/`](./observability/) |
-| **Decisiones** | [`adr/`](./adr/) |
-| **Cliente (legal)** | [`legal/`](./legal/) — privacidad, términos, avisos; no mezclar con OPERATIONS |
+## Para clientes e integradores
 
-**SQL Supabase:** `supabase/schemas/` (`00`→`09`) + `004` / `006` / `006b` — orden en [SETUP.md](./supabase/SETUP.md).
+| Recurso | Descripción |
+|---------|-------------|
+| [`legal/`](./legal/) | Plantillas legales (privacidad, términos, cookies, aviso legal, WhatsApp/Meta) |
+| [`contracts/`](./contracts/) | Contratos HTTP entre servicios (prefijos gateway) |
+| [`rules.md`](./rules.md) | Reglas al cambiar rutas públicas en el gateway |
 
-**Fusionados en OPERATIONS.md (eliminados):** `CORE-TENANTS-TEMP.md`, `PRODUCTION-CHECKLIST-TEMP.md`, `DAKINIS-HUB-VISION.md`, `RAILWAY-PRODUCTION.md`, `ARCHITECTURE-DECISIONS.md`, `DAKINIS-ESTRUCTURA-TEMP.md`, `SUPABASE-SECURITY.md`.
+## Infraestructura
+
+| Recurso | Descripción |
+|---------|-------------|
+| [`railway.env.example`](./railway.env.example) | Plantilla de variables (sin secretos) |
+| [`supabase/schemas/`](./supabase/schemas/) | Migraciones SQL Dakinis Core / Auth |
+| [`../docker/README.md`](../docker/README.md) | Stack local Docker |
+| [`../gateway/README.md`](../gateway/README.md) | API Gateway Nginx |
+
+## Operador interno
+
+| Recurso | Descripción |
+|---------|-------------|
+| [`PENDIENTES.md`](./PENDIENTES.md) | Checklist único de tareas abiertas (prod, Stripe, deploy) |

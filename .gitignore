@@ -5,6 +5,9 @@
 # --- Docs temporales locales (no versionar) ---
 docs/*-TEMP.md
 
+# --- Proyectos locales fuera del control repo ---
+/finanzas/
+
 # --- Secretos locales del stack Docker ---
 /docker/.env
 /docker/.env.dev
