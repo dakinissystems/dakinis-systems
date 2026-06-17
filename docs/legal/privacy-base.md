@@ -1,49 +1,73 @@
-# Política de privacidad (base corporativa)
+# Política de privacidad (sitio corporativo)
 
-**Última actualización:** ver `company.json`
+**Última actualización:** 19 mayo 2026
 
 ## 1. Responsable
 
-**Dakinis Systems** (nombre comercial de Christian Villar)  
-Privacidad: privacy@dakinis-systems.com
+| Campo | Dato |
+|-------|------|
+| **Titular / Operador** | Christian David Villar Colodro |
+| **Nombre comercial** | Dakinis Systems |
+| **NIF** | 18513473Z |
+| **Domicilio** | Málaga, España |
+| **País** | España |
+| **Privacidad** | privacy@dakinis-systems.com |
 
 ## 2. Qué datos tratamos
 
-- **Navegación:** dirección IP, tipo de navegador y logs técnicos del proveedor de hosting (seguridad y funcionamiento).
-- **Contacto:** si nos escribes por correo o formularios enlazados, tratamos el email y el contenido del mensaje para responder.
-- **No vendemos** datos personales ni usamos publicidad comportamental en el sitio corporativo.
+- **Navegación:** IP, tipo de navegador y logs técnicos del hosting (seguridad y funcionamiento).
+- **Contacto:** email y contenido del mensaje si nos escribes.
+- **No vendemos** datos personales ni usamos publicidad comportamental en este sitio.
 
 ## 3. Finalidad y base legal
 
-- Atender consultas comerciales (interés legítimo / medidas precontractuales).
-- Mantener la seguridad del sitio (interés legítimo).
-- Cumplir obligaciones legales cuando aplique.
+- Atender consultas (interés legítimo / medidas precontractuales).
+- Seguridad del sitio (interés legítimo).
+- Obligaciones legales cuando aplique.
 
-## 4. Conservación
+## 4. Encargados del tratamiento
 
-Conservamos los datos el tiempo necesario para la finalidad indicada y para atender posibles responsabilidades legales.
+**Solo compartimos datos personales con encargados** que ofrecen garantías contractuales y técnicas adecuadas conforme al RGPD (p. ej. hosting e infraestructura como Railway).
 
-## 5. Encargados
+## 5. Conservación
 
-Podemos usar proveedores de hosting e infraestructura (por ejemplo Railway u otros) que tratan datos por nuestra cuenta con obligaciones de confidencialidad.
+Ver [política de retención](./retention-policy-base.md). Resumen:
 
-## 6. Tus derechos (RGPD)
+- Datos de cuenta/contacto: mientras sea necesario para la finalidad.
+- Logs de seguridad: hasta 12 meses.
+- Comunicaciones de soporte: hasta 24 meses.
+- Facturación: según obligaciones fiscales.
 
-Puedes solicitar acceso, rectificación, supresión, oposición, limitación o portabilidad escribiendo a **privacy@dakinis-systems.com**.  
-También puedes reclamar ante la AEPD (www.aepd.es).
+## 6. Transferencias internacionales
 
-## 7. Cookies
+Algunos encargados pueden tratar datos **fuera del EEE**. Cuando proceda, usamos **CCT/SCC** u otras garantías equivalentes reconocidas por el RGPD.
 
-Ver la política de cookies del sitio. En el sitio corporativo no usamos cookies de analítica o publicidad por defecto.
+## 7. Tus derechos (RGPD)
 
-## 8. Productos vinculados
+Acceso, rectificación, supresión, oposición, limitación y **portabilidad** (copia en formato estructurado y de uso habitual) en **privacy@dakinis-systems.com** o el [canal de solicitudes de privacidad](./privacy-requests-base.md).
 
-Cada producto (Dakinis One, StreamAutomator, AkoeNet) tiene su propia política en su dominio. El tratamiento allí se rige por ese documento.
+Reclamación **AEPD**: https://www.aepd.es
 
-## 9. WhatsApp y Meta (Dakinis One)
+## 8. Menores
 
-Si el cliente usa **WhatsApp Business API** u otras **Herramientas empresariales de Meta** desde Dakinis One, aplican las [Condiciones de las herramientas empresariales de Meta](https://www.facebook.com/legal/terms/businesstools) y la política de privacidad de Core (secciones Comunicaciones / Meta). Ver [`whatsapp-meta-business-tools-base.md`](./whatsapp-meta-business-tools-base.md).
+Los servicios **no están dirigidos a personas menores de 14 años**.
 
-## 10. Cambios
+## 9. Cookies
 
-Publicaremos la versión vigente en esta página con la fecha de actualización.
+Ver [política de cookies](./cookies-base.md). No usamos analítica ni publicidad por defecto.
+
+## 10. Productos vinculados
+
+Cada producto (Dakinis One, StreamAutomator, AkoeNet) tiene política propia en su dominio.
+
+## 11. WhatsApp y Meta (Dakinis One)
+
+Si un cliente activa WhatsApp Business API u otras herramientas Meta desde Dakinis One, aplican las [Condiciones de Meta](https://www.facebook.com/legal/terms/businesstools). **Dakinis Systems no controla el tratamiento independiente de Meta.** El cliente debe revisar la documentación legal de Meta antes de activar integraciones. Ver [`whatsapp-meta-business-tools-base.md`](./whatsapp-meta-business-tools-base.md).
+
+## 12. Automatización e IA
+
+Ver [`ai-automation-base.md`](./ai-automation-base.md).
+
+## 13. Seguridad
+
+Ver [política de seguridad](./security-policy-base.md). Vulnerabilidades: security@dakinis-systems.com o legal@dakinis-systems.com

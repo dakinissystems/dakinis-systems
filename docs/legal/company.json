@@ -1,12 +1,23 @@
 {
-  "legalName": "Christian Villar",
+  "legalName": "Christian David Villar Colodro",
   "tradingName": "Dakinis Systems",
+  "taxId": "18513473Z",
+  "registeredAddress": "Málaga, España",
   "jurisdiction": "España",
   "countryCode": "ES",
+  "countryEn": "Spain",
+  "minAgeYears": 14,
   "contacts": {
     "general": "contacto@dakinis-systems.com",
     "legal": "legal@dakinis-systems.com",
-    "privacy": "privacy@dakinis-systems.com"
+    "privacy": "privacy@dakinis-systems.com",
+    "security": "security@dakinis-systems.com",
+    "safety": "safety@dakinis-systems.com"
+  },
+  "resend": {
+    "verifiedDomain": "streamautomator.com",
+    "defaultFrom": "Dakinis Systems <noreply@streamautomator.com>",
+    "inboundForward": "dakinissystems@gmail.com"
   },
   "sites": {
     "corporate": "https://dakinissystems.com/",
@@ -15,10 +26,16 @@
     "streamautomator": "https://streamautomator.com/",
     "akoenet": "https://akoenet.dakinissystems.com/"
   },
+  "privacyRequestsForm": {
+    "akoenetEs": "https://akoenet.dakinissystems.com/legal/privacidad-solicitudes",
+    "akoenetEn": "https://akoenet.dakinissystems.com/legal/privacy-requests"
+  },
+  "authorities": {
+    "aepdUrl": "https://www.aepd.es"
+  },
   "taglineI18n": {
     "es": "Transformamos negocios mediante software.",
     "en": "We transform businesses through software."
   },
-  "lastUpdated": "2026-06-03",
-  "notes": "Datos registrales (NIF/CIF, domicilio social) — completar en aviso legal cuando estén disponibles para publicación."
+  "lastUpdated": "2026-05-19"
 }

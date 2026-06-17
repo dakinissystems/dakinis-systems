@@ -1,23 +1,25 @@
-# Aviso legal (base corporativa)
+# Aviso legal (sitio corporativo)
 
-**Última actualización:** ver `company.json` → `lastUpdated`
+**Última actualización:** 19 mayo 2026 · Fuente: `company.json`
 
-## 1. Titular del sitio
+## 1. Titular del sitio (LSSI)
 
-**Dakinis Systems** es el nombre comercial de **Christian Villar**, con actividad en España.
-
-- Contacto: contacto@dakinis-systems.com
-- Consultas legales: legal@dakinis-systems.com
-
-*(Completar NIF/CIF y domicilio cuando se publiquen en el sitio.)*
+| Campo | Dato |
+|-------|------|
+| **Titular** | Christian David Villar Colodro |
+| **Nombre comercial** | Dakinis Systems |
+| **NIF** | 18513473Z |
+| **Domicilio** | Málaga, España |
+| **Correo** | legal@dakinis-systems.com |
+| **Contacto general** | contacto@dakinis-systems.com |
 
 ## 2. Objeto
 
-Este sitio presenta los servicios de desarrollo de software a medida y los productos del ecosistema Dakinis Systems.
+Este sitio presenta servicios de desarrollo de software a medida y los productos del ecosistema Dakinis Systems.
 
 ## 3. Propiedad intelectual
 
-Los contenidos, diseños, logotipos y código son titularidad de Dakinis Systems o de sus licenciantes. Queda prohibida su reproducción sin autorización.
+Los contenidos, diseños, logotipos y código son titularidad del titular o de sus licenciantes. Queda prohibida su reproducción sin autorización.
 
 ## 4. Enlaces a terceros
 
@@ -29,4 +31,4 @@ Dakinis Systems no se hace responsable del uso indebido de la información publi
 
 ## 6. Ley aplicable
 
-Salvo norma imperativa distinta, se aplica la legislación española. Para controversias, los tribunales que correspondan según la normativa de consumidores y usuarios.
+Legislación española. Para controversias, tribunales competentes según normativa de consumidores y usuarios.

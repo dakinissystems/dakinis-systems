@@ -1,25 +1,25 @@
-# Política de cookies (base — sitio corporativo)
+# Política de cookies (sitio corporativo)
 
-**Última actualización:** ver `company.json`
+**Última actualización:** 19 mayo 2026
 
-## Qué usamos
+## Qué usamos actualmente
 
-En **dakinissystems.com** (sitio corporativo) **no** instalamos por defecto:
+En **dakinissystems.com** **no instalamos por defecto**:
 
 - Google Analytics
 - Meta Pixel
 - herramientas de publicidad o heatmaps
 
+> **Actualmente** no usamos cookies de analítica ni publicidad. Si en el futuro añadimos herramientas como Plausible, Umami, Google Analytics o Meta Pixel, actualizaremos esta política y, cuando sea exigible, solicitaremos consentimiento.
+
 ## Almacenamiento estrictamente necesario
 
-El sitio puede usar almacenamiento local mínimo (por ejemplo preferencia de idioma) para que la página funcione. No requiere banner de consentimiento para cookies de analítica porque no las usamos.
+Preferencia de idioma en almacenamiento local. No requiere banner de analítica mientras no haya cookies no esenciales.
 
-## Si contactas por email
+## Contacto externo
 
-Al usar enlaces `mailto:` o WhatsApp (wa.me), aplican las políticas de tu proveedor de correo o de WhatsApp/Meta.
-
-Si usas **Dakinis One** con **WhatsApp Business API**, aplican además las [Condiciones de las herramientas empresariales de Meta](https://www.facebook.com/legal/terms/businesstools) y la política de privacidad de Core (véase `whatsapp-meta-business-tools-base.md`).
+Enlaces `mailto:` o WhatsApp (wa.me): aplican políticas de tu proveedor o de Meta/WhatsApp.
 
 ## Más información
 
-Política de privacidad del mismo sitio.
+[Política de privacidad](./privacy-base.md)

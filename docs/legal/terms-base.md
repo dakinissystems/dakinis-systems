@@ -1,26 +1,26 @@
-# Términos de uso (base — sitio corporativo)
+# Términos de uso (sitio corporativo)
 
-**Última actualización:** ver `company.json`
+**Última actualización:** 19 mayo 2026
 
 ## 1. Uso del sitio
 
-Al usar este sitio aceptas estos términos. Si no estás de acuerdo, no uses el sitio.
+Al usar este sitio aceptas estos términos.
 
-## 2. Naturaleza del sitio
+## 2. Naturaleza
 
-Es un sitio informativo sobre servicios y productos. No constituye por sí solo un contrato de desarrollo; los proyectos se formalizan por escrito.
+Sitio informativo. Los proyectos se formalizan por escrito.
 
 ## 3. Propiedad intelectual
 
-Los contenidos están protegidos. No copies ni redistribuyas sin permiso.
+Contenidos protegidos. No copies sin permiso.
 
 ## 4. Enlaces externos
 
-No somos responsables del contenido de sitios de terceros enlazados.
+No somos responsables del contenido de sitios de terceros.
 
 ## 5. Limitación de responsabilidad
 
-El sitio se ofrece “tal cual”. No garantizamos disponibilidad ininterrumpida.
+El sitio se ofrece «tal cual».
 
 ## 6. Contacto
 

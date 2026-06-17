@@ -34,7 +34,7 @@
 El cliente declara y garantiza, entre otras (según Meta):
 
 1. **Base legal y permisos** para compartir datos con Meta (RGPD / LOPDGDD y normativa aplicable).
-2. **No** datos de menores de 13 años ni categorías prohibidas (salud, financiera, SSN, tarjetas, etc.).
+2. **No** datos de menores de **14 años** ni categorías prohibidas (salud, financiera, SSN, tarjetas, etc.).
 3. **Aviso transparente** en web/app: uso de tecnologías de terceros (incl. Meta) para medición y publicidad; cómo optar out (p. ej. https://www.aboutads.info/choices , https://www.youronlinechoices.eu/ ).
 4. **Consentimiento** previo donde la ley lo exija (p. ej. cookies en UE) antes de almacenar cookies Meta en dispositivos de usuarios finales.
 5. **Notificación** a Dakinis y colaboración ante reclamaciones relacionadas con el uso de herramientas Meta.
@@ -56,6 +56,8 @@ El cliente declara y garantiza, entre otras (según Meta):
 | Cliente (tenant) | **Responsable** frente a sus clientes; debe cumplir Meta Business Tools Terms al activar WhatsApp |
 | Dakinis Systems | Proveedor de plataforma; tratamiento según contrato y política de privacidad de Dakinis One |
 | Meta | **Encargado** / **corresponsable** según el tipo de dato y la herramienta (ver condiciones Meta y DPA) |
+
+**Dakinis Systems no controla el tratamiento independiente de Meta.** Los clientes deben revisar la documentación legal de Meta antes de activar integraciones.
 
 ## Estado producto Dakinis One
 

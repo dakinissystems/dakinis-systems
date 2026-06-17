@@ -2,9 +2,11 @@ import { dakinisPickLocaleString } from "./i18n.js";
 
 /** Fuente de verdad de marca (sincronizar con docs/legal/company.json). */
 const company = {
-  legalName: "Christian Villar",
+  legalName: "Christian David Villar Colodro",
   tradingName: "Dakinis Systems",
   productLineName: "Dakinis One",
+  taxId: "18513473Z",
+  registeredAddress: "Málaga, España",
   tagline: "Transformamos negocios mediante software.",
   taglineI18n: {
     es: "Transformamos negocios mediante software.",
@@ -15,7 +17,9 @@ const company = {
   contacts: {
     general: "contacto@dakinis-systems.com",
     legal: "legal@dakinis-systems.com",
-    privacy: "privacy@dakinis-systems.com"
+    privacy: "privacy@dakinis-systems.com",
+    security: "security@dakinis-systems.com",
+    safety: "safety@dakinis-systems.com"
   },
   sites: {
     corporate: "https://dakinissystems.com/",

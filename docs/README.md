@@ -6,7 +6,7 @@ Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legale
 
 | Recurso | Descripción |
 |---------|-------------|
-| [`legal/`](./legal/) | Plantillas legales (privacidad, términos, cookies, aviso legal, WhatsApp/Meta) |
+| [`legal/`](./legal/) | Plantillas legales **bilingües** (ES + EN): privacidad, LSSI, cookies, canal RGPD, copyright, seguridad |
 | [`contracts/`](./contracts/) | Contratos HTTP entre servicios (prefijos gateway) |
 | [`rules.md`](./rules.md) | Reglas al cambiar rutas públicas en el gateway |
 
