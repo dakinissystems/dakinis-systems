@@ -18,6 +18,8 @@ Datos del titular: [`company.json`](./company.json) · NIF **18513473Z**
 | `transparency-dsa-base.md` | `transparency-dsa-base.en.md` | Transparencia DSA (AkoeNet) |
 | `whatsapp-meta-business-tools-base.md` | *(resumen EN al final)* | Meta / WhatsApp |
 
+Flujos implementados: [`LEGAL-FLOWS.md`](./LEGAL-FLOWS.md)
+
 **Implementación en apps:**
 
 | Producto | Ruta código |
