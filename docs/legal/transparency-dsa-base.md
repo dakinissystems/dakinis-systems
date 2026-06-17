@@ -1,4 +1,4 @@
-# Informe de transparencia (DSA) — AkoeNet
+﻿# Informe de transparencia (DSA) — AkoeNet
 
 **Última actualización:** 19 mayo 2026
 
@@ -15,6 +15,6 @@ Período de referencia: desde el lanzamiento público hasta la fecha de esta pub
 
 > **Nota:** Durante este período no se recibieron reportes registrados en el sistema de moderación. Actualizaremos este informe periódicamente.
 
-Contacto DSA / legal: legal@dakinis-systems.com · Privacidad: privacy@dakinis-systems.com
+Contacto DSA / legal: legal@dakinissystems.com · Privacidad: privacy@dakinissystems.com
 
 Formulario de solicitudes de privacidad: https://akoenet.dakinissystems.com/legal/privacidad-solicitudes

@@ -1,4 +1,4 @@
-# Security policy (Dakinis ecosystem)
+﻿# Security policy (Dakinis ecosystem)
 
 **Last updated:** 19 May 2026 · **Scope:** Dakinis Systems, Dakinis One, AkoeNet, StreamAutomator, and shared infrastructure
 
@@ -24,8 +24,8 @@
 
 Report security vulnerabilities or incidents to:
 
-- **security@dakinis-systems.com**
-- **legal@dakinis-systems.com**
+- **help@dakinissystems.com**
+- **legal@dakinissystems.com**
 
 B2B customers under a master agreement follow agreed notification timelines.
 

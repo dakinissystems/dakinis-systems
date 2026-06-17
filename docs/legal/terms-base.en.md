@@ -1,4 +1,4 @@
-# Terms of use (corporate site)
+﻿# Terms of use (corporate site)
 
 **Last updated:** 19 May 2026
 
@@ -24,4 +24,4 @@ The site is provided «as is».
 
 ## 6. Contact
 
-legal@dakinis-systems.com
+legal@dakinissystems.com

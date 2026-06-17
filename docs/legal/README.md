@@ -1,4 +1,4 @@
-# Legal — fuente de verdad corporativa
+﻿# Legal — fuente de verdad corporativa
 
 Plantillas **bilingües (ES + EN)**. Revisar con asesoría legal antes de producción.  
 Datos del titular: [`company.json`](./company.json) · NIF **18513473Z**
@@ -26,11 +26,20 @@ Flujos implementados: [`LEGAL-FLOWS.md`](./LEGAL-FLOWS.md)
 |----------|-------------|
 | Landing | `apps/landing/src/i18n/legal-content.js` |
 | Core | `platform/core/web/src/locales/legal-core.js` |
-| AkoeNet | `apps/akoenet/docs/legal/*.md` + `/legal/privacy-requests`, `/legal/privacidad-solicitudes` |
+| AkoeNet | `apps/akoenet/Client/docs/legal/*.md` + `/legal/privacy-requests`, `/legal/privacidad-solicitudes` |
 | StreamAutomator | `apps/streamautomator/docs/legal/*.md` |
 
-**Emails públicos:** `@dakinis-systems.com` · seguridad: `security@`, `safety@`
+**Emails públicos:** Cloudflare Email Routing → `@dakinissystems.com` reenvía a Gmail. **Catch-all desactivado.** StreamAutomator: `@streamautomator.com`.
 
-**Resend:** dominio `streamautomator.com` → `RESEND_FROM=Dakinis Systems <noreply@streamautomator.com>`
+| Uso | Email | `company.json` |
+|-----|-------|----------------|
+| Contacto general | hello@dakinissystems.com | `contactEmail` / `contacts.general` |
+| Ayuda / soporte | help@dakinissystems.com | `supportEmail` / `contacts.support` |
+| Facturación / Stripe | billing@dakinissystems.com | `billingEmail` / `contacts.billing` |
+| Privacidad RGPD | privacy@dakinissystems.com | `privacyEmail` / `contacts.privacy` |
+| Legal | legal@dakinissystems.com | `legalEmail` / `contacts.legal` |
+| Administración interna | admin@dakinissystems.com | `adminEmail` / `contacts.admin` |
+
+**Resend (no cambiar):** dominio `streamautomator.com` → `RESEND_FROM=Dakinis Systems <noreply@streamautomator.com>` (Core), `akonet@` (AkoeNet), `no-reply@` (StreamAutomator API).
 
 **No usar el término DPO** en textos públicos; usar «canal de solicitudes de privacidad / Privacy Requests channel».

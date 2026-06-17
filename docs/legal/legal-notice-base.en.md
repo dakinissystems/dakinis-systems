@@ -1,4 +1,4 @@
-# Legal notice (corporate site)
+﻿# Legal notice (corporate site)
 
 **Last updated:** 19 May 2026 · Source: `company.json`
 
@@ -10,8 +10,8 @@
 | **Trading name** | Dakinis Systems |
 | **Tax ID (NIF)** | 18513473Z |
 | **Address** | Málaga, Spain |
-| **Email** | legal@dakinis-systems.com |
-| **General contact** | contacto@dakinis-systems.com |
+| **Email** | legal@dakinissystems.com |
+| **General contact** | hello@dakinissystems.com |
 
 ## 2. Purpose
 

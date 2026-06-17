@@ -1,4 +1,4 @@
-# Data retention policy
+﻿# Data retention policy
 
 **Last updated:** 19 May 2026 · **Controller:** Christian David Villar Colodro (Dakinis Systems) · Tax ID (NIF) 18513473Z
 
@@ -13,4 +13,4 @@ Indicative periods; may vary due to legal duty, litigation, or security needs.
 | **Moderation / DSA records** | As long as needed to handle the case and meet legal duties |
 | **Backup copies** | Operational backup cycle; purged per procedure |
 
-Erasure requests: [privacy requests channel](./privacy-requests-base.en.md) or privacy@dakinis-systems.com
+Erasure requests: [privacy requests channel](./privacy-requests-base.en.md) or privacy@dakinissystems.com

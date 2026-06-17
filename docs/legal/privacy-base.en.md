@@ -1,4 +1,4 @@
-# Privacy policy (corporate site)
+﻿# Privacy policy (corporate site)
 
 **Last updated:** 19 May 2026
 
@@ -11,7 +11,8 @@
 | **Tax ID (NIF)** | 18513473Z |
 | **Address** | Málaga, Spain |
 | **Country** | Spain |
-| **Privacy** | privacy@dakinis-systems.com |
+| **Privacy** | privacy@dakinissystems.com |
+| **Billing** | billing@dakinissystems.com |
 
 ## 2. Data we process
 
@@ -36,7 +37,7 @@ See [retention policy](./retention-policy-base.en.md). Summary:
 - Account/contact data: as long as needed for the purpose.
 - Security logs: up to 12 months.
 - Support communications: up to 24 months.
-- Billing: per applicable tax obligations.
+- Billing / payment inquiries: **billing@dakinissystems.com** · retention per applicable tax obligations.
 
 ## 6. International transfers
 
@@ -44,7 +45,7 @@ Some processors may process data **outside the EEA**. Where applicable, we use *
 
 ## 7. Your rights (GDPR)
 
-Access, rectification, erasure, objection, restriction, and **portability** (copy in a structured, commonly used format) at **privacy@dakinis-systems.com** or via our [privacy requests channel](./privacy-requests-base.en.md).
+Access, rectification, erasure, objection, restriction, and **portability** (copy in a structured, commonly used format) at **privacy@dakinissystems.com** or via our [privacy requests channel](./privacy-requests-base.en.md).
 
 Complaint to the **AEPD**: https://www.aepd.es
 
@@ -70,4 +71,4 @@ See [`ai-automation-base.en.md`](./ai-automation-base.en.md).
 
 ## 13. Security
 
-See [security policy](./security-policy-base.en.md). Vulnerabilities: security@dakinis-systems.com or legal@dakinis-systems.com
+See [security policy](./security-policy-base.en.md). Vulnerabilities: help@dakinissystems.com or legal@dakinissystems.com

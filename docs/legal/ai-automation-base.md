@@ -1,4 +1,4 @@
-# Uso de sistemas automatizados e IA (base)
+﻿# Uso de sistemas automatizados e IA (base)
 
 **Última actualización:** 19 mayo 2026
 
@@ -8,4 +8,4 @@ Estos sistemas **asisten** la toma de decisiones humana y **no están destinados
 
 El operador (**Christian David Villar Colodro**, Dakinis Systems) mantiene supervisión operativa y puede desactivar o limitar funciones automatizadas.
 
-Consultas: privacy@dakinis-systems.com
+Consultas: privacy@dakinissystems.com

@@ -1,4 +1,4 @@
-# Automated systems and AI (base)
+﻿# Automated systems and AI (base)
 
 **Last updated:** 19 May 2026
 
@@ -8,4 +8,4 @@ These systems **assist** human decision-making and are **not intended** to produ
 
 The operator (**Christian David Villar Colodro**, Dakinis Systems) maintains operational oversight and may disable or limit automated features.
 
-Contact: privacy@dakinis-systems.com
+Contact: privacy@dakinissystems.com

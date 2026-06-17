@@ -1,4 +1,4 @@
-# Acuerdo de nivel de servicio (SLA) — Dakinis One
+﻿# Acuerdo de nivel de servicio (SLA) — Dakinis One
 
 **Última actualización:** 19 mayo 2026
 
@@ -17,7 +17,7 @@
 | **Respuesta general** | 48 horas laborables |
 | **Incidentes críticos** (indisponibilidad general del tenant o pérdida de acceso masiva) | 24 horas |
 
-Contacto: privacy@dakinis-systems.com · legal@dakinis-systems.com
+Contacto: help@dakinissystems.com · legal@dakinissystems.com
 
 ## Exclusiones
 

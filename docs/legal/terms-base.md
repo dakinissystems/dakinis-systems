@@ -1,4 +1,4 @@
-# Términos de uso (sitio corporativo)
+﻿# Términos de uso (sitio corporativo)
 
 **Última actualización:** 19 mayo 2026
 
@@ -24,4 +24,4 @@ El sitio se ofrece «tal cual».
 
 ## 6. Contacto
 
-legal@dakinis-systems.com
+legal@dakinissystems.com

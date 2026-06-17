@@ -8,11 +8,14 @@
   "jurisdiction": "España",
   "countryCode": "ES",
   "contacts": {
-    "general": "contacto@dakinis-systems.com",
-    "legal": "legal@dakinis-systems.com",
-    "privacy": "privacy@dakinis-systems.com",
-    "security": "security@dakinis-systems.com",
-    "safety": "safety@dakinis-systems.com"
+    "general": "hello@dakinissystems.com",
+    "support": "help@dakinissystems.com",
+    "billing": "billing@dakinissystems.com",
+    "legal": "legal@dakinissystems.com",
+    "privacy": "privacy@dakinissystems.com",
+    "admin": "admin@dakinissystems.com",
+    "security": "help@dakinissystems.com",
+    "safety": "legal@dakinissystems.com"
   },
   "sites": {
     "corporate": "https://dakinissystems.com/",

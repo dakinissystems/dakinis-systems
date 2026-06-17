@@ -1,4 +1,4 @@
-# Canal de solicitudes de privacidad (RGPD)
+﻿# Canal de solicitudes de privacidad (RGPD)
 
 **Última actualización:** 19 mayo 2026
 
@@ -6,7 +6,7 @@
 
 ## Contacto
 
-**Email:** privacy@dakinis-systems.com
+**Email:** privacy@dakinissystems.com
 
 **Formulario (AkoeNet):** https://akoenet.dakinissystems.com/legal/privacidad-solicitudes
 

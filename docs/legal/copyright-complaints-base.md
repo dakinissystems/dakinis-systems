@@ -1,4 +1,4 @@
-# Reclamaciones de copyright y propiedad intelectual
+﻿# Reclamaciones de copyright y propiedad intelectual
 
 **Última actualización:** 19 mayo 2026
 
@@ -12,7 +12,7 @@ Para contenido alojado en servicios Dakinis (p. ej. AkoeNet, mensajes de usuario
 
 ## Por email
 
-**legal@dakinis-systems.com** — asunto: «Reclamación copyright / PI»
+**legal@dakinissystems.com** — asunto: «Reclamación copyright / PI»
 
 ## Información mínima
 

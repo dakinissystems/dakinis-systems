@@ -1,4 +1,4 @@
-# Aviso legal (sitio corporativo)
+﻿# Aviso legal (sitio corporativo)
 
 **Última actualización:** 19 mayo 2026 · Fuente: `company.json`
 
@@ -10,8 +10,8 @@
 | **Nombre comercial** | Dakinis Systems |
 | **NIF** | 18513473Z |
 | **Domicilio** | Málaga, España |
-| **Correo** | legal@dakinis-systems.com |
-| **Contacto general** | contacto@dakinis-systems.com |
+| **Correo** | legal@dakinissystems.com |
+| **Contacto general** | hello@dakinissystems.com |
 
 ## 2. Objeto
 

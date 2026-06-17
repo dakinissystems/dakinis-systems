@@ -1,4 +1,4 @@
-# Privacy requests channel (GDPR)
+﻿# Privacy requests channel (GDPR)
 
 **Last updated:** 19 May 2026
 
@@ -6,7 +6,7 @@
 
 ## Contact
 
-**Email:** privacy@dakinis-systems.com
+**Email:** privacy@dakinissystems.com
 
 **Form (AkoeNet):** https://akoenet.dakinissystems.com/legal/privacy-requests
 

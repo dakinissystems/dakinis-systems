@@ -1,4 +1,4 @@
-# Política de privacidad (sitio corporativo)
+﻿# Política de privacidad (sitio corporativo)
 
 **Última actualización:** 19 mayo 2026
 
@@ -11,7 +11,8 @@
 | **NIF** | 18513473Z |
 | **Domicilio** | Málaga, España |
 | **País** | España |
-| **Privacidad** | privacy@dakinis-systems.com |
+| **Privacidad** | privacy@dakinissystems.com |
+| **Facturación** | billing@dakinissystems.com |
 
 ## 2. Qué datos tratamos
 
@@ -36,7 +37,7 @@ Ver [política de retención](./retention-policy-base.md). Resumen:
 - Datos de cuenta/contacto: mientras sea necesario para la finalidad.
 - Logs de seguridad: hasta 12 meses.
 - Comunicaciones de soporte: hasta 24 meses.
-- Facturación: según obligaciones fiscales.
+- Facturación / consultas de pago: **billing@dakinissystems.com** · conservación según obligaciones fiscales.
 
 ## 6. Transferencias internacionales
 
@@ -44,7 +45,7 @@ Algunos encargados pueden tratar datos **fuera del EEE**. Cuando proceda, usamos
 
 ## 7. Tus derechos (RGPD)
 
-Acceso, rectificación, supresión, oposición, limitación y **portabilidad** (copia en formato estructurado y de uso habitual) en **privacy@dakinis-systems.com** o el [canal de solicitudes de privacidad](./privacy-requests-base.md).
+Acceso, rectificación, supresión, oposición, limitación y **portabilidad** (copia en formato estructurado y de uso habitual) en **privacy@dakinissystems.com** o el [canal de solicitudes de privacidad](./privacy-requests-base.md).
 
 Reclamación **AEPD**: https://www.aepd.es
 
@@ -70,4 +71,4 @@ Ver [`ai-automation-base.md`](./ai-automation-base.md).
 
 ## 13. Seguridad
 
-Ver [política de seguridad](./security-policy-base.md). Vulnerabilidades: security@dakinis-systems.com o legal@dakinis-systems.com
+Ver [política de seguridad](./security-policy-base.md). Vulnerabilidades: help@dakinissystems.com o legal@dakinissystems.com

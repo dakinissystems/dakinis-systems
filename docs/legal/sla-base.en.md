@@ -1,4 +1,4 @@
-# Service level agreement (SLA) — Dakinis One
+﻿# Service level agreement (SLA) — Dakinis One
 
 **Last updated:** 19 May 2026
 
@@ -17,7 +17,7 @@
 | **General response** | 48 business hours |
 | **Critical incidents** (general tenant outage or widespread loss of access) | 24 hours |
 
-Contact: privacy@dakinis-systems.com · legal@dakinis-systems.com
+Contact: help@dakinissystems.com · legal@dakinissystems.com
 
 ## Exclusions
 

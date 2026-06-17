@@ -1,4 +1,4 @@
-# Copyright & intellectual property complaints
+﻿# Copyright & intellectual property complaints
 
 **Last updated:** 19 May 2026
 
@@ -12,7 +12,7 @@ For content hosted on Dakinis services (e.g. AkoeNet, user messages, shared file
 
 ## By email
 
-**legal@dakinis-systems.com** — subject: «Copyright / IP complaint»
+**legal@dakinissystems.com** — subject: «Copyright / IP complaint»
 
 ## Minimum information
 
