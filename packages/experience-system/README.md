@@ -38,4 +38,4 @@ import { skeletonStylesheet } from "@dakinis/shared-loading";
 import { ILLUSTRATION_KEYS } from "@dakinis/shared-illustrations";
 ```
 
-Principios de producto: [`docs/experience-principles.md`](../../docs/experience-principles.md).
+Principios de producto: ver §11 en [`docs/DAKINIS-ESTRUCTURA-TEMP.md`](../../docs/DAKINIS-ESTRUCTURA-TEMP.md) y paquetes `shared-ux` / `shared-brand`.

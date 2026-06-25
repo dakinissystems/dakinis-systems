@@ -15,13 +15,12 @@ Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legale
 | Recurso | Descripción |
 |---------|-------------|
 | [`railway.env.example`](./railway.env.example) | Plantilla de variables (sin secretos) |
-| [`supabase/schemas/`](./supabase/schemas/) | Migraciones SQL Dakinis Core / Auth |
+| [`supabase/schemas/`](./supabase/schemas/) | Migraciones SQL legacy Core / Auth |
+| [`supabase/migrations/`](./supabase/migrations/) | Multi-schema 000–019 + [`RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md) |
 | [`../docker/README.md`](../docker/README.md) | Stack local Docker |
+| [`../scripts/clone-akoenet.ps1`](../scripts/clone-akoenet.ps1) | Clonar `akoenet-client` + `akoenet-backend` en `apps/akoenet/` |
 | [`../gateway/README.md`](../gateway/README.md) | API Gateway Nginx |
 
 ## Operador interno
 
-| Recurso | Descripción |
-|---------|-------------|
-| [`ROADMAP-PLATAFORMA.md`](./ROADMAP-PLATAFORMA.md) | **Roadmap vivo** — Railway, Supabase, GitHub, fases 0–17 |
-| [`PENDIENTES.md`](./PENDIENTES.md) | Checklist único de tareas abiertas (prod, Stripe, deploy) |
+Roadmap, pendientes, estructura de todos los sistemas y estado Supabase: **`DAKINIS-ESTRUCTURA-TEMP.md`** (local, no versionado — ver cabecera del archivo).

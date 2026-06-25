@@ -31,7 +31,7 @@ Prefijos HTTP en dev (`localhost:80`): `/auth/`, `/core/`, `/streamautomator/`, 
 | [`docs/legal/`](./docs/legal/) | Textos legales (privacidad, términos, cookies) |
 | [`docs/contracts/`](./docs/contracts/) | Contratos HTTP del ecosistema |
 | [`docs/rules.md`](./docs/rules.md) | Reglas al modificar rutas del gateway |
-| [`docs/PENDIENTES.md`](./docs/PENDIENTES.md) | Checklist operativo interno |
+| [`docs/DAKINIS-ESTRUCTURA-TEMP.md`](./docs/DAKINIS-ESTRUCTURA-TEMP.md) | Roadmap + pendientes internos (local) |
 
 ## Integración
 
