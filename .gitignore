@@ -7,6 +7,7 @@ docs/*-TEMP.md
 
 # --- Proyectos locales fuera del control repo ---
 /finanzas/
+/hub/
 
 # --- Secretos locales del stack Docker ---
 /docker/.env

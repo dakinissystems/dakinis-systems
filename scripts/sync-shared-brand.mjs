@@ -14,6 +14,7 @@ const targets = [
   path.join(root, "apps", "landing", "packages", "shared-brand"),
   path.join(root, "platform", "core", "packages", "shared-brand"),
   path.join(root, "finanzas", "packages", "shared-brand"),
+  path.join(root, "hub", "packages", "shared-brand"),
 ];
 
 function copyRecursive(from, to) {
@@ -38,6 +39,7 @@ for (const dest of targets) {
     console.warn("SKIP (no existe carpeta padre):", dest);
     continue;
   }
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
   copyRecursive(src, dest);
   console.log("OK:", dest);
   ok += 1;

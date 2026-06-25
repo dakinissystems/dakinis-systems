@@ -13,6 +13,7 @@ const packages = ["shared-ux", "shared-loading", "shared-illustrations", "shared
 const targets = [
   path.join(root, "platform", "core", "packages"),
   path.join(root, "finanzas", "packages"),
+  path.join(root, "hub", "packages"),
 ];
 
 function copyRecursive(from, to) {
@@ -38,6 +39,7 @@ for (const pkg of packages) {
       console.warn("SKIP destino padre:", destRoot);
       continue;
     }
+    fs.mkdirSync(destRoot, { recursive: true });
     const dest = path.join(destRoot, pkg);
     copyRecursive(src, dest);
     console.log("OK:", dest);

@@ -36,6 +36,11 @@ export const DAKINIS_URL_AKOENET = dakinisNormalizeUrl(
   company.sites.akoenet
 );
 
+export const DAKINIS_URL_LIFEFLOW = dakinisNormalizeUrl(
+  import.meta.env?.VITE_LIFEFLOW_APP_URL,
+  company.sites.lifeflow
+);
+
 /** @deprecated Use DAKINIS_URL_CORPORATE */
 export const DAKINIS_MARKETING_SITE_URL = DAKINIS_URL_CORPORATE;
 

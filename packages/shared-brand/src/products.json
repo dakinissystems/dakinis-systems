@@ -13,9 +13,44 @@
       }
     },
     "landingPath": "/productos/dakinis-one",
-    "corePath": "/hub",
-    "external": false,
+    "corePath": "/",
+    "urlKey": "core",
+    "external": true,
     "sso": { "mode": "core-session", "productKey": "one" }
+  },
+  {
+    "id": "lifeflow",
+    "name": "LifeFlow",
+    "role": "product",
+    "status": "active",
+    "summary": "Planificación de flujo de caja y score financiero personal.",
+    "i18n": {
+      "name": { "es": "LifeFlow", "en": "LifeFlow" },
+      "summary": {
+        "es": "Planificación de flujo de caja y score financiero personal.",
+        "en": "Cash-flow planning and personal financial score."
+      }
+    },
+    "urlKey": "lifeflow",
+    "landingPath": "/productos/lifeflow",
+    "external": true,
+    "sso": { "mode": "idp-exchange", "productKey": "lifeflow", "ssoReady": false }
+  },
+  {
+    "id": "dnd",
+    "name": "DND 5e",
+    "role": "product",
+    "status": "roadmap",
+    "summary": "Gestor de fichas D&D 5e (local, sin backend).",
+    "i18n": {
+      "name": { "es": "DND 5e", "en": "DND 5e" },
+      "summary": {
+        "es": "Gestor de fichas D&D 5e (local, sin backend).",
+        "en": "D&D 5e character manager (local, no backend)."
+      }
+    },
+    "external": true,
+    "sso": { "mode": "none", "productKey": "dnd" }
   },
   {
     "id": "streamautomator",

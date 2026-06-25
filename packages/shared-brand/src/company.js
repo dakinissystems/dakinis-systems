@@ -27,7 +27,8 @@ const company = {
   sites: {
     corporate: "https://dakinissystems.com/",
     core: "https://core.dakinissystems.com/",
-    hub: "https://core.dakinissystems.com/hub",
+    hub: "https://hub.dakinissystems.com/",
+    lifeflow: "http://localhost:5174/",
     streamautomator: "https://streamautomator.com/",
     akoenet: "https://akoenet.dakinissystems.com/"
   },

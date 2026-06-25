@@ -1,12 +1,14 @@
-import { DAKINIS_URL_AKOENET, DAKINIS_URL_STREAMAUTOMATOR } from "./product-urls.js";
+import { DAKINIS_URL_AKOENET, DAKINIS_URL_CORE, DAKINIS_URL_LIFEFLOW, DAKINIS_URL_STREAMAUTOMATOR } from "./product-urls.js";
 import { dakinisGetProduct } from "./products.js";
 
 export const DAKINIS_ECOSYSTEM_SESSION_KEY = "dakinis_ecosystem_sso_v1";
 export const DAKINIS_IDP_TOKENS_KEY = "dakinis_idp_tokens_v1";
 
 const URL_BY_KEY = {
+  core: DAKINIS_URL_CORE,
   streamautomator: DAKINIS_URL_STREAMAUTOMATOR,
-  akoenet: DAKINIS_URL_AKOENET
+  akoenet: DAKINIS_URL_AKOENET,
+  lifeflow: DAKINIS_URL_LIFEFLOW
 };
 
 /**
