@@ -8,7 +8,7 @@
 
 **Email:** privacy@dakinissystems.com
 
-**Formulario (AkoeNet):** https://akoenet.dakinissystems.com/legal/privacidad-solicitudes
+**Formulario (AkoeNet):** https://akoenet.dakinissystems.com/legal/dpo
 
 ## Derechos que puedes ejercer
 

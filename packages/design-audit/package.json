@@ -1,0 +1,13 @@
+{
+  "name": "@dakinis/design-audit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "audit": "node src/audit.mjs",
+    "audit:core": "node src/audit.mjs platform/core/web finanzas/web/src/styles"
+  },
+  "exports": {
+    ".": "./src/audit.mjs"
+  }
+}

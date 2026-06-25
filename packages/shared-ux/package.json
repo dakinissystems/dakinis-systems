@@ -1,0 +1,20 @@
+{
+  "name": "@dakinis/shared-ux",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./motion": "./src/motion.js",
+    "./empty-states": "./src/empty-states.js",
+    "./hub-nav": "./src/hub-nav.js",
+    "./command-palette": "./src/command-palette.js",
+    "./widgets": "./src/widgets.js",
+    "./react/EmptyState.jsx": "./src/react/EmptyState.jsx",
+    "./react/CommandPalette.jsx": "./src/react/CommandPalette.jsx",
+    "./react/HubWidgetGrid.jsx": "./src/react/HubWidgetGrid.jsx",
+    "./react/NotificationsCenter.jsx": "./src/react/NotificationsCenter.jsx",
+    "./react/ActivityTimeline.jsx": "./src/react/ActivityTimeline.jsx",
+    "./react/AiContextualHint.jsx": "./src/react/AiContextualHint.jsx"
+  }
+}

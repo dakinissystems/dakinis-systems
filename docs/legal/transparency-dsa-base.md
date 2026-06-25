@@ -17,4 +17,4 @@ Período de referencia: desde el lanzamiento público hasta la fecha de esta pub
 
 Contacto DSA / legal: legal@dakinissystems.com · Privacidad: privacy@dakinissystems.com
 
-Formulario de solicitudes de privacidad: https://akoenet.dakinissystems.com/legal/privacidad-solicitudes
+Formulario de solicitudes de privacidad: https://akoenet.dakinissystems.com/legal/dpo

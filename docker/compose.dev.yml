@@ -32,6 +32,10 @@ services:
     ports:
       - "4010:4010"
 
+  ai:
+    ports:
+      - "4020:4020"
+
   gateway:
     labels:
       - "dakinis.stack=full"

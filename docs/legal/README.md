@@ -17,6 +17,8 @@ Datos del titular: [`company.json`](./company.json) · NIF **18513473Z**
 | `ai-automation-base.md` | `ai-automation-base.en.md` | IA / automatización |
 | `transparency-dsa-base.md` | `transparency-dsa-base.en.md` | Transparencia DSA (AkoeNet) |
 | `whatsapp-meta-business-tools-base.md` | *(resumen EN al final)* | Meta / WhatsApp |
+| `TENANT-ACCESS-AND-SUSPENSION.md` | `TENANT-ACCESS-AND-SUSPENSION.en.md` | Acceso y suspensión tenant (Dakinis One) |
+| `refund-policy-base.md` | `refund-policy-base.en.md` | Reembolsos Stripe (ecosistema) |
 
 Flujos implementados: [`LEGAL-FLOWS.md`](./LEGAL-FLOWS.md)
 
@@ -24,10 +26,12 @@ Flujos implementados: [`LEGAL-FLOWS.md`](./LEGAL-FLOWS.md)
 
 | Producto | Ruta código |
 |----------|-------------|
-| Landing | `apps/landing/src/i18n/legal-content.js` |
-| Core | `platform/core/web/src/locales/legal-core.js` |
-| AkoeNet | `apps/akoenet/Client/docs/legal/*.md` + `/legal/privacy-requests`, `/legal/privacidad-solicitudes` |
-| StreamAutomator | `apps/streamautomator/docs/legal/*.md` |
+| Landing | `apps/landing/src/i18n/legal-content.js` — `/privacidad`, `/aviso-legal`, `/cookies`, `/terminos` |
+| Core | `platform/core/web/src/locales/legal-core.js` — `/privacy`, `/terms`, `/legal`, `/cookies`, `/security`, `/sla` |
+| AkoeNet | `apps/akoenet/Client/docs/legal/*.md` + `/legal/dpo` (alias `/legal/privacidad-solicitudes`) |
+| StreamAutomator | `apps/streamautomator/apps/web` — `/privacy`, `/terms`, `/cookies`, `/aviso-legal`, `/legal/*` |
+| LifeFlow | `finanzas/web` — `/legal/*` (público) |
+| DND | `DND/src/legal/content.ts` — pantalla in-app |
 
 **Emails públicos:** Cloudflare Email Routing → `@dakinissystems.com` reenvía a Gmail. **Catch-all desactivado.** StreamAutomator: `@streamautomator.com`.
 

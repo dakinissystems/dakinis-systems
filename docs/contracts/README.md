@@ -8,5 +8,6 @@ Referencias **ligeras** (legibles por humanos y CI) para rutas y nombres expuest
 | [`core-api.json`](./core-api.json) | `/core/` → `platform/core` API |
 | [`streamautomator-api.json`](./streamautomator-api.json) | `/streamautomator/` → StreamAutomator API |
 | [`akoenet-backend.json`](./akoenet-backend.json) | `/akoenet/` → AkoeNet Server |
+| [`dakinis-ai.json`](./dakinis-ai.json) | `/ai/` → `platform/ai` (Dakinis AI Platform) |
 
 Actualiza estos JSON cuando cambies prefijos en [`gateway/routes/`](../../gateway/routes/) o contratos públicos de las APIs.

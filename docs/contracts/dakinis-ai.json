@@ -1,0 +1,40 @@
+{
+  "service": "dakinis-ai",
+  "gatewayPrefix": "/ai/",
+  "upstreamContainer": "ai:4020",
+  "publicUrl": "https://ai.dakinissystems.com",
+  "description": "Plataforma IA compartida — chat, RAG, agentes por producto. No expone datos de negocio de Core/LifeFlow; recibe contexto JSON y devuelve narrativa o clasificaciones.",
+  "auth": {
+    "serviceKeyHeader": "Authorization: Bearer <DAKINIS_AI_SERVICE_KEY>",
+    "productHeader": "X-Dakinis-Product",
+    "userHeader": "X-Dakinis-User-Id"
+  },
+  "publicRoutePrefixes": ["/ai/v1/health"],
+  "examplePaths": [
+    "/ai/health",
+    "/ai/v1/health",
+    "/ai/v1/chat",
+    "/ai/v1/lifeflow/coach",
+    "/ai/v1/rag/query",
+    "/ai/v1/core/advisor",
+    "/ai/v1/content/generate",
+    "/ai/v1/moderation/classify",
+    "/ai/v1/channels/summary"
+  ],
+  "implementedPaths": [
+    "/health",
+    "/v1/health",
+    "/v1/chat",
+    "/v1/lifeflow/coach",
+    "/v1/rag/index",
+    "/v1/rag/query",
+    "/v1/core/advisor"
+  ],
+  "consumers": [
+    { "product": "lifeflow", "path": "POST /v1/lifeflow/coach", "status": "implemented" },
+    { "product": "lifeflow", "path": "POST /v1/rag/query", "status": "planned" },
+    { "product": "core", "path": "POST /v1/core/advisor", "status": "implemented" },
+    { "product": "streamautomator", "path": "POST /v1/content/generate", "status": "planned" },
+    { "product": "akoenet", "path": "POST /v1/moderation/classify", "status": "planned" }
+  ]
+}

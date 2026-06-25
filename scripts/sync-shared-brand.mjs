@@ -12,7 +12,8 @@ const src = path.join(root, "packages", "shared-brand");
 
 const targets = [
   path.join(root, "apps", "landing", "packages", "shared-brand"),
-  path.join(root, "platform", "core", "packages", "shared-brand")
+  path.join(root, "platform", "core", "packages", "shared-brand"),
+  path.join(root, "finanzas", "packages", "shared-brand"),
 ];
 
 function copyRecursive(from, to) {

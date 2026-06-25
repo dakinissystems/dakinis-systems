@@ -23,4 +23,5 @@ Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legale
 
 | Recurso | Descripción |
 |---------|-------------|
+| [`ROADMAP-PLATAFORMA.md`](./ROADMAP-PLATAFORMA.md) | **Roadmap vivo** — Railway, Supabase, GitHub, fases 0–17 |
 | [`PENDIENTES.md`](./PENDIENTES.md) | Checklist único de tareas abiertas (prod, Stripe, deploy) |
