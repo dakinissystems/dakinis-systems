@@ -1,0 +1,20 @@
+{
+  "service": "finanzas-api",
+  "repo": "lifeflow",
+  "gatewayPrefix": "/finance/",
+  "publicRoutes": [
+    "GET /finance/health",
+    "POST /finance/api/auth/login",
+    "POST /finance/api/auth/register"
+  ],
+  "protectedRoutes": "JWT Bearer en la app (sin auth_request IdP en gateway por ahora)",
+  "upstreamProd": {
+    "api": "https://api.finance.dakinissystems.com",
+    "web": "https://finance.dakinissystems.com"
+  },
+  "notes": [
+    "Web SPA: VITE_API_URL=https://api.finance.dakinissystems.com en Railway LifeFlow Web",
+    "Hub tile: hub.dakinissystems.com/finance → proxy gateway a finance.dakinissystems.com",
+    "Repo interno lifeflow; marca pública Dakinis Finanzas"
+  ]
+}

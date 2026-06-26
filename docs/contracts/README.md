@@ -9,5 +9,6 @@ Referencias **ligeras** (legibles por humanos y CI) para rutas y nombres expuest
 | [`streamautomator-api.json`](./streamautomator-api.json) | `/streamautomator/` → StreamAutomator API |
 | [`akoenet-backend.json`](./akoenet-backend.json) | `/akoenet/` → AkoeNet Server |
 | [`dakinis-ai.json`](./dakinis-ai.json) | `/ai/` → `platform/ai` (Dakinis AI Platform) |
+| [`finance-api.json`](./finance-api.json) | `/finance/` → LifeFlow API + web (repo `lifeflow`) |
 
 Actualiza estos JSON cuando cambies prefijos en [`gateway/routes/`](../../gateway/routes/) o contratos públicos de las APIs.

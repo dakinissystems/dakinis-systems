@@ -40,7 +40,7 @@ export const DAKINIS_BRAND_COLORS = {
 export const DAKINIS_PRODUCT_THEMES = {
   core: { accent: "#2dd4bf", accentDark: "#14b8a6", label: "Dakinis One" },
   landing: { accent: "#22d3ee", accentDark: "#06b6d4", label: "Corporate" },
-  lifeflow: { accent: "#3dd6c6", accentDark: "#2a9d8f", premium: "#a78bfa", label: "LifeFlow" },
+  lifeflow: { accent: "#3dd6c6", accentDark: "#2a9d8f", premium: "#a78bfa", label: "Finanzas" },
   streamautomator: { accent: "#3b82f6", accentDark: "#2563eb", label: "StreamAutomator" },
   akoenet: { accent: "#7c3aed", accentDark: "#6d28d9", link: "#3b82f6", label: "AkoeNet" },
   dnd: { accent: "#4a7c9e", accentDark: "#5d94b8", gold: "#c9a227", label: "D&D 5e" },

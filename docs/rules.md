@@ -70,6 +70,7 @@ When moving off `localhost`, a typical layout is:
 | Core API | `api.dakinis.example/core/` |
 | StreamAutomator | `api.dakinis.example/streamautomator/` |
 | AkoeNet | `api.dakinis.example/akoenet/` or dedicated host |
+| Dakinis Finanzas | `finance.dakinissystems.com` · API `api.finance.dakinissystems.com` · gateway `/finance/` |
 
 TLS termination and DNS live in front of this repo’s Nginx gateway or a cloud load balancer; only paths and upstream names need to stay consistent with compose.
 

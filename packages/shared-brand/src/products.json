@@ -20,19 +20,19 @@
   },
   {
     "id": "lifeflow",
-    "name": "LifeFlow",
+    "name": "Dakinis Finanzas",
     "role": "product",
     "status": "active",
-    "summary": "Planificación de flujo de caja y score financiero personal.",
+    "summary": "Flujo de caja, metas de ahorro y radar financiero personal.",
     "i18n": {
-      "name": { "es": "LifeFlow", "en": "LifeFlow" },
+      "name": { "es": "Dakinis Finanzas", "en": "Dakinis Finances" },
       "summary": {
-        "es": "Planificación de flujo de caja y score financiero personal.",
-        "en": "Cash-flow planning and personal financial score."
+        "es": "Flujo de caja, metas de ahorro y radar financiero personal.",
+        "en": "Cash flow, savings goals and personal financial radar."
       }
     },
     "urlKey": "lifeflow",
-    "landingPath": "/productos/lifeflow",
+    "landingPath": "/productos/finanzas",
     "external": true,
     "sso": { "mode": "idp-exchange", "productKey": "lifeflow", "ssoReady": false }
   },
