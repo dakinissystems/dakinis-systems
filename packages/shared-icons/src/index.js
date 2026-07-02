@@ -7,6 +7,22 @@
 
 export const DAKINIS_ICON_LIBRARY = "lucide";
 
+/** Tamaños estándar (px) — prohibido usar otros en UI nueva. */
+export const ICON_SIZES = {
+  xs: 16,
+  sm: 20,
+  md: 24,
+  lg: 32,
+  xl: 48,
+};
+
+/** Pesos de trazo Lucide. */
+export const ICON_WEIGHTS = {
+  outline: 1.75,
+  filled: 2.5,
+  duotone: 2,
+};
+
 /** Iconos canónicos Hub Navigation Language. */
 export const HUB_ICONS = {
   home: "home",
@@ -22,6 +38,7 @@ export const PRODUCT_ICONS = {
   lifeflow: "heart-pulse",
   streamautomator: "radio",
   akoenet: "messages-square",
+  tabletop: "swords",
   ai: "sparkles",
   hub: "layout-grid",
   dnd: "swords",
@@ -37,24 +54,17 @@ export const STATE_ICONS = {
   empty: "inbox",
 };
 
-/** Tamaños estándar (px). */
-export const ICON_SIZES = {
-  sm: 16,
-  md: 20,
-  lg: 24,
-  xl: 32,
-};
-
 /**
  * @param {string} name — nombre Lucide kebab-case
- * @param {{ size?: keyof typeof ICON_SIZES; className?: string }} [opts]
+ * @param {{ size?: keyof typeof ICON_SIZES; weight?: keyof typeof ICON_WEIGHTS; className?: string }} [opts]
  */
 export function iconProps(name, opts = {}) {
   const size = ICON_SIZES[opts.size || "md"] || ICON_SIZES.md;
+  const strokeWidth = ICON_WEIGHTS[opts.weight || "outline"] || ICON_WEIGHTS.outline;
   return {
     name,
     size,
-    strokeWidth: 2,
+    strokeWidth,
     className: opts.className || "",
     "aria-hidden": true,
   };

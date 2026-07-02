@@ -1,0 +1,17 @@
+{
+  "name": "@dakinis/shared-des",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dakinis Experience System — plataforma de experiencia unificada",
+  "exports": {
+    ".": "./src/index.js",
+    "./foundations": "./src/foundations/index.js",
+    "./components": "./src/components/index.js",
+    "./patterns": "./src/patterns/index.js",
+    "./layouts": "./src/layouts/index.js",
+    "./charts": "./src/charts/index.js",
+    "./branding": "./src/branding/index.js",
+    "./ai": "./src/ai/index.js"
+  }
+}

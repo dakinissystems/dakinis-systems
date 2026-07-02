@@ -2,12 +2,15 @@ import productsJson from "./products.json" with { type: "json" };
 import {
   DAKINIS_URL_AKOENET,
   DAKINIS_URL_CORE,
+  DAKINIS_URL_LIFEFLOW,
   DAKINIS_URL_STREAMAUTOMATOR
 } from "./product-urls.js";
 
 const URL_RESOLVERS = {
+  core: DAKINIS_URL_CORE,
   streamautomator: DAKINIS_URL_STREAMAUTOMATOR,
-  akoenet: DAKINIS_URL_AKOENET
+  akoenet: DAKINIS_URL_AKOENET,
+  lifeflow: DAKINIS_URL_LIFEFLOW
 };
 
 /**

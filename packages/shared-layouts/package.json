@@ -1,0 +1,16 @@
+{
+  "name": "@dakinis/shared-layouts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shell y layouts oficiales DES — AppShell, dashboard template",
+  "exports": {
+    ".": "./src/index.js",
+    "./AppShell.jsx": "./src/AppShell.jsx",
+    "./AppShell.css": "./src/AppShell.css",
+    "./dashboard-template": "./src/dashboard-template.js"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}

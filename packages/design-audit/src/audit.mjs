@@ -7,7 +7,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DAKINIS_SURFACES, DAKINIS_AI_ACCENT, DAKINIS_PRODUCT_THEMES } from "../../shared-brand/src/colors.js";
+import { DAKINIS_SURFACES } from "../../shared-brand/src/surfaces.js";
+import { DAKINIS_AI_ACCENT, DAKINIS_PRODUCT_THEMES } from "../../shared-brand/src/colors.js";
+import { DAKINIS_SPACING_ALLOWED } from "../../shared-brand/src/spacing.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");
@@ -18,7 +20,7 @@ const ALLOWED_HEX = new Set([
   ...Object.values(DAKINIS_PRODUCT_THEMES).flatMap((t) =>
     Object.values(t).filter((v) => typeof v === "string" && v.startsWith("#"))
   ),
-  "#2dd4bf", "#14b8a6", "#22d3ee", "#06b6d4", "#3dd6c6", "#2a9d8f",
+  "#2dd4bf", "#14b8a6", "#22d3ee", "#06b6d4", "#22c55e", "#16a34a",
   "#3b82f6", "#2563eb", "#7c3aed", "#6d28d9", "#a78bfa", "#a855f7",
   "#4a7c9e", "#5d94b8", "#c9a227", "#059669", "#047857",
   "#f4a261", "#e76f6f", "#52b788", "#f97316", "#f87171",

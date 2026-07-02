@@ -1,13 +1,5 @@
-/** Tipos de eventos del bus (Core → productos / AI). */
-export const DAKINIS_EVENTS = {
-  USER_CREATED: "user.created",
-  USER_PLAN_CHANGED: "user.plan_changed",
-  PAYMENT_SUCCEEDED: "billing.payment_succeeded",
-  TENANT_SUSPENDED: "tenant.suspended",
-  AI_REQUEST: "ai.request",
-  AI_RESPONSE: "ai.response",
-  AI_USAGE: "ai.usage",
-};
+/** Tipos de eventos del bus (Core → productos / AI). Ver events.js para catálogo completo. */
+export { DAKINIS_EVENTS, EVENT_BUS_QUEUES, createPlatformEvent } from "./events.js";
 
 /** Feature flags IA (env: DAKINIS_AI_FLAGS=AI_CHAT,AI_COACH). */
 export const AI_FEATURE_FLAGS = {

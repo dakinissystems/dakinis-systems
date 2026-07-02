@@ -32,9 +32,14 @@ export const DAKINIS_COMMANDS = [
 export const SEARCH_SCOPES = [
   { id: "all", label: "Todo" },
   { id: "customers", label: "Clientes", product: "core" },
+  { id: "invoices", label: "Facturas", product: "core" },
+  { id: "orders", label: "Pedidos", product: "core" },
   { id: "documents", label: "Documentos" },
+  { id: "messages", label: "Mensajes", product: "akoenet" },
   { id: "chats", label: "Chats", product: "akoenet" },
+  { id: "events", label: "Eventos" },
   { id: "knowledge", label: "Ayuda y docs", rag: true },
+  { id: "ai", label: "Preguntas IA", rag: true },
   { id: "settings", label: "Configuración" },
 ];
 

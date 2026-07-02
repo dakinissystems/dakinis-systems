@@ -5,6 +5,13 @@
 
 export const DAKINIS_ANALYTICS_EVENTS = Object.freeze({
   CTA_DAKINIS_ONE_CLICKED: "cta_dakinis_one_clicked",
+  LANDING_PAGE_VIEW: "landing_page_view",
+  LANDING_PRICING_CLICKED: "landing_pricing_clicked",
+  LANDING_SAVINGS_CALC_CLICKED: "landing_savings_calc_clicked",
+  CORE_PAGE_VIEW: "core_page_view",
+  CORE_PRICING_VIEW: "core_pricing_view",
+  SIGNUP_STARTED: "signup_started",
+  SIGNUP_COMPLETED: "signup_completed",
   HUB_OPENED: "hub_opened",
   LOGIN_STARTED: "login_started",
   LOGIN_SUCCESS: "login_success",
@@ -45,6 +52,13 @@ function dakinisGaEvent(name, props) {
   gtag("event", name, props);
 }
 
+function dakinisMetaPixelEvent(name, props) {
+  if (typeof window === "undefined") return;
+  const fbq = window.fbq;
+  if (typeof fbq !== "function") return;
+  fbq("trackCustom", name, props);
+}
+
 /**
  * Carga gtag.js si `VITE_GA_MEASUREMENT_ID` está definido (Core, Landing, etc.).
  */
@@ -67,6 +81,31 @@ export function dakinisInitAnalytics() {
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
   document.head.appendChild(script);
+
+  const pixelId =
+    (typeof import.meta !== "undefined" && import.meta.env?.VITE_META_PIXEL_ID) || "";
+  const pid = String(pixelId).trim();
+  if (pid && !window.__dakinisMetaPixelInitialized) {
+    window.__dakinisMetaPixelInitialized = true;
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = !0;
+      n.version = "2.0";
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = !0;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+    window.fbq("init", pid);
+    window.fbq("track", "PageView");
+  }
 }
 
 export function dakinisTrackEvent(name, props = {}) {
@@ -81,4 +120,5 @@ export function dakinisTrackEvent(name, props = {}) {
   dakinisPushDataLayer(name, payload);
   dakinisSentryBreadcrumb(name, payload);
   dakinisGaEvent(name, payload);
+  dakinisMetaPixelEvent(name, payload);
 }

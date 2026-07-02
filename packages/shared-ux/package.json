@@ -8,6 +8,7 @@
     "./motion": "./src/motion.js",
     "./empty-states": "./src/empty-states.js",
     "./hub-nav": "./src/hub-nav.js",
+    "./hub-dashboard": "./src/hub-dashboard.js",
     "./command-palette": "./src/command-palette.js",
     "./widgets": "./src/widgets.js",
     "./react/EmptyState.jsx": "./src/react/EmptyState.jsx",
@@ -15,6 +16,14 @@
     "./react/HubWidgetGrid.jsx": "./src/react/HubWidgetGrid.jsx",
     "./react/NotificationsCenter.jsx": "./src/react/NotificationsCenter.jsx",
     "./react/ActivityTimeline.jsx": "./src/react/ActivityTimeline.jsx",
-    "./react/AiContextualHint.jsx": "./src/react/AiContextualHint.jsx"
+    "./react/AiContextualHint.jsx": "./src/react/AiContextualHint.jsx",
+    "./react/AiMessage.jsx": "./src/react/AiMessage.jsx",
+    "./react/AiSuggestion.jsx": "./src/react/AiSuggestion.jsx",
+    "./react/AiThinking.jsx": "./src/react/AiThinking.jsx",
+    "./react/AiConfidence.jsx": "./src/react/AiConfidence.jsx",
+    "./react/AiSources.jsx": "./src/react/AiSources.jsx",
+    "./react/AiWarning.jsx": "./src/react/AiWarning.jsx",
+    "./react/AiAction.jsx": "./src/react/AiAction.jsx",
+    "./react/AiTimeline.jsx": "./src/react/AiTimeline.jsx"
   }
 }

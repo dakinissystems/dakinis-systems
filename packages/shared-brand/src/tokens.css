@@ -1,19 +1,37 @@
 /**
- * Dakinis Experience — variables CSS compartidas.
- * Copiar o importar en cada app web.
+ * Dakinis Experience System — variables CSS compartidas.
+ * Importar en cada app web: @import "@dakinis/shared-brand/tokens.css";
  */
-:root {
-  /* Superficies unificadas */
-  --dakinis-bg: #08111d;
-  --dakinis-surface: #122840;
-  --dakinis-panel: #17344e;
+:root,
+:root[data-theme="dark"] {
+  /* Surface 0–4 */
+  --dakinis-surface-0: #08111d;
+  --dakinis-surface-1: #122840;
+  --dakinis-surface-2: #17344e;
+  --dakinis-surface-3: #1e4060;
+  --dakinis-surface-4: #254b6e;
+
+  /* Legacy aliases */
+  --dakinis-bg: var(--dakinis-surface-0);
+  --dakinis-surface: var(--dakinis-surface-1);
+  --dakinis-panel: var(--dakinis-surface-2);
   --dakinis-text: #f0f4f9;
   --dakinis-muted: #b8c6d9;
   --dakinis-line: #23415f;
 
+  /* Semánticos */
+  --dakinis-primary: #2dd4bf;
+  --dakinis-primary-dark: #14b8a6;
+  --dakinis-secondary: #64748b;
+  --dakinis-success: #22c55e;
+  --dakinis-warning: #f59e0b;
+  --dakinis-danger: #ef4444;
+  --dakinis-info: #3b82f6;
+  --dakinis-neutral: #94a3b8;
+
   /* Marca Core / Hub */
-  --dakinis-brand: #2dd4bf;
-  --dakinis-brand-dark: #14b8a6;
+  --dakinis-brand: var(--dakinis-primary);
+  --dakinis-brand-dark: var(--dakinis-primary-dark);
 
   /* IA — mismo color en todo el ecosistema */
   --dakinis-ai: #7c3aed;
@@ -21,36 +39,83 @@
   --dakinis-ai-glow: rgba(124, 58, 237, 0.22);
   --dakinis-ai-border: rgba(168, 85, 247, 0.45);
 
-  /* Producto (override por app en :root[data-product="lifeflow"]) */
+  /* Producto (override por app en data-product) */
   --dakinis-accent: var(--dakinis-brand);
   --dakinis-accent-dark: var(--dakinis-brand-dark);
 
-  /* Layout tokens */
+  /* Espaciado oficial (px) */
+  --dakinis-space-xs: 4px;
+  --dakinis-space-sm: 8px;
+  --dakinis-space-md: 12px;
+  --dakinis-space-base: 16px;
+  --dakinis-space-lg: 24px;
+  --dakinis-space-xl: 32px;
+  --dakinis-space-2xl: 48px;
+  --dakinis-space-3xl: 64px;
+
+  /* Radius */
   --dakinis-radius-sm: 8px;
   --dakinis-radius-md: 12px;
   --dakinis-radius-lg: 16px;
   --dakinis-radius-card: 16px;
+
+  /* Sombras */
   --dakinis-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.28);
   --dakinis-shadow-ai: 0 0 24px rgba(124, 58, 237, 0.25);
 
   /* Motion */
-  --dakinis-duration: 180ms;
-  --dakinis-duration-slow: 220ms;
+  --dakinis-motion-hover: 150ms;
+  --dakinis-motion-dropdown: 200ms;
+  --dakinis-motion-modal: 250ms;
+  --dakinis-motion-navigation: 300ms;
+  --dakinis-motion-sidebar: 250ms;
   --dakinis-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dakinis-duration: var(--dakinis-motion-hover);
+  --dakinis-duration-slow: var(--dakinis-motion-modal);
+
+  /* Tipografía */
+  --dakinis-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --dakinis-font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 
   /* A11y */
   --dakinis-focus-ring: 0 0 0 3px rgba(45, 212, 191, 0.45);
   --dakinis-focus-ring-ai: 0 0 0 3px rgba(124, 58, 237, 0.45);
 }
 
-:root[data-product="core"] {
+:root[data-theme="light"] {
+  --dakinis-surface-0: #f8fafc;
+  --dakinis-surface-1: #ffffff;
+  --dakinis-surface-2: #ffffff;
+  --dakinis-surface-3: #f1f5f9;
+  --dakinis-surface-4: #e2e8f0;
+  --dakinis-text: #0f172a;
+  --dakinis-muted: #64748b;
+  --dakinis-line: #cbd5e1;
+  --dakinis-shadow-card: 0 8px 32px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="high-contrast"] {
+  --dakinis-surface-0: #000000;
+  --dakinis-surface-1: #0a0a0a;
+  --dakinis-surface-2: #141414;
+  --dakinis-surface-3: #1a1a1a;
+  --dakinis-surface-4: #222222;
+  --dakinis-text: #ffffff;
+  --dakinis-muted: #e2e8f0;
+  --dakinis-line: #ffffff;
+  --dakinis-primary: #5eead4;
+  --dakinis-focus-ring: 0 0 0 3px #ffffff;
+}
+
+:root[data-product="core"],
+:root[data-product="hub"] {
   --dakinis-accent: #2dd4bf;
   --dakinis-accent-dark: #14b8a6;
 }
 
 :root[data-product="lifeflow"] {
-  --dakinis-accent: #3dd6c6;
-  --dakinis-accent-dark: #2a9d8f;
+  --dakinis-accent: #22c55e;
+  --dakinis-accent-dark: #16a34a;
 }
 
 :root[data-product="landing"] {
@@ -68,15 +133,66 @@
   --dakinis-accent-dark: #6d28d9;
 }
 
+:root[data-product="tabletop"],
+:root[data-product="dnd"] {
+  --dakinis-accent: #c9a227;
+  --dakinis-accent-dark: #a8841f;
+}
+
+/* Shell oficial */
+.dakinis-shell {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  min-height: 100dvh;
+  background: var(--dakinis-surface-0);
+  color: var(--dakinis-text);
+  font-family: var(--dakinis-font-sans);
+}
+
+.dakinis-shell__sidebar {
+  width: 16rem;
+  background: var(--dakinis-surface-1);
+  border-right: 1px solid var(--dakinis-line);
+}
+
+.dakinis-shell__main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  min-width: 0;
+}
+
+.dakinis-shell__content {
+  flex: 1;
+  padding: var(--dakinis-space-lg);
+  overflow: auto;
+}
+
+@media (max-width: 1023px) {
+  .dakinis-shell {
+    grid-template-columns: 1fr;
+  }
+  .dakinis-shell__sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform var(--dakinis-motion-sidebar) var(--dakinis-ease);
+  }
+  .dakinis-shell--sidebar-open .dakinis-shell__sidebar {
+    transform: translateX(0);
+  }
+}
+
 /* Tarjeta Dakinis unificada */
 .dakinis-card {
-  background: var(--dakinis-surface);
+  background: var(--dakinis-surface-1);
   border: 1px solid var(--dakinis-line);
   border-radius: var(--dakinis-radius-card);
   box-shadow: var(--dakinis-shadow-card);
-  padding: 1rem 1.15rem;
-  transition: transform var(--dakinis-duration) var(--dakinis-ease),
-    box-shadow var(--dakinis-duration) var(--dakinis-ease);
+  padding: var(--dakinis-space-base) var(--dakinis-space-md);
+  transition: transform var(--dakinis-motion-hover) var(--dakinis-ease),
+    box-shadow var(--dakinis-motion-hover) var(--dakinis-ease);
 }
 
 .dakinis-card:hover {
@@ -91,8 +207,8 @@
 .dakinis-ai-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.2rem 0.55rem;
+  gap: var(--dakinis-space-xs);
+  padding: 2px var(--dakinis-space-sm);
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -107,11 +223,123 @@
   border-radius: var(--dakinis-radius-lg);
 }
 
+/* Componentes IA */
+.dakinis-ai-message {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-sm);
+  padding: var(--dakinis-space-base);
+  border-radius: var(--dakinis-radius-md);
+  background: var(--dakinis-surface-1);
+  border: 1px solid var(--dakinis-ai-border);
+}
+
+.dakinis-ai-thinking {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dakinis-space-sm);
+  color: var(--dakinis-muted);
+  font-size: 0.875rem;
+}
+
+.dakinis-ai-thinking__dots span {
+  animation: dakinis-ai-pulse 1.2s ease-in-out infinite;
+}
+.dakinis-ai-thinking__dots span:nth-child(2) { animation-delay: 0.15s; }
+.dakinis-ai-thinking__dots span:nth-child(3) { animation-delay: 0.3s; }
+
+.dakinis-ai-suggestion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dakinis-space-sm);
+  padding: var(--dakinis-space-sm) var(--dakinis-space-base);
+  border-radius: 999px;
+  border: 1px solid var(--dakinis-ai-border);
+  background: var(--dakinis-surface-1);
+  color: var(--dakinis-text);
+  cursor: pointer;
+  transition: border-color var(--dakinis-motion-hover) var(--dakinis-ease);
+}
+
+.dakinis-ai-confidence__bar {
+  flex: 1;
+  height: 6px;
+  background: var(--dakinis-line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.dakinis-ai-confidence__fill {
+  height: 100%;
+  background: var(--dakinis-ai);
+  border-radius: 999px;
+}
+.dakinis-ai-confidence {
+  display: flex;
+  align-items: center;
+  gap: var(--dakinis-space-sm);
+  font-size: 0.875rem;
+}
+
+.dakinis-ai-sources__list {
+  margin: var(--dakinis-space-sm) 0 0;
+  padding-left: var(--dakinis-space-lg);
+}
+.dakinis-ai-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--dakinis-space-sm);
+  padding: var(--dakinis-space-base);
+  border-radius: var(--dakinis-radius-md);
+  border: 1px solid var(--dakinis-warning);
+  background: rgba(245, 158, 11, 0.08);
+}
+.dakinis-ai-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dakinis-space-base);
+  padding: var(--dakinis-space-base);
+  border: 1px solid var(--dakinis-ai-border);
+  border-radius: var(--dakinis-radius-md);
+  background: var(--dakinis-surface-1);
+}
+.dakinis-ai-action__btn {
+  border: none;
+  background: var(--dakinis-ai);
+  color: #fff;
+  padding: var(--dakinis-space-sm) var(--dakinis-space-base);
+  border-radius: var(--dakinis-radius-sm);
+  cursor: pointer;
+}
+.dakinis-ai-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-base);
+}
+.dakinis-ai-timeline__item {
+  display: flex;
+  gap: var(--dakinis-space-sm);
+  align-items: flex-start;
+}
+
+@keyframes dakinis-ai-pulse {
+  0%, 80%, 100% { opacity: 0.35; }
+  40% { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .dakinis-card {
+  .dakinis-card,
+  .dakinis-shell__sidebar {
     transition: none;
   }
   .dakinis-card:hover {
     transform: none;
+  }
+  .dakinis-ai-thinking__dots span {
+    animation: none;
+    opacity: 0.7;
   }
 }

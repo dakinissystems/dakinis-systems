@@ -5,6 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.js",
-    "./flags": "./src/flags.js"
+    "./flags": "./src/flags.js",
+    "./agents": "./src/agents.js",
+    "./events": "./src/events.js"
   }
 }

@@ -1,0 +1,10 @@
+{
+  "name": "@dakinis/shared-charts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Visualización de datos DES — catálogo y helpers",
+  "exports": {
+    ".": "./src/index.js"
+  }
+}

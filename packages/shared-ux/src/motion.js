@@ -1,4 +1,4 @@
-export { DAKINIS_MOTION } from "../shared-brand/src/motion.js";
+export { DAKINIS_MOTION, DAKINIS_MOTION_USAGE } from "../../shared-brand/src/motion.js";
 
 /** Clases utilitarias para animaciones consistentes. */
 export const DAKINIS_MOTION_CLASSES = {
@@ -21,10 +21,10 @@ export const motionStylesheet = `
   50% { opacity: 0.85; }
 }
 .dakinis-motion-fade-in {
-  animation: dakinis-fade-in 180ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: dakinis-fade-in 200ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 .dakinis-motion-slide-in {
-  animation: dakinis-slide-in 220ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: dakinis-slide-in 250ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 .dakinis-motion-skeleton {
   animation: dakinis-skeleton 1.2s ease-in-out infinite;
