@@ -34,10 +34,13 @@ Copy `.env.example` → `.env`. Never commit secrets.
 
 ## Deploy (Railway)
 
-1. Connect Railway service to [dakinis-billing](https://github.com/dakinissystems/dakinis-billing).
-2. Variables: `DATABASE_URL`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `JWT_SECRET`, `REDIS_URL`
-3. Healthcheck path: `/health`
-4. **Do not expose publicly** until Stripe migration from Core is complete.
+> **Scaffold only** — builds and serves `/health`. Business routes return 501 until Fase 8.
+
+1. Repo conectado: [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) (debe incluir `package.json`, `Dockerfile`, `src/` — no solo README).
+2. Railway: **Builder = Dockerfile** (via `railway.toml`). No uses Railpack/Nixpacks si el repo está vacío.
+3. Variables mínimas: `PORT` (Railway auto), opcional `NODE_ENV=production`
+4. Healthcheck: `/health`
+5. **No exponer en prod** hasta migrar Stripe desde Core.
 
 ## Contracts
 

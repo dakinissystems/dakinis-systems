@@ -1,7 +1,6 @@
-# Publica el scaffolding inicial en los repos platform de GitHub.
-# Requiere: git, acceso push a dakinissystems/*
+# Publica scaffolding en repos platform (git aislado por carpeta).
 # Uso: .\scripts\push-platform-scaffolds.ps1
-#      .\scripts\push-platform-scaffolds.ps1 -Repo billing   # solo uno
+#      .\scripts\push-platform-scaffolds.ps1 -Repo billing
 
 param(
     [ValidateSet("all", "billing", "notifications", "search")]
@@ -15,55 +14,63 @@ $map = @{
     billing = @{
         dir = Join-Path $root "billing"
         remote = "https://github.com/dakinissystems/dakinis-billing.git"
-        message = "Initial billing platform scaffold"
+        message = "Platform billing scaffold"
     }
     notifications = @{
         dir = Join-Path $root "notifications"
         remote = "https://github.com/dakinissystems/dakinis-notifications.git"
-        message = "Initial notifications platform scaffold"
+        message = "Platform notifications scaffold"
     }
     search = @{
         dir = Join-Path $root "search"
         remote = "https://github.com/dakinissystems/dakinis-search.git"
-        message = "Initial search platform scaffold"
+        message = "Platform search scaffold"
     }
 }
 
 function Push-Scaffold($name, $cfg) {
     $dir = $cfg.dir
     if (-not (Test-Path $dir)) {
-        Write-Warning "SKIP $name — no existe $dir"
+        Write-Warning "SKIP $name - folder missing: $dir"
         return
     }
 
     Write-Host "`n=== $name ===" -ForegroundColor Cyan
     Push-Location $dir
 
-    if (-not (Test-Path ".git")) {
-        git init -b main
+    $gitDir = Join-Path $dir ".git"
+    if (-not (Test-Path $gitDir)) {
+        git init -b main | Out-Null
     }
 
-    $remotes = git remote 2>$null
-    if ($remotes -notcontains "origin") {
-        git remote add origin $cfg.remote
-    } else {
-        git remote set-url origin $cfg.remote
+    $top = (Resolve-Path (git rev-parse --show-toplevel)).Path
+    $dirResolved = (Resolve-Path $dir).Path
+    if ($top.ToLower() -ne $dirResolved.ToLower()) {
+        throw "Git toplevel wrong for ${name}: ${top} (expected ${dirResolved})"
     }
+
+    if (git remote 2>$null | Select-String -Pattern "^origin$") {
+        git remote remove origin
+    }
+    git remote add origin $cfg.remote
 
     git add -A
     $status = git status --porcelain
-    if (-not $status) {
-        Write-Host "Nothing to commit in $name"
-    } else {
+    if ($status) {
         git commit -m $cfg.message
     }
 
-    git push -u origin main
-    if ($LASTEXITCODE -ne 0) {
-        Write-Warning "Push failed for $name — verify repo exists and you have access"
-    } else {
-        Write-Host "OK $name -> $($cfg.remote)" -ForegroundColor Green
+    $files = (git ls-files | Measure-Object -Line).Lines
+    if ($files -lt 5) {
+        throw "Repo ${name} has only ${files} files - aborting incomplete push"
     }
+
+    Write-Host "Files tracked: $files"
+    git push -u origin main --force
+    if ($LASTEXITCODE -ne 0) {
+        throw "Push failed for ${name}"
+    }
+    Write-Host "OK ${name} -> $($cfg.remote)" -ForegroundColor Green
 
     Pop-Location
 }
@@ -74,7 +81,4 @@ foreach ($name in $targets) {
     Push-Scaffold $name $map[$name]
 }
 
-Write-Host "`nDone. Repos:" -ForegroundColor Green
-Write-Host "  https://github.com/dakinissystems/dakinis-billing"
-Write-Host "  https://github.com/dakinissystems/dakinis-notifications"
-Write-Host "  https://github.com/dakinissystems/dakinis-search"
+Write-Host "`nDone. Verify GitHub has package.json + Dockerfile + src/ (not README only)." -ForegroundColor Green
