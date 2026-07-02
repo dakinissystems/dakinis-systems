@@ -1,22 +1,27 @@
 {
-  "name": "dnd-character-manager",
+  "name": "dakinis-tabletop",
   "private": true,
   "version": "1.0.0",
+  "description": "Tabletop RPG platform for Dakinis Systems — character management, campaigns, and cloud sync.",
   "type": "module",
+  "workspaces": [
+    "api",
+    "web"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "npm run dev -w @dakinis/tabletop-api",
+    "dev:web": "npm run dev -w @dakinis/tabletop-web",
+    "build": "npm run build -w @dakinis/tabletop-web",
+    "start": "serve web/dist -s -l tcp://0.0.0.0:${PORT:-8080}",
+    "start:api": "npm run start -w @dakinis/tabletop-api",
+    "preview": "npm run preview -w @dakinis/tabletop-web",
+    "migrate-legacy": "node scripts/migrate-legacy-json.mjs"
   },
   "dependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "serve": "^14.2.4"
   },
   "devDependencies": {
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.4.1",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "concurrently": "^9.2.1"
   }
 }

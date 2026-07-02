@@ -1,69 +1,56 @@
-# D&D 5e — Gestor de Personajes
+# dakinis-tabletop
 
-Aplicación web para manejar personajes de **Dungeons & Dragons 5ª edición**, basada en la estructura de `DnDHojaPersonaje.xlsx`.
+**Producto público:** Dakinis Tabletop · **Hub:** 🎲 Tabletop  
+**Web:** `tabletop.dakinissystems.com` · **API:** `tabletop-api.dakinissystems.com`  
+**Estado:** MVP (reglas SRD 5e como primer ruleset)
+
+Modern tabletop RPG platform with character management, campaigns, and cross-device synchronization.
+
+Plataforma de rol de mesa para Dakinis Systems: gestión de personajes, campañas compartidas, sincronización en nube y modo offline.
+
+> Carpeta local en el monorepo de orquestación: `DND/` (nombre interno). Repositorio GitHub: [`dakinissystems/dakinis-tabletop`](https://github.com/dakinissystems/dakinis-tabletop).
 
 ## Características
 
-- **Ficha completa**: atributos, clase, raza, rasgos y dotes (fórmulas 5e del Excel)
-- **Armas**: plantillas SRD + armas personalizadas de campaña (ej. Rencorosa, Cegadora)
-- **Hechizos**: lista SRD, preparación con límite por CAR/INT/SAB, hechizos custom
-- **Inventario**: objetos por categoría (herrería, magia, curación, etc.)
-- **Combate**: PV, slots, Lay on Hands, acciones especiales
-- **Combos inteligentes**: sugerencias tácticas según tus decisiones (clase, armas activas, hechizos, dotes, inventario)
+- **Cuenta opcional** — registro/login, personajes en nube, merge con datos locales
+- **Modo offline** — continuar sin cuenta (`localStorage`)
+- **Ficha completa** — atributos, clase, raza, combate, magia, arsenal (SRD 5e MVP)
+- **Campañas** — código de invitación, notas de sesión y botín compartido
+- **Notas y dados** — diario por personaje, tirador d4–d100
+- **Backup** — export/import JSON, PDF, migrador legacy Flask
 
-## Arranque
+## Arranque local
 
 ```powershell
-cd DND
+cd DND   # o clon: dakinis-tabletop
 npm install
 npm run dev
 ```
 
-Abre la URL en el móvil (misma red) o en el navegador. La UI está optimizada para **pantallas ≤480px**: navegación inferior, asistente de creación y áreas táctiles de 48px.
+- Web: `http://localhost:5174`
+- API: `http://localhost:4200` (proxy Vite `/api` → API)
 
-### Flujo móvil
+## Estructura (MVP)
 
-1. **Mis personajes** — lista con tarjetas; botón flotante **+** para crear
-2. **Asistente** (5 pasos) — Nombre → Raza → Clase → Atributos → Resumen
-3. **Ficha** — navegación inferior: Ficha · Combate · Magia · Arsenal · Más
+```
+dakinis-tabletop/
+├── api/                # @dakinis/tabletop-api — Express + SQLite
+├── web/                # @dakinis/tabletop-web — React 19 + Vite PWA
+│   └── src/
+├── scripts/
+└── package.json        # workspaces
+```
 
-En **Más** están Inventario, Combos, Compendio y editar raza/clase.
+Evolución: `packages/shared/` · Supabase schema `tabletop`.
 
-## Base de datos SRD 5e
+## Variables de entorno
 
-Datos en `src/data/srd/`:
-
-| Archivo | Contenido |
-|---------|-----------|
-| `races.ts` | 9 razas PHB/SRD con subrazas |
-| `classes.ts` | 12 clases con subclases, dado de golpe y conjuros |
-| `spells.ts` | Catálogo unificado (~280+ hechizos) |
-| `spells-srd-extra.ts` | Mago/clérigo SRD ampliado |
-| `spells-xge.ts` | Xanathar's Guide to Everything |
-| `spells-tce.ts` | Tasha's Cauldron of Everything |
-
-Subclases XGE/TCE añadidas en `classes.ts` (Gloria, Vigilantes, Paz, Crepúsculo, Genio, Escribas, etc.).
-
-Pestaña **Compendio SRD** para consultar todo. Filtros por fuente (SRD / XGE / TCE), clase y nivel.
-
-
-| Hoja | Uso en la app |
-|------|----------------|
-| `datos_basicos` | Ficha, inventario, dotes sugeridas |
-| `acciones_en_combate` | Panel Combate |
-| `spells_list` | Panel Hechizos |
-| `status` | Recursos y equipamiento activo |
-| `Hoja1` | Fórmulas 5e en `src/engine/formulas.ts` |
-
-## Motor de combos
-
-Las reglas en `src/engine/combo-suggester.ts` evalúan el estado del personaje y proponen secuencias de turno (ej. Vow of Enmity + Extra Attack, Bless + múltiples ataques, armas custom con Atlatl).
-
-Los datos se guardan en `localStorage` del navegador.
-
-## Legal
-
-Privacidad, términos, aviso legal y atribución OGL/SRD desde la lista de personajes o menú **Más → Legal**. Sin servidor: no hay cookies de terceros.
+| Variable | Uso |
+|----------|-----|
+| `TABLETOP_JWT_SECRET` | JWT producción (alias legacy: `DND_JWT_SECRET`) |
+| `TABLETOP_DB_PATH` | Ruta SQLite con volume (alias: `DND_DB_PATH`) |
+| `TABLETOP_CORS_ORIGINS` | Orígenes CORS (alias: `DND_CORS_ORIGINS`) |
+| `VITE_TABLETOP_API_URL` | URL API en build web (vacío = proxy dev) |
 
 ## Build producción
 
@@ -71,3 +58,11 @@ Privacidad, términos, aviso legal y atribución OGL/SRD desde la lista de perso
 npm run build
 npm run preview
 ```
+
+## Legal
+
+Privacidad, términos, aviso legal y atribución OGL/SRD in-app. El producto **Tabletop** no está afiliado a Wizards of the Coast; el MVP incluye contenido SRD 5e bajo OGL.
+
+## Supabase (roadmap)
+
+Schema reservado: `tabletop` — migración desde SQLite cuando el MVP esté en prod.

@@ -1,0 +1,28 @@
+# Dependencies & build
+node_modules/
+dist/
+web/dist/
+.vite/
+
+# App data
+api/data/
+*.db
+salida.json
+
+# Env & OS
+.env
+.env.local
+.env.*
+!.env.example
+.DS_Store
+
+# TypeScript / logs
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+*.log
+npm-debug.log*
+
+# Coverage & cache
+coverage/
+.cache/
+.eslintcache
