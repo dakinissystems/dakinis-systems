@@ -31,7 +31,7 @@ Flujos implementados: [`LEGAL-FLOWS.md`](./LEGAL-FLOWS.md)
 | AkoeNet | `apps/akoenet/Client/docs/legal/*.md` + `/legal/dpo` (alias `/legal/privacidad-solicitudes`) |
 | StreamAutomator | `apps/streamautomator/apps/web` — `/privacy`, `/terms`, `/cookies`, `/aviso-legal`, `/legal/*` |
 | LifeFlow | `finanzas/web` — `/legal/*` (público) |
-| DND | `DND/src/legal/content.ts` — pantalla in-app |
+| Tabletop | `DND/src/legal/content.ts` — pantalla in-app (repo `dakinis-tabletop`) |
 
 **Emails públicos:** Cloudflare Email Routing → `@dakinissystems.com` reenvía a Gmail. **Catch-all desactivado.** StreamAutomator: `@streamautomator.com`.
 

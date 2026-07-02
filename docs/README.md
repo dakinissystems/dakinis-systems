@@ -1,13 +1,24 @@
 # Documentación Dakinis Systems
 
-Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legales). El código de producto vive en repos separados (`dakinis-core`, `dakinis-landing`, etc.).
+Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legales). El código de producto vive en repos separados.
+
+## Documentación de plataforma (mayo 2026)
+
+| Documento | Para qué |
+|-----------|----------|
+| [**ARCHITECTURE.md**](./ARCHITECTURE.md) | Platform vs Products, servicios transversales, Internal API, agents |
+| [**ROADMAP.md**](./ROADMAP.md) | Fases, workers, LifeFlow Engine, Marketplace |
+| [**OPERATIONS.md**](./OPERATIONS.md) | Railway, deploy, env, health checks, pendientes ops |
+| [**PRODUCTS.md**](./PRODUCTS.md) | Resumen por producto (Core BOS, LifeFlow, SA, AkoeNet…) |
+| [**GITHUB-ORG.md**](./GITHUB-ORG.md) | Monorepo DES, descripciones GitHub, plantillas README |
+| [`DAKINIS-ESTRUCTURA-TEMP.md`](./DAKINIS-ESTRUCTURA-TEMP.md) | Índice local + valoración global (no versionado) |
 
 ## Para clientes e integradores
 
 | Recurso | Descripción |
 |---------|-------------|
-| [`legal/`](./legal/) | Plantillas legales **bilingües** (ES + EN): privacidad, LSSI, cookies, canal RGPD, copyright, seguridad |
-| [`contracts/`](./contracts/) | Contratos HTTP entre servicios (prefijos gateway) |
+| [`legal/`](./legal/) | Plantillas legales **bilingües** (ES + EN) |
+| [`contracts/`](./contracts/) | Contratos HTTP entre servicios |
 | [`rules.md`](./rules.md) | Reglas al cambiar rutas públicas en el gateway |
 
 ## Infraestructura
@@ -15,12 +26,6 @@ Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legale
 | Recurso | Descripción |
 |---------|-------------|
 | [`railway.env.example`](./railway.env.example) | Plantilla de variables (sin secretos) |
-| [`supabase/schemas/`](./supabase/schemas/) | Migraciones SQL legacy Core / Auth |
-| [`supabase/migrations/`](./supabase/migrations/) | Multi-schema 000–019 + [`RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md) |
-| [`../docker/README.md`](../docker/README.md) | Stack local Docker |
-| [`../scripts/clone-akoenet.ps1`](../scripts/clone-akoenet.ps1) | Clonar `akoenet-client` + `akoenet-backend` en `apps/akoenet/` |
+| [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md) | Orden SQL multi-schema |
 | [`../gateway/README.md`](../gateway/README.md) | API Gateway Nginx |
-
-## Operador interno
-
-Roadmap, pendientes, estructura de todos los sistemas y estado Supabase: **`DAKINIS-ESTRUCTURA-TEMP.md`** (local, no versionado — ver cabecera del archivo).
+| [`../docker/README.md`](../docker/README.md) | Stack local Docker |

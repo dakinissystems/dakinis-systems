@@ -9,11 +9,11 @@
   ],
   "protectedRoutes": "JWT Bearer en la app (sin auth_request IdP en gateway por ahora)",
   "upstreamProd": {
-    "api": "https://api.finance.dakinissystems.com",
+    "api": "https://finance-api.dakinissystems.com",
     "web": "https://finance.dakinissystems.com"
   },
   "notes": [
-    "Web SPA: VITE_API_URL=https://api.finance.dakinissystems.com en Railway LifeFlow Web",
+    "Web SPA: VITE_API_URL=https://finance-api.dakinissystems.com en Railway LifeFlow Web",
     "Hub tile: hub.dakinissystems.com/finance → proxy gateway a finance.dakinissystems.com",
     "Repo interno lifeflow; marca pública Dakinis Finanzas"
   ]

@@ -1,0 +1,2 @@
+-- Fuente: modules/stream/functions/v1/get_contents.sql
+-- API: SELECT * FROM stream.v1_get_contents($user_id, $from, $to, $status);

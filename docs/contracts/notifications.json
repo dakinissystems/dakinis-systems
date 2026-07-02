@@ -1,0 +1,29 @@
+{
+  "service": "dakinis-notifications",
+  "status": "planned",
+  "description": "Servicio transversal de notificaciones — productos publican eventos, Notifications entrega.",
+  "baseUrl": "https://notifications.dakinissystems.com",
+  "gatewayPrefix": "/notifications/",
+  "channels": [
+    "email",
+    "push",
+    "sms",
+    "whatsapp",
+    "discord",
+    "slack",
+    "webhooks",
+    "in-app"
+  ],
+  "routes": {
+    "GET /health": "Health",
+    "POST /v1/send": "Encolar notificación (service auth)",
+    "GET /v1/preferences/:userId": "Preferencias usuario por canal",
+    "PATCH /v1/preferences/:userId": "Actualizar preferencias",
+    "GET /v1/inbox/:userId": "In-app inbox (Hub + productos)",
+    "PATCH /v1/inbox/:id/read": "Marcar leída"
+  },
+  "eventFlow": "Product → Events bus → Notifications Worker → channel adapters",
+  "repository": "https://github.com/dakinissystems/dakinis-notifications",
+  "catalog": "@dakinis/shared-ai/notifications.js NOTIFICATION_CHANNELS",
+  "schema": "hub.notifications (009) + worker queue"
+}

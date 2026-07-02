@@ -1,0 +1,26 @@
+{
+  "service": "dakinis-search",
+  "status": "planned",
+  "description": "Global search — Hub Ctrl+K and cross-product query API.",
+  "baseUrl": "https://search.dakinissystems.com",
+  "gatewayPrefix": "/search/",
+  "scopes": [
+    "clients",
+    "invoices",
+    "messages",
+    "events",
+    "documentation",
+    "chats",
+    "ai",
+    "all"
+  ],
+  "routes": {
+    "GET /health": "Health",
+    "GET /v1/query": "Search query ?q=&scope=&tenantId=",
+    "POST /v1/index": "Enqueue document for indexing (internal)",
+    "DELETE /v1/index/:scope/:id": "Remove from index"
+  },
+  "repository": "https://github.com/dakinissystems/dakinis-search",
+  "scaffold": "../../search/",
+  "worker": "Indexer consumes Redis queue dakinis:search:index"
+}

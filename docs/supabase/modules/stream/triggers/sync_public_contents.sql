@@ -1,0 +1,2 @@
+-- Fuente: modules/stream/triggers/sync_public_contents.sql
+-- Ejecutar vía migrations/016b_stream_sync_triggers.sql

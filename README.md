@@ -2,7 +2,9 @@
 
 Repositorio remoto: [github.com/dakinissystems/dakinis-systems](https://github.com/dakinissystems/dakinis-systems).
 
-Este repo versiona **gateway HTTP**, **Docker local**, **documentación legal**, **contratos entre servicios** y **esquemas SQL** compartidos. El código de cada producto (Core, Landing, StreamAutomator, AkoeNet, Auth) vive en **repos Git propios** bajo `apps/` y `platform/` (no incluidos aquí).
+Este repo versiona **gateway HTTP**, **Docker local**, **documentación legal**, **contratos entre servicios**, **esquemas SQL** y **scaffolds de plataforma** (`billing/`, `notifications/`, `search/`). El código de cada producto (Core, Landing, StreamAutomator, AkoeNet, Auth) vive en **repos Git propios** bajo `apps/` y `platform/` (no incluidos aquí).
+
+DES (paquetes npm): [`packages/`](./packages/) → target monorepo [`dakinis-shared`](https://github.com/dakinissystems/dakinis-shared). Ver [`packages/MIGRATION.md`](./packages/MIGRATION.md).
 
 ## Productos
 
@@ -32,6 +34,11 @@ Prefijos HTTP en dev (`localhost:80`): `/auth/`, `/core/`, `/streamautomator/`, 
 | [`docs/contracts/`](./docs/contracts/) | Contratos HTTP del ecosistema |
 | [`docs/rules.md`](./docs/rules.md) | Reglas al modificar rutas del gateway |
 | [`docs/DAKINIS-ESTRUCTURA-TEMP.md`](./docs/DAKINIS-ESTRUCTURA-TEMP.md) | Roadmap + pendientes internos (local) |
+| [`docs/GITHUB-ORG.md`](./docs/GITHUB-ORG.md) | Alineación GitHub: monorepo DES, descripciones repos |
+| [`packages/README.md`](./packages/README.md) | Índice paquetes DES (target: `dakinis-shared`) |
+| [`billing/README.md`](./billing/README.md) | [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) |
+| [`notifications/README.md`](./notifications/README.md) | [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |
+| [`search/README.md`](./search/README.md) | [dakinis-search](https://github.com/dakinissystems/dakinis-search) |
 
 ## Integración
 

@@ -1,0 +1,2 @@
+-- Fuente: modules/hub/functions/v1/get_dashboard.sql
+-- API: SELECT hub.v1_get_dashboard($user_id);
