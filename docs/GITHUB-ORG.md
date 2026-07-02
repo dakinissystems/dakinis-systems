@@ -178,7 +178,7 @@ Plantillas listas para copiar al repo correspondiente:
 | README `dakinis-shared` (monorepo DES) | Alta | ✅ plantilla lista |
 | README `dakinis-hub` (centro ecosistema) | Alta | ✅ plantilla lista |
 | README Core / Landing / AI | Media | ✅ plantillas listas |
-| Migrar `packages/` → repo `dakinis-shared` | Media | ✅ workspaces + [MIGRATION.md](../packages/MIGRATION.md) |
+| Migrar `packages/` → repo `dakinis-shared` | Media | ✅ [dakinis-shared](https://github.com/dakinissystems/dakinis-shared) · `push-dakinis-shared.ps1` |
 | Scaffolds billing/notifications/search | Media | ✅ repos GitHub · push con `push-platform-scaffolds.ps1` |
 | Railway servicios futuros | Baja | ✅ solo docs (OPERATIONS) |
 

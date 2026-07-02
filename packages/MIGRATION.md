@@ -1,56 +1,27 @@
 # Migración → repo `dakinis-shared`
 
-Fuente actual: `dakinis-systems/packages/` (workspaces npm listos).
+**Estado:** ✅ migrado · repo canónico [github.com/dakinissystems/dakinis-shared](https://github.com/dakinissystems/dakinis-shared)
 
-## 1. Crear repo GitHub
+Esta carpeta (`dakinis-systems/packages/`) es **mirror de desarrollo** sincronizado con `dakinis-shared`. Para cambios DES:
 
-```bash
-gh repo create dakinissystems/dakinis-shared --private --description "Dakinis Experience System (DES) — monorepo of shared UI packages, tokens, AppShell, SDK."
-```
+1. Editar aquí o en clone de `dakinis-shared`
+2. Push a `dakinis-shared`
+3. Opcional: `node scripts/sync-shared-brand.mjs` en control repo → apps vendoreadas
 
-## 2. Copiar monorepo
-
-Desde `dakinis-systems/packages/`:
+## Publicar cambios a dakinis-shared
 
 ```powershell
-# En clone vacío de dakinis-shared
-Copy-Item -Recurse D:\dakinis-systems\packages\* .
-Copy-Item D:\dakinis-systems\docs\templates\README-dakinis-shared.md .\README.md
-git add . && git commit -m "Initial DES monorepo from dakinis-systems/packages"
+.\scripts\push-dakinis-shared.ps1
 ```
 
-El `package.json` raíz ya define `"workspaces": ["shared-des", "shared-brand", …]`.
-
-## 3. Instalar
-
-```bash
-npm install
-npm run test:imports
-npm run audit
-```
-
-## 4. Consumo en productos
-
-**Opción A — git dependency (sin npm publish):**
+## Consumo en productos (git dependency)
 
 ```json
 "@dakinis/shared-brand": "github:dakinissystems/dakinis-shared#main&path:packages/shared-brand"
 ```
 
-**Opción B — submodule** en cada producto apuntando a `dakinis-shared/packages/shared-brand`.
-
-**Opción C — npm private registry** (GitHub Packages) cuando el volumen lo justifique.
-
-## 5. Sync legacy
-
-Mientras coexisten copias vendoreadas:
+## Instalar local (mirror)
 
 ```bash
-node scripts/sync-shared-brand.mjs   # en dakinis-systems
+cd packages && npm install && npm run test:imports
 ```
-
-Actualizar script para clonar desde `dakinis-shared` cuando el cutover esté hecho.
-
-## 6. Limpiar control repo
-
-Tras cutover: `dakinis-systems/packages/` → enlace doc a `dakinis-shared` o submodule.

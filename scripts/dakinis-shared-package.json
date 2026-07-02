@@ -1,0 +1,27 @@
+{
+  "name": "dakinis-shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dakinis Experience System (DES) — monorepo npm",
+  "type": "module",
+  "workspaces": [
+    "shared-des",
+    "shared-brand",
+    "shared-ux",
+    "shared-layouts",
+    "shared-charts",
+    "shared-ai",
+    "shared-loading",
+    "shared-icons",
+    "shared-illustrations",
+    "sdk",
+    "design-audit"
+  ],
+  "scripts": {
+    "audit": "node design-audit/src/audit.mjs",
+    "test:imports": "node -e \"import('./shared-des/src/index.js').then(() => console.log('shared-des OK'))\""
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

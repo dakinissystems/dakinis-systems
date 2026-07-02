@@ -1,6 +1,8 @@
 # Packages — Dakinis Experience System (DES)
 
-Monorepo local de paquetes DES. **Target:** migrar a [`dakinis-shared`](https://github.com/dakinissystems/dakinis-shared) como monorepo npm único.
+Monorepo local de paquetes DES. **Canónico:** [dakinis-shared](https://github.com/dakinissystems/dakinis-shared).
+
+Publicar cambios: `.\scripts\push-dakinis-shared.ps1`
 
 Índice detallado: [`experience-system/README.md`](./experience-system/README.md)  
 Guía GitHub org: [`docs/GITHUB-ORG.md`](../docs/GITHUB-ORG.md)

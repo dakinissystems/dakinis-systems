@@ -4,7 +4,7 @@
 
 Este repositorio es el **ciudadano de plataforma** responsable de que Core, LifeFlow, Hub, AkoeNet y el resto compartan el mismo AppShell, componentes, temas y experiencia de usuario. No se despliega en Railway; se consume como dependencia en cada app.
 
-> Fuente de desarrollo actual (mirror): [`dakinis-systems/packages/`](../dakinis-systems/tree/main/packages) hasta completar la migración del monorepo.
+> Mirror de desarrollo: [`dakinis-systems/packages/`](https://github.com/dakinissystems/dakinis-systems/tree/main/packages) — publicar con `scripts/push-dakinis-shared.ps1`.
 
 ---
 
