@@ -1,0 +1,15 @@
+{
+  "name": "dakinis-billing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Platform billing service — plans, Stripe, invoices, usage",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "health": "node -e \"fetch('http://127.0.0.1:'+(process.env.PORT||4010)+'/health').then(r=>r.json()).then(console.log)\""
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
