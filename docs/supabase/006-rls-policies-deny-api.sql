@@ -25,7 +25,8 @@ DECLARE
     'lifeflow',
     'ai',
     'hub',
-    'audit'
+    'audit',
+    'meta'
   ];
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
@@ -77,7 +78,7 @@ WHERE c.relkind = 'r'
   AND c.relrowsecurity
   AND n.nspname IN (
     'public', 'dakinis_auth', 'dakinis_core_prod', 'dakinis_core_dev',
-    'core', 'billing', 'stream', 'akoenet', 'lifeflow', 'ai', 'hub', 'audit'
+    'core', 'billing', 'stream', 'akoenet', 'lifeflow', 'ai', 'hub', 'audit', 'meta'
   )
   AND NOT EXISTS (
     SELECT 1

@@ -16,7 +16,8 @@ DECLARE
     'lifeflow',
     'ai',
     'hub',
-    'audit'
+    'audit',
+    'meta'
   ];
 BEGIN
   FOR r IN
@@ -39,7 +40,7 @@ DECLARE
   s text;
   schemas text[] := ARRAY[
     'public', 'dakinis_auth', 'dakinis_core_prod', 'dakinis_core_dev',
-    'core', 'billing', 'stream', 'akoenet', 'lifeflow', 'ai', 'hub', 'audit'
+    'core', 'billing', 'stream', 'akoenet', 'lifeflow', 'ai', 'hub', 'audit', 'meta'
   ];
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
@@ -67,7 +68,7 @@ JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE c.relkind = 'r'
   AND n.nspname IN (
     'dakinis_auth', 'core', 'billing', 'stream', 'akoenet',
-    'lifeflow', 'ai', 'hub', 'audit', 'dakinis_core_prod'
+    'lifeflow', 'ai', 'hub', 'audit', 'dakinis_core_prod', 'meta'
   )
   AND (NOT c.relrowsecurity OR NOT c.relforcerowsecurity)
 ORDER BY 1, 2;
