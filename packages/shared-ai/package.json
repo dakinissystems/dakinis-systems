@@ -7,6 +7,10 @@
     ".": "./src/index.js",
     "./flags": "./src/flags.js",
     "./agents": "./src/agents.js",
-    "./events": "./src/events.js"
+    "./events": "./src/events.js",
+    "./event-bus": "./src/event-bus.js"
+  },
+  "optionalDependencies": {
+    "redis": "^4.7.0"
   }
 }

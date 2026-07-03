@@ -1,6 +1,6 @@
 {
   "service": "dakinis-internal-api",
-  "status": "planned",
+  "status": "scaffold",
   "description": "API interna platform — productos nunca hablan entre sí directamente.",
   "baseUrl": "https://api.dakinissystems.com/internal",
   "auth": "Bearer service token (DAKINIS_INTERNAL_SERVICE_KEY)",
@@ -8,6 +8,7 @@
     "GET /internal/health": "Health del servicio internal",
     "GET /internal/users/:id": "Perfil mínimo usuario (IdP)",
     "GET /internal/profile/:userId": "Preferencias cross-producto",
+    "GET /internal/hub/dashboard/:userId": "Dashboard Hub — secciones, apps, resumen",
     "POST /internal/events": "Publicar evento al bus platform",
     "GET /internal/events": "Suscripción / replay (admin)",
     "POST /internal/storage/upload": "Upload firmado → Storage service",

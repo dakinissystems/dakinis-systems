@@ -1,18 +1,20 @@
 {
   "service": "dakinis-billing",
-  "status": "planned",
+  "status": "partial",
   "description": "Platform billing — plans, Stripe subscriptions, invoices, usage metering.",
   "baseUrl": "https://billing.dakinissystems.com",
   "gatewayPrefix": "/billing/",
   "schema": "billing",
   "routes": {
-    "GET /health": "Health",
-    "GET /v1/plans": "List public plans",
-    "GET /v1/subscriptions/:tenantId": "Subscription for tenant (internal auth)",
-    "POST /v1/webhooks/stripe": "Stripe webhooks",
-    "POST /v1/usage": "Report metered usage (AI tokens, storage)"
+    "GET /health": "Health + DB status",
+    "GET /v1/plans": "List public plans (Stripe Price IDs from env)",
+    "GET /v1/subscriptions/:tenantId": "Subscription for tenant (internal auth optional)",
+    "POST /v1/checkout": "Create Stripe Checkout session (INTERNAL_API_KEY)",
+    "POST /v1/portal": "Stripe Customer Portal session (INTERNAL_API_KEY)",
+    "POST /v1/webhooks/stripe": "Stripe webhooks — verify + persist subscriptions/invoices",
+    "POST /v1/usage": "Report metered usage (INTERNAL_API_KEY)"
   },
   "repository": "https://github.com/dakinissystems/dakinis-billing",
   "scaffold": "../../billing/",
-  "migration": "Stripe logic currently in dakinis-core → move here (Fase 8)"
+  "migration": "Move Stripe env from Core Back → dakinis-billing Railway; point Stripe webhook to /billing/v1/webhooks/stripe"
 }

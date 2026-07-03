@@ -1,5 +1,5 @@
 export const config = {
-  port: Number(process.env.PORT) || 4011,
+  port: Number(process.env.PORT) || 4081,
   service: "dakinis-notifications",
   redisUrl: process.env.REDIS_URL || "",
   queueName: process.env.NOTIFICATIONS_QUEUE || "dakinis:notifications",

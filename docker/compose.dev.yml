@@ -29,12 +29,29 @@ services:
       - "4003:4003"
 
   fitness-platform-api:
+    # Host 4090 — evita choque con billing standalone (:4080) u otro proceso en :4010
     ports:
-      - "4010:4010"
+      - "4090:4010"
 
   ai:
     ports:
       - "4020:4020"
+
+  billing:
+    ports:
+      - "4080:8080"
+
+  notifications:
+    ports:
+      - "4081:8080"
+
+  search:
+    ports:
+      - "4082:8080"
+
+  internal-api:
+    ports:
+      - "4083:8080"
 
   gateway:
     labels:
@@ -42,3 +59,8 @@ services:
       - "dakinis.environment=development"
     ports:
       - "80:80"
+    volumes:
+      - ../gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../gateway/routes:/etc/nginx/routes:ro
+      # Sobrescribe resolver Railway → DNS embebido Docker (fix 502 en /billing/, /ai/, etc.)
+      - ./nginx/resolver.local.conf:/etc/nginx/routes/resolver.conf:ro

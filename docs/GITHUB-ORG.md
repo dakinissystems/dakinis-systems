@@ -92,7 +92,7 @@ Repos **creados** en GitHub. Mirror local en control repo + push con script.
 # .\scripts\push-platform-scaffolds.ps1 -Repo billing
 ```
 
-Puertos dev: **4010** · **4011** · **4012**. No desplegar en Railway hasta implementar lógica real.
+Puertos dev: **4080** · **4081** · **4082** (fitness Docker host: **4090**). No desplegar en Railway hasta implementar lógica real.
 
 ---
 

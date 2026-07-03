@@ -81,6 +81,9 @@ services:
       # Mismo SPA Vite habitual; evita clash de FRONTEND_URL compartido vía env_file.
       FRONTEND_URL: http://localhost:5173
       CORS_ORIGIN: http://localhost:5173
+      DAKINIS_BILLING_URL: http://billing.railway.internal:8080
+      DAKINIS_INTERNAL_SERVICE_KEY: ${INTERNAL_API_KEY:-dakinis-dev-internal-key}
+      DAKINIS_EVENTS_QUEUE: dakinis:events
     expose:
       - "4001"
     volumes:
@@ -107,6 +110,8 @@ services:
     environment:
       PORT: "4002"
       DATABASE_URL: ${DATABASE_URL_STREAMAUTOMATOR:-postgres://dakinis:dakinis@postgres:5432/dakinis_stream}
+      # Postgres local (compose) no usa SSL; env_file prod/Supabase puede traer DATABASE_SSL=true
+      DATABASE_SSL: ${DATABASE_SSL_STREAMAUTOMATOR:-false}
       REDIS_URL: redis://redis:6379
       TRUST_GATEWAY_IDENTITY_HEADERS: "true"
       FRONTEND_URL: http://localhost:3000
@@ -232,6 +237,153 @@ services:
         aliases:
           - ai.railway.internal
 
+  billing:
+    build:
+      context: ../billing
+      dockerfile: Dockerfile
+    container_name: dakinis-billing
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      PORT: "8080"
+      DATABASE_URL: ${DATABASE_URL_BILLING:-postgres://dakinis:dakinis@postgres:5432/dakinis}
+      DATABASE_SSL: "false"
+      POSTGRES_SCHEMA: billing
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dakinis-dev-internal-key}
+      FRONTEND_URL: http://localhost:5173
+    expose:
+      - "8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - billing.railway.internal
+
+  notifications:
+    build:
+      context: ../notifications
+      dockerfile: Dockerfile
+    container_name: dakinis-notifications
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      REDIS_URL: redis://redis:6379
+    expose:
+      - "8080"
+    depends_on:
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - notifications.railway.internal
+
+  notifications-worker:
+    build:
+      context: ../notifications
+      dockerfile: Dockerfile
+    container_name: dakinis-notifications-worker
+    restart: unless-stopped
+    command: ["node", "src/worker.js"]
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_started
+      notifications:
+        condition: service_healthy
+    networks: [dakinis]
+
+  search:
+    build:
+      context: ../search
+      dockerfile: Dockerfile
+    container_name: dakinis-search
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      REDIS_URL: redis://redis:6379
+    expose:
+      - "8080"
+    depends_on:
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - search.railway.internal
+
+  search-worker:
+    build:
+      context: ../search
+      dockerfile: Dockerfile
+    container_name: dakinis-search-worker
+    restart: unless-stopped
+    command: ["node", "src/worker.js"]
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_started
+      search:
+        condition: service_healthy
+    networks: [dakinis]
+
+  internal-api:
+    build:
+      context: ../internal
+      dockerfile: Dockerfile
+    container_name: dakinis-internal-api
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      REDIS_URL: redis://redis:6379
+      DAKINIS_INTERNAL_SERVICE_KEY: ${DAKINIS_INTERNAL_SERVICE_KEY:-dev-internal-key-change-in-prod}
+      DAKINIS_NOTIFICATIONS_URL: http://notifications.railway.internal:8080
+      DAKINIS_SEARCH_URL: http://search.railway.internal:8080
+      DAKINIS_BILLING_URL: http://billing.railway.internal:8080
+    expose:
+      - "8080"
+    depends_on:
+      redis:
+        condition: service_started
+      notifications:
+        condition: service_healthy
+      search:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - internal.railway.internal
+
   gateway:
     image: nginx:1.27-alpine
     container_name: dakinis-gateway
@@ -255,6 +407,14 @@ services:
       fitness-platform-api:
         condition: service_healthy
       ai:
+        condition: service_healthy
+      billing:
+        condition: service_healthy
+      notifications:
+        condition: service_healthy
+      search:
+        condition: service_healthy
+      internal-api:
         condition: service_healthy
     networks: [dakinis]
 

@@ -24,6 +24,7 @@ CREATE OR REPLACE FUNCTION dakinis_auth._safe_uuid_from_text(p text)
 RETURNS uuid
 LANGUAGE plpgsql
 IMMUTABLE
+SET search_path = dakinis_auth, extensions, pg_catalog, pg_temp
 AS $$
 BEGIN
   IF p IS NULL OR trim(p) = '' THEN

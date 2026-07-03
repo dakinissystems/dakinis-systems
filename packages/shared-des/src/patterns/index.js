@@ -6,7 +6,7 @@ export const DES_PATTERNS = {
   loading: { status: "ready", module: "@dakinis/shared-loading" },
   errors: { status: "ready", module: "@dakinis/shared-illustrations" },
   aiResponses: { status: "ready", module: "@dakinis/shared-des/ai" },
-  search: { status: "planned", module: "@dakinis/shared-ux/command-palette" },
+  search: { status: "ready", module: "@dakinis/shared-ux/command-palette", note: "Hub Ctrl+K + dakinis-search API" },
   crud: { status: "documented", surfaces: [0, 1], layout: "list-detail" },
   wizards: { status: "planned", module: "@dakinis/shared-onboarding" },
   dashboards: { status: "ready", module: "@dakinis/shared-layouts" },

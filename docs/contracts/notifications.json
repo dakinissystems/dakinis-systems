@@ -1,6 +1,6 @@
 {
   "service": "dakinis-notifications",
-  "status": "planned",
+  "status": "scaffold",
   "description": "Servicio transversal de notificaciones — productos publican eventos, Notifications entrega.",
   "baseUrl": "https://notifications.dakinissystems.com",
   "gatewayPrefix": "/notifications/",

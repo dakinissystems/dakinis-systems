@@ -25,6 +25,7 @@ CREATE OR REPLACE FUNCTION meta.cutover_core_checklist()
 RETURNS TABLE (step integer, action text, done boolean)
 LANGUAGE sql
 STABLE
+SET search_path = meta, pg_catalog, pg_temp
 AS $$
   SELECT * FROM (VALUES
     (1, 'Dual-read Core API: dakinis_core_prod.business + core.tenants', false),

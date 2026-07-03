@@ -1,6 +1,10 @@
 export * from "./motion.js";
 export * from "./feedback.js";
 export { DashboardCard, dashboardCardStyles } from "./DashboardCard.jsx";
+export { default as Button } from "./react/Button.jsx";
+export { default as Input } from "./react/Input.jsx";
+export { default as Dialog } from "./react/Dialog.jsx";
+export { default as Table } from "./react/Table.jsx";
 export * from "./empty-states.js";
 export * from "./hub-nav.js";
 export * from "./hub-dashboard.js";

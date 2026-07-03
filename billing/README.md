@@ -25,7 +25,7 @@
 cd billing
 npm install
 npm run dev
-curl http://localhost:4010/health
+curl http://localhost:4080/health
 ```
 
 ## Environment

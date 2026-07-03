@@ -1,6 +1,8 @@
 import http from "node:http";
 import { config } from "./config.js";
 import { routes } from "./routes.js";
+import { getRootPage } from "./root.js";
+import { sendHtml } from "./status-page.js";
 
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body);
@@ -22,6 +24,11 @@ function matchRoute(method, path) {
 
 const server = http.createServer(async (req, res) => {
   const path = (req.url || "/").split("?")[0];
+
+  if ((req.method || "GET") === "GET" && path === "/") {
+    return sendHtml(res, 200, getRootPage(), config.service);
+  }
+
   const handler = matchRoute(req.method || "GET", path);
   if (!handler) {
     return sendJson(res, 404, { error: "not_found", path });

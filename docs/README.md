@@ -11,7 +11,7 @@ Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legale
 | [**OPERATIONS.md**](./OPERATIONS.md) | Railway, deploy, env, health checks, pendientes ops |
 | [**PRODUCTS.md**](./PRODUCTS.md) | Resumen por producto (Core BOS, LifeFlow, SA, AkoeNet…) |
 | [**GITHUB-ORG.md**](./GITHUB-ORG.md) | Monorepo DES, descripciones GitHub, plantillas README |
-| [`DAKINIS-ESTRUCTURA-TEMP.md`](./DAKINIS-ESTRUCTURA-TEMP.md) | Índice local + valoración global (no versionado) |
+| [`DAKINIS-SISTEMA-TEMP.md`](./DAKINIS-SISTEMA-TEMP.md) | **Documento unificado local** — overview, DES, IA, ops, repos (no versionado) |
 
 ## Para clientes e integradores
 

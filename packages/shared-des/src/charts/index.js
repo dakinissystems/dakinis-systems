@@ -2,7 +2,7 @@
  * Catálogo de visualización de datos DES.
  */
 export const DES_CHART_TYPES = {
-  mini: { variants: ["sparkline", "bar", "donut"], status: "planned" },
+  mini: { variants: ["sparkline", "bar", "donut"], status: "ready", export: "MiniSparkline" },
   area: { status: "planned", use: "tendencias temporales" },
   bar: { status: "planned", use: "comparativas categóricas" },
   line: { status: "planned", use: "series temporales" },

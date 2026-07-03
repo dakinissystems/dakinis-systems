@@ -30,7 +30,7 @@ Product → Event bus → Notifications Worker → channel adapters (email, push
 ```powershell
 cd notifications
 npm install
-npm run dev          # API :4011
+npm run dev          # API :4081
 npm run worker       # worker (needs REDIS_URL)
 ```
 

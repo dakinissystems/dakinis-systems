@@ -76,4 +76,16 @@ Gateway prefix: `/hub/` or dedicated subdomain in production.
 - ⬜ Notifications center wired to Notifications service (when live)
 - ⬜ Full AppShell adoption from `@dakinis/shared-layouts`
 
-Detail: [dakinis-systems docs](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/DAKINIS-SISTEMA-TEMP.md)
+Use **`HubDashboardPage`** from `@dakinis/shared-layouts` as the starting dashboard:
+
+```jsx
+import { HubDashboardPage } from "@dakinis/shared-layouts";
+
+export default function HomePage() {
+  return <HubDashboardPage userName="Christian" />;
+}
+```
+
+Internal API: `GET /internal/hub/dashboard/:userId` (via gateway) for aggregated section data.
+
+---

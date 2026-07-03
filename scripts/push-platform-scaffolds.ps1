@@ -3,7 +3,7 @@
 #      .\scripts\push-platform-scaffolds.ps1 -Repo billing
 
 param(
-    [ValidateSet("all", "billing", "notifications", "search")]
+    [ValidateSet("all", "billing", "notifications", "search", "internal")]
     [string]$Repo = "all"
 )
 
@@ -25,6 +25,11 @@ $map = @{
         dir = Join-Path $root "search"
         remote = "https://github.com/dakinissystems/dakinis-search.git"
         message = "Platform search scaffold"
+    }
+    internal = @{
+        dir = Join-Path $root "internal"
+        remote = "https://github.com/dakinissystems/dakinis-internal-api.git"
+        message = "Platform internal API scaffold"
     }
 }
 
@@ -75,7 +80,7 @@ function Push-Scaffold($name, $cfg) {
     Pop-Location
 }
 
-$targets = if ($Repo -eq "all") { @("billing", "notifications", "search") } else { @($Repo) }
+$targets = if ($Repo -eq "all") { @("billing", "notifications", "search", "internal") } else { @($Repo) }
 
 foreach ($name in $targets) {
     Push-Scaffold $name $map[$name]

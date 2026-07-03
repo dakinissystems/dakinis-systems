@@ -1,6 +1,8 @@
 import http from "node:http";
 import { config } from "./config.js";
 import { routes } from "./routes.js";
+import { getRootPage } from "./root.js";
+import { sendHtml } from "./status-page.js";
 
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body);
@@ -13,20 +15,27 @@ function sendJson(res, status, body) {
 }
 
 function matchRoute(method, path) {
-  const key = `${method} ${path.split("?")[0]}`;
+  const bare = path.split("?")[0];
+  const key = `${method} ${bare}`;
   if (routes[key]) return routes[key];
   if (method === "GET" && path.startsWith("/v1/query")) return routes["GET /v1/query"];
-  if (path.startsWith("/v1/index/") && method === "DELETE") {
+  if (bare.startsWith("/v1/index/") && method === "DELETE") {
     return routes["DELETE /v1/index/:scope/:id"];
   }
   return null;
 }
 
 const server = http.createServer(async (req, res) => {
-  const path = req.url || "/";
-  const handler = matchRoute(req.method || "GET", path);
+  const raw = req.url || "/";
+  const path = raw.split("?")[0];
+
+  if ((req.method || "GET") === "GET" && path === "/") {
+    return sendHtml(res, 200, getRootPage(), config.service);
+  }
+
+  const handler = matchRoute(req.method || "GET", raw);
   if (!handler) {
-    return sendJson(res, 404, { error: "not_found", path: path.split("?")[0] });
+    return sendJson(res, 404, { error: "not_found", path });
   }
   try {
     const result = await handler(req);

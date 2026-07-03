@@ -4,7 +4,7 @@
  */
 export class PlatformClient {
   constructor(opts = {}) {
-    this.baseUrl = (opts.baseUrl || process.env.DAKINIS_INTERNAL_URL || "http://localhost:3000/internal").replace(
+    this.baseUrl = (opts.baseUrl || process.env.DAKINIS_INTERNAL_URL || "http://localhost/internal").replace(
       /\/$/,
       ""
     );
@@ -35,9 +35,23 @@ export class AuthClient extends PlatformClient {
 
 /** @extends PlatformClient */
 export class BillingClient extends PlatformClient {
-  /** @param {string} userId */
-  subscription(userId) {
-    return this.request(`/billing/subscriptions/${encodeURIComponent(userId)}`);
+  plans() {
+    return this.request("/billing/plans");
+  }
+
+  /** @param {string} tenantId */
+  subscription(tenantId) {
+    return this.request(`/billing/subscriptions/${encodeURIComponent(tenantId)}`);
+  }
+
+  /** @param {{ plan: string; email?: string; businessId?: string; userId?: string }} body */
+  checkout(body) {
+    return this.request("/billing/checkout", { method: "POST", body: JSON.stringify(body) });
+  }
+
+  /** @param {{ userId: string; returnUrl?: string }} body */
+  portal(body) {
+    return this.request("/billing/portal", { method: "POST", body: JSON.stringify(body) });
   }
 }
 

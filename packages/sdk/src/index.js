@@ -10,3 +10,9 @@ export {
   KnowledgeClient,
   PlatformClient,
 } from "./modules/platform.js";
+export {
+  BillingServiceClient,
+  NotificationsServiceClient,
+  SearchServiceClient,
+  ServiceClient,
+} from "./modules/platform-services.js";

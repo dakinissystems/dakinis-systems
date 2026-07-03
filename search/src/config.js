@@ -1,5 +1,5 @@
 export const config = {
-  port: Number(process.env.PORT) || 4012,
+  port: Number(process.env.PORT) || 4082,
   service: "dakinis-search",
   redisUrl: process.env.REDIS_URL || "",
   indexQueue: process.env.SEARCH_INDEX_QUEUE || "dakinis:search:index",

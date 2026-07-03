@@ -24,8 +24,8 @@ Canonical UI scopes: `@dakinis/shared-ux/command-palette`.
 cd search
 npm install
 npm run dev
-curl "http://localhost:4012/health"
-curl "http://localhost:4012/v1/query?q=test&scope=clients"
+curl "http://localhost:4082/health"
+curl "http://localhost:4082/v1/query?q=test&scope=clients"
 ```
 
 ## Deploy (Railway)

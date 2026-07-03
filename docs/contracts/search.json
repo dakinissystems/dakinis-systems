@@ -1,6 +1,6 @@
 {
   "service": "dakinis-search",
-  "status": "planned",
+  "status": "scaffold",
   "description": "Global search — Hub Ctrl+K and cross-product query API.",
   "baseUrl": "https://search.dakinissystems.com",
   "gatewayPrefix": "/search/",

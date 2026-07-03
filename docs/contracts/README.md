@@ -10,7 +10,7 @@ Referencias **ligeras** (legibles por humanos y CI) para rutas y nombres expuest
 | [`akoenet-backend.json`](./akoenet-backend.json) | `/akoenet/` → AkoeNet Server |
 | [`dakinis-ai.json`](./dakinis-ai.json) | `/ai/` → `platform/ai` (Dakinis AI Platform) |
 | [`finance-api.json`](./finance-api.json) | `/finance/` → LifeFlow API + web (repo `lifeflow`) |
-| [`internal-api.json`](./internal-api.json) | `/internal/` → Internal API platform (planificado) |
+| [`internal-api.json`](./internal-api.json) | `/internal/` → Internal API platform (scaffold) |
 | [`billing.json`](./billing.json) | `/billing/` → [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) |
 | [`notifications.json`](./notifications.json) | `/notifications/` → [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |
 | [`search.json`](./search.json) | `/search/` → [dakinis-search](https://github.com/dakinissystems/dakinis-search) |

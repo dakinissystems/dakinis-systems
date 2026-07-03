@@ -21,7 +21,19 @@ docker compose -f compose.full.yml -f compose.prod.yml up --build
 
 Ejemplos: `http://localhost/auth/login`, `http://localhost/core/api/...` (con token), `http://localhost:4001/api/health` (puerto directo, sin JWT).
 
-Puertos directos al host: solo con overlay **`compose.dev.yml`** (`4000` auth, `4001` core, `4002` SA, `4003` akoenet). En **`compose.prod.yml`** solo se publican `80`/`443` del gateway.
+Puertos directos al host: solo con overlay **`compose.dev.yml`** (`4000` auth, `4001` core, `4002` SA, `4003` akoenet, `4020` AI, `4080–4082` billing/notifications/search, `4090` fitness). En **`compose.prod.yml`** solo se publican `80`/`443` del gateway.
+
+## Troubleshooting
+
+**StreamAutomator: `The server does not support SSL connections`** — el Postgres del contenedor `postgres` no usa TLS. `compose.full.yml` fuerza `DATABASE_SSL_STREAMAUTOMATOR=false` para el stack local. Si apuntas `DATABASE_URL_STREAMAUTOMATOR` a Supabase remoto, define también `DATABASE_SSL_STREAMAUTOMATOR=true` en `docker/.env` o `.env.dev`.
+
+Puertos platform dev: billing **4080**, notifications **4081**, search **4082**, internal **4083**, fitness **4090**.
+
+**502 en `/billing/` (u otros `*.railway.internal`)** — el gateway en Railway usa `resolver [fd12::10]`; en Docker local, `compose.dev.yml` monta `docker/nginx/resolver.local.conf` (`127.0.0.11`). Tras cambiar resolver, recarga gateway:
+
+```powershell
+docker compose -f compose.full.yml -f compose.dev.yml up -d gateway --force-recreate
+```
 
 ## Entorno
 

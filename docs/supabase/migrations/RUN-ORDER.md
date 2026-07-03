@@ -3,7 +3,7 @@
 Pega **cada archivo en orden** en el SQL Editor de Supabase (proyecto **Dakinis Production**).
 
 > **Identidad:** `dakinis_auth` (no `auth`). **ERP activo:** `dakinis_core_prod` hasta cutover → `core`.  
-> **Convenciones y estado:** [`DAKINIS-ESTRUCTURA-TEMP.md`](../../DAKINIS-ESTRUCTURA-TEMP.md) §17
+> **Convenciones y estado:** [`DAKINIS-SISTEMA-TEMP.md`](../../DAKINIS-SISTEMA-TEMP.md)
 
 ## Fase A — Estructura (000–013)
 
@@ -29,6 +29,15 @@ Pega **cada archivo en orden** en el SQL Editor de Supabase (proyecto **Dakinis 
 | 17 | [`017_functions_v1.sql`](./017_functions_v1.sql) | API SQL versionada (Node llama funciones, no tablas) |
 | 18 | [`018_hub_dashboard.sql`](./018_hub_dashboard.sql) | Vista + materialized view dashboard |
 | 19 | [`019_rls_templates_and_cutover_plan.sql`](./019_rls_templates_and_cutover_plan.sql) | RLS plantillas + checklist cutover core |
+
+## Fase D — Billing + Security Advisor (020–023)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 20 | [`020_billing_plan_catalog.sql`](./020_billing_plan_catalog.sql) | Catálogo planes |
+| 21 | [`021_billing_tenant_text.sql`](./021_billing_tenant_text.sql) | ✅ tenant_id text |
+| 22 | [`022_billing_functions_tenant_text.sql`](./022_billing_functions_tenant_text.sql) | Funciones billing text |
+| 23 | [`023_security_advisor_fixes.sql`](./023_security_advisor_fixes.sql) | RLS, search_path, extensiones |
 
 ## Seeds
 

@@ -17,7 +17,15 @@ DECLARE
     'public',
     'dakinis_auth',
     'dakinis_core_prod',
-    'dakinis_core_dev'
+    'dakinis_core_dev',
+    'core',
+    'billing',
+    'stream',
+    'akoenet',
+    'lifeflow',
+    'ai',
+    'hub',
+    'audit'
   ];
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
@@ -67,7 +75,10 @@ FROM pg_class c
 JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE c.relkind = 'r'
   AND c.relrowsecurity
-  AND n.nspname IN ('public', 'dakinis_auth', 'dakinis_core_prod', 'dakinis_core_dev')
+  AND n.nspname IN (
+    'public', 'dakinis_auth', 'dakinis_core_prod', 'dakinis_core_dev',
+    'core', 'billing', 'stream', 'akoenet', 'lifeflow', 'ai', 'hub', 'audit'
+  )
   AND NOT EXISTS (
     SELECT 1
     FROM pg_policy pol

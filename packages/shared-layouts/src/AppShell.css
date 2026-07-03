@@ -78,3 +78,25 @@
     display: inline-flex;
   }
 }
+
+.dakinis-hub-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-xs, 0.25rem);
+}
+.dakinis-hub-nav__link {
+  display: block;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--dakinis-radius-sm);
+  color: var(--dakinis-muted, #b8c6d9);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.dakinis-hub-nav__link:hover {
+  background: var(--dakinis-surface-2);
+  color: var(--dakinis-text, #e8f0fa);
+}
