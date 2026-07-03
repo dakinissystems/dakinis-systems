@@ -122,3 +122,28 @@ export class SearchServiceClient extends ServiceClient {
     return this.request("/v1/index", { method: "POST", body: JSON.stringify(body) });
   }
 }
+
+export class KnowledgeServiceClient extends ServiceClient {
+  constructor(opts = {}) {
+    super(
+      opts.baseUrl || serviceBaseUrl("DAKINIS_KNOWLEDGE_URL", "/knowledge", "http://localhost:4084"),
+      opts.fetch
+    );
+  }
+
+  health() {
+    return this.request("/health");
+  }
+
+  sources() {
+    return this.request("/v1/sources");
+  }
+
+  query(body) {
+    return this.request("/v1/query", { method: "POST", body: JSON.stringify(body) });
+  }
+
+  ingest(body) {
+    return this.request("/v1/ingest", { method: "POST", body: JSON.stringify(body) });
+  }
+}

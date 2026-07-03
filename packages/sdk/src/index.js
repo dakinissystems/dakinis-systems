@@ -14,5 +14,6 @@ export {
   BillingServiceClient,
   NotificationsServiceClient,
   SearchServiceClient,
+  KnowledgeServiceClient,
   ServiceClient,
 } from "./modules/platform-services.js";

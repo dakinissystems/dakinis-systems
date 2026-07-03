@@ -81,7 +81,7 @@ Contratos placeholder: [`docs/contracts/`](./contracts/README.md).
 
 ⚠️ **No usar** `api.finance.dakinissystems.com` — SSL Cloudflare free no cubre subdominio de 2º nivel.
 
-**Workers roadmap:** Notifications · Scheduler · Media · Search — ver [`ROADMAP.md`](./ROADMAP.md).
+**Workers roadmap:** Notifications · Scheduler · Media · Search — ver [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md).
 
 ---
 
@@ -168,6 +168,88 @@ Backup: workflow `.github/workflows/backup-postgres.yml` — secret `BACKUP_DATA
 - Config: [`gateway/routes/default.conf`](../gateway/routes/default.conf)
 - LifeFlow: `/finance/health`, `/finance/api/*`, SPA `/finance/`
 - Reglas cambio: [`docs/rules.md`](./rules.md)
+- Smoke billing: `.\scripts\smoke-billing.ps1` (prod) o `-BaseUrl http://localhost`
+- Smoke knowledge: `.\scripts\smoke-knowledge.ps1` (prod) o `-BaseUrl http://localhost`
+
+---
+
+## Billing E2E Live (checklist)
+
+**Pre-requisito:** `.\scripts\smoke-billing.ps1` → los 3 checks en **200** (ya OK en prod).
+
+| Paso | Acción | Verificación |
+|------|--------|--------------|
+| 1 | Stripe Dashboard → Webhooks → endpoint Live | URL: `https://api.dakinissystems.com/billing/v1/webhooks/stripe` |
+| 2 | Eventos mínimos activos | `checkout.session.completed`, `customer.subscription.*`, `invoice.paid`, `invoice.payment_failed` |
+| 3 | `STRIPE_WEBHOOK_SECRET` en servicio **dakinis-billing** Railway | Redeploy billing |
+| 4 | Core Back: `DAKINIS_BILLING_URL` + `REDIS_URL` + `DAKINIS_EVENTS_QUEUE` | Sin `STRIPE_*` en Core |
+| 5 | Checkout test | `https://core.dakinissystems.com/precios` → Growth → tarjeta test Live o real |
+| 6 | Stripe → Webhook delivery | Respuesta **200** en el evento |
+| 7 | Supabase | `billing.subscriptions` fila con `plan=growth` y `tenant_id` correcto |
+| 8 | Core | `business.plan` actualizado (Redis consumer o sync manual) |
+| 9 | Impago (opcional) | Simular `invoice.payment_failed` → tenant `access_state=degraded` → restore al pagar |
+
+**SQL rápido post-checkout:**
+
+```sql
+SELECT plan, status, tenant_id, stripe_subscription_id, updated_at
+FROM billing.subscriptions
+ORDER BY updated_at DESC LIMIT 5;
+```
+
+---
+
+## Railway — Knowledge (dos servicios)
+
+Repo: [dakinis-knowledge](https://github.com/dakinissystems/dakinis-knowledge) · gateway ya expone `/knowledge/` → `dakinis-knowledge.railway.internal:4084`.
+
+### 1. knowledge-api
+
+| Campo | Valor |
+|-------|-------|
+| Repo | `dakinissystems/dakinis-knowledge` |
+| Root | `/` |
+| Builder | Dockerfile (`railway.toml`) |
+| Start | `npm run start:api` |
+| `PORT` | `4084` |
+| Health | `/health` |
+| Dominio (opcional) | `knowledge.dakinissystems.com` o solo vía gateway `/knowledge/` |
+
+**Variables API:**
+
+```
+PORT=4084
+REDIS_URL=${{Redis.REDIS_URL}}
+DATABASE_URL=<Supabase pooler 6543>
+DATABASE_SSL=true
+DAKINIS_SEARCH_URL=https://api.dakinissystems.com/search
+DAKINIS_INTERNAL_SERVICE_KEY=<igual que Core>
+STORAGE_PROVIDER=supabase
+STORAGE_BUCKET=knowledge
+```
+
+**Private networking:** alias `dakinis-knowledge.railway.internal` (Settings → Networking).
+
+### 2. knowledge-worker
+
+| Campo | Valor |
+|-------|-------|
+| Mismo repo | Segundo servicio en el mismo proyecto Railway |
+| Config | `railway.worker.toml` o Start Command: `npm run worker` |
+| Dominio | Ninguno |
+| `WORKER_TYPE` | `ingest` |
+| `KNOWLEDGE_INGEST_QUEUE` | `dakinis:knowledge:ingest` |
+
+**Variables worker:** `REDIS_URL`, `DATABASE_URL`, `WORKER_TYPE=ingest` (mínimo).
+
+### 3. Post-deploy
+
+```powershell
+.\scripts\smoke-knowledge.ps1
+curl.exe https://api.dakinissystems.com/knowledge/health
+```
+
+Supabase: `025` + `026` ✅ · Post-deploy: `.\scripts\smoke-knowledge.ps1`
 
 ---
 
@@ -180,11 +262,12 @@ Backup: workflow `.github/workflows/backup-postgres.yml` — secret `BACKUP_DATA
 | 3 | Stripe | E2E pago → webhook 200 → plan actualizado | [ ] |
 | 4 | Stripe | Impago → tenant degraded → restore | [ ] |
 | 5 | Stripe SA | Webhook `api.streamautomator.com/...` | [ ] |
-| 6 | Tenant access | `schemas/12-tenant-access.sql` en prod | [ ] |
+| 6 | Supabase | `022` + `023` + `024` + `12-tenant-access.sql` en prod | [x] |
 | 7 | Tenant access | Redeploy + smoke suspend/reactivate | [ ] |
-| 8 | Deploy | Push `dakinis-core` + Railway | [ ] |
+| 8 | Deploy | Push `dakinis-core` + Railway (proxy billing `:4080`) | [x] prod OK |
 | 9 | Deploy | Push `dakinis-landing` + smoke | [ ] |
 | 10 | Deploy | `upsert-platform-admin.mjs` prod | [ ] |
+| 11 | Gateway | Upstreams platform `4080–4084` + `/knowledge/` | [x] local |
 
 ---
 
@@ -192,14 +275,15 @@ Backup: workflow `.github/workflows/backup-postgres.yml` — secret `BACKUP_DATA
 
 | # | Área | Tarea | Estado |
 |---|------|-------|--------|
-| 11 | Railway Core | Variables `WHATSAPP_*` | [ ] |
-| 12 | WhatsApp | Callback Meta + smoke | [ ] |
-| 13 | Observabilidad | Sentry backend + frontend | [ ] |
-| 14 | Observabilidad | Uptime monitoring | [ ] |
-| 15 | Backups | Secret + probar workflow | [ ] |
-| 16 | Brand sync | SA/AkoeNet pendiente | 🔄 |
-| 17 | Legal | Revisión abogado tenant access | [ ] |
-| 18 | LifeFlow ops | Volume + JWT secret Railway | [ ] |
+| 12 | Railway Core | Variables `WHATSAPP_*` | [ ] |
+| 13 | WhatsApp | Callback Meta + smoke | [ ] |
+| 14 | Observabilidad | Sentry backend + frontend | [ ] |
+| 15 | Observabilidad | Uptime monitoring | [ ] |
+| 16 | Backups | Secret + probar workflow | [ ] |
+| 17 | Brand sync | SA/AkoeNet pendiente | 🔄 |
+| 18 | Legal | Revisión abogado tenant access | [ ] |
+| 19 | LifeFlow ops | Volume + JWT secret Railway | [ ] |
+| 20 | Knowledge | Railway deploy scaffold (repo ✅ GitHub) | [ ] |
 
 ---
 

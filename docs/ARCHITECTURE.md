@@ -1,356 +1,314 @@
 # Dakinis Systems — Arquitectura
 
-> **Estado vigente** · mayo 2026 · Solo arquitectura actual + objetivo de plataforma.  
-> Operaciones → [`OPERATIONS.md`](./OPERATIONS.md) · Roadmap → [`ROADMAP.md`](./ROADMAP.md) · Productos → [`PRODUCTS.md`](./PRODUCTS.md)
+> **Estado vigente** · julio 2026 · decisiones de arquitectura y capas.  
+> Estado operativo → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) · Productos → [`PRODUCTS.md`](./PRODUCTS.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md)
 
 ---
 
-## Valoración global (mayo 2026)
+## Tres capas
 
-| Área | Nota | Comentario |
-|------|------|------------|
-| Arquitectura | 9.9/10 | Platform vs Products bien separados en repos y BD |
-| Escalabilidad | 9.8/10 | AI Gateway, schemas Supabase, workers roadmap |
-| Organización Git | 10/10 | Un repo por servicio/producto |
-| Separación productos | 10/10 | Sin BD compartida entre productos |
-| Railway | 9.8/10 | Mapa Fase 1 definido; workers transversales pendientes |
-| Supabase | 9.7/10 | Multi-schema 000–019; cutover core/stream pendiente |
-| IA | 9.5/10 | Agents + gateway; Knowledge y capacidades ampliadas en roadmap |
-| UX / DES | 9.6/10 | DES maduro; Hub aún launcher-first en UI |
-| Documentación | 10/10 | Contratos, legal, SQL, docs divididos |
+No mezclar **Infrastructure**, **Platform** ni **Products**. Tabla de estado: [PLATFORM-STATUS § Ecosistema](./PLATFORM-STATUS.md#estado-del-ecosistema).
 
-**Conclusión:** la arquitectura ya se parece a una plataforma SaaS multi-producto. El trabajo principal es **ejecutar** el roadmap (Hub centro, cutover Supabase, servicios transversales).
+```mermaid
+flowchart TB
+  subgraph infra [Infrastructure]
+    GW[Gateway]
+    REDIS[(Redis)]
+    SB[(Supabase)]
+    RAIL[Railway]
+    STOR[Storage]
+    OBS[Observability]
+  end
+
+  subgraph platform [Platform]
+    AUTH[Auth]
+    HUB[Hub]
+    AI[AI Platform]
+    BILL[Billing]
+    NOTIF[Notifications]
+    SRCH[Search]
+    KNOW[Knowledge]
+    EVT[Events]
+  end
+
+  subgraph products [Products]
+    CORE[Core]
+    LF[LifeFlow]
+    SA[StreamAutomator]
+    AN[AkoeNet]
+    TT[Tabletop]
+    LAND[Landing]
+  end
+
+  infra --> platform
+  platform --> products
+```
+
+| Capa | Qué incluye | Qué no incluye |
+|------|-------------|----------------|
+| **Infrastructure** | Gateway, Redis, Supabase, Railway, Storage, Observability | Lógica de negocio de productos |
+| **Platform** | Auth, Hub, AI, Billing, Notifications, Search, Knowledge, Events, DES, SDK | Core, LifeFlow, SA… |
+| **Products** | Core (Business OS), LifeFlow, StreamAutomator, AkoeNet, Tabletop, Landing | Auth, Billing, AI engine |
+
+**Reglas:**
+
+1. **Core es producto**, no plataforma.
+2. Los productos **solo consumen** platform vía Gateway o Internal API — nunca cross-DB.
+3. **Billing es plataforma en prod** (v0.2.0) — no roadmap.
+4. **Knowledge es servicio aparte** — AI lo consume; no al revés.
 
 ---
 
-## Modelo mental: Platform ≠ Products
+## Infrastructure
 
-**Core no es plataforma. Core es un producto** (Business Operating System).
+### Gateway — ✅
+
+`api.dakinissystems.com` · Nginx · JWT (`/_auth_check`) · rate limit · CORS.
+
+Prefijos: `/auth/` · `/core/` · `/finance/` · `/billing/` · `/notifications/` · `/search/` · `/ai/` · `/internal/` · SA · AkoeNet
+
+Config: [`gateway/routes/default.conf`](../gateway/routes/default.conf) · reglas: [`rules.md`](./rules.md)
+
+### Redis — ✅
+
+Cache · colas · event bus (lists → BullMQ roadmap). Referencia: `${{Redis.REDIS_URL}}`.
+
+### Supabase — 🔄
+
+PostgreSQL multi-schema · pooler `:6543` · identidad `dakinis_auth`.
+
+Schema `meta`: `function_versions` ✅ · `schema_versions` · `migration_history` · `feature_flags` ⬜
+
+Orden SQL: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
+
+### Railway — ✅
+
+Contenedores · mapa 22 servicios: [PLATFORM-STATUS § Railway](./PLATFORM-STATUS.md#railway--mapa-de-servicios)
+
+### Storage — ⬜
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  PLATFORM (servicios transversales)                         │
-│  Auth · Gateway · AI · Hub · DES · Billing* · Notifications*      │
-│  Events* · Search* · Knowledge* · Storage* · Observability*         │
-└─────────────────────────────────────────────────────────────┘
-         │ HTTP / Internal API / Event bus (nunca cross-DB)
-         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  PRODUCTS (negocio independiente)                           │
-│  Core · LifeFlow · StreamAutomator · AkoeNet · Tabletop     │
-└─────────────────────────────────────────────────────────────┘
-
-* = diseñado / schema parcial — ver ROADMAP.md
+Storage → Supabase Storage / Cloudflare R2
+         → Assets · Media · Documents · Exports
 ```
 
-### Repos GitHub
+Prioridad: LifeFlow · Tabletop · Core · Knowledge
 
-| Capa | Repos |
-|------|-------|
-| **Platform** | `dakinis-auth`, `dakinis-ai`, `dakinis-hub`, [`dakinis-billing`](https://github.com/dakinissystems/dakinis-billing), [`dakinis-notifications`](https://github.com/dakinissystems/dakinis-notifications), [`dakinis-search`](https://github.com/dakinissystems/dakinis-search) |
-| **DES (platform)** | `dakinis-shared` — monorepo npm (`shared-des`, `shared-brand`, `shared-layouts`…). Fuente dev: `dakinis-systems/packages/` |
-| **Products** | `dakinis-core`, `lifeflow`, `dakinis-streamautomator`, `akoenet-*`, `dakinis-tabletop` |
-| **Marketing** | `dakinis-landing` |
-| **Orquestación** | `dakinis-systems` (gateway, Docker, SQL, contratos, legal) |
+### Observability — 🔄
 
-Carpetas locales ignoradas: `apps/`, `platform/`, `finanzas/`, `DND/` (repo `dakinis-tabletop`).
+Logs · metrics · tracing (Sentry) · queue health · costes IA · `/health` por servicio.
 
 ---
 
-## Hub — centro del ecosistema (objetivo)
+## Platform
 
-**Hoy:** launcher de apps + widgets.  
-**Objetivo:** home del usuario — las apps son secundarias.
-
-```
-Hub (hub.dakinissystems.com)
-├── Mi día              ← agenda, tareas, resumen IA
-├── Actividad           ← timeline cross-producto
-├── IA                  ← resumen + recomendaciones
-├── Notificaciones      ← in-app (+ canales vía servicio Notifications)
-├── Widgets             ← salud financiera, ventas, streams…
-└── Aplicaciones        ← launcher (último, no primero)
-```
-
-Implementación parcial: `HUB_DASHBOARD_SECTIONS` y `HUB_WIDGET_REGISTRY` en `@dakinis/shared-ux`.
-
----
-
-## Internal API (regla de integración)
-
-Los productos **no hablan entre sí**. Hablan con **Internal API** (platform):
+### Consumo desde productos
 
 ```
-Product (Core | LifeFlow | SA | AkoeNet)
-    │
-    ▼
-Internal API  (/internal/* — auth service-to-service)
-    ├── /internal/users
-    ├── /internal/profile
-    ├── /internal/events
-    ├── /internal/storage
-    ├── /internal/search
-    ├── /internal/knowledge
-    └── /internal/notifications
+Product
+    ↓
+Gateway (api.dakinissystems.com)
+    ↓
+Auth · Billing · Notifications · Search · Knowledge · Storage
+    ↓
+Internal API (/internal/) — proxy opcional · mirror [`internal/`](../internal/)
 ```
 
-Contrato esqueleto: [`docs/contracts/internal-api.json`](./contracts/internal-api.json).
+Contrato: [`contracts/internal-api.json`](./contracts/internal-api.json)
 
----
+### Auth — ✅
 
-## Servicios de plataforma
+`dakinis-auth` · `auth.dakinissystems.com` · schema `dakinis_auth` · JWT central.
 
-### Auth — ✅ vigente
+### Hub — 🔄
 
-`auth.dakinissystems.com` · JWT central · gateway `/_auth_check`.
+`dakinis-hub` · `hub.dakinissystems.com` · schema `hub`.
 
-### Gateway — ✅ vigente
+**Hoy:** launcher + widgets. **Objetivo:** Mi día → Actividad → IA → Notificaciones → Widgets → Apps.
 
-`api.dakinissystems.com` · Nginx · rate limit · CORS · proxy a todos los upstreams.  
-Ver [`gateway/routes/default.conf`](../gateway/routes/default.conf) · [`docs/rules.md`](./rules.md).
+Registries: `HUB_DASHBOARD_SECTIONS` · `HUB_WIDGET_REGISTRY` en `@dakinis/shared-ux`.
 
-### AI — 🔄 en progreso
+### AI Platform — 🔄
 
-`platform/ai` · puerto `:4020` · Gateway `/ai/`.
+`dakinis-ai` · `:4020` · `/ai/` · schema `ai`.
 
 ```
 AI Platform
-├── LLM (chat, agents)
-├── OCR
-├── Embeddings
-├── RAG (consulta Knowledge)
-├── Vision / Speech / Transcription  ← roadmap
-└── Prompt Registry / Agent Registry ← agents.js en shared-ai
+├── LLM · Agents
+├── Knowledge (consume RAG sources)
+├── Vision · Speech · OCR
+├── Forecast · Recommendations · Automation · Planner
+└── Embeddings (pgvector · AI Worker)
 ```
 
-**Knowledge es servicio separado** (no mezclado con AI):
+Contrato: [`contracts/dakinis-ai.json`](./contracts/dakinis-ai.json)
+
+Agents: `@dakinis/shared-ai/agents.js` — `core-advisor`, `lifeflow-coach`, `support-agent`, `knowledge-agent`, etc.
+
+### Knowledge — 🔄 scaffold
+
+Servicio **independiente** de AI y Search.
 
 ```
-Knowledge                    AI consulta Knowledge
-├── PDF / Wiki               ──────────────────────► RAG
-├── Documentos / FAQ
-├── Policies / Productos
-└── schema `ai` + futuro schema `knowledge`
+Knowledge
+├── Documents · Policies · FAQ · Wiki
+├── Product docs · User docs
+├── RAG sources
+└── Embeddings → Search semantic
 ```
 
-### Billing — ⬜ producto interno (Fase 8)
+Mirror local: `knowledge/` · puerto **4084** · repo [`dakinis-knowledge`](https://github.com/dakinissystems/dakinis-knowledge) · layout `api/` + `workers/` · schema `knowledge` ([025](./supabase/migrations/025_knowledge_schema.sql))
 
-Dominio objetivo: `billing.dakinissystems.com` · schema `billing`.
+Contrato: [`contracts/knowledge.json`](./contracts/knowledge.json)
 
-| Dominio | Entidades |
-|---------|-----------|
-| Planes | Starter, Growth, Pro, Lite, Premium… |
-| Suscripciones | Stripe Customer Portal |
-| Facturas | invoices |
-| Licencias | SA, marketplace |
-| Uso | consumo IA, storage |
-| Cupones | promos |
-| Marketplace | comisiones plugins |
+### Billing — ✅ prod
 
-Hoy: lógica Stripe parcial en **Core** → migrar a repo `dakinis-billing`.
+`dakinis-billing` · v0.2.0 · `/billing/` · schema `billing` · Stripe Live.
 
-### Notifications — ⬜ diseñado
+Planes · suscripciones · checkout · portal · webhooks · Redis events → Core `business.plan`.
 
-Servicio transversal. Canales: `email`, `push`, `sms`, `whatsapp`, `discord`, `slack`, `webhooks`, `in-app`.
+Core **no** tiene SDK Stripe — proxy `/api/public/stripe/*` hacia Billing.
 
-```
-Core / LifeFlow / SA / AkoeNet
-    │  evento (ej. invoice.created)
-    ▼
-Notifications Service
-    ├── Email (SendGrid / Resend)
-    ├── Push (Web Push / FCM)
-    └── In-app (Hub + productos)
-```
+Contrato: [`contracts/billing.json`](./contracts/billing.json)
 
-Catálogo canales: `@dakinis/shared-ai` → `NOTIFICATION_CHANNELS`.  
-Contrato: [`docs/contracts/notifications.json`](./contracts/notifications.json).
+### Notifications — 🔄 scaffold
 
-### Search — ⬜ diseñado
+`dakinis-notifications` · `/notifications/` · puerto 4081.
 
-Hub search global (Ctrl+K ampliado):
+Canales objetivo: Email · Push · Discord · Slack · WhatsApp · SMS · In-App.
 
-```
-Buscar → Clientes · Facturas · Mensajes · Eventos · Documentación · Chats · IA
-```
+Catálogo: `NOTIFICATION_CHANNELS` en `@dakinis/shared-ai`. Contrato: [`contracts/notifications.json`](./contracts/notifications.json)
 
-Backend objetivo: índice + embeddings · schema `hub` + worker Search.
+### Search — 🔄 scaffold
+
+`dakinis-search` · `/search/` · puerto 4082.
+
+Global Search · Index · Autocomplete · Semantic · Knowledge Search · AI Search.
 
 Scopes UI: `SEARCH_SCOPES` en `@dakinis/shared-ux/command-palette.js`.
 
-### Events — 🔄 parcial
-
-Hoy: `event-bus.js` en Core (in-process) + tipos `DAKINIS_EVENTS` en `@dakinis/shared-ai`.
-
-Objetivo platform:
+### Events — 🔄
 
 ```
-Events
-├── Redis
-├── BullMQ
-├── Queues + Workers
-├── Dead Letter Queue
-└── Retries
+Events → Redis → BullMQ → Queues → Workers → Retries → DLQ
 ```
 
-Ver `EVENT_BUS_QUEUES` en `@dakinis/shared-ai/events.js`.
+Hoy: Redis lists + `event-bus.js` Core · tipos `DAKINIS_EVENTS` en `@dakinis/shared-ai/events.js`.
 
-### Storage — ⬜ diseñado
+### DES — ✅
 
-Objetivo: imágenes, documentos, videos, OCR input, exports, backups.
+Monorepo [`dakinis-shared`](https://github.com/dakinissystems/dakinis-shared) · mirror `packages/`.
 
-Opciones: Supabase Storage · Cloudflare R2 · S3.  
-SDK stub: `@dakinis/sdk/storage`.
+Foundations → Tokens → Components → Patterns → Layouts → Animations · A11y · Icons · Charts · Copywriting.
 
-### Observability — ⬜ crítico en roadmap
+No se despliega en Railway. Ver [`GITHUB-ORG.md`](./GITHUB-ORG.md).
+
+### SDK — 🔄
+
+`@dakinis/sdk` — Auth · Billing · Notifications · Hub · AI · Storage ⬜ · Search · Knowledge 🔄
+
+Implementado: `ai`, `core`, `lifeflow`, `platform-services` · mirror [`packages/sdk/`](../packages/sdk/)
+
+---
+
+## Products
+
+Detalle funcional por producto: [`PRODUCTS.md`](./PRODUCTS.md).
+
+| Producto | Repo | BD | Consume platform |
+|----------|------|-----|------------------|
+| **Core** (Business OS) | `dakinis-core` | `dakinis_core_prod` | Auth, AI, Billing, Notifications |
+| **LifeFlow** | `lifeflow` | SQLite → `lifeflow` | Auth, AI |
+| **StreamAutomator** | `dakinis-streamautomator` | `stream` | Auth (Stripe propio) |
+| **AkoeNet** | `akoenet-*` | `akoenet` | Auth, Notifications |
+| **Tabletop** | `dakinis-tabletop` | SQLite → ⬜ | Auth, AI (roadmap) |
+| **Landing** | `dakinis-landing` | — | — |
+
+**Regla BD:** sin queries cross-schema desde apps producto. Sync vía HTTP + eventos.
+
+---
+
+## Bases de datos por schema
+
+| Schema | Capa | Notas |
+|--------|------|-------|
+| `dakinis_auth` | Platform | Identidad |
+| `billing` | Platform | Billing prod |
+| `ai` | Platform | AI + embeddings |
+| `hub` | Platform | Hub prefs, widgets |
+| `knowledge` | Platform | ⬜ |
+| `meta` | Infra/governance | function_versions, flags |
+| `dakinis_core_prod` → `core` | Product | Core ERP |
+| `stream` | Product | StreamAutomator |
+| `akoenet` | Product | AkoeNet |
+| `lifeflow` | Product | ⬜ |
+| `audit` | Platform | Logs, jobs |
+
+Tabletop hoy: SQLite volume · schema Supabase ⬜
+
+---
+
+## LifeFlow Engine (arquitectura)
+
+Motor **independiente de UI** — el producto real de LifeFlow:
 
 ```
-Observability
-├── Logs (structured)
-├── Metrics (tokens, latencia, colas)
-├── Tracing (requestId cross-service)
-├── Errors (Sentry)
-├── Costs (OpenAI, Railway, Supabase)
-└── Queues / Redis / Railway health
+Engine (Score · Forecast · Scenario · Risk · Retirement · Investment)
+    ↑
+API · Web · Mobile · Hub widgets
 ```
 
 ---
 
-## Bases de datos (aisladas)
+## Marketplace (capacidad platform)
 
-| Servicio | BD | Schema / notas |
-|----------|-----|----------------|
-| Core | Supabase PostgreSQL | `dakinis_core_prod` → cutover `core` |
-| Auth | Supabase | `dakinis_auth` |
-| Billing | Supabase | `billing` (004 migración) |
-| StreamAutomator | Supabase / propia | `stream` |
-| AkoeNet | Supabase / propia | `akoenet` |
-| LifeFlow | SQLite prod · PostgreSQL futuro | `lifeflow` (007) |
-| AI | Supabase | `ai` (008) |
-| Hub | Supabase | `hub` (009) |
-| Audit | Supabase | `audit` (010) |
-| Tabletop | SQLite + JWT (`dakinis-tabletop`) | `tabletop-api.dakinissystems.com` |
-
-**Regla:** sincronización solo vía HTTP + eventos. No queries cross-schema desde apps producto.
-
----
-
-## SDK — estructura objetivo
-
-```
-@dakinis/sdk
-├── auth        → tokens, refresh, verify
-├── billing     → planes, suscripciones, usage
-├── hub         → widgets, dashboard, timeline
-├── ai          → DakinisAI, agents (✅ parcial)
-├── storage     → upload, signed URLs
-├── notifications → subscribe, preferences
-├── events      → publish, subscribe
-└── search      → query, scopes
-```
-
-Implementación actual: `ai`, `core`, `lifeflow` · stubs en `sdk/src/modules/`.
-
----
-
-## AI Agents (no solo prompts)
-
-Registro canónico en `@dakinis/shared-ai/agents.js`:
-
-| Agent | Producto | Rol |
-|-------|----------|-----|
-| `core-advisor` | Core | Copilot BOS |
-| `sales-advisor` | Core | CRM / pipeline |
-| `restaurant-advisor` | Core | Restaurante vertical |
-| `inventory-coach` | Core | Stock / caducidad |
-| `lifeflow-coach` | LifeFlow | Coach financiero |
-| `finance-coach` | LifeFlow | alias roadmap |
-| `support-agent` | Platform | Soporte + RAG |
-| `knowledge-agent` | Platform | Knowledge Hub |
-| `marketplace-agent` | Hub | Plugins / apps |
-
----
-
-## LifeFlow Engine (arquitectura objetivo)
-
-Motor de simulación **independiente de la UI**:
-
-```
-LifeFlow Engine
-├── Score Engine
-├── Forecast Engine
-├── Scenario Engine
-├── Risk Engine
-├── Retirement Engine
-└── Investment Engine
-         ▲
-    Web · Android · API · Hub widgets
-```
-
-API objetivo: `POST /v1/score` · `/v1/coach` · `/v1/scenario` · `GET /v1/cities/compare`.
-
----
-
-## Marketplace (estructura objetivo)
-
-```
-Marketplace (Hub)
-├── Apps
-├── Plugins
-├── Themes
-├── Templates
-├── Automations
-└── AI Agents
-```
-
----
-
-## Design System (DES) — capas
-
-```
-DES (@dakinis/shared-des + monorepo dakinis-shared)
-├── Foundations     ✅ shared-brand — surfaces, spacing, motion, themes
-├── Components      🔄 shared-ux — Card, Timeline, 8 AI components
-├── Patterns        ✅ registries + empty/loading/errors
-├── Layouts         ✅ shared-layouts — AppShell, DashboardTemplate
-├── Charts          🔄 shared-charts — catálogo
-├── Product Themes  ✅ acento por producto
-└── Audit           ✅ design-audit
-```
-
-DES no se despliega en Railway. Es **platform en GitHub** — ver [`GITHUB-ORG.md`](./GITHUB-ORG.md).
-
----
-
-## Diagrama de despliegue (Railway Fase 1)
-
-Ver detalle operativo en [`OPERATIONS.md`](./OPERATIONS.md).
-
-```
-Gateway → Auth → AI API → AI Worker → Hub → Core API → Core Web
-                              ↓
-                    (roadmap: Notifications, Search, Media workers)
-                              ↓
-         LifeFlow API/Web · Stream* · AkoeNet* · Landing · Redis
-```
+Apps · Plugins · Templates · Automations · AI Agents · Themes — UI Hub ⬜
 
 ---
 
 ## Contratos HTTP
 
-Índice: [`docs/contracts/README.md`](./contracts/README.md).
+Índice: [`contracts/README.md`](./contracts/README.md)
 
-| Contrato | Prefijo |
-|----------|---------|
-| auth.json | `/auth/` |
-| core-api.json | `/core/` |
-| dakinis-ai.json | `/ai/` |
-| finance-api.json | `/finance/` |
-| streamautomator-api.json | `/streamautomator/` |
-| akoenet-backend.json | `/akoenet/` |
-| internal-api.json | `/internal/` (objetivo) |
-| notifications.json | `/notifications/` (objetivo) |
+| Contrato | Prefijo | Capa |
+|----------|---------|------|
+| auth.json | `/auth/` | Platform |
+| billing.json | `/billing/` | Platform |
+| dakinis-ai.json | `/ai/` | Platform |
+| notifications.json | `/notifications/` | Platform |
+| search.json | `/search/` | Platform |
+| knowledge.json | `/knowledge/` | Platform |
+| internal-api.json | `/internal/` | Platform |
+| core-api.json | `/core/` | Product |
+| finance-api.json | `/finance/` | Product |
+| streamautomator-api.json | SA | Product |
+| akoenet-backend.json | AkoeNet | Product |
 
 ---
 
-*Mantener este archivo alineado con cambios de gateway, schemas Supabase y nuevos servicios platform.*
+## Repos y carpetas locales
+
+| Capa | Repos GitHub | Mirror local (gitignored) |
+|------|--------------|---------------------------|
+| Orquestación | `dakinis-systems` | — |
+| Platform | auth, ai, hub, billing, notifications, search, shared | `platform/`, `billing/`, … |
+| Products | core, lifeflow, streamautomator, akoenet-*, tabletop, landing | `platform/core`, `apps/`, `finanzas/`, `DND/` |
+
+Carpeta `DND/` = desarrollo local **Tabletop** (repo `dakinis-tabletop`). En documentación usar siempre **Tabletop**.
+
+---
+
+## Diagrama de despliegue (Railway)
+
+```
+Gateway → Auth → AI (+ Worker) → Hub → Core (API + Web)
+              → Billing · Notifications · Search (platform)
+              → LifeFlow · Tabletop · SA (+ workers) · AkoeNet · Landing
+              → Redis · Supabase (externo)
+```
+
+Mapa completo: [PLATFORM-STATUS § Railway](./PLATFORM-STATUS.md#railway--mapa-de-servicios)
+
+---
+
+*Actualizar al añadir servicios platform, cambiar gateway o schemas Supabase.*

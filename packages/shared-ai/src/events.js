@@ -55,6 +55,7 @@ export const EVENT_BUS_QUEUES = {
   search: { name: "dakinis.search", concurrency: 2, retries: 3 },
   knowledge: { name: "dakinis.knowledge", concurrency: 2, retries: 3 },
   media: { name: "dakinis.media", concurrency: 2, retries: 2 },
+  storage: { name: "dakinis.storage", concurrency: 2, retries: 2 },
   deadLetter: { name: "dakinis.dlq", concurrency: 1, retries: 0 },
 };
 

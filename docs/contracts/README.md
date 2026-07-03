@@ -14,5 +14,6 @@ Referencias **ligeras** (legibles por humanos y CI) para rutas y nombres expuest
 | [`billing.json`](./billing.json) | `/billing/` → [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) |
 | [`notifications.json`](./notifications.json) | `/notifications/` → [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |
 | [`search.json`](./search.json) | `/search/` → [dakinis-search](https://github.com/dakinissystems/dakinis-search) |
+| [`knowledge.json`](./knowledge.json) | `/knowledge/` → [dakinis-knowledge](https://github.com/dakinissystems/dakinis-knowledge) |
 
 Actualiza estos JSON cuando cambies prefijos en [`gateway/routes/`](../../gateway/routes/) o contratos públicos de las APIs.

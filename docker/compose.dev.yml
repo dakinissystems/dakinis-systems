@@ -39,19 +39,23 @@ services:
 
   billing:
     ports:
-      - "4080:8080"
+      - "4080:4080"
 
   notifications:
     ports:
-      - "4081:8080"
+      - "4081:4081"
 
   search:
     ports:
-      - "4082:8080"
+      - "4082:4082"
+
+  knowledge:
+    ports:
+      - "4084:4084"
 
   internal-api:
     ports:
-      - "4083:8080"
+      - "4083:4083"
 
   gateway:
     labels:

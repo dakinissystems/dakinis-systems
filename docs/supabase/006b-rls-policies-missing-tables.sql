@@ -22,7 +22,8 @@ DECLARE
     'ai',
     'hub',
     'audit',
-    'meta'
+    'meta',
+    'knowledge'
   ];
   created int := 0;
 BEGIN
@@ -73,7 +74,7 @@ WHERE c.relkind = 'r'
   AND c.relrowsecurity
   AND n.nspname IN (
     'public', 'dakinis_auth', 'dakinis_core_prod', 'dakinis_core_dev',
-    'core', 'billing', 'stream', 'akoenet', 'lifeflow', 'ai', 'hub', 'audit', 'meta'
+    'core', 'billing', 'stream', 'akoenet', 'lifeflow', 'ai', 'hub', 'audit', 'meta', 'knowledge'
   )
   AND NOT EXISTS (
     SELECT 1 FROM pg_policy pol WHERE pol.polrelid = c.oid

@@ -2,9 +2,6 @@
 /apps/
 /platform/
 
-# --- Docs temporales locales (no versionar) ---
-docs/*-TEMP.md
-
 # --- Proyectos locales fuera del control repo ---
 /finanzas/
 /hub/

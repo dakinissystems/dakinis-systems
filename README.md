@@ -33,7 +33,7 @@ Prefijos HTTP en dev (`localhost:80`): `/auth/`, `/core/`, `/streamautomator/`, 
 | [`docs/legal/`](./docs/legal/) | Textos legales (privacidad, términos, cookies) |
 | [`docs/contracts/`](./docs/contracts/) | Contratos HTTP del ecosistema |
 | [`docs/rules.md`](./docs/rules.md) | Reglas al modificar rutas del gateway |
-| [`docs/DAKINIS-SISTEMA-TEMP.md`](./docs/DAKINIS-SISTEMA-TEMP.md) | Overview unificado local (DES, IA, ops, repos) |
+| [`docs/PLATFORM-STATUS.md`](./docs/PLATFORM-STATUS.md) | Estado unificado — roadmap, Railway, billing |
 | [`docs/GITHUB-ORG.md`](./docs/GITHUB-ORG.md) | Alineación GitHub: monorepo DES, descripciones repos |
 | [`packages/README.md`](./packages/README.md) | Índice paquetes DES (target: `dakinis-shared`) |
 | [`billing/README.md`](./billing/README.md) | [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) |

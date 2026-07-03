@@ -81,7 +81,7 @@ services:
       # Mismo SPA Vite habitual; evita clash de FRONTEND_URL compartido vía env_file.
       FRONTEND_URL: http://localhost:5173
       CORS_ORIGIN: http://localhost:5173
-      DAKINIS_BILLING_URL: http://billing.railway.internal:8080
+      DAKINIS_BILLING_URL: http://dakinis-billing.railway.internal:4080
       DAKINIS_INTERNAL_SERVICE_KEY: ${INTERNAL_API_KEY:-dakinis-dev-internal-key}
       DAKINIS_EVENTS_QUEUE: dakinis:events
     expose:
@@ -246,7 +246,7 @@ services:
     env_file:
       - .env.${ENV:-dev}
     environment:
-      PORT: "8080"
+      PORT: "4080"
       DATABASE_URL: ${DATABASE_URL_BILLING:-postgres://dakinis:dakinis@postgres:5432/dakinis}
       DATABASE_SSL: "false"
       POSTGRES_SCHEMA: billing
@@ -254,12 +254,12 @@ services:
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dakinis-dev-internal-key}
       FRONTEND_URL: http://localhost:5173
     expose:
-      - "8080"
+      - "4080"
     depends_on:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4080/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -267,7 +267,7 @@ services:
     networks:
       dakinis:
         aliases:
-          - billing.railway.internal
+          - dakinis-billing.railway.internal
 
   notifications:
     build:
@@ -276,15 +276,15 @@ services:
     container_name: dakinis-notifications
     restart: unless-stopped
     environment:
-      PORT: "8080"
+      PORT: "4081"
       REDIS_URL: redis://redis:6379
     expose:
-      - "8080"
+      - "4081"
     depends_on:
       redis:
         condition: service_started
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4081/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -292,7 +292,7 @@ services:
     networks:
       dakinis:
         aliases:
-          - notifications.railway.internal
+          - dakinis-notifications.railway.internal
 
   notifications-worker:
     build:
@@ -317,15 +317,15 @@ services:
     container_name: dakinis-search
     restart: unless-stopped
     environment:
-      PORT: "8080"
+      PORT: "4082"
       REDIS_URL: redis://redis:6379
     expose:
-      - "8080"
+      - "4082"
     depends_on:
       redis:
         condition: service_started
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4082/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -333,7 +333,7 @@ services:
     networks:
       dakinis:
         aliases:
-          - search.railway.internal
+          - dakinis-search.railway.internal
 
   search-worker:
     build:
@@ -351,30 +351,26 @@ services:
         condition: service_healthy
     networks: [dakinis]
 
-  internal-api:
+  knowledge:
     build:
-      context: ../internal
+      context: ../knowledge
       dockerfile: Dockerfile
-    container_name: dakinis-internal-api
+    container_name: dakinis-knowledge-api
     restart: unless-stopped
+    command: ["npm", "run", "start:api"]
     environment:
-      PORT: "8080"
+      PORT: "4084"
       REDIS_URL: redis://redis:6379
-      DAKINIS_INTERNAL_SERVICE_KEY: ${DAKINIS_INTERNAL_SERVICE_KEY:-dev-internal-key-change-in-prod}
-      DAKINIS_NOTIFICATIONS_URL: http://notifications.railway.internal:8080
-      DAKINIS_SEARCH_URL: http://search.railway.internal:8080
-      DAKINIS_BILLING_URL: http://billing.railway.internal:8080
+      DAKINIS_SEARCH_URL: http://dakinis-search.railway.internal:4082
     expose:
-      - "8080"
+      - "4084"
     depends_on:
       redis:
         condition: service_started
-      notifications:
-        condition: service_healthy
       search:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4084/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -382,7 +378,61 @@ services:
     networks:
       dakinis:
         aliases:
-          - internal.railway.internal
+          - dakinis-knowledge.railway.internal
+
+  knowledge-worker:
+    build:
+      context: ../knowledge
+      dockerfile: Dockerfile
+    container_name: dakinis-knowledge-worker
+    restart: unless-stopped
+    command: ["npm", "run", "worker"]
+    environment:
+      REDIS_URL: redis://redis:6379
+      KNOWLEDGE_INGEST_QUEUE: dakinis:knowledge:ingest
+      WORKER_TYPE: ingest
+    depends_on:
+      redis:
+        condition: service_started
+      knowledge:
+        condition: service_healthy
+    networks: [dakinis]
+
+  internal-api:
+    build:
+      context: ../internal
+      dockerfile: Dockerfile
+    container_name: dakinis-internal-api
+    restart: unless-stopped
+    environment:
+      PORT: "4083"
+      REDIS_URL: redis://redis:6379
+      DAKINIS_INTERNAL_SERVICE_KEY: ${DAKINIS_INTERNAL_SERVICE_KEY:-dev-internal-key-change-in-prod}
+      DAKINIS_NOTIFICATIONS_URL: http://dakinis-notifications.railway.internal:4081
+      DAKINIS_SEARCH_URL: http://dakinis-search.railway.internal:4082
+      DAKINIS_BILLING_URL: http://dakinis-billing.railway.internal:4080
+      DAKINIS_KNOWLEDGE_URL: http://dakinis-knowledge.railway.internal:4084
+    expose:
+      - "4083"
+    depends_on:
+      redis:
+        condition: service_started
+      notifications:
+        condition: service_healthy
+      search:
+        condition: service_healthy
+      knowledge:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4083/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-internal-api.railway.internal
 
   gateway:
     image: nginx:1.27-alpine
@@ -413,6 +463,8 @@ services:
       notifications:
         condition: service_healthy
       search:
+        condition: service_healthy
+      knowledge:
         condition: service_healthy
       internal-api:
         condition: service_healthy

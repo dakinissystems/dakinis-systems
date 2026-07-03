@@ -1,6 +1,6 @@
 {
   "service": "dakinis-billing",
-  "status": "partial",
+  "status": "production",
   "description": "Platform billing — plans, Stripe subscriptions, invoices, usage metering.",
   "baseUrl": "https://billing.dakinissystems.com",
   "gatewayPrefix": "/billing/",

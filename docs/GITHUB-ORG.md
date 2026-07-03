@@ -1,6 +1,6 @@
 # GitHub — organización y descripciones
 
-> Guía para alinear repos GitHub con [DAKINIS-SISTEMA-TEMP.md](./DAKINIS-SISTEMA-TEMP.md) y [ARCHITECTURE.md](./ARCHITECTURE.md).  
+> Guía para alinear repos GitHub con [PLATFORM-STATUS.md](./PLATFORM-STATUS.md) y [ARCHITECTURE.md](./ARCHITECTURE.md).  
 > **No cambiar Railway** por servicios futuros; solo documentar huecos reservados → [OPERATIONS.md](./OPERATIONS.md).
 
 ---
@@ -77,22 +77,25 @@ Ver pasos completos: [`packages/MIGRATION.md`](../packages/MIGRATION.md).
 
 ---
 
-## Platform repos (billing, notifications, search)
+## Platform repos (billing, notifications, search, knowledge, internal)
 
-Repos **creados** en GitHub. Mirror local en control repo + push con script.
+Repos **creados** en GitHub (excepto Knowledge — scaffold local). Mirror local en control repo + push con script.
 
 | Repo GitHub | Mirror local | Railway |
 |-------------|--------------|---------|
 | [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) | `billing/` | ⬜ Fase 8 |
 | [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) | `notifications/` | ⬜ Fase 5–6 |
 | [dakinis-search](https://github.com/dakinissystems/dakinis-search) | `search/` | ⬜ roadmap |
+| [dakinis-knowledge](https://github.com/dakinissystems/dakinis-knowledge) | `knowledge/` | ⬜ Fase 6 |
+| [dakinis-internal-api](https://github.com/dakinissystems/dakinis-internal-api) | `internal/` | ⬜ no deploy |
 
 ```powershell
 .\scripts\push-platform-scaffolds.ps1
-# .\scripts\push-platform-scaffolds.ps1 -Repo billing
+# .\scripts\push-platform-scaffolds.ps1 -Repo knowledge
+# .\scripts\push-platform-scaffolds.ps1 -ScaffoldOnly   # solo api/ workers/ docs/ sin push
 ```
 
-Puertos dev: **4080** · **4081** · **4082** (fitness Docker host: **4090**). No desplegar en Railway hasta implementar lógica real.
+Layout estándar (todos los repos platform): `api/` · `workers/` · `packages/` · `docs/` · `tests/` · `.github/` · `Dockerfile` · `docker-compose.yml` · `railway.toml`
 
 ---
 
@@ -117,6 +120,7 @@ Todas las descripciones cortas del repo en **inglés**, formato uniforme: `[Prod
 | **dakinis-billing** | Platform billing service — Stripe subscriptions, plans, invoices and usage metering. |
 | **dakinis-notifications** | Cross-product notifications platform — email, push, in-app inbox and webhooks. |
 | **dakinis-search** | Global search platform — Hub Ctrl+K and cross-product index API. |
+| **dakinis-knowledge** | Knowledge platform for Dakinis Systems with document ingestion, RAG and semantic search. |
 
 ### Aplicar con GitHub CLI
 
@@ -142,23 +146,14 @@ gh repo edit dakinissystems/dakinis-tabletop --description "Modern tabletop RPG 
 gh repo edit dakinissystems/dakinis-billing --description "Platform billing service — Stripe subscriptions, plans, invoices and usage metering."
 gh repo edit dakinissystems/dakinis-notifications --description "Cross-product notifications platform — email, push, in-app inbox and webhooks."
 gh repo edit dakinissystems/dakinis-search --description "Global search platform — Hub Ctrl+K and cross-product index API."
+gh repo edit dakinissystems/dakinis-knowledge --description "Knowledge platform for Dakinis Systems with document ingestion, RAG and semantic search."
 ```
 
 ---
 
 ## README por repo
 
-Plantillas listas para copiar al repo correspondiente:
-
-| Plantilla | Repo destino |
-|-----------|--------------|
-| [templates/README-dakinis-shared.md](./templates/README-dakinis-shared.md) | `dakinis-shared` |
-| [templates/README-dakinis-hub.md](./templates/README-dakinis-hub.md) | `dakinis-hub` |
-| [templates/README-dakinis-core.md](./templates/README-dakinis-core.md) | `dakinis-core` |
-| [templates/README-dakinis-landing.md](./templates/README-dakinis-landing.md) | `dakinis-landing` |
-| [templates/README-dakinis-ai.md](./templates/README-dakinis-ai.md) | `dakinis-ai` |
-
-Índice DES local (mientras la fuente siga en `dakinis-systems`): [`../packages/README.md`](../packages/README.md).
+Cada repo mantiene su README en GitHub. DES local: [`../packages/README.md`](../packages/README.md) · estado plataforma: [PLATFORM-STATUS.md](./PLATFORM-STATUS.md).
 
 ---
 
@@ -175,9 +170,8 @@ Plantillas listas para copiar al repo correspondiente:
 | Acción | Prioridad | Estado |
 |--------|-----------|--------|
 | Descriptions GitHub (inglés uniforme) | Alta | ⬜ ejecutar script |
-| README `dakinis-shared` (monorepo DES) | Alta | ✅ plantilla lista |
-| README `dakinis-hub` (centro ecosistema) | Alta | ✅ plantilla lista |
-| README Core / Landing / AI | Media | ✅ plantillas listas |
+| README `dakinis-shared` (monorepo DES) | Alta | ✅ vía `push-dakinis-shared.ps1` |
+| README Hub / Core / Landing / AI | Media | ✅ en cada repo GitHub |
 | Migrar `packages/` → repo `dakinis-shared` | Media | ✅ [dakinis-shared](https://github.com/dakinissystems/dakinis-shared) · `push-dakinis-shared.ps1` |
 | Scaffolds billing/notifications/search | Media | ✅ repos GitHub · push con `push-platform-scaffolds.ps1` |
 | Railway servicios futuros | Baja | ✅ solo docs (OPERATIONS) |

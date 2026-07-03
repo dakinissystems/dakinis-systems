@@ -170,18 +170,39 @@ export const routes = {
     return { status: proxied.status, body: proxied.body };
   },
 
-  "POST /knowledge/query": () => ({
-    status: 501,
-    body: { error: "not_implemented", message: "RAG Knowledge service — roadmap" },
-  }),
+  "POST /knowledge/query": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const proxied = await proxyJson(config.knowledgeUrl, "/v1/query", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+    return { status: proxied.status, body: { proxied: true, ...proxied.body } };
+  },
 
-  "POST /storage/upload": () => ({
-    status: 501,
-    body: { error: "not_implemented", message: "Storage service — roadmap" },
-  }),
+  "POST /storage/upload-url": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    if (!body.filename || !body.contentType) {
+      return { status: 400, body: { error: "validation", message: "filename and contentType required" } };
+    }
+    return {
+      status: 501,
+      body: {
+        error: "not_implemented",
+        message: "Supabase Storage / Cloudflare R2 — roadmap",
+        purpose: body.purpose || "asset",
+        filename: body.filename,
+      },
+    };
+  },
 
   "GET /storage/:objectId": () => ({
     status: 501,
-    body: { error: "not_implemented", message: "Signed URL — roadmap" },
+    body: { error: "not_implemented", message: "Signed URL read — Supabase Storage / R2 roadmap" },
   }),
 };

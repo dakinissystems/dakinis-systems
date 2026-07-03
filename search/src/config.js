@@ -7,12 +7,15 @@ export const config = {
 
 /** Search scopes — align with Hub command palette. */
 export const SEARCH_SCOPES = [
+  "global",
   "clients",
   "invoices",
   "messages",
   "events",
   "documentation",
+  "knowledge",
   "chats",
   "ai",
+  "semantic",
   "all",
 ];

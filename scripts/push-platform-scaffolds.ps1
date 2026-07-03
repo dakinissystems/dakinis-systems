@@ -1,14 +1,22 @@
 # Publica scaffolding en repos platform (git aislado por carpeta).
+# Asegura layout estándar api/ workers/ packages/ docs/ tests/ .github/ antes del push.
+#
 # Uso: .\scripts\push-platform-scaffolds.ps1
-#      .\scripts\push-platform-scaffolds.ps1 -Repo billing
+#      .\scripts\push-platform-scaffolds.ps1 -Repo knowledge
+#      .\scripts\push-platform-scaffolds.ps1 -ScaffoldOnly -Repo search
 
 param(
-    [ValidateSet("all", "billing", "notifications", "search", "internal")]
-    [string]$Repo = "all"
+    [ValidateSet("all", "billing", "notifications", "search", "knowledge", "internal")]
+    [string]$Repo = "all",
+    [switch]$ScaffoldOnly,
+    [switch]$SkipPush
 )
 
 $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
+
+. (Join-Path $PSScriptRoot "platform-scaffold\Ensure-PlatformScaffold.ps1")
+. (Join-Path $PSScriptRoot "platform-scaffold\configs.ps1")
 
 $map = @{
     billing = @{
@@ -26,6 +34,11 @@ $map = @{
         remote = "https://github.com/dakinissystems/dakinis-search.git"
         message = "Platform search scaffold"
     }
+    knowledge = @{
+        dir = Join-Path $root "knowledge"
+        remote = "https://github.com/dakinissystems/dakinis-knowledge.git"
+        message = "Platform knowledge — api/ + workers/ standard layout"
+    }
     internal = @{
         dir = Join-Path $root "internal"
         remote = "https://github.com/dakinissystems/dakinis-internal-api.git"
@@ -37,6 +50,21 @@ function Push-Scaffold($name, $cfg) {
     $dir = $cfg.dir
     if (-not (Test-Path $dir)) {
         Write-Warning "SKIP $name - folder missing: $dir"
+        return
+    }
+
+    $scaffoldCfg = $script:PlatformScaffoldConfigs[$name]
+    if ($scaffoldCfg) {
+        Ensure-PlatformScaffold -ServiceDir $dir -Config $scaffoldCfg
+    }
+
+    if ($ScaffoldOnly) {
+        Write-Host "ScaffoldOnly — skip git for $name" -ForegroundColor Yellow
+        return
+    }
+
+    if ($SkipPush) {
+        Write-Host "SkipPush — scaffold applied for $name" -ForegroundColor Yellow
         return
     }
 
@@ -80,10 +108,10 @@ function Push-Scaffold($name, $cfg) {
     Pop-Location
 }
 
-$targets = if ($Repo -eq "all") { @("billing", "notifications", "search", "internal") } else { @($Repo) }
+$targets = if ($Repo -eq "all") { @("billing", "notifications", "search", "knowledge", "internal") } else { @($Repo) }
 
 foreach ($name in $targets) {
     Push-Scaffold $name $map[$name]
 }
 
-Write-Host "`nDone. Verify GitHub has package.json + Dockerfile + src/ (not README only)." -ForegroundColor Green
+Write-Host "`nDone. Standard layout: api/ workers/ packages/ docs/ tests/ .github/" -ForegroundColor Green

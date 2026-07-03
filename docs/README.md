@@ -2,16 +2,15 @@
 
 Repositorio de **orquestación** (gateway, Docker, SQL compartido, textos legales). El código de producto vive en repos separados.
 
-## Documentación de plataforma (mayo 2026)
+## Documentación de plataforma
 
 | Documento | Para qué |
 |-----------|----------|
-| [**ARCHITECTURE.md**](./ARCHITECTURE.md) | Platform vs Products, servicios transversales, Internal API, agents |
-| [**ROADMAP.md**](./ROADMAP.md) | Fases, workers, LifeFlow Engine, Marketplace |
-| [**OPERATIONS.md**](./OPERATIONS.md) | Railway, deploy, env, health checks, pendientes ops |
-| [**PRODUCTS.md**](./PRODUCTS.md) | Resumen por producto (Core BOS, LifeFlow, SA, AkoeNet…) |
-| [**GITHUB-ORG.md**](./GITHUB-ORG.md) | Monorepo DES, descripciones GitHub, plantillas README |
-| [`DAKINIS-SISTEMA-TEMP.md`](./DAKINIS-SISTEMA-TEMP.md) | **Documento unificado local** — overview, DES, IA, ops, repos (no versionado) |
+| [**PLATFORM-STATUS.md**](./PLATFORM-STATUS.md) | **Estado unificado** — ecosistema, capas, roadmap, Railway |
+| [**ARCHITECTURE.md**](./ARCHITECTURE.md) | Infrastructure · Platform · Products — decisiones técnicas |
+| [**PRODUCTS.md**](./PRODUCTS.md) | Catálogo productos (Core, LifeFlow, SA, AkoeNet, Tabletop, Landing) |
+| [**OPERATIONS.md**](./OPERATIONS.md) | Deploy, env, health checks |
+| [**GITHUB-ORG.md**](./GITHUB-ORG.md) | Monorepo DES, descripciones GitHub |
 
 ## Para clientes e integradores
 

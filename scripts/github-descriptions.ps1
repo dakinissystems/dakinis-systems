@@ -26,6 +26,8 @@ $repos = @{
     "dakinissystems/dakinis-billing"      = "Platform billing service — Stripe subscriptions, plans, invoices and usage metering."
     "dakinissystems/dakinis-notifications" = "Cross-product notifications platform — email, push, in-app inbox and webhooks."
     "dakinissystems/dakinis-search"       = "Global search platform — Hub Ctrl+K and cross-product index API."
+    "dakinissystems/dakinis-knowledge"    = "Knowledge platform for Dakinis Systems with document ingestion, RAG and semantic search."
+    "dakinissystems/dakinis-internal-api" = "Internal API gateway for Dakinis platform services — service-to-service proxy."
 }
 
 foreach ($entry in $repos.GetEnumerator()) {

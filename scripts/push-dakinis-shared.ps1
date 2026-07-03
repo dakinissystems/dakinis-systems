@@ -23,7 +23,7 @@ if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 Copy-Tree $src $dest
 
-Copy-Item (Join-Path $root "docs\templates\README-dakinis-shared.md") (Join-Path $dest "README.md") -Force
+Copy-Item (Join-Path $src "README.md") (Join-Path $dest "README.md") -Force
 Copy-Item (Join-Path $root "scripts\dakinis-shared-package.json") (Join-Path $dest "package.json") -Force
 Copy-Item (Join-Path $src ".gitignore") (Join-Path $dest ".gitignore") -Force
 
