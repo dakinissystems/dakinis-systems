@@ -1,4 +1,10 @@
-import { DAKINIS_URL_AKOENET, DAKINIS_URL_CORE, DAKINIS_URL_LIFEFLOW, DAKINIS_URL_STREAMAUTOMATOR } from "./product-urls.js";
+import {
+  DAKINIS_URL_AKOENET,
+  DAKINIS_URL_CORE,
+  DAKINIS_URL_LIFEFLOW,
+  DAKINIS_URL_STREAMAUTOMATOR,
+  DAKINIS_URL_TABLETOP
+} from "./product-urls.js";
 import { dakinisGetProduct } from "./products.js";
 
 export const DAKINIS_ECOSYSTEM_SESSION_KEY = "dakinis_ecosystem_sso_v1";
@@ -8,7 +14,17 @@ const URL_BY_KEY = {
   core: DAKINIS_URL_CORE,
   streamautomator: DAKINIS_URL_STREAMAUTOMATOR,
   akoenet: DAKINIS_URL_AKOENET,
-  lifeflow: DAKINIS_URL_LIFEFLOW
+  lifeflow: DAKINIS_URL_LIFEFLOW,
+  tabletop: DAKINIS_URL_TABLETOP
+};
+
+/** Hub launcher id → product id en products.json */
+export const HUB_APP_PRODUCT_IDS = {
+  core: "dakinis-one",
+  lifeflow: "lifeflow",
+  streamautomator: "streamautomator",
+  akoenet: "akoenet",
+  tabletop: "dnd"
 };
 
 /**
@@ -108,6 +124,40 @@ export function dakinisBuildProductLaunchUrl(productId, opts = {}) {
   }
 
   return url.href;
+}
+
+/**
+ * URL de lanzamiento desde tarjeta Hub (producto canónico + fallback a app.url del API).
+ * @param {{ id?: string; product?: string; url?: string }} app
+ * @param {{ session?: { token?: string; user?: { email?: string } }; returnUrl?: string }} [opts]
+ */
+export function dakinisBuildHubAppLaunchUrl(app, opts = {}) {
+  const productId =
+    HUB_APP_PRODUCT_IDS[app?.id] ||
+    (app?.product === "core" ? "dakinis-one" : app?.product === "tabletop" ? "dnd" : app?.product);
+
+  if (productId) {
+    const href = dakinisBuildProductLaunchUrl(productId, opts);
+    if (href && href !== "/hub" && !href.endsWith("/hub")) return href;
+  }
+
+  const fallback = String(app?.url || "").trim();
+  if (!fallback) return "/hub";
+
+  try {
+    const url = new URL(fallback);
+    url.searchParams.set("utm_source", "dakinis-hub");
+    url.searchParams.set("utm_medium", "ecosystem");
+    if (opts.session?.token) url.searchParams.set("dakinis_sso", "1");
+    const email = opts.session?.user?.email;
+    if (typeof email === "string" && email.trim()) {
+      url.searchParams.set("email", email.trim());
+    }
+    if (opts.returnUrl) url.searchParams.set("return_url", opts.returnUrl);
+    return url.href;
+  } catch {
+    return fallback;
+  }
 }
 
 /**

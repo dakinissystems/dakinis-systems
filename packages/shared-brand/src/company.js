@@ -30,7 +30,8 @@ const company = {
     hub: "https://hub.dakinissystems.com/",
     lifeflow: "https://finance.dakinissystems.com/",
     streamautomator: "https://streamautomator.com/",
-    akoenet: "https://akoenet.dakinissystems.com/"
+    akoenet: "https://akoenet.dakinissystems.com/",
+    tabletop: "https://tabletop.dakinissystems.com/"
   },
   lastUpdated: "2026-05-19"
 };

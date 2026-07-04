@@ -1,0 +1,8 @@
+# Railway — Search Worker (second service, same repo)
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "npm run worker"
+restartPolicyType = "ON_FAILURE"

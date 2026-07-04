@@ -22,7 +22,9 @@
     "core": "https://core.dakinissystems.com/",
     "hub": "https://core.dakinissystems.com/hub",
     "streamautomator": "https://streamautomator.com/",
-    "akoenet": "https://akoenet.dakinissystems.com/"
+    "akoenet": "https://akoenet.dakinissystems.com/",
+    "lifeflow": "https://finance.dakinissystems.com/",
+    "tabletop": "https://tabletop.dakinissystems.com/"
   },
   "lastUpdated": "2026-05-19"
 }

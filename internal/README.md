@@ -4,21 +4,23 @@
 
 | | |
 |---|---|
+| **GitHub** | [dakinissystems/dakinis-internal-api](https://github.com/dakinissystems/dakinis-internal-api) |
 | **Gateway prefix** | `/internal/` |
 | **Local port** | `4083` |
+| **Railway DNS** | `dakinis-internal-api.railway.internal:4083` |
 | **Auth** | `Authorization: Bearer $DAKINIS_INTERNAL_SERVICE_KEY` |
 
-## Routes (scaffold)
+## Routes
 
 | Method | Path | Status |
 |--------|------|--------|
 | GET | `/health` | ✅ |
+| GET | `/hub/dashboard/:userId` | ✅ Supabase `hub.v1_get_dashboard` |
 | POST | `/events` | ✅ Redis queue |
 | GET | `/events` | ✅ recent |
-| GET | `/users/:id` | ✅ stub |
-| GET | `/profile/:userId` | ✅ stub |
-| POST | `/notifications/send` | 501 → notifications service |
-| POST | `/search` | 501 → search service |
+| POST | `/notifications/send` | ✅ proxy |
+| POST | `/search` | ✅ proxy |
+| GET | `/billing/plans` | ✅ proxy |
 
 ## Local
 
@@ -27,9 +29,8 @@ cd internal
 npm install
 npm run dev
 curl http://localhost:4083/health
-curl -X POST http://localhost:4083/events -H "Content-Type: application/json" -d "{\"event\":\"user.created\",\"payload\":{\"id\":\"1\"}}"
 ```
 
-Via gateway: `http://localhost/internal/health`
+Via gateway: `https://api.dakinissystems.com/internal/health`
 
-Contrato: [`docs/contracts/internal-api.json`](../docs/contracts/internal-api.json)
+Contrato (control repo): `docs/contracts/internal-api.json`

@@ -8,6 +8,6 @@ export function getRootPage() {
     phase: "Scaffold · Roadmap",
     description:
       "Global search API for Hub Ctrl+K and cross-product index. Indexer worker scaffold — no public UI.",
-    endpoints: ["GET /health", "GET /v1/query (501)", "POST /v1/index (501)"],
+    endpoints: ["GET /health", "GET /v1/query", "POST /v1/index", "DELETE /v1/index/:scope/:id"],
   });
 }

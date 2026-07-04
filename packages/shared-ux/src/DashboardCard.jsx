@@ -1,6 +1,8 @@
 /**
  * Tarjeta dashboard Hub/producto — contrato completo DES.
  */
+import { LucideIcon } from "./LucideIcon.jsx";
+
 export function DashboardCard({
   icon,
   title,
@@ -44,7 +46,11 @@ export function DashboardCard({
   return (
     <article className={`dakinis-card dakinis-dashboard-card ${className}`.trim()}>
       <header className="dakinis-dashboard-card__head">
-        {icon ? <span className="dakinis-dashboard-card__icon" aria-hidden="true">{icon}</span> : null}
+        {icon ? (
+          <span className="dakinis-dashboard-card__icon" aria-hidden="true">
+            {typeof icon === "string" ? <LucideIcon name={icon} size={20} /> : icon}
+          </span>
+        ) : null}
         <h3 className="dakinis-dashboard-card__title">{title}</h3>
         {status ? <span className="dakinis-dashboard-card__status">{status}</span> : null}
       </header>
@@ -86,7 +92,7 @@ export const dashboardCardStyles = `
 .dakinis-dashboard-card--loading { pointer-events: none; }
 .dakinis-dashboard-card--error { border-color: rgba(231, 111, 111, 0.45); }
 .dakinis-dashboard-card__head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-.dakinis-dashboard-card__icon { font-size: 1.25rem; }
+.dakinis-dashboard-card__icon { display: inline-flex; align-items: center; color: var(--dakinis-accent, #2dd4bf); flex-shrink: 0; }
 .dakinis-dashboard-card__title { margin: 0; font-size: 0.9rem; font-weight: 600; flex: 1; }
 .dakinis-dashboard-card__status { font-size: 0.72rem; padding: 0.15rem 0.45rem; border-radius: 999px; background: var(--dakinis-ai-glow, rgba(124,58,237,0.15)); color: var(--dakinis-muted, #b8c6d9); }
 .dakinis-dashboard-card__value { margin: 0; font-size: 1.75rem; font-weight: 700; line-height: 1.1; }

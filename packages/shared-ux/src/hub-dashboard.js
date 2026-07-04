@@ -76,6 +76,16 @@ export const HUB_SECTION_WIDGETS = {
   apps: ["hub-app-launcher"],
 };
 
+/** Iconos Lucide por app del launcher Hub (mirror de @dakinis/shared-icons PRODUCT_ICONS). */
+export const HUB_APP_ICONS = {
+  core: "building-2",
+  lifeflow: "heart-pulse",
+  streamautomator: "radio",
+  akoenet: "messages-square",
+  tabletop: "swords",
+  dnd: "swords",
+};
+
 /**
  * @param {number} [maxOrder=98]
  * @returns {HubSectionDef[]}

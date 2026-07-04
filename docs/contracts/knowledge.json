@@ -1,7 +1,7 @@
 {
   "service": "dakinis-knowledge",
   "status": "scaffold",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Platform Knowledge — documents, policies, FAQ, RAG sources. AI consumes Knowledge.",
   "baseUrl": "https://api.dakinissystems.com/knowledge",
   "auth": "Bearer INTERNAL_API_KEY (service-to-service)",
@@ -9,7 +9,9 @@
     "GET /knowledge/health": "Health",
     "GET /knowledge/v1/sources": "List source types",
     "POST /knowledge/v1/query": "Query corpus (proxies Search when configured)",
-    "POST /knowledge/v1/ingest": "Enqueue document ingest"
+    "POST /knowledge/v1/ingest": "Enqueue document ingest",
+    "GET /knowledge/v1/documents": "List documents (slug and/or tenantId)",
+    "GET /knowledge/v1/documents/:id": "Get document by id"
   },
   "schema": "knowledge",
   "repository": "https://github.com/dakinissystems/dakinis-knowledge",

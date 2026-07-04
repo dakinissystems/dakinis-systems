@@ -2,7 +2,8 @@ import { config } from "./config.js";
 import { requireServiceAuth, readJson } from "./lib/auth.js";
 import { publishEvent, listQueuedEvents } from "./lib/events.js";
 import { proxyJson } from "./lib/proxy.js";
-import { HUB_APPS, HUB_SECTIONS } from "./hub-data.js";
+import { checkDbHealth } from "./lib/db.js";
+import { getHubDashboard, validateUserId } from "./services/hub-dashboard.js";
 
 function platformEvent(type, payload, meta = {}) {
   return {
@@ -16,16 +17,20 @@ function platformEvent(type, payload, meta = {}) {
 }
 
 export const routes = {
-  "GET /health": () => ({
-    status: 200,
-    body: {
-      ok: true,
-      service: config.service,
-      version: "0.2.0-scaffold",
-      redis: config.redisUrl ? "configured" : "not_configured",
-      auth: config.serviceKey ? "required" : "dev_open",
-    },
-  }),
+  "GET /health": async () => {
+    const db = await checkDbHealth();
+    return {
+      status: 200,
+      body: {
+        ok: true,
+        service: config.service,
+        version: "0.3.0",
+        redis: config.redisUrl ? "configured" : "not_configured",
+        database: db.ok ? "configured" : config.databaseUrl ? "error" : "not_configured",
+        auth: config.serviceKey ? "required" : "dev_open",
+      },
+    };
+  },
 
   "GET /users/:id": (req) => {
     const auth = requireServiceAuth(req);
@@ -51,24 +56,15 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const userId = (req.url || "").split("?")[0].replace("/hub/dashboard/", "");
-    let unread = 0;
+    if (!validateUserId(userId)) {
+      return { status: 400, body: { error: "validation", message: "userId must be a UUID" } };
+    }
+    let notificationsUnread;
     const inbox = await proxyJson(config.notificationsUrl, `/v1/inbox/${encodeURIComponent(userId)}`);
     if (inbox.status === 200 && inbox.body?.unread != null) {
-      unread = inbox.body.unread;
+      notificationsUnread = inbox.body.unread;
     }
-    return {
-      status: 200,
-      body: {
-        userId,
-        sections: HUB_SECTIONS,
-        apps: HUB_APPS,
-        summary: {
-          notificationsUnread: unread,
-          aiSummary: null,
-          stub: true,
-        },
-      },
-    };
+    return getHubDashboard(userId, { notificationsUnread });
   },
 
   "POST /events": async (req) => {

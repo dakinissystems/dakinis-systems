@@ -26,9 +26,17 @@ Pega **cada archivo en orden** en el SQL Editor de Supabase (proyecto **Dakinis 
 |---|---------|----------|
 | 16 | [`016_schema_enhancements.sql`](./016_schema_enhancements.sql) | AI prompt_versions, audit ampliado, hub dashboard_prefs |
 | 16b | [`016b_stream_sync_triggers.sql`](./016b_stream_sync_triggers.sql) | **Fase convivencia:** sync `public.Contents` → `stream.contents` |
-| 17 | [`017_functions_v1.sql`](./017_functions_v1.sql) | API SQL versionada (Node llama funciones, no tablas) |
+| 17 | [`017_functions_v1.sql`](./017_functions_v1.sql) | API SQL versionada (billing usa `text` tenant — compatible 021+) |
 | 18 | [`018_hub_dashboard.sql`](./018_hub_dashboard.sql) | Vista + materialized view dashboard |
 | 19 | [`019_rls_templates_and_cutover_plan.sql`](./019_rls_templates_and_cutover_plan.sql) | RLS plantillas + checklist cutover core |
+
+Verificación: [`scripts/smoke-supabase-phase-c.sql`](../../scripts/smoke-supabase-phase-c.sql)
+
+## Fase C+ — Hub Mi día (027)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 27 | [`027_hub_mi_dia.sql`](./027_hub_mi_dia.sql) | ⬜ Tras 016–019 · activa `hub.mi_dia` + widgets |
 
 ## Fase D — Billing + Security Advisor (020–023)
 

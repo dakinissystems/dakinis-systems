@@ -155,7 +155,18 @@ Orden migraciones: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RU
 | A Estructura | 000–013 | ✅ |
 | B Backfill | 014a, 014, 015 | ✅ |
 | C Mejoras | 016, 016b, 017, 018, 019 | ⬜ SQL Editor |
+| C+ Hub Mi día | 027 | ⬜ Tras C |
 | E Cutover apps | código + disable triggers | ⬜ |
+
+**Fase C — pasos (SQL Editor, en orden):**
+
+1. `016_schema_enhancements.sql`
+2. `016b_stream_sync_triggers.sql` (convivencia Stream; opcional si no usas `public.Contents`)
+3. `017_functions_v1.sql`
+4. `018_hub_dashboard.sql`
+5. `019_rls_templates_and_cutover_plan.sql`
+6. Verificar: pegar [`scripts/smoke-supabase-phase-c.sql`](../scripts/smoke-supabase-phase-c.sql)
+7. `027_hub_mi_dia.sql` — activa flag `hub.mi_dia`
 
 **Regla API:** usar funciones `schema.v1_*` — no queries directas cross-schema.
 
@@ -170,6 +181,53 @@ Backup: workflow `.github/workflows/backup-postgres.yml` — secret `BACKUP_DATA
 - Reglas cambio: [`docs/rules.md`](./rules.md)
 - Smoke billing: `.\scripts\smoke-billing.ps1` (prod) o `-BaseUrl http://localhost`
 - Smoke knowledge: `.\scripts\smoke-knowledge.ps1` (prod) o `-BaseUrl http://localhost`
+- Smoke search: `.\scripts\smoke-search.ps1`
+- Smoke notifications: `.\scripts\smoke-notifications.ps1`
+- Smoke hub: `.\scripts\smoke-hub.ps1` (Internal API dashboard; requiere `DAKINIS_INTERNAL_SERVICE_KEY`)
+
+---
+
+## Hub «Mi día»
+
+Repo: [dakinis-hub](https://github.com/dakinissystems/dakinis-hub) → `hub.dakinissystems.com`
+
+Antes de push: `.\scripts\sync-hub-des.ps1` (copia `shared-brand`, `shared-layouts`, `shared-ux` → `hub/packages/`).
+
+| Componente | Estado |
+|------------|--------|
+| Supabase `hub.v1_get_dashboard` | ✅ migraciones 016–019 + 027 |
+| Internal API | ✅ `dakinis-internal-api` |
+| SPA `hub/` | ✅ build + `server.js` proxy |
+
+### Railway `dakinis-hub`
+
+| Campo | Valor |
+|-------|-------|
+| Repo | `dakinissystems/dakinis-hub` |
+| Builder | Dockerfile |
+| Start | `node server.js` |
+| Dominio | `hub.dakinissystems.com` |
+
+**Variables build + runtime:**
+
+```
+HUB_DEMO_USER_ID=<uuid>
+HUB_INTERNAL_SERVICE_KEY=<igual que Internal API>
+HUB_INTERNAL_URL=http://dakinis-internal-api.railway.internal:4083
+HUB_API_BASE=https://api.dakinissystems.com
+PORT=8080
+```
+
+`HUB_INTERNAL_URL` evita Cloudflare 403 en proxy server→gateway público.
+
+**Local:**
+
+```powershell
+.\scripts\sync-hub-des.ps1
+cd hub && npm install && npm run dev
+```
+
+Post-deploy: `curl.exe -s https://hub.dakinissystems.com/`
 
 ---
 
@@ -240,7 +298,14 @@ STORAGE_BUCKET=knowledge
 | `WORKER_TYPE` | `ingest` |
 | `KNOWLEDGE_INGEST_QUEUE` | `dakinis:knowledge:ingest` |
 
-**Variables worker:** `REDIS_URL`, `DATABASE_URL`, `WORKER_TYPE=ingest` (mínimo).
+**Variables worker:** `REDIS_URL`, `DATABASE_URL`, `DATABASE_SSL=true`, `WORKER_TYPE=ingest`, `DAKINIS_SEARCH_URL` (opcional, indexa en Search tras persist).
+
+Post-deploy persist smoke:
+
+```powershell
+.\scripts\smoke-knowledge.ps1
+# ingest → worker → GET /knowledge/v1/documents?slug=...
+```
 
 ### 3. Post-deploy
 
@@ -250,6 +315,68 @@ curl.exe https://api.dakinissystems.com/knowledge/health
 ```
 
 Supabase: `025` + `026` ✅ · Post-deploy: `.\scripts\smoke-knowledge.ps1`
+
+---
+
+## Railway — Search + Notifications (API + workers)
+
+APIs prod: `/search/health` · `/notifications/health` (200). Falta **worker** en cada repo.
+
+### Search — `dakinis-search` (4082)
+
+**API** (si no existe o revisar):
+
+| Campo | Valor |
+|-------|-------|
+| Service name | **`dakinis-search`** |
+| Private DNS | `dakinis-search.railway.internal` |
+| Start | `node src/server.js` |
+| `PORT` | `4082` |
+| Health | `/health` |
+
+```env
+PORT=4082
+REDIS_URL=${{Redis.REDIS_URL}}
+SEARCH_INDEX_QUEUE=dakinis:search:index
+```
+
+**Worker** — servicio **`dakinis-search-worker`** (mismo repo):
+
+```env
+REDIS_URL=${{Redis.REDIS_URL}}
+SEARCH_INDEX_QUEUE=dakinis:search:index
+```
+
+Start: `npm run worker` · sin dominio · sin healthcheck.
+
+Smoke: `.\scripts\smoke-search.ps1` → worker log: `[worker] index job`
+
+### Notifications — `dakinis-notifications` (4081)
+
+**API**:
+
+| Campo | Valor |
+|-------|-------|
+| Service name | **`dakinis-notifications`** |
+| Private DNS | `dakinis-notifications.railway.internal` |
+| `PORT` | `4081` |
+
+```env
+PORT=4081
+REDIS_URL=${{Redis.REDIS_URL}}
+NOTIFICATIONS_QUEUE=dakinis:notifications
+```
+
+**Worker** — **`dakinis-notifications-worker`**:
+
+```env
+REDIS_URL=${{Redis.REDIS_URL}}
+NOTIFICATIONS_QUEUE=dakinis:notifications
+```
+
+Start: `npm run worker`
+
+Smoke: `.\scripts\smoke-notifications.ps1` → worker log: `[worker] dispatch channel=in-app`
 
 ---
 
@@ -283,7 +410,7 @@ Supabase: `025` + `026` ✅ · Post-deploy: `.\scripts\smoke-knowledge.ps1`
 | 17 | Brand sync | SA/AkoeNet pendiente | 🔄 |
 | 18 | Legal | Revisión abogado tenant access | [ ] |
 | 19 | LifeFlow ops | Volume + JWT secret Railway | [ ] |
-| 20 | Knowledge | Railway deploy scaffold (repo ✅ GitHub) | [ ] |
+| 20 | Knowledge | Railway API + worker + ingest | [x] |
 
 ---
 

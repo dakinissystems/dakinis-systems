@@ -49,6 +49,8 @@
         "en": "D&D 5e character manager (local, no backend)."
       }
     },
+    "urlKey": "tabletop",
+    "landingPath": "/productos/tabletop",
     "external": true,
     "sso": { "mode": "none", "productKey": "dnd" }
   },

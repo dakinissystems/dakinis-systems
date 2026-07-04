@@ -70,7 +70,11 @@ END;
 $$;
 
 -- ─── billing v1 ──────────────────────────────────────────────
-CREATE OR REPLACE FUNCTION billing.v1_get_active_subscription(p_tenant_id uuid)
+-- tenant_id / user_id as text (compatible con 021+; pre-021 usa tenant_id::text en WHERE)
+DROP FUNCTION IF EXISTS billing.v1_get_active_subscription(uuid);
+DROP FUNCTION IF EXISTS billing.v1_activate_plan(uuid, uuid, text);
+
+CREATE OR REPLACE FUNCTION billing.v1_get_active_subscription(p_tenant_id text)
 RETURNS TABLE (
   plan text,
   status text,
@@ -84,15 +88,15 @@ SET search_path = billing, pg_temp
 AS $$
   SELECT s.plan, s.status, s.current_period_end, s.stripe_subscription_id
   FROM billing.subscriptions s
-  WHERE s.tenant_id = p_tenant_id
+  WHERE s.tenant_id::text = p_tenant_id
     AND s.status IN ('active', 'trialing', 'past_due')
   ORDER BY s.created_at DESC
   LIMIT 1;
 $$;
 
 CREATE OR REPLACE FUNCTION billing.v1_activate_plan(
-  p_tenant_id uuid,
-  p_user_id uuid,
+  p_tenant_id text,
+  p_user_id text,
   p_plan_code text
 )
 RETURNS uuid

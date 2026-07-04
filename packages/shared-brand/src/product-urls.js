@@ -41,6 +41,11 @@ export const DAKINIS_URL_LIFEFLOW = dakinisNormalizeUrl(
   company.sites.lifeflow
 );
 
+export const DAKINIS_URL_TABLETOP = dakinisNormalizeUrl(
+  import.meta.env?.VITE_TABLETOP_APP_URL,
+  company.sites.tabletop
+);
+
 /** @deprecated Use DAKINIS_URL_CORPORATE */
 export const DAKINIS_MARKETING_SITE_URL = DAKINIS_URL_CORPORATE;
 

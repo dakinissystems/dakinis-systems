@@ -11,9 +11,9 @@ export const HUB_SECTIONS = [
 ];
 
 export const HUB_APPS = [
-  { id: "core", name: "Dakinis One", url: "https://core.dakinissystems.com", product: "core" },
-  { id: "lifeflow", name: "LifeFlow", url: "https://finance.dakinissystems.com", product: "lifeflow" },
-  { id: "streamautomator", name: "StreamAutomator", url: "https://streamautomator.com", product: "streamautomator" },
-  { id: "akoenet", name: "AkoeNet", url: "https://akoenet.dakinissystems.com", product: "akoenet" },
-  { id: "tabletop", name: "Tabletop", url: "https://tabletop.dakinissystems.com", product: "tabletop" },
+  { id: "core", name: "Dakinis One", url: "https://core.dakinissystems.com", product: "core", icon: "building-2" },
+  { id: "lifeflow", name: "LifeFlow", url: "https://finance.dakinissystems.com", product: "lifeflow", icon: "heart-pulse" },
+  { id: "streamautomator", name: "StreamAutomator", url: "https://streamautomator.com", product: "streamautomator", icon: "radio" },
+  { id: "akoenet", name: "AkoeNet", url: "https://akoenet.dakinissystems.com", product: "akoenet", icon: "messages-square" },
+  { id: "tabletop", name: "Tabletop", url: "https://tabletop.dakinissystems.com", product: "tabletop", icon: "swords" },
 ];
