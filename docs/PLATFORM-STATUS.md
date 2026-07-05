@@ -30,7 +30,7 @@ Vista en <1 min antes de entrar en detalle.
 
 | Producto / servicio | Estado | Prod | BD | Responsable | Próximo hito |
 |---------------------|--------|------|-----|-------------|--------------|
-| **Core** (Business OS) | 🟢 Activo | Sí | Supabase `dakinis_core_prod` | Christian | E2E billing · redeploy `efbe6ee` |
+| **Core** (Business OS) | 🟢 Activo | Sí | Supabase `dakinis_core_prod` | Christian | Billing E2E checkout live |
 | **LifeFlow** | 🟡 Beta | Sí | SQLite + `lifeflow` PG | Christian | Cutover SQLite completo ⬜ |
 | **Tabletop** | 🟡 MVP | Sí | SQLite (volume) | Christian | Migración Supabase |
 | **StreamAutomator** | 🟢 Activo | Sí | Supabase `stream` | Christian | Métricas · event bus |
@@ -44,7 +44,7 @@ Vista en <1 min antes de entrar en detalle.
 | **Knowledge** | 🟢 Activo | Sí | Supabase `knowledge` | Christian | RAG PDF masivo · Ctrl+K JWT smoke ⬜ |
 | **Landing** | 🟢 Activo | Sí | — | Christian | Funnel One-first |
 
-**Prioridad plataforma (julio 2026):** Billing E2E Live · Core redeploy Ctrl+K (`efbe6ee`) · Hub SSO smoke · LifeFlow cutover SQLite.
+**Prioridad plataforma (julio 2026):** Billing E2E Live (checkout + webhook Stripe) · AI `OPENAI_API_KEY` prod · Hub SSO smoke.
 
 ---
 
@@ -429,8 +429,8 @@ Billing
 |---|-------|--------|
 | 1 | Redeploy Core Back (proxy `/api/public/stripe/*`) | ✅ prod (`billingReachable`) |
 | 2 | Supabase `022` + `023` + `024` + `12-tenant-access.sql` | ✅ |
-| 3 | E2E Live: `/precios` → plan BD + `business.plan` | 🔄 código ✅ · smoke live ⬜ |
-| 4 | Webhook Live test → **200** | 🔄 probe script ✅ · Stripe Dashboard ⬜ |
+| 3 | E2E Live: `/precios` → plan BD + `business.plan` | 🔄 checkout API ✅ · tenantId obligatorio ✅ · smoke live ⬜ |
+| 4 | Webhook Live test → **200** | 🔄 probe ✅ · URL `$Gateway/billing/v1/webhooks/stripe` · Stripe Dashboard ⬜ |
 | 5 | Impago → `access_state=degraded` → restore | 🔄 sync + banner UI ✅ · smoke live ⬜ |
 
 Contrato: [`contracts/billing.json`](./contracts/billing.json)
@@ -862,9 +862,9 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 | Hito | Prioridad | Estado |
 |------|-----------|--------|
-| Billing E2E Live | 🔴 Alta | 🔄 checkout UI + sync + banner · smoke gateway ✅ · checkout live ⬜ |
+| Billing E2E Live | 🔴 Alta | 🔄 sync gateway fallback ✅ · tenantId checkout ✅ · smoke chain ✅ · checkout JWT ⬜ |
 | Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
-| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core `efbe6ee` · build fix shared-ux · redeploy ⬜ · smoke JWT ⬜ |
+| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core proxy prod · smoke JWT ⬜ |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
 | LifeFlow Engine + PostgreSQL | 🟡 Media | ✅ Engine v1 · PG sync v1 · migr. **030** ✅ · API prod `9f45bc2` · cutover SQLite ⬜ |
 | Hub SSO → productos | 🟠 Media | ✅ LifeFlow prod · SA `f18725b` · AkoeNet código · `smoke-hub-sso-products.ps1` ⬜ |
@@ -877,8 +877,8 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 ### Lista ejecutiva (referencia)
 
-1. **Billing E2E Live** — `smoke-billing-e2e.ps1` ✅ gateway · webhook Stripe Dashboard ⬜ · checkout JWT ⬜
-2. **Knowledge** — ✅ index sync · ✅ Hub query `efbe6ee` · redeploy Core · smoke JWT ⬜
+1. **Billing E2E Live** — smoke chain ✅ · webhook Stripe Dashboard ⬜ · checkout JWT/browser ⬜
+2. **Knowledge** — ✅ index sync · ✅ Hub query prod · smoke JWT ⬜
 3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ · SA/AkoeNet hub-sso · smoke 3 productos ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ ✅ · activar `DAKINIS_EVENT_BUS=bullmq` en prod
 5. **LifeFlow** — ✅ API/Web prod · PG sync · migr. **030** ✅ · cutover SQLite ⬜
@@ -925,7 +925,7 @@ RAG PDF masivo · Calendario global Core · SSO Hub→productos (smoke live) · 
 
 **Core Back:** `DAKINIS_BILLING_URL` · `DAKINIS_GATEWAY_URL` (Search proxy) · `DAKINIS_EVENTS_QUEUE` · sin `STRIPE_*`  
 **Core Front:** proxy `/api` · build incluye `@dakinis/shared-ux` del repo Core (sync manual desde monorepo)  
-**Billing:** `PORT=4080` · `STRIPE_*` Live · `POSTGRES_SCHEMA=billing`  
+**Billing:** `PORT=4080` · `STRIPE_*` Live · `POSTGRES_SCHEMA=billing` · **`INTERNAL_API_KEY`** · **`DAKINIS_GATEWAY_URL`** · `DAKINIS_CORE_INTERNAL_URL=$GATEWAY/core` (sync HTTP fallback)  
 **LifeFlow API:** `DATABASE_URL` · `POSTGRES_SCHEMA=lifeflow` · `DATABASE_SSL=true` · `FINANZAS_DB_PATH` (volume)  
 **Notifications:** `PORT=4081` · `REDIS_URL` · **`DATABASE_URL`** · `DATABASE_SSL=true` · **`RESEND_API_KEY`** · `RESEND_FROM` · worker mismo schema `hub`
 
@@ -934,6 +934,7 @@ RAG PDF masivo · Calendario global Core · SSO Hub→productos (smoke live) · 
 - [x] Webhook Live · Stripe en billing · Gateway v0.2.0 · Push GitHub · Supabase `021`–`024` · Knowledge scaffold local
 - [x] Core proxy `/api/public/stripe/plans` · billing health prod
 - [ ] Webhook 200 · E2E checkout → `business.plan` · impago degraded
+- [ ] Stripe Dashboard webhook: `https://api.dakinissystems.com/billing/v1/webhooks/stripe` (eventos: `checkout.session.completed`, `customer.subscription.*`, `invoice.paid`, `invoice.payment_failed`)
 
 ---
 

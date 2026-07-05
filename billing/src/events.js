@@ -64,11 +64,12 @@ export async function publishBillingEvent(type, payload = {}) {
  * @param {Record<string, unknown>} payload
  */
 async function notifyCoreBillingSync(type, payload) {
+  const gateway = String(process.env.DAKINIS_GATEWAY_URL || "").replace(/\/$/, "");
   const coreBase = String(
     process.env.DAKINIS_CORE_INTERNAL_URL ||
       process.env.CORE_INTERNAL_URL ||
       process.env.DAKINIS_CORE_URL ||
-      ""
+      (gateway ? `${gateway}/core` : "")
   ).replace(/\/$/, "");
   const key = String(process.env.INTERNAL_API_KEY || process.env.DAKINIS_INTERNAL_SERVICE_KEY || "").trim();
   if (!coreBase || !key) return;

@@ -166,6 +166,15 @@ export const routes = {
     if (!getPlanById(resolvedPlan)) {
       return { status: 400, body: { error: "invalid_plan" } };
     }
+    if (!resolvedTenant) {
+      return {
+        status: 400,
+        body: {
+          error: "missing_tenant",
+          message: "businessId/tenantId required — metadata sync to Core needs tenant",
+        },
+      };
+    }
 
     try {
       const session = await createCheckoutSession({
