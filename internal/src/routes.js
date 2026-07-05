@@ -8,6 +8,13 @@ import {
   getTenantHubProducts,
   upsertTenantHubProducts,
 } from "./services/hub-product-access.js";
+import {
+  getBusHealthSummary,
+  getBusStatus,
+  listDeadLetterJobs,
+  replayDeadLetterJob,
+  discardDeadLetterJob,
+} from "./lib/bullmq-monitor.js";
 
 function platformEvent(type, payload, meta = {}) {
   return {
@@ -23,15 +30,17 @@ function platformEvent(type, payload, meta = {}) {
 export const routes = {
   "GET /health": async () => {
     const db = await checkDbHealth();
+    const eventBus = await getBusHealthSummary();
     return {
       status: 200,
       body: {
         ok: true,
         service: config.service,
-        version: "0.3.0",
+        version: "0.3.1",
         redis: config.redisUrl ? "configured" : "not_configured",
         database: db.ok ? "configured" : config.databaseUrl ? "error" : "not_configured",
         auth: config.serviceKey ? "required" : "dev_open",
+        eventBus,
       },
     };
   },
@@ -118,6 +127,45 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const items = await listQueuedEvents(25);
     return { status: 200, body: { items, count: items.length } };
+  },
+
+  "GET /events/bus/status": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const body = await getBusStatus();
+    return { status: 200, body };
+  },
+
+  "GET /events/dlq": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const body = await listDeadLetterJobs(url.searchParams);
+    return { status: 200, body };
+  },
+
+  "POST /events/dlq/replay": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const jobId = body.jobId || body.id;
+    if (!jobId) return { status: 400, body: { error: "validation", message: "jobId required" } };
+    const result = await replayDeadLetterJob(String(jobId));
+    const status = result.ok ? 200 : result.reason === "not_found" ? 404 : 400;
+    return { status, body: result };
+  },
+
+  "POST /events/dlq/discard": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const jobId = body.jobId || body.id;
+    if (!jobId) return { status: 400, body: { error: "validation", message: "jobId required" } };
+    const result = await discardDeadLetterJob(String(jobId));
+    const status = result.ok ? 200 : result.reason === "not_found" ? 404 : 400;
+    return { status, body: result };
   },
 
   "POST /notifications/send": async (req) => {

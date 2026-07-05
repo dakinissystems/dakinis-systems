@@ -11,6 +11,10 @@ export function getRootPage() {
     endpoints: [
       "GET /health",
       "POST /events",
+      "GET /events/bus/status",
+      "GET /events/dlq",
+      "POST /events/dlq/replay",
+      "POST /events/dlq/discard",
       "GET /hub/dashboard/:userId",
       "POST /notifications/send",
       "POST /search",
