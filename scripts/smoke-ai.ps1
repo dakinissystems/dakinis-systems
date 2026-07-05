@@ -55,7 +55,7 @@ $healthJson = $health.Raw | ConvertFrom-Json
 Write-Host "Provider: $($healthJson.aiProvider) · serviceKey: $($healthJson.serviceKeyConfigured) · model: $($healthJson.openaiModel)" -ForegroundColor Yellow
 
 if ($healthJson.aiProvider -eq "stub") {
-    Write-Host "GO-LIVE: set OPENAI_API_KEY en dakinis-ai (+ worker) y redeploy" -ForegroundColor DarkYellow
+    Write-Host 'GO-LIVE: set OPENAI_API_KEY en dakinis-ai y worker, luego redeploy' -ForegroundColor DarkYellow
 }
 
 if ($AiServiceKey) {
