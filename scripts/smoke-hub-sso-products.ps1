@@ -1,4 +1,4 @@
-# Smoke Hub SSO → product API exchange (StreamAutomator, AkoeNet, LifeFlow).
+# Smoke Hub SSO -> product API exchange (StreamAutomator, AkoeNet, LifeFlow).
 param(
     [string]$AuthUrl = $env:DAKINIS_AUTH_URL,
     [string]$StreamAutomatorApi = $env:STREAMAUTOMATOR_API_URL,
@@ -62,16 +62,21 @@ function Invoke-HubSsoExchange {
     Write-Host ""
     Write-Host "== $Name hub-sso ==" -ForegroundColor Cyan
     Write-Host "POST $url"
-    $res = Invoke-RestMethod -Uri $url -Method POST `
-        -Headers @{ Authorization = "Bearer $script:IdpToken" } `
-        -ContentType "application/json" `
-        -Body "{}"
+    try {
+        $res = Invoke-RestMethod -Uri $url -Method POST `
+            -Headers @{ Authorization = "Bearer $script:IdpToken" } `
+            -ContentType "application/json" `
+            -Body "{}"
+    } catch {
+        Write-Host "WARN $($_.Exception.Message)" -ForegroundColor Yellow
+        return
+    }
     $email = $res.user.email
     if (-not $email) { $email = $res.user.username }
     Write-Host "user=$email provisioned=$($res.sso.provisioned)" -ForegroundColor Green
 }
 
-Write-Host "Hub SSO smoke — IdP + products" -ForegroundColor Green
+Write-Host "Hub SSO smoke - IdP + products" -ForegroundColor Green
 
 $idp = Invoke-RestMethod -Uri "$($AuthUrl.TrimEnd('/'))/login" -Method POST `
     -ContentType "application/json" `
@@ -79,7 +84,7 @@ $idp = Invoke-RestMethod -Uri "$($AuthUrl.TrimEnd('/'))/login" -Method POST `
 
 $script:IdpToken = $idp.token
 if (-not $script:IdpToken) { $script:IdpToken = $idp.accessToken }
-if (-not $script:IdpToken) { throw "IdP no devolvió token" }
+if (-not $script:IdpToken) { throw "IdP no devolvio token" }
 
 if ($Product -eq "all" -or $Product -eq "streamautomator") {
     Invoke-HubSsoExchange -Name "StreamAutomator" -ApiBase $StreamAutomatorApi
@@ -92,4 +97,4 @@ if ($Product -eq "all" -or $Product -eq "lifeflow") {
 }
 
 Write-Host ""
-Write-Host "OK — Hub SSO exchanges" -ForegroundColor Green
+Write-Host "OK - Hub SSO exchanges" -ForegroundColor Green

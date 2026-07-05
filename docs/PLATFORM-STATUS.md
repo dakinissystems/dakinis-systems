@@ -881,12 +881,9 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 | Hito | Prioridad | Estado |
 |------|-----------|--------|
-| Billing E2E Live | 🔴 Alta | 🔄 sync prod ✅ · smoke auto-login ✅ · checkout live ⬜ |
-| Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
-| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core proxy · smoke auto-login ✅ · live JWT ⬜ |
-| Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
-| LifeFlow Engine + PostgreSQL | 🟡 Media | ✅ Engine v1 · PG sync v1 · migr. **030** ✅ · API prod `9f45bc2` · cutover SQLite ⬜ |
-| Hub SSO → productos | 🟠 Media | ✅ LifeFlow + SA prod · AkoeNet host ⬜ · smoke E2E creds ⬜ |
+| Billing E2E Live | 🔴 Alta | 🔄 checkout live ✅ smoke · pago Stripe browser ⬜ · webhook test ⬜ |
+| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ JWT live smoke · Core proxy 200 · hits index ⬜ |
+| Hub SSO → productos | 🟠 Media | ✅ SA + LifeFlow E2E · AkoeNet DNS ⬜ |
 | Notifications v1 inbox | 🟠 Media | ✅ prod `0.3.1` · Resend configured · Internal `c5f2ddb` · inbox JWT ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
 | AI OpenAI prod | 🔴 Alta | ⬜ **`OPENAI_API_KEY` + `DAKINIS_AI_SERVICE_KEY` pendientes Railway** · health v0.1.1 · smoke ✅ |
