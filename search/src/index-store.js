@@ -12,7 +12,7 @@ function scopeSetKey(scope) {
 /**
  * @param {{ scope: string; id: string; title?: string; body?: string; metadata?: object }} doc
  */
-export async function indexDocument(doc) {
+export async function storeSearchDocument(doc) {
   const redis = await getRedis();
   const record = {
     ...doc,
@@ -23,8 +23,13 @@ export async function indexDocument(doc) {
   }
   await redis.set(docKey(doc.scope, doc.id), JSON.stringify(record));
   await redis.sAdd(scopeSetKey(doc.scope), doc.id);
+  return { indexed: true, record };
+}
 
-  const indexJob = { action: "index", scope: doc.scope, id: doc.id, title: doc.title };
+async function enqueueIndexJob(indexJob) {
+  const redis = await getRedis();
+  if (!redis) return;
+
   if (String(process.env.DAKINIS_EVENT_BUS || "").toLowerCase() === "bullmq") {
     try {
       const { publishPlatformEvent } = await import("@dakinis/shared-ai/event-bus");
@@ -32,15 +37,50 @@ export async function indexDocument(doc) {
         source: config.service,
         queueKey: "search",
       });
+      return;
     } catch (err) {
       console.warn("[search] bullmq index job failed:", err instanceof Error ? err.message : err);
-      await redis.lPush(config.indexQueue, JSON.stringify(indexJob));
     }
-  } else {
-    await redis.lPush(config.indexQueue, JSON.stringify(indexJob));
+  }
+  await redis.lPush(config.indexQueue, JSON.stringify(indexJob));
+}
+
+/**
+ * Apply index job from queue/BullMQ (idempotent store, no re-enqueue).
+ * @param {object} job
+ */
+export async function applyIndexJob(job) {
+  const payload = job?.payload || job;
+  const scope = payload.scope || "global";
+  const id = payload.id;
+  if (!id) return { applied: false, reason: "missing_id" };
+
+  let title = payload.title || "";
+  let body = payload.body || payload.text || "";
+
+  if ((!body || !String(body).trim()) && scope === "knowledge") {
+    const { fetchKnowledgeDocument } = await import("./lib/knowledge-source.js");
+    const fetched = await fetchKnowledgeDocument(id);
+    if (fetched) {
+      title = fetched.title || title;
+      body = fetched.content || body;
+    }
   }
 
-  return { indexed: true, record };
+  const result = await storeSearchDocument({ scope, id, title, body, metadata: payload.metadata });
+  return { applied: result.indexed, ...result };
+}
+
+/**
+ * @param {{ scope: string; id: string; title?: string; body?: string; metadata?: object }} doc
+ */
+export async function indexDocument(doc) {
+  const result = await storeSearchDocument(doc);
+  if (!result.indexed) return result;
+
+  const indexJob = { action: "index", scope: doc.scope, id: doc.id, title: doc.title, body: doc.body };
+  await enqueueIndexJob(indexJob);
+  return result;
 }
 
 /**

@@ -2,7 +2,7 @@
  * Search indexer worker — BullMQ (fase 1) o Redis list (legacy).
  */
 import { config } from "./config.js";
-import { dequeueIndexJob } from "./index-store.js";
+import { dequeueIndexJob, applyIndexJob } from "./index-store.js";
 import { closeRedis } from "./lib/redis.js";
 
 console.log(`[${config.service}:worker] starting`);
@@ -15,8 +15,12 @@ if (!config.redisUrl) {
 }
 
 async function processJob(job) {
-  const payload = job.payload || job;
-  console.log(`[worker] index`, payload?.scope, payload?.id || payload?.action);
+  const payload = job?.payload || job;
+  const result = await applyIndexJob(payload);
+  console.log(
+    `[worker] index scope=${payload?.scope} id=${payload?.id} applied=${result.applied}`,
+    result.reason || ""
+  );
 }
 
 function isBullMqMode() {
@@ -45,7 +49,7 @@ async function startLegacyLoop() {
 async function startBullMqWorker() {
   const { createPlatformWorker } = await import("@dakinis/shared-ai/bullmq-bus");
   const worker = await createPlatformWorker("search", async (event) => {
-    await processJob(event?.payload || event);
+    await processJob(event);
   });
 
   process.on("SIGTERM", async () => {
