@@ -425,9 +425,9 @@ Billing
 |---|-------|--------|
 | 1 | Redeploy Core Back (proxy `/api/public/stripe/*`) | ✅ prod (`billingReachable`) |
 | 2 | Supabase `022` + `023` + `024` + `12-tenant-access.sql` | ✅ |
-| 3 | E2E Live: `/precios` → plan BD + `business.plan` | ⬜ |
-| 4 | Webhook Live test → **200** | ⬜ |
-| 5 | Impago → `access_state=degraded` → restore | ⬜ |
+| 3 | E2E Live: `/precios` → plan BD + `business.plan` | 🔄 código ✅ · smoke live ⬜ |
+| 4 | Webhook Live test → **200** | 🔄 probe script ✅ · Stripe Dashboard ⬜ |
+| 5 | Impago → `access_state=degraded` → restore | 🔄 sync + banner UI ✅ · smoke live ⬜ |
 
 Contrato: [`contracts/billing.json`](./contracts/billing.json)
 
@@ -852,11 +852,11 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 | Hito | Prioridad | Estado |
 |------|-----------|--------|
-| Billing E2E Live | 🔴 Alta | ⬜ checkout · webhook 200 |
+| Billing E2E Live | 🔴 Alta | 🔄 checkout UI + sync + banner · smoke live ⬜ |
 | Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
 | LifeFlow Engine + PostgreSQL | 🟡 Media | 🔄 Engine v1 ✅ · schema `lifeflow` ⬜ |
-| Hub SSO → productos | 🟠 Media | 🔄 LifeFlow ✅ · SA/AkoeNet ⬜ |
+| Hub SSO → productos | 🟠 Media | 🔄 LifeFlow ✅ · SA/AkoeNet ✅ código · smoke live ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
 | AI OpenAI prod (`OPENAI_API_KEY`) | 🔴 Alta | ⬜ stub hoy |
 | Supabase `022`/`023` | 🟠 Media | ⬜ |
@@ -865,9 +865,9 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 ### Lista ejecutiva (referencia)
 
-1. **Billing E2E Live** — redeploy Core · checkout · webhook 200
+1. **Billing E2E Live** — redeploy Core · `smoke-billing-e2e.ps1` · webhook Stripe Dashboard
 2. **Knowledge** — ✅ index sync Search · Hub query ⬜
-3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ · SA/AkoeNet ⬜
+3. **Hub** — ✅ v0.2.1 · SSO LifeFlow/SA/AkoeNet ✅ · smoke live ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ monitor · activar `DAKINIS_EVENT_BUS=bullmq` en prod
 5. **LifeFlow Engine** — ✅ API v1 · schema `lifeflow` cutover ⬜
 
@@ -882,7 +882,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | 5 | Events + Notifications v1 | 🔄 BullMQ ✅ · DLQ ✅ |
 | 6 | Search + Knowledge | ✅ Search v0.2.0 · Knowledge prod |
 | 7 | LifeFlow Engine + PostgreSQL | 🔄 Engine v1 ✅ · cutover ⬜ |
-| 8 | ~~Billing separado~~ | ✅ **plataforma prod** · E2E ⬜ |
+| 8 | ~~Billing separado~~ | ✅ **plataforma prod** · E2E smoke live ⬜ |
 | 9 | Async platform (no HTTP largo) | ⬜ |
 
 ### Calendario 6 semanas (referencia)

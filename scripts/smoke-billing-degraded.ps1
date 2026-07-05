@@ -1,8 +1,9 @@
-# Smoke: billing sync degrade → restore vía Core internal API.
+# Smoke: billing sync degrade → restore vía Core internal API + verificación /api/config.
 param(
     [string]$CoreBase = "https://api.dakinissystems.com/core/api",
     [string]$BusinessId = $env:DAKINIS_BUSINESS_ID,
-    [string]$InternalKey = $env:INTERNAL_API_KEY
+    [string]$InternalKey = $env:INTERNAL_API_KEY,
+    [string]$CoreJwt = $env:DAKINIS_CORE_JWT
 )
 
 $ErrorActionPreference = "Stop"
@@ -33,6 +34,31 @@ function Invoke-BillingSync {
     if ($code -notmatch "^2") { throw "FAIL $Event" }
 }
 
+function Get-TenantConfig {
+    param([string]$Label)
+    if (-not $CoreJwt) {
+        Write-Host "Omitido GET /api/config ($Label) — define DAKINIS_CORE_JWT" -ForegroundColor DarkYellow
+        return $null
+    }
+    Write-Host ""
+    Write-Host "== GET /api/config ($Label) ==" -ForegroundColor Cyan
+    $url = "$CoreBase/config"
+    $raw = curl.exe -s -H "Authorization: Bearer $CoreJwt" -H "x-business-id: $BusinessId" $url
+    $code = curl.exe -s -o NUL -w "%{http_code}" -H "Authorization: Bearer $CoreJwt" -H "x-business-id: $BusinessId" $url
+    Write-Host "HTTP $code"
+    if ($raw) {
+        try {
+            $json = $raw | ConvertFrom-Json
+            $json | ConvertTo-Json -Depth 6
+            return $json
+        } catch {
+            Write-Host $raw
+        }
+    }
+    if ($code -notmatch "^2") { throw "FAIL /api/config ($Label)" }
+    return $null
+}
+
 Write-Host "Billing degraded sync smoke — tenant $BusinessId" -ForegroundColor Green
 
 Invoke-BillingSync -Event "billing.payment_failed" -Payload @{
@@ -42,11 +68,29 @@ Invoke-BillingSync -Event "billing.payment_failed" -Payload @{
     status     = "past_due"
 }
 
+$degradedConfig = Get-TenantConfig -Label "degraded"
+if ($degradedConfig) {
+    $access = $degradedConfig.data.accessState
+    if ($access -ne "degraded") {
+        throw "Expected accessState=degraded, got '$access'"
+    }
+    Write-Host "OK accessState=degraded" -ForegroundColor Green
+}
+
 Invoke-BillingSync -Event "billing.payment_succeeded" -Payload @{
     businessId = $BusinessId
     tenantId   = $BusinessId
     plan       = "pro"
     status     = "active"
+}
+
+$activeConfig = Get-TenantConfig -Label "restored"
+if ($activeConfig) {
+    $access = $activeConfig.data.accessState
+    if ($access -ne "active") {
+        throw "Expected accessState=active, got '$access'"
+    }
+    Write-Host "OK accessState=active" -ForegroundColor Green
 }
 
 Write-Host ""
