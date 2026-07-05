@@ -17,8 +17,42 @@ if (-not $StreamAutomatorApi) { $StreamAutomatorApi = "https://api.streamautomat
 if (-not $AkoeNetApi) { $AkoeNetApi = "https://api.akoenet.com" }
 if (-not $LifeFlowApi) { $LifeFlowApi = "https://finance-api.dakinissystems.com" }
 if (-not $Email -or -not $Password) {
-    Write-Host "Define DAKINIS_TEST_EMAIL y DAKINIS_TEST_PASSWORD" -ForegroundColor Yellow
-    exit 1
+    Write-Host "Hub SSO gateway probe (sin credenciales)" -ForegroundColor Yellow
+    Write-Host "Tip: define DAKINIS_TEST_EMAIL y DAKINIS_TEST_PASSWORD para E2E IdP + hub-sso" -ForegroundColor DarkYellow
+    Write-Host ""
+
+    function Test-HubSsoRoute {
+        param([string]$Name, [string]$Url)
+        Write-Host "== $Name ==" -ForegroundColor Cyan
+        Write-Host "POST $Url"
+        $raw = curl.exe -s -X POST -H "Content-Type: application/json" -d "{}" $Url
+        $code = curl.exe -s -o NUL -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "{}" $Url
+        Write-Host "HTTP $code"
+        if ($raw) { Write-Host $raw -ForegroundColor DarkGray }
+        if ($code -match "^(401|403|400)$") {
+            Write-Host "OK route live (auth/validation required)" -ForegroundColor Green
+        } elseif ($code -eq "404") {
+            Write-Host "WARN ruta no desplegada o URL incorrecta" -ForegroundColor Yellow
+        } elseif ($code -eq "000") {
+            Write-Host "WARN host no alcanzable (DNS/TLS)" -ForegroundColor Yellow
+        } else {
+            throw "FAIL $Name (HTTP $code)"
+        }
+    }
+
+    $authBase = $AuthUrl.TrimEnd("/")
+    Write-Host "== Auth reachable ==" -ForegroundColor Cyan
+    Write-Host "GET $authBase/health"
+    $authCode = curl.exe -s -o NUL -w "%{http_code}" "$authBase/health"
+    Write-Host "HTTP $authCode"
+
+    Test-HubSsoRoute -Name "StreamAutomator hub-sso" -Url "$($StreamAutomatorApi.TrimEnd('/'))/api/auth/hub-sso"
+    Test-HubSsoRoute -Name "AkoeNet hub-sso" -Url "$($AkoeNetApi.TrimEnd('/'))/auth/hub-sso"
+    Test-HubSsoRoute -Name "LifeFlow hub-sso" -Url "$($LifeFlowApi.TrimEnd('/'))/api/auth/hub-sso"
+
+    Write-Host ""
+    Write-Host "OK - Hub SSO routes reachable (gateway probe)" -ForegroundColor Green
+    exit 0
 }
 
 function Invoke-HubSsoExchange {

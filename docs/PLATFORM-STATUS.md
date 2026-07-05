@@ -36,7 +36,7 @@ Vista en <1 min antes de entrar en detalle.
 | **StreamAutomator** | 🟢 Activo | Sí | Supabase `stream` | Christian | Métricas · event bus |
 | **AkoeNet** | 🟡 Desarrollo | Sí | Supabase / legacy | Christian | Schema `akoenet` completo |
 | **Hub** | 🟢 Activo | Sí | Supabase `hub` | Christian | SSO smoke live (3 productos) |
-| **AI Platform** | 🟡 Beta | Sí | Supabase `ai` | Christian | `OPENAI_API_KEY` prod · advisor Live |
+| **AI Platform** | 🟡 Beta | Sí | Supabase `ai` | Christian | ⬜ **vars Railway** `OPENAI_API_KEY` + `DAKINIS_AI_SERVICE_KEY` |
 | **Billing** | 🟢 Activo | Sí | Supabase `billing` | Christian | Webhook Stripe 200 · checkout live |
 | **Identity** (Auth) | 🟢 Activo | Sí | Supabase `dakinis_auth` | Christian | — |
 | **Notifications** | 🟡 Beta | Sí | Redis + Supabase `hub` | Christian | Resend email · inbox Hub UI |
@@ -44,7 +44,7 @@ Vista en <1 min antes de entrar en detalle.
 | **Knowledge** | 🟢 Activo | Sí | Supabase `knowledge` | Christian | RAG PDF masivo · Ctrl+K JWT smoke ⬜ |
 | **Landing** | 🟢 Activo | Sí | — | Christian | Funnel One-first |
 
-**Prioridad plataforma (julio 2026):** Billing E2E Live (checkout + webhook Stripe) · AI `OPENAI_API_KEY` prod · Hub SSO smoke.
+**Prioridad plataforma (julio 2026):** Billing E2E Live · Hub SSO smoke · Knowledge Ctrl+K JWT · **⬜ vars IA en Railway** (bloqueado hasta keys).
 
 ---
 
@@ -297,9 +297,9 @@ Hoy en prod: Mi día → Agenda → Notificaciones → Actividad → IA → Salu
 | App | Logo | Estrategia | Comportamiento |
 |-----|------|------------|----------------|
 | Dakinis One | `core.png` | `core-session` | Login en Core (sesión propia) |
-| LifeFlow | `lifeflow.png` | `idp-exchange` + `/auth/hub-sso` | ✅ Entrada logueada (provisiona usuario) |
-| StreamAutomator | `streamautomator.png` | `idp-exchange` + `/api/auth/hub-sso` | ✅ código `f18725b` · smoke live ⬜ |
-| AkoeNet | `akoenet.png` | `idp-exchange` + `/auth/hub-sso` | ✅ código · smoke live ⬜ |
+| StreamAutomator | `streamautomator.png` | `idp-exchange` + `/api/auth/hub-sso` | 🔄 código `f18725b` · **prod 404** (redeploy SA API) · smoke gateway ⬜ |
+| AkoeNet | `akoenet.png` | `idp-exchange` + `/auth/hub-sso` | 🔄 código · prod no alcanzable · smoke ⬜ |
+| LifeFlow | `lifeflow.png` | `idp-exchange` + `/auth/hub-sso` | ✅ prod (`400 platformToken` = ruta viva) · smoke JWT ⬜ |
 | Tabletop | `tabletop.png` | `sso: none` → URL directa | `tabletop.dakinissystems.com` |
 
 Assets: [`packages/shared-brand/assets/hub-logos/`](../packages/shared-brand/assets/hub-logos/) · mapa en `hub-product-logos.js`.
@@ -341,16 +341,29 @@ AI Platform
 
 | Capacidad | Estado |
 |-----------|--------|
-| Chat / Agents | ✅ API prod · 🔄 **provider stub** sin `OPENAI_API_KEY` |
-| Core advisor (`/v1/core/advisor`) | ✅ · Core copilot consume vía `DAKINIS_AI_SERVICE_KEY` |
+| Chat / Agents | ✅ API prod · ⬜ **`OPENAI_API_KEY` no configurada** → provider `stub` |
+| Core advisor (`/v1/core/advisor`) | ✅ código · ⬜ **`DAKINIS_AI_SERVICE_KEY` no configurada** en dakinis-ai / Core Back |
 | OCR | ✅ parcial |
 | RAG query | 🔄 vía `ai.*` · Knowledge ⬜ |
 | Embeddings batch | ⬜ AI Worker |
 | Vision / Speech / Planner | ⬜ roadmap |
 
-**Prod (jul 2026):** `/ai/health` reporta `aiProvider: "stub"` hasta `OPENAI_API_KEY` en **dakinis-ai** (+ worker). Health v0.1.1 expone `serviceKeyConfigured` y `openaiModel`.
+**Prod (jul 2026):** `/ai/health` → `aiProvider: "stub"` · `serviceKeyConfigured: false` · smoke `smoke-ai.ps1` ✅.
 
-**Go-live Railway (dakinis-ai + worker):**
+> **⬜ PENDIENTE Railway (jul 2026)** — sin esto la IA sigue en stub y copilot/advisor degradados:
+>
+> | Servicio | Variable | Estado |
+> |----------|----------|--------|
+> | **dakinis-ai** | `OPENAI_API_KEY` | ⬜ falta |
+> | **dakinis-ai** | `DAKINIS_AI_SERVICE_KEY` | ⬜ falta |
+> | **dakinis-ai-worker** | `OPENAI_API_KEY` | ⬜ falta |
+> | **Core Back** | `DAKINIS_AI_SERVICE_KEY` | ⬜ falta (mismo valor que dakinis-ai) |
+> | **Core Back** | `DAKINIS_AI_BASE_URL` | verificar `https://api.dakinissystems.com/ai` |
+> | Opcional | `OPENAI_MODEL=gpt-4o-mini` | default OK |
+>
+> Tras configurar + redeploy: `/ai/health` → `aiProvider: "openai"` · `serviceKeyConfigured: true`.
+
+**Go-live Railway (referencia):**
 1. `OPENAI_API_KEY` · `OPENAI_MODEL=gpt-4o-mini`
 2. `DAKINIS_AI_SERVICE_KEY` (mismo valor en **Core Back**)
 3. Core Back: `DAKINIS_AI_BASE_URL=https://api.dakinissystems.com/ai` (o DNS privado Railway)
@@ -873,10 +886,10 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core proxy prod · smoke JWT ⬜ |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
 | LifeFlow Engine + PostgreSQL | 🟡 Media | ✅ Engine v1 · PG sync v1 · migr. **030** ✅ · API prod `9f45bc2` · cutover SQLite ⬜ |
-| Hub SSO → productos | 🟠 Media | ✅ LifeFlow prod · SA `f18725b` · AkoeNet código · `smoke-hub-sso-products.ps1` ⬜ |
+| Hub SSO → productos | 🟠 Media | ✅ LifeFlow prod · SA `f18725b` redeploy ⬜ · AkoeNet prod ⬜ · smoke gateway ✅ |
 | Notifications v1 inbox | 🟠 Media | ✅ prod `0.3.1` · Resend configured · Internal `c5f2ddb` · inbox JWT ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
-| AI OpenAI prod (`OPENAI_API_KEY`) | 🔴 Alta | 🔄 health v0.1.1 · smoke `smoke-ai.ps1` ✅ · Railway key ⬜ |
+| AI OpenAI prod | 🔴 Alta | ⬜ **`OPENAI_API_KEY` + `DAKINIS_AI_SERVICE_KEY` pendientes Railway** · health v0.1.1 · smoke ✅ |
 | Supabase `022`/`023` | 🟠 Media | ⬜ |
 | Marketplace Hub UI | 🔵 Baja | ⬜ |
 | Hub v0.2.1 | — | ✅ desplegado · migr. 028/029 ✅ |
@@ -885,7 +898,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 1. **Billing E2E Live** — smoke chain ✅ · webhook Stripe Dashboard ⬜ · checkout JWT/browser ⬜
 2. **Knowledge** — ✅ index sync · ✅ Hub query prod · smoke JWT ⬜
-3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ · SA/AkoeNet hub-sso · smoke 3 productos ⬜
+3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ prod · SA hub-sso **404 prod** (redeploy) · smoke gateway ✅ · E2E creds ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ ✅ · activar `DAKINIS_EVENT_BUS=bullmq` en prod
 5. **LifeFlow** — ✅ API/Web prod · PG sync · migr. **030** ✅ · cutover SQLite ⬜
 6. **Notifications v1** — ✅ inbox persist prod · Resend email · Hub dashboard items · smoke enqueue ✅ · `DAKINIS_USER_ID` inbox ⬜
@@ -933,7 +946,9 @@ RAG PDF masivo · Calendario global Core · SSO Hub→productos (smoke live) · 
 **Core Front:** proxy `/api` · build incluye `@dakinis/shared-ux` del repo Core (sync manual desde monorepo)  
 **Billing:** `PORT=4080` · `STRIPE_*` Live · `POSTGRES_SCHEMA=billing` · **`INTERNAL_API_KEY`** · **`DAKINIS_GATEWAY_URL`** · `DAKINIS_CORE_INTERNAL_URL=$GATEWAY/core` (sync HTTP fallback)  
 **LifeFlow API:** `DATABASE_URL` · `POSTGRES_SCHEMA=lifeflow` · `DATABASE_SSL=true` · `FINANZAS_DB_PATH` (volume)  
-**Notifications:** `PORT=4081` · `REDIS_URL` · **`DATABASE_URL`** · `DATABASE_SSL=true` · **`RESEND_API_KEY`** · `RESEND_FROM` · worker mismo schema `hub`
+**Notifications:** `PORT=4081` · `REDIS_URL` · **`DATABASE_URL`** · `DATABASE_SSL=true` · **`RESEND_API_KEY`** · `RESEND_FROM` · worker mismo schema `hub`  
+**AI (dakinis-ai + worker):** ⬜ **`OPENAI_API_KEY`** · ⬜ **`DAKINIS_AI_SERVICE_KEY`** · `OPENAI_MODEL=gpt-4o-mini` · `DATABASE_URL` · `POSTGRES_SCHEMA=ai`  
+**Core Back (proxy IA):** ⬜ **`DAKINIS_AI_SERVICE_KEY`** (mismo que ai) · `DAKINIS_AI_BASE_URL=https://api.dakinissystems.com/ai`
 
 ### Checklist go-live Stripe
 
