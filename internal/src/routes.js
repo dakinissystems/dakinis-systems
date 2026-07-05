@@ -4,6 +4,10 @@ import { publishEvent, listQueuedEvents } from "./lib/events.js";
 import { proxyJson } from "./lib/proxy.js";
 import { checkDbHealth } from "./lib/db.js";
 import { getHubDashboard, validateUserId } from "./services/hub-dashboard.js";
+import {
+  getTenantHubProducts,
+  upsertTenantHubProducts,
+} from "./services/hub-product-access.js";
 
 function platformEvent(type, payload, meta = {}) {
   return {
@@ -65,6 +69,37 @@ export const routes = {
       notificationsUnread = inbox.body.unread;
     }
     return getHubDashboard(userId, { notificationsUnread });
+  },
+
+  "GET /hub/tenant-access/:slug": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const slug = decodeURIComponent((req.url || "").split("?")[0].replace("/hub/tenant-access/", ""));
+    try {
+      const data = await getTenantHubProducts(slug);
+      return { status: 200, body: data };
+    } catch (err) {
+      return {
+        status: 500,
+        body: { error: "db_error", message: err instanceof Error ? err.message : "db_error" },
+      };
+    }
+  },
+
+  "PUT /hub/tenant-access/:slug": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const slug = decodeURIComponent((req.url || "").split("?")[0].replace("/hub/tenant-access/", ""));
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const data = await upsertTenantHubProducts(slug, body.products);
+      return { status: 200, body: data };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "db_error";
+      const status = message === "tenant_slug_required" ? 400 : 500;
+      return { status, body: { error: message } };
+    }
   },
 
   "POST /events": async (req) => {

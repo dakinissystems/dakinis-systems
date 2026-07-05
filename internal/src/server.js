@@ -21,6 +21,12 @@ function matchRoute(method, path) {
   if (method === "GET" && bare.startsWith("/users/")) return routes["GET /users/:id"];
   if (method === "GET" && bare.startsWith("/profile/")) return routes["GET /profile/:userId"];
   if (method === "GET" && bare.startsWith("/hub/dashboard/")) return routes["GET /hub/dashboard/:userId"];
+  if (method === "GET" && bare.startsWith("/hub/tenant-access/")) {
+    return routes["GET /hub/tenant-access/:slug"];
+  }
+  if (method === "PUT" && bare.startsWith("/hub/tenant-access/")) {
+    return routes["PUT /hub/tenant-access/:slug"];
+  }
   if (method === "GET" && bare.startsWith("/billing/subscriptions/")) {
     return routes["GET /billing/subscriptions/:tenantId"];
   }

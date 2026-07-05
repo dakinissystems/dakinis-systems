@@ -1,6 +1,10 @@
 import { query } from "../lib/db.js";
 import { HUB_APPS, HUB_SECTIONS } from "../hub-data.js";
 import { buildWidgetValues } from "../hub-widget-values.js";
+import {
+  fetchUserHubProducts,
+  dakinisFilterHubApps,
+} from "./hub-product-access.js";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -36,23 +40,40 @@ export async function fetchMiDiaEnabled() {
  * @param {{ db?: object | null; miDiaEnabled?: boolean; notificationsUnread?: number }} [opts]
  */
 export function buildHubDashboardResponse(userId, opts = {}) {
-  const db = opts.db;
-  const unread =
-    db?.unread_notifications ?? opts.notificationsUnread ?? 0;
+  const dbRaw = opts.db;
+  const unreadExternal = opts.notificationsUnread;
+  const hubAccess = opts.hubAccess || { products: ["core"], isPlatformAdmin: false };
+  const enabledProducts = hubAccess.products || ["core"];
+  const db = dbRaw
+    ? {
+        ...dbRaw,
+        unread_notifications: Math.max(
+          Number(dbRaw.unread_notifications ?? 0),
+          Number(unreadExternal ?? 0)
+        ),
+      }
+    : null;
+  const unread = db?.unread_notifications ?? unreadExternal ?? 0;
+  const apps = dakinisFilterHubApps(HUB_APPS, enabledProducts);
 
   const payload = {
     userId,
     miDiaEnabled: opts.miDiaEnabled ?? false,
     landing: opts.miDiaEnabled ? "my-day" : "apps",
     sections: HUB_SECTIONS,
-    apps: HUB_APPS,
+    apps,
+    enabledProducts,
+    isPlatformAdmin: Boolean(hubAccess.isPlatformAdmin),
     db: db ?? null,
     summary: {
       notificationsUnread: Number(unread) || 0,
       scheduledContents: db?.scheduled_contents ?? null,
+      streamScheduledWeek: db?.stream_scheduled_week ?? null,
+      streamUpcoming: db?.stream_upcoming ?? null,
       lifeflowScore: db?.lifeflow_score ?? null,
-      tenantCount: Array.isArray(db?.tenants) ? db.tenants.length : null,
+      tenantCount: Number(db?.core_tenant_count ?? 0) || (Array.isArray(db?.tenants) ? db.tenants.length : null),
       recentItemsCount: Array.isArray(db?.recent_items) ? db.recent_items.length : 0,
+      timelineCount: Array.isArray(db?.timeline) ? db.timeline.length : 0,
       stub: !db,
     },
     widgetValues: buildWidgetValues({ db, summary: { notificationsUnread: unread } }),
@@ -68,12 +89,14 @@ export function buildHubDashboardResponse(userId, opts = {}) {
 export async function getHubDashboard(userId, opts = {}) {
   let db = null;
   let miDiaEnabled = false;
+  let hubAccess = { products: ["core"], isPlatformAdmin: false };
   let dbError = null;
 
   try {
-    [db, miDiaEnabled] = await Promise.all([
+    [db, miDiaEnabled, hubAccess] = await Promise.all([
       fetchDashboardFromDb(userId),
       fetchMiDiaEnabled(),
+      fetchUserHubProducts(userId),
     ]);
   } catch (err) {
     dbError = err instanceof Error ? err.message : "db_error";
@@ -86,6 +109,7 @@ export async function getHubDashboard(userId, opts = {}) {
     db,
     miDiaEnabled,
     notificationsUnread: opts.notificationsUnread,
+    hubAccess,
   });
 
   return {
