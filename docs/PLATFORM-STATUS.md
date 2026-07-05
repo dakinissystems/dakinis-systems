@@ -40,11 +40,11 @@ Vista en <1 min antes de entrar en detalle.
 | **Billing** | 🟢 Activo | Sí | Supabase `billing` | Christian | E2E checkout Live |
 | **Identity** (Auth) | 🟢 Activo | Sí | Supabase `dakinis_auth` | Christian | — |
 | **Notifications** | 🟡 Scaffold | Sí | Redis (+ Supabase ⬜) | Christian | v1 email/push |
-| **Search** | 🟡 Scaffold | Sí | Redis (+ pgvector ⬜) | Christian | Index + semantic |
-| **Knowledge** | 🟢 Activo | Sí | Supabase `knowledge` ✅ persist | Christian | Search index sync |
+| **Search** | 🟡 Scaffold | Sí | Redis (+ pgvector ⬜) | Christian | Hub Ctrl+K query |
+| **Knowledge** | 🟢 Activo | Sí | Supabase `knowledge` | Christian | Hub Search query |
 | **Landing** | 🟢 Activo | Sí | — | Christian | Funnel One-first |
 
-**Prioridad plataforma (julio 2026):** Billing E2E Live · Knowledge index sync · Hub SSO → productos · LifeFlow cutover Supabase.
+**Prioridad plataforma (julio 2026):** Billing E2E Live · Hub SSO SA/AkoeNet · LifeFlow cutover Supabase.
 
 ---
 
@@ -386,10 +386,12 @@ Knowledge
 | **Repo** | [`dakinis-knowledge`](https://github.com/dakinissystems/dakinis-knowledge) |
 | **Gateway** | `/knowledge/` · puerto **4084** |
 | **Schema** | Supabase `knowledge` ✅ `025` + `026` RLS |
-| **Estado** | ✅ API prod · gateway + dominio |
+| **Estado** | ✅ API prod · **Search index sync** · gateway + dominio |
 | **Railway** | `dakinis-knowledge` (API) + `dakinis-knowledge-worker` |
 
 Contrato: [`contracts/knowledge.json`](./contracts/knowledge.json)
+
+Sync Search: `POST /knowledge/v1/sync/search` (service key) · worker Search aplica jobs BullMQ/list · smoke `.\scripts\smoke-knowledge-search-sync.ps1`
 
 ---
 
@@ -466,7 +468,7 @@ Search
 |---|---|
 | **Repo** | `dakinis-search` |
 | **Gateway** | `/search/` · puerto **4082** |
-| **Estado** | 🔄 scaffold API + indexer Redis · health ✅ |
+| **Estado** | 🔄 scaffold API + **indexer funcional** · health ✅ |
 
 ---
 
@@ -835,7 +837,7 @@ La arquitectura ya define Foundation → Infrastructure → Platform → Product
 **No ampliar arquitectura** salvo necesidad real. Priorizar **cerrar hitos**:
 
 1. Billing E2E Live  
-2. Knowledge index sync  
+2. Knowledge index sync ✅
 3. Event bus BullMQ  
 4. LifeFlow Engine + cutover Supabase  
 5. SSO Hub → productos  
@@ -851,7 +853,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | Hito | Prioridad | Estado |
 |------|-----------|--------|
 | Billing E2E Live | 🔴 Alta | ⬜ checkout · webhook 200 |
-| Knowledge index sync | 🔴 Alta | 🔄 API prod · sync ⬜ |
+| Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
 | LifeFlow Engine + PostgreSQL | 🟡 Media | 🔄 Engine v1 ✅ · schema `lifeflow` ⬜ |
 | Hub SSO → productos | 🟠 Media | 🔄 LifeFlow ✅ · SA/AkoeNet ⬜ |
@@ -864,7 +866,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 ### Lista ejecutiva (referencia)
 
 1. **Billing E2E Live** — redeploy Core · checkout · webhook 200
-2. **Knowledge** — index sync Search ↔ Knowledge
+2. **Knowledge** — ✅ index sync Search · Hub query ⬜
 3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ · SA/AkoeNet ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ monitor · activar `DAKINIS_EVENT_BUS=bullmq` en prod
 5. **LifeFlow Engine** — ✅ API v1 · schema `lifeflow` cutover ⬜
