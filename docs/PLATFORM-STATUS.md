@@ -448,8 +448,8 @@ Billing
 |---|-------|--------|
 | 1 | Redeploy Core Back (proxy `/api/public/stripe/*`) | ✅ prod (`billingReachable`) |
 | 2 | Supabase `022` + `023` + `024` + `12-tenant-access.sql` | ✅ |
-| 3 | E2E Live: `/precios` → plan BD + `business.plan` | 🔄 checkout API ✅ · tenantId obligatorio ✅ · smoke live ⬜ |
-| 4 | Webhook Live test → **200** | 🔄 POST only (GET → 405) · probe ✅ · Stripe Dashboard test event ⬜ |
+| 3 | E2E Live: `/precios` → plan BD + `business.plan` | 🔄 checkout + **success sync** ✅ · smoke live ⬜ |
+| 4 | Webhook Live test → **200** | 🔄 POST only · probe ✅ · Stripe test event ⬜ · fallback success page sync ✅ |
 | 5 | Impago → `access_state=degraded` → restore | 🔄 sync + banner UI ✅ · smoke live ⬜ |
 
 Contrato: [`contracts/billing.json`](./contracts/billing.json)
@@ -881,7 +881,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 | Hito | Prioridad | Estado |
 |------|-----------|--------|
-| Billing E2E Live | 🔴 Alta | 🔄 sync gateway fallback ✅ · tenantId checkout ✅ · smoke chain ✅ · checkout JWT ⬜ |
+| Billing E2E Live | 🔴 Alta | 🔄 success page sync ✅ · tenantId checkout ✅ · smoke chain ✅ · checkout JWT ⬜ |
 | Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
 | Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core proxy prod · smoke JWT ⬜ |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
@@ -896,7 +896,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 ### Lista ejecutiva (referencia)
 
-1. **Billing E2E Live** — smoke chain ✅ · webhook Stripe Dashboard ⬜ · checkout JWT/browser ⬜
+1. **Billing E2E Live** — success page sync ✅ · webhook Stripe ⬜ · checkout JWT/browser ⬜
 2. **Knowledge** — ✅ index sync · ✅ Hub query prod · smoke JWT ⬜
 3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ prod · SA hub-sso **404 prod** (redeploy) · smoke gateway ✅ · E2E creds ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ ✅ · activar `DAKINIS_EVENT_BUS=bullmq` en prod

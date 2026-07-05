@@ -59,7 +59,7 @@ async function publishSubscriptionLifecycle(fields, type) {
 }
 
 /** @param {import("stripe").Stripe.Checkout.Session} session */
-async function onCheckoutCompleted(session) {
+export async function onCheckoutCompleted(session) {
   const tenantId = session.metadata?.business_id || session.metadata?.tenant_id;
   const userId = session.metadata?.user_id;
   const planCode = session.metadata?.plan_code;

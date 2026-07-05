@@ -32,6 +32,9 @@ async function handle(req, res) {
   if (!handler && path.startsWith("/v1/subscriptions/")) {
     handler = routes["GET /v1/subscriptions/:tenantId"];
   }
+  if (!handler && path.startsWith("/v1/checkout/sessions/") && path.endsWith("/sync")) {
+    handler = routes["POST /v1/checkout/sessions/:sessionId/sync"];
+  }
   if (!handler && path.startsWith("/v1/checkout/sessions/")) {
     handler = routes["GET /v1/checkout/sessions/:sessionId"];
   }

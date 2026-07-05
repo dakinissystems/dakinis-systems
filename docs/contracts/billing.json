@@ -10,6 +10,7 @@
     "GET /v1/plans": "List public plans (Stripe Price IDs from env)",
     "GET /v1/subscriptions/:tenantId": "Subscription for tenant (internal auth optional)",
     "POST /v1/checkout": "Create Stripe Checkout session (INTERNAL_API_KEY)",
+    "POST /v1/checkout/sessions/:sessionId/sync": "Sync paid session to subscription + Core (INTERNAL_API_KEY, idempotent)",
     "POST /v1/portal": "Stripe Customer Portal session (INTERNAL_API_KEY)",
     "POST /v1/webhooks/stripe": "Stripe webhooks — verify + persist subscriptions/invoices",
     "POST /v1/usage": "Report metered usage (INTERNAL_API_KEY)"

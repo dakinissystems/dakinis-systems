@@ -16,6 +16,7 @@ export function getRootPage() {
       "POST /v1/portal",
       "POST /v1/usage",
       "POST /v1/webhooks/stripe",
+      "POST /v1/checkout/sessions/:sessionId/sync",
     ],
   });
 }

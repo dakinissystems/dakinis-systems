@@ -4,6 +4,7 @@ import { PUBLIC_PLANS, getPlanById } from "./plans.js";
 import { constructWebhookEvent } from "./stripe.js";
 import { handleStripeWebhook } from "./webhooks.js";
 import { createCheckoutSession, createPortalSession, getCheckoutSession } from "./checkout.js";
+import { syncPaidCheckoutSession } from "./checkout-sync.js";
 import { requireInternalAuth } from "./auth.js";
 import { getSubscriptionByTenantId, recordUsage } from "./repository.js";
 
@@ -222,7 +223,7 @@ export const routes = {
 
   "GET /v1/checkout/sessions/:sessionId": async (req) => {
     const path = (req.url || "").split("?")[0];
-    const sessionId = path.replace("/v1/checkout/sessions/", "");
+    const sessionId = path.replace("/v1/checkout/sessions/", "").split("/")[0];
     if (!sessionId) {
       return { status: 400, body: { error: "invalid_session_id" } };
     }
@@ -233,6 +234,32 @@ export const routes = {
     } catch (err) {
       const message = err instanceof Error ? err.message : "session_lookup_failed";
       const status = message === "stripe_not_configured" ? 503 : 404;
+      return { status, body: { error: message } };
+    }
+  },
+
+  "POST /v1/checkout/sessions/:sessionId/sync": async (req) => {
+    const auth = requireInternalAuth(req, { required: true });
+    if (!auth.ok) {
+      return { status: auth.status, body: { error: auth.error } };
+    }
+
+    const path = (req.url || "").split("?")[0];
+    const parts = path.split("/").filter(Boolean);
+    const sessionId = parts.length >= 4 ? parts[3] : "";
+    if (!sessionId || sessionId === "sync") {
+      return { status: 400, body: { error: "invalid_session_id" } };
+    }
+
+    try {
+      const result = await syncPaidCheckoutSession(sessionId);
+      if (!result.ok) {
+        return { status: 409, body: result };
+      }
+      return { status: 200, body: result };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "sync_failed";
+      const status = message === "stripe_not_configured" ? 503 : 502;
       return { status, body: { error: message } };
     }
   },
