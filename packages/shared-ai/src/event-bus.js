@@ -48,6 +48,18 @@ export async function publishPlatformEvent(type, payload, opts = {}) {
     tenantId: opts.tenantId,
     source: opts.source || "platform",
   });
+
+  if (String(process.env.DAKINIS_EVENT_BUS || "").toLowerCase() === "bullmq") {
+    try {
+      const { publishBullMqEvent, isBullMqEnabled } = await import("./bullmq-bus.js");
+      if (isBullMqEnabled()) {
+        return publishBullMqEvent(type, payload, opts);
+      }
+    } catch (err) {
+      console.warn("[event-bus] bullmq publish failed:", err instanceof Error ? err.message : err);
+    }
+  }
+
   const queue = opts.queue || process.env.DAKINIS_EVENTS_QUEUE || "dakinis:events";
   const redis = await getEventBusRedis(opts.redisUrl);
   if (!redis) {

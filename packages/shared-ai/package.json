@@ -8,9 +8,11 @@
     "./flags": "./src/flags.js",
     "./agents": "./src/agents.js",
     "./events": "./src/events.js",
-    "./event-bus": "./src/event-bus.js"
+    "./event-bus": "./src/event-bus.js",
+    "./bullmq-bus": "./src/bullmq-bus.js"
   },
   "optionalDependencies": {
-    "redis": "^4.7.0"
+    "redis": "^4.7.0",
+    "bullmq": "^5.41.0"
   }
 }
