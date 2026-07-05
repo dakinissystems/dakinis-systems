@@ -31,7 +31,7 @@ Vista en <1 min antes de entrar en detalle.
 | Producto / servicio | Estado | Prod | BD | Responsable | Próximo hito |
 |---------------------|--------|------|-----|-------------|--------------|
 | **Core** (Business OS) | 🟢 Activo | Sí | Supabase `dakinis_core_prod` | Christian | Cutover → `core` · E2E billing |
-| **LifeFlow** | 🟡 Beta | Sí | SQLite → Supabase | Christian | Engine v1 · schema `lifeflow` |
+| **LifeFlow** | 🟡 Beta | Sí | SQLite → Supabase | Christian | Engine v1 ✅ · cutover `lifeflow` |
 | **Tabletop** | 🟡 MVP | Sí | SQLite (volume) | Christian | Migración Supabase |
 | **StreamAutomator** | 🟢 Activo | Sí | Supabase `stream` | Christian | Métricas · event bus |
 | **AkoeNet** | 🟡 Desarrollo | Sí | Supabase / legacy | Christian | Schema `akoenet` completo |
@@ -44,7 +44,7 @@ Vista en <1 min antes de entrar en detalle.
 | **Knowledge** | 🟢 Activo | Sí | Supabase `knowledge` ✅ persist | Christian | Search index sync |
 | **Landing** | 🟢 Activo | Sí | — | Christian | Funnel One-first |
 
-**Prioridad plataforma (julio 2026):** Billing E2E Live · Knowledge index sync · Event bus BullMQ · SSO Hub→productos.
+**Prioridad plataforma (julio 2026):** Billing E2E Live · Knowledge index sync · Hub SSO → productos · LifeFlow cutover Supabase.
 
 ---
 
@@ -133,7 +133,7 @@ Componentes transversales — **no** son productos.
 | Componente | Rol | Estado |
 |------------|-----|--------|
 | **Gateway** | Proxy único · JWT (`/_auth_check`) · rate limit · CORS | ✅ `api.dakinissystems.com` |
-| **Redis** | Cache · colas · event bus (list → BullMQ roadmap) | ✅ Railway plugin |
+| **Redis** | Cache · colas · event bus BullMQ | ✅ Railway plugin · `DAKINIS_EVENT_BUS=bullmq` |
 | **Supabase** | PostgreSQL multi-schema · pooler `:6543` | 🔄 ver [§ Supabase](#supabase) |
 | **Railway** | Contenedores · 22+ servicios | ✅ Fase 1 |
 | **Storage** | Assets · media · documentos · exports | ⬜ Supabase Storage / R2 |
@@ -259,7 +259,7 @@ Mapa de las 17 mejoras documentadas en este archivo:
 | **Dominio** | `hub.dakinissystems.com` |
 | **Schema** | `hub` · `hub.v1_get_dashboard` · `hub.v1_get_user_hub_products` |
 | **Versión prod** | **v0.2.1** (`83c9c75`) — ver desglose abajo |
-| **Internal API** | v0.3.1 (`ab6e461`) — dashboard widgets · acceso por tenant · metadata logos |
+| **Internal API** | v0.3.1 — dashboard widgets · acceso tenant · **DLQ monitor BullMQ** |
 
 **Estado:** ✅ «Mi día» prod · IdP login · launcher con **logos reales por producto** · widgets «Ver» · filtro apps/widgets por tenant · Supabase `028`/`029` ✅ prod.
 
@@ -479,16 +479,15 @@ Events
 ├── Domain Events (negocio)
 ├── Integration Events (platform)
 ├── Scheduled Jobs
-├── Redis (lists hoy)
-├── BullMQ (roadmap)
-├── Queues (DAKINIS_EVENTS · NOTIFICATIONS · SEARCH_INDEX)
-├── Workers (AI · Notifications · Search · Media · Storage)
-├── Retries
-└── Dead Letter Queue
+├── Redis (lists legacy + BullMQ prod)
+├── BullMQ ✅ (`packages/shared-ai/bullmq-bus.js`)
+├── Queues (dakinis.events · notifications · search · **dakinis.dlq**)
+├── Workers (Billing · Notifications · Search · Core events)
+├── Retries + exponential backoff
+└── Dead Letter Queue ✅ monitor Internal API (`GET /events/dlq` · replay/discard)
 ```
 
-Publicación: Core · Billing · AI · productos  
-Consumo: Notifications · Search · Hub timeline · Analytics
+Smoke BullMQ: `.\scripts\smoke-bullmq.ps1` · DLQ: `.\scripts\smoke-dlq.ps1`
 
 ---
 
@@ -597,10 +596,15 @@ LifeFlow
 
 | | |
 |---|---|
-| **Repo** | `lifeflow` |
+| **Repo** | `lifeflow` (`finanzas/`) |
 | **BD hoy** | SQLite volume `/data` |
 | **BD objetivo** | Supabase schema `lifeflow` |
 | **Coach IA** | ✅ Pro · tools deterministas + AI |
+| **Engine v1** | ✅ `POST /v1/score` · `/v1/forecast` · `/v1/risk` · `/v1/scenario` · `/v1/cities/compare` |
+
+Auth server-to-server: `Authorization: Bearer $DAKINIS_SERVICE_KEY` + header `X-Dakinis-User-Id`.
+
+Smoke: `.\scripts\smoke-lifeflow-engine.ps1 -UserId <uuid>`
 
 ---
 
@@ -716,9 +720,9 @@ Orden: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
 | Search | dakinis-search | — | /search/ | ✅ | ✅ | Scaffold | ✅ v0.2.0 |
 | Knowledge | dakinis-knowledge | knowledge | knowledge.dakinissystems.com | ✅ | ✅ | Active | ✅ prod |
 | Knowledge Worker | dakinis-knowledge-worker | knowledge | interno | ✅ | ✅ | Active | ✅ |
-| Internal API | dakinis-internal-api | hub + platform | /internal/ · `:4083` | — | ⬜ | Stable | ✅ v0.3.1 |
+| Internal API | dakinis-internal-api | hub + platform | /internal/ · `:4083` | — | ✅ | Stable | ✅ v0.3.1 + DLQ |
 | Landing | dakinis-landing | — | dakinissystems.com | — | — | Stable | ✅ |
-| LifeFlow API | lifeflow | SQLite | finance-api… | — | — | Beta | ✅ |
+| LifeFlow API | lifeflow | SQLite | finance-api… | — | — | Beta | ✅ Engine v1 |
 | LifeFlow Web | lifeflow | — | finance… | — | — | Beta | ✅ |
 | Tabletop API | dakinis-tabletop | SQLite | tabletop-api… | — | — | MVP | ✅ |
 | Tabletop Web | dakinis-tabletop | — | tabletop… | — | — | MVP | ✅ |
@@ -846,8 +850,8 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 |------|-----------|--------|
 | Billing E2E Live | 🔴 Alta | ⬜ checkout · webhook 200 |
 | Knowledge index sync | 🔴 Alta | 🔄 API prod · sync ⬜ |
-| Event bus BullMQ | 🟠 Media | 🔄 lists → BullMQ |
-| LifeFlow Engine + PostgreSQL | 🟡 Media | ⬜ |
+| Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
+| LifeFlow Engine + PostgreSQL | 🟡 Media | 🔄 Engine v1 ✅ · schema `lifeflow` ⬜ |
 | Hub SSO → productos | 🟠 Media | ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
 | AI OpenAI prod (`OPENAI_API_KEY`) | 🔴 Alta | ⬜ stub hoy |
@@ -860,8 +864,8 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 1. **Billing E2E Live** — redeploy Core · checkout · webhook 200
 2. **Knowledge** — index sync Search ↔ Knowledge
 3. **Hub** — ✅ v0.2.1 · SSO hub→productos siguiente
-4. **Event bus BullMQ** — DLQ · workers Notifications/Search prod
-5. **LifeFlow Engine** — API v1 · schema `lifeflow`
+4. **Event bus BullMQ** — ✅ workers · DLQ monitor · activar `DAKINIS_EVENT_BUS=bullmq` en prod
+5. **LifeFlow Engine** — ✅ API v1 · schema `lifeflow` cutover ⬜
 
 ### Fases (referencia)
 
@@ -871,9 +875,9 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | 2 | Supabase multi-schema | 🔄 |
 | 3 | AI Platform completa | 🔄 |
 | 4 | Hub «Mi día» + launcher | ✅ v0.2.1 — logos · widgets · acceso tenant |
-| 5 | Events + Notifications v1 | 🔄 |
+| 5 | Events + Notifications v1 | 🔄 BullMQ ✅ · DLQ ✅ |
 | 6 | Search + Knowledge | ✅ Search v0.2.0 · Knowledge prod |
-| 7 | LifeFlow Engine + PostgreSQL | ⬜ |
+| 7 | LifeFlow Engine + PostgreSQL | 🔄 Engine v1 ✅ · cutover ⬜ |
 | 8 | ~~Billing separado~~ | ✅ **plataforma prod** · E2E ⬜ |
 | 9 | Async platform (no HTTP largo) | ⬜ |
 
@@ -884,7 +888,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | S1 | Supabase stream/core cutover · LifeFlow ✅ |
 | S2 | AI Worker batch · BullMQ |
 | S3 | Hub «Mi día» · widgets reales | ✅ v0.2.1 |
-| S4 | LifeFlow Engine API v1 · schema `lifeflow` |
+| S4 | LifeFlow Engine API v1 · schema `lifeflow` | 🔄 v1 ✅ |
 | S5 | Billing E2E ✅ · Notifications v1 |
 | S6 | Knowledge ingest · Observability baseline |
 
