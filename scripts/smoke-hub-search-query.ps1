@@ -8,6 +8,14 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+. "$PSScriptRoot/lib/core-smoke-auth.ps1"
+
+$auth = Get-CoreSmokeAuth -CoreBase $CoreBase -CoreJwt $CoreJwt -BusinessId $BusinessId
+if ($auth) {
+    $CoreJwt = $auth.Jwt
+    if ($auth.BusinessId) { $BusinessId = $auth.BusinessId }
+    Write-Host "Core auth: $($auth.Source) businessId=$BusinessId" -ForegroundColor DarkGray
+}
 $Gateway = $Gateway.TrimEnd("/")
 $CoreBase = $CoreBase.TrimEnd("/")
 
@@ -52,12 +60,10 @@ if ($CoreJwt -and $BusinessId) {
         "x-business-id" = $BusinessId
     }
     $coreHits = @($coreJson.data.hits)
-    if ($coreHits.Count -lt 0) {
-        Write-Host "Core proxy returned data (hits may be 0 if index empty)" -ForegroundColor DarkYellow
-    }
+    Write-Host "Core proxy hits: $($coreHits.Count)" -ForegroundColor Green
 } else {
     Write-Host ""
-    Write-Host "Omitido Core proxy - define DAKINIS_CORE_JWT y DAKINIS_BUSINESS_ID para validar /api/search/query" -ForegroundColor DarkYellow
+    Write-Host "Omitido Core proxy - define DAKINIS_CORE_JWT + DAKINIS_BUSINESS_ID o DAKINIS_TEST_EMAIL/PASSWORD" -ForegroundColor DarkYellow
 }
 
 Write-Host ""

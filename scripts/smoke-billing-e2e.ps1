@@ -15,6 +15,14 @@ $CoreBase = "$BaseUrl/core/api"
 $BillingBase = "$BaseUrl/billing"
 $WebhookUrl = "$BillingBase/v1/webhooks/stripe"
 
+. "$PSScriptRoot/lib/core-smoke-auth.ps1"
+
+$authBootstrap = Get-CoreSmokeAuth -CoreBase $CoreBase -CoreJwt $CoreJwt -BusinessId $BusinessId
+if ($authBootstrap) {
+    if (-not $CoreJwt) { $CoreJwt = $authBootstrap.Jwt }
+    if (-not $BusinessId -and $authBootstrap.BusinessId) { $BusinessId = $authBootstrap.BusinessId }
+}
+
 function Invoke-SmokeJson {
     param(
         [string]$Name,
@@ -92,10 +100,25 @@ if ($InternalKey -and $BusinessId) {
         Write-Host "Checkout URL ready (abrir en browser para E2E Live)" -ForegroundColor Green
     }
 } else {
-    Write-Host ""
-    Write-Host "Omitido checkout live:" -ForegroundColor DarkYellow
-    Write-Host "  INTERNAL_API_KEY + DAKINIS_BUSINESS_ID  -> billing /v1/checkout" -ForegroundColor DarkYellow
-    Write-Host "  DAKINIS_CORE_JWT (+ DAKINIS_BUSINESS_ID) -> Core /public/stripe/checkout-session" -ForegroundColor DarkYellow
+    $auth = Get-CoreSmokeAuth -CoreBase $CoreBase
+    if ($auth -and $auth.Jwt -and $auth.BusinessId) {
+        $checkoutBody = @{ plan = $Plan } | ConvertTo-Json -Compress
+        $checkout = Invoke-SmokeJson -Name "Core checkout (login smoke)" -Url "$CoreBase/public/stripe/checkout-session" -Method "POST" `
+            -Headers @{
+                Authorization = "Bearer $($auth.Jwt)"
+                "x-business-id" = $auth.BusinessId
+            } -Body $checkoutBody
+        $checkoutJson = $checkout.Raw | ConvertFrom-Json
+        if ($checkoutJson.data.url) {
+            Write-Host "Checkout URL ready (abrir en browser para E2E Live)" -ForegroundColor Green
+        }
+    } else {
+        Write-Host ""
+        Write-Host "Omitido checkout live:" -ForegroundColor DarkYellow
+        Write-Host "  INTERNAL_API_KEY + DAKINIS_BUSINESS_ID  -> billing /v1/checkout" -ForegroundColor DarkYellow
+        Write-Host "  DAKINIS_CORE_JWT (+ DAKINIS_BUSINESS_ID) -> Core checkout" -ForegroundColor DarkYellow
+        Write-Host "  DAKINIS_TEST_EMAIL + DAKINIS_TEST_PASSWORD -> Core login + checkout" -ForegroundColor DarkYellow
+    }
 }
 
 Write-Host ""

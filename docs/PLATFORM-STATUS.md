@@ -297,7 +297,7 @@ Hoy en prod: Mi día → Agenda → Notificaciones → Actividad → IA → Salu
 | App | Logo | Estrategia | Comportamiento |
 |-----|------|------------|----------------|
 | Dakinis One | `core.png` | `core-session` | Login en Core (sesión propia) |
-| StreamAutomator | `streamautomator.png` | `idp-exchange` + `/api/auth/hub-sso` | 🔄 código `f18725b` · **prod 404** (redeploy SA API) · smoke gateway ⬜ |
+| StreamAutomator | `streamautomator.png` | `idp-exchange` + `/api/auth/hub-sso` | ✅ prod (`400 platformToken`) · smoke E2E creds ⬜ |
 | AkoeNet | `akoenet.png` | `idp-exchange` + `/auth/hub-sso` | 🔄 código · prod no alcanzable · smoke ⬜ |
 | LifeFlow | `lifeflow.png` | `idp-exchange` + `/auth/hub-sso` | ✅ prod (`400 platformToken` = ruta viva) · smoke JWT ⬜ |
 | Tabletop | `tabletop.png` | `sso: none` → URL directa | `tabletop.dakinissystems.com` |
