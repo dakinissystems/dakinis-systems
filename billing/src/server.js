@@ -23,6 +23,12 @@ async function handle(req, res) {
 
   const key = `${req.method} ${path}`;
   let handler = routes[key];
+  if (!handler && req.method === "GET" && path === "/v1/webhooks/stripe") {
+    return sendJson(res, 405, {
+      error: "method_not_allowed",
+      message: "Stripe webhooks use POST with Stripe-Signature header",
+    });
+  }
   if (!handler && path.startsWith("/v1/subscriptions/")) {
     handler = routes["GET /v1/subscriptions/:tenantId"];
   }

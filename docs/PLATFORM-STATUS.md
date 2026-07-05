@@ -430,7 +430,7 @@ Billing
 | 1 | Redeploy Core Back (proxy `/api/public/stripe/*`) | ✅ prod (`billingReachable`) |
 | 2 | Supabase `022` + `023` + `024` + `12-tenant-access.sql` | ✅ |
 | 3 | E2E Live: `/precios` → plan BD + `business.plan` | 🔄 checkout API ✅ · tenantId obligatorio ✅ · smoke live ⬜ |
-| 4 | Webhook Live test → **200** | 🔄 probe ✅ · URL `$Gateway/billing/v1/webhooks/stripe` · Stripe Dashboard ⬜ |
+| 4 | Webhook Live test → **200** | 🔄 POST only (GET → 405) · probe ✅ · Stripe Dashboard test event ⬜ |
 | 5 | Impago → `access_state=degraded` → restore | 🔄 sync + banner UI ✅ · smoke live ⬜ |
 
 Contrato: [`contracts/billing.json`](./contracts/billing.json)
@@ -564,7 +564,7 @@ Business OS (Core)
 | **API** | `/core/` vía gateway |
 | **Schema** | `dakinis_core_prod` → cutover `core` |
 | **Hub admin** | ✅ `PlatformHubAccessPanel` — habilitar productos Hub por tenant (`6bdcd94`) |
-| **Command Palette (Ctrl+K)** | ✅ `efbe6ee` · proxy `/api/search/query` · hits Knowledge/Search · redeploy Railway ⬜ |
+| **Command Palette (Ctrl+K)** | ✅ proxy `/api/search/query` prod · hits Knowledge/Search |
 | **Billing UX** | ✅ `c7bf4c5` · banner degraded · portal · sync `access_state` en sesión |
 
 #### WhatsApp (Meta Cloud API)
@@ -724,13 +724,13 @@ Orden: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
 |---------|------|--------|--------|--------|-------|-----------|--------|
 | Gateway | dakinis-systems | — | api.dakinissystems.com | — | — | Stable | ✅ |
 | Identity (Auth) | dakinis-auth | dakinis_auth | auth.dakinissystems.com | — | ✅ | Stable | ✅ |
-| Core Back | dakinis-core | dakinis_core_prod | /core/ | — | ✅ | Stable | 🔄 redeploy `efbe6ee` |
-| Core Front | dakinis-core | — | core.dakinissystems.com | — | — | Stable | 🔄 redeploy `efbe6ee` |
+| Core Back | dakinis-core | dakinis_core_prod | /core/ | — | ✅ | Stable | ✅ Ctrl+K prod |
+| Core Front | dakinis-core | — | core.dakinissystems.com | — | — | Stable | ✅ |
 | Hub | dakinis-hub | hub | hub.dakinissystems.com | — | ⬜ | Stable | ✅ v0.2.1 |
 | AI | dakinis-ai | ai | ai.dakinissystems.com | — | ✅ | Active | ✅ |
 | AI Worker | dakinis-ai | ai | interno | ✅ | ✅ | Active | — |
-| **Billing** | dakinis-billing | billing | /billing/ | — | ✅ | Stable | ✅ v0.2.0 |
-| Notifications | dakinis-notifications | — | /notifications/ | ✅ | ✅ | Scaffold | ✅ v0.2.0 |
+| **Billing** | dakinis-billing | billing | /billing/ | — | ✅ | Stable | ✅ `9c8e03f` prod |
+| Notifications | dakinis-notifications | — | /notifications/ | ✅ | ✅ | Beta | 🔄 redeploy `3402c16` |
 | Search | dakinis-search | — | /search/ | ✅ | ✅ | Scaffold | ✅ v0.2.0 |
 | Knowledge | dakinis-knowledge | knowledge | knowledge.dakinissystems.com | ✅ | ✅ | Active | ✅ prod |
 | Knowledge Worker | dakinis-knowledge-worker | knowledge | interno | ✅ | ✅ | Active | ✅ |
