@@ -41,4 +41,6 @@ Invoke-Smoke -Name "core stripe plans proxy" -Url "$BaseUrl/core/api/public/stri
 
 Write-Host ""
 Write-Host "OK - billing reachable via gateway and Core proxy." -ForegroundColor Green
-Write-Host "Manual E2E: checkout /precios, Stripe webhook 200, business.plan in DB." -ForegroundColor Yellow
+Write-Host "E2E probes: .\scripts\smoke-billing-e2e.ps1" -ForegroundColor Yellow
+Write-Host "Degraded sync: .\scripts\smoke-billing-degraded.ps1 (INTERNAL_API_KEY + DAKINIS_BUSINESS_ID)" -ForegroundColor Yellow
+Write-Host "Manual: /precios checkout · Stripe Dashboard webhook → /billing/v1/webhooks/stripe" -ForegroundColor Yellow
