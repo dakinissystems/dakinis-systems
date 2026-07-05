@@ -5,6 +5,7 @@
 # --- Proyectos locales fuera del control repo ---
 /finanzas/
 /hub/
+/ai/
 
 # --- Secretos locales del stack Docker ---
 /docker/.env
