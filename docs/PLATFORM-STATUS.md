@@ -599,8 +599,8 @@ LifeFlow
 | | |
 |---|---|
 | **Repo** | `lifeflow` (`finanzas/`) |
-| **BD hoy** | SQLite volume `/data` |
-| **BD objetivo** | Supabase schema `lifeflow` |
+| **BD hoy** | SQLite volume `/data` + **sync PG v1** (`score_history`, `app_user_links`) |
+| **BD objetivo** | Supabase schema `lifeflow` (cutover completo ⬜) |
 | **Coach IA** | ✅ Pro · tools deterministas + AI |
 | **Engine v1** | ✅ `POST /v1/score` · `/v1/forecast` · `/v1/risk` · `/v1/scenario` · `/v1/cities/compare` |
 
@@ -675,7 +675,7 @@ Proyecto **Dakinis Production** · pooler `:6543` · identidad `dakinis_auth` (n
 | `hub` | Hub | ✅ 016–019 + 027–029 |
 | `stream` | StreamAutomator | 🔄 |
 | `akoenet` | AkoeNet | ⬜ |
-| `lifeflow` | LifeFlow | ⬜ |
+| `lifeflow` | LifeFlow | 🔄 sync v1 |
 | `dakinis_core_prod` → `core` | Core | ⬜ cutover |
 | `audit` | Platform | ⬜ |
 | `meta` | Platform | 🔄 function_versions ✅ |
@@ -855,7 +855,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | Billing E2E Live | 🔴 Alta | 🔄 checkout UI + sync + banner · smoke live ⬜ |
 | Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
-| LifeFlow Engine + PostgreSQL | 🟡 Media | 🔄 Engine v1 ✅ · schema `lifeflow` ⬜ |
+| LifeFlow Engine + PostgreSQL | 🟡 Media | 🔄 Engine v1 ✅ · PG sync v1 ✅ · cutover completo ⬜ |
 | Hub SSO → productos | 🟠 Media | 🔄 LifeFlow ✅ · SA/AkoeNet ✅ código · smoke live ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
 | AI OpenAI prod (`OPENAI_API_KEY`) | 🔴 Alta | ⬜ stub hoy |
@@ -869,7 +869,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 2. **Knowledge** — ✅ index sync Search · Hub query ⬜
 3. **Hub** — ✅ v0.2.1 · SSO LifeFlow/SA/AkoeNet ✅ · smoke live ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ monitor · activar `DAKINIS_EVENT_BUS=bullmq` en prod
-5. **LifeFlow Engine** — ✅ API v1 · schema `lifeflow` cutover ⬜
+5. **LifeFlow Engine** — ✅ API v1 · PG sync v1 (`030`) · migración completa SQLite ⬜
 
 ### Fases (referencia)
 
