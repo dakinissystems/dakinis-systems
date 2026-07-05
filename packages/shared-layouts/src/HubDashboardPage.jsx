@@ -3,11 +3,13 @@ import { DashboardCard } from "../../shared-ux/src/DashboardCard.jsx";
 import {
   HUB_DASHBOARD_SECTIONS,
   HUB_SECTION_WIDGETS,
-  HUB_APP_ICONS,
   getHubSectionsBeforeApps,
 } from "../../shared-ux/src/hub-dashboard.js";
 import { getWidgetsForSection } from "../../shared-ux/src/widgets.js";
 import { getWidgetDisplay } from "../../shared-ux/src/hub-widget-values.js";
+import { dakinisResolveHubWidgetOpen, dakinisRunHubWidgetAction } from "../../shared-ux/src/hub-widget-actions.js";
+import { dakinisHubProductEnabled } from "../../shared-brand/src/hub-product-access.js";
+import { HubProductIcon } from "../../shared-ux/src/HubProductIcon.jsx";
 import { dashboardCardStyles } from "../../shared-ux/src/DashboardCard.jsx";
 
 /**
@@ -19,10 +21,20 @@ export default function HubDashboardPage({
   dashboard = null,
   headerExtra = null,
   onAppOpen = null,
+  onWidgetOpen = null,
 }) {
   const sections = getHubSectionsBeforeApps();
   const widgetValues = dashboard?.widgetValues || {};
   const apps = dashboard?.apps || [];
+  const enabledProducts = dashboard?.enabledProducts || null;
+
+  function widgetsForSection(sectionId) {
+    const widgets = getWidgetsForSection(sectionId);
+    if (!enabledProducts?.length) return widgets;
+    return widgets.filter(
+      (w) => w.product === "hub" || dakinisHubProductEnabled(w.product, enabledProducts)
+    );
+  }
 
   return (
     <HubShell
@@ -48,10 +60,12 @@ export default function HubDashboardPage({
         .dakinis-hub-dashboard { display: flex; flex-direction: column; gap: 1.75rem; }
         .dakinis-hub-section__title { margin: 0 0 0.75rem; font-size: 1rem; font-weight: 600; }
         .dakinis-hub-section__grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+        .dakinis-dashboard-card--app-launcher .dakinis-dashboard-card__head { align-items: center; }
+        .dakinis-dashboard-card--app-launcher .dakinis-dashboard-card__value { font-size: 1.15rem; font-weight: 600; }
       `}</style>
       <div className="dakinis-hub-dashboard">
         {sections.map((section) => {
-          const widgets = getWidgetsForSection(section.id);
+          const widgets = widgetsForSection(section.id);
           return (
             <section key={section.id} id={section.id} className="dakinis-hub-section" aria-labelledby={`hub-${section.id}`}>
               <h2 id={`hub-${section.id}`} className="dakinis-hub-section__title">
@@ -63,6 +77,7 @@ export default function HubDashboardPage({
                 ) : (
                   widgets.map((w) => {
                     const display = getWidgetDisplay(w.id, widgetValues);
+                    const widgetAction = dakinisResolveHubWidgetOpen(w, apps);
                     return (
                       <DashboardCard
                         key={w.id}
@@ -70,7 +85,15 @@ export default function HubDashboardPage({
                         icon={w.icon}
                         value={display.value}
                         status={display.status || w.product}
-                        actionLabel="Ver"
+                        actionLabel={widgetAction ? "Ver" : undefined}
+                        onAction={
+                          widgetAction
+                            ? () => {
+                                if (onWidgetOpen) onWidgetOpen(w, widgetAction);
+                                else dakinisRunHubWidgetAction(widgetAction, { onAppOpen });
+                              }
+                            : undefined
+                        }
                       />
                     );
                   })
@@ -88,9 +111,9 @@ export default function HubDashboardPage({
               ? apps.map((app) => (
                   <DashboardCard
                     key={app.id}
-                    title={app.name}
-                    icon={app.icon || HUB_APP_ICONS[app.id] || HUB_APP_ICONS[app.product] || "layout-grid"}
-                    value={app.product}
+                    className="dakinis-dashboard-card--app-launcher"
+                    icon={<HubProductIcon appId={app.id} product={app.product} size={20} />}
+                    value={app.name}
                     actionLabel="Abrir"
                     onAction={onAppOpen ? () => onAppOpen(app) : undefined}
                   />

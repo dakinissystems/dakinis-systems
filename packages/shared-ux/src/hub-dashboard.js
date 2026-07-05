@@ -78,12 +78,12 @@ export const HUB_SECTION_WIDGETS = {
 
 /** Iconos Lucide por app del launcher Hub (mirror de @dakinis/shared-icons PRODUCT_ICONS). */
 export const HUB_APP_ICONS = {
-  core: "building-2",
+  core: "layers",
   lifeflow: "heart-pulse",
-  streamautomator: "radio",
-  akoenet: "messages-square",
-  tabletop: "swords",
-  dnd: "swords",
+  streamautomator: "cast",
+  akoenet: "audio-lines",
+  tabletop: "dice-5",
+  dnd: "dice-5",
 };
 
 /**

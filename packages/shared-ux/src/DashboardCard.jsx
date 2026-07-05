@@ -44,14 +44,17 @@ export function DashboardCard({
   }
 
   return (
-    <article className={`dakinis-card dakinis-dashboard-card ${className}`.trim()}>
+    <article
+      className={`dakinis-card dakinis-dashboard-card ${className}`.trim()}
+      aria-label={title || (typeof value === "string" ? value : undefined)}
+    >
       <header className="dakinis-dashboard-card__head">
         {icon ? (
           <span className="dakinis-dashboard-card__icon" aria-hidden="true">
             {typeof icon === "string" ? <LucideIcon name={icon} size={20} /> : icon}
           </span>
         ) : null}
-        <h3 className="dakinis-dashboard-card__title">{title}</h3>
+        {title ? <h3 className="dakinis-dashboard-card__title">{title}</h3> : null}
         {status ? <span className="dakinis-dashboard-card__status">{status}</span> : null}
       </header>
       {value != null ? (

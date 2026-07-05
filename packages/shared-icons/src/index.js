@@ -34,14 +34,14 @@ export const HUB_ICONS = {
 
 /** Iconos producto / widgets. */
 export const PRODUCT_ICONS = {
-  core: "building-2",
+  core: "layers",
   lifeflow: "heart-pulse",
-  streamautomator: "radio",
-  akoenet: "messages-square",
-  tabletop: "swords",
+  streamautomator: "cast",
+  akoenet: "audio-lines",
+  tabletop: "dice-5",
   ai: "sparkles",
   hub: "layout-grid",
-  dnd: "swords",
+  dnd: "dice-5",
 };
 
 /** Iconos estados UX. */
