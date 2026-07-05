@@ -743,12 +743,12 @@ Orden: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
 |---------|------|--------|--------|--------|-------|-----------|--------|
 | Gateway | dakinis-systems | — | api.dakinissystems.com | — | — | Stable | ✅ |
 | Identity (Auth) | dakinis-auth | dakinis_auth | auth.dakinissystems.com | — | ✅ | Stable | ✅ |
-| Core Back | dakinis-core | dakinis_core_prod | /core/ | — | ✅ | Stable | ✅ Ctrl+K prod |
+| Core Back | dakinis-core | dakinis_core_prod | /core/ | — | ✅ | Stable | 🔄 redeploy `1756a6b` billing sync |
 | Core Front | dakinis-core | — | core.dakinissystems.com | — | — | Stable | ✅ |
 | Hub | dakinis-hub | hub | hub.dakinissystems.com | — | ⬜ | Stable | ✅ v0.2.1 |
 | AI | dakinis-ai | ai | ai.dakinissystems.com | — | ✅ | Active | ✅ |
 | AI Worker | dakinis-ai | ai | interno | ✅ | ✅ | Active | — |
-| **Billing** | dakinis-billing | billing | /billing/ | — | ✅ | Stable | ✅ `9c8e03f` prod |
+| **Billing** | dakinis-billing | billing | /billing/ | — | ✅ | Stable | 🔄 redeploy `9aacf13` sync |
 | Notifications | dakinis-notifications | — | /notifications/ | ✅ | ✅ | Beta | 🔄 redeploy `3402c16` |
 | Search | dakinis-search | — | /search/ | ✅ | ✅ | Scaffold | ✅ v0.2.0 |
 | Knowledge | dakinis-knowledge | knowledge | knowledge.dakinissystems.com | ✅ | ✅ | Active | ✅ prod |
