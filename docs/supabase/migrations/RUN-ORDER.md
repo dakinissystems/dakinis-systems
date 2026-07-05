@@ -37,6 +37,8 @@ Verificación: [`scripts/smoke-supabase-phase-c.sql`](../../scripts/smoke-supaba
 | # | Archivo | Prod |
 |---|---------|------|
 | 27 | [`027_hub_mi_dia.sql`](./027_hub_mi_dia.sql) | ⬜ Tras 016–019 · activa `hub.mi_dia` + widgets |
+| 28 | [`028_hub_dashboard_widgets.sql`](./028_hub_dashboard_widgets.sql) | ⬜ Métricas cross-producto para widgets Hub |
+| 29 | [`029_hub_product_access.sql`](./029_hub_product_access.sql) | ⬜ Acceso Hub por tenant + super-admin |
 
 ## Fase D — Billing + Security Advisor (020–023)
 

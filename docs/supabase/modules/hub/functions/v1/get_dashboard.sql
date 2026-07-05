@@ -1,2 +1,2 @@
--- Fuente: modules/hub/functions/v1/get_dashboard.sql
+-- Fuente: migrations/028_hub_dashboard_widgets.sql
 -- API: SELECT hub.v1_get_dashboard($user_id);
