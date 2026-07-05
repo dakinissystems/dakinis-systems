@@ -23,7 +23,23 @@ export async function indexDocument(doc) {
   }
   await redis.set(docKey(doc.scope, doc.id), JSON.stringify(record));
   await redis.sAdd(scopeSetKey(doc.scope), doc.id);
-  await redis.lPush(config.indexQueue, JSON.stringify({ action: "index", scope: doc.scope, id: doc.id }));
+
+  const indexJob = { action: "index", scope: doc.scope, id: doc.id, title: doc.title };
+  if (String(process.env.DAKINIS_EVENT_BUS || "").toLowerCase() === "bullmq") {
+    try {
+      const { publishPlatformEvent } = await import("@dakinis/shared-ai/event-bus");
+      await publishPlatformEvent("search.index", indexJob, {
+        source: config.service,
+        queueKey: "search",
+      });
+    } catch (err) {
+      console.warn("[search] bullmq index job failed:", err instanceof Error ? err.message : err);
+      await redis.lPush(config.indexQueue, JSON.stringify(indexJob));
+    }
+  } else {
+    await redis.lPush(config.indexQueue, JSON.stringify(indexJob));
+  }
+
   return { indexed: true, record };
 }
 

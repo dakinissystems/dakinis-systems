@@ -51,6 +51,8 @@ export const routes = {
         service: config.service,
         version: "0.2.0",
         stripe: config.stripeConfigured ? "configured" : "not_configured",
+        webhook: config.stripeWebhookSecret ? "configured" : "not_configured",
+        eventBus: process.env.DAKINIS_EVENT_BUS || "redis-list",
         database: db.ok ? "connected" : db.reason,
       },
     };

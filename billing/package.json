@@ -13,6 +13,8 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@dakinis/shared-ai": "file:../packages/shared-ai",
+    "bullmq": "^5.41.0",
     "pg": "^8.13.1",
     "redis": "^4.7.0",
     "stripe": "^17.7.0"

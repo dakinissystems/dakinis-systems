@@ -2,6 +2,10 @@ import { randomUUID } from "node:crypto";
 import { config } from "./config.js";
 import { getRedis } from "./lib/redis.js";
 
+function isBullMqMode() {
+  return String(process.env.DAKINIS_EVENT_BUS || "").toLowerCase() === "bullmq";
+}
+
 /**
  * @param {{ userId: string; channel: string; type: string; payload?: object; tenantId?: string }} job
  */
@@ -13,12 +17,28 @@ export async function enqueueNotification(job) {
     enqueuedAt: new Date().toISOString(),
     status: "pending",
   };
+
+  if (isBullMqMode() && config.redisUrl) {
+    try {
+      const { publishPlatformEvent } = await import("@dakinis/shared-ai/event-bus");
+      const result = await publishPlatformEvent("notifications.requested", record, {
+        source: config.service,
+        userId: job.userId,
+        tenantId: job.tenantId,
+        queueKey: "notifications",
+      });
+      return { queued: Boolean(result?.queued), id, record, transport: "bullmq", jobId: result?.jobId };
+    } catch (err) {
+      console.warn("[notifications] bullmq enqueue failed:", err instanceof Error ? err.message : err);
+    }
+  }
+
   const redis = await getRedis();
   if (!redis) {
     return { queued: false, id, record };
   }
   await redis.lPush(config.queueName, JSON.stringify(record));
-  return { queued: true, id, record };
+  return { queued: true, id, record, transport: "redis-list" };
 }
 
 /**

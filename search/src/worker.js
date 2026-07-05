@@ -1,5 +1,5 @@
 /**
- * Search indexer worker — procesa cola de indexación (stub + log).
+ * Search indexer worker — BullMQ (fase 1) o Redis list (legacy).
  */
 import { config } from "./config.js";
 import { dequeueIndexJob } from "./index-store.js";
@@ -7,19 +7,30 @@ import { closeRedis } from "./lib/redis.js";
 
 console.log(`[${config.service}:worker] starting`);
 console.log(`  queue: ${config.indexQueue}`);
+console.log(`  bus: ${process.env.DAKINIS_EVENT_BUS || "redis-list"}`);
 
 if (!config.redisUrl) {
   console.warn("[worker] Set REDIS_URL. Exiting.");
   process.exit(0);
 }
 
-let running = true;
-
 async function processJob(job) {
-  console.log(`[worker] index job`, job);
+  const payload = job.payload || job;
+  console.log(`[worker] index`, payload?.scope, payload?.id || payload?.action);
 }
 
-async function loop() {
+function isBullMqMode() {
+  return String(process.env.DAKINIS_EVENT_BUS || "").toLowerCase() === "bullmq";
+}
+
+async function startLegacyLoop() {
+  let running = true;
+  process.on("SIGTERM", async () => {
+    running = false;
+    await closeRedis();
+    process.exit(0);
+  });
+
   while (running) {
     try {
       const job = await dequeueIndexJob(5);
@@ -31,10 +42,23 @@ async function loop() {
   }
 }
 
-process.on("SIGTERM", async () => {
-  running = false;
-  await closeRedis();
-  process.exit(0);
-});
+async function startBullMqWorker() {
+  const { createPlatformWorker } = await import("@dakinis/shared-ai/bullmq-bus");
+  const worker = await createPlatformWorker("search", async (event) => {
+    await processJob(event?.payload || event);
+  });
 
-loop();
+  process.on("SIGTERM", async () => {
+    await worker.close();
+    process.exit(0);
+  });
+}
+
+if (isBullMqMode()) {
+  startBullMqWorker().catch((err) => {
+    console.error("[worker] bullmq fatal", err);
+    process.exit(1);
+  });
+} else {
+  startLegacyLoop();
+}
