@@ -52,6 +52,38 @@ function queueConfig(queueKey) {
 }
 
 /**
+ * @param {string} queueName
+ * @returns {keyof typeof EVENT_BUS_QUEUES | null}
+ */
+export function resolveQueueKeyByName(queueName) {
+  const name = String(queueName || "").trim();
+  if (!name) return null;
+  for (const [key, cfg] of Object.entries(EVENT_BUS_QUEUES)) {
+    if (cfg.name === name) return key;
+  }
+  return null;
+}
+
+/**
+ * @param {import('bullmq').Job} job
+ */
+function summarizeDlqJob(job) {
+  const data = job.data || {};
+  const event = data.event || {};
+  return {
+    id: job.id,
+    originalQueue: data.originalQueue || null,
+    originalJobId: data.originalJobId || null,
+    error: data.error || null,
+    failedAt: data.failedAt || null,
+    eventType: event.event || event.type || null,
+    tenantId: event.tenantId || event.payload?.tenantId || null,
+    source: event.source || null,
+    enqueuedAt: job.timestamp ? new Date(job.timestamp).toISOString() : null,
+  };
+}
+
+/**
  * @param {keyof typeof EVENT_BUS_QUEUES | string} queueKey
  */
 export async function getBullMqQueue(queueKey = "default") {
@@ -160,4 +192,131 @@ export async function closeBullMqQueues() {
     await q.close();
   }
   queues.clear();
+}
+
+/**
+ * Job counts for one queue key (waiting, active, failed, …).
+ * @param {keyof typeof EVENT_BUS_QUEUES | string} queueKey
+ */
+export async function getBullMqQueueCounts(queueKey = "default") {
+  if (!isBullMqEnabled()) return { enabled: false, counts: null };
+  const cfg = queueConfig(queueKey);
+  const queue = await getBullMqQueue(queueKey);
+  const counts = await queue.getJobCounts(
+    "waiting",
+    "active",
+    "completed",
+    "failed",
+    "delayed",
+    "paused"
+  );
+  return { enabled: true, queueKey, name: cfg.name, counts };
+}
+
+/**
+ * Snapshot of all platform queues + DLQ depth.
+ */
+export async function getEventBusQueueSnapshot() {
+  if (!isBullMqEnabled()) {
+    return { enabled: false, mode: String(process.env.DAKINIS_EVENT_BUS || "redis-list") };
+  }
+
+  /** @type {Record<string, { name: string; counts: Record<string, number> }>} */
+  const queuesSnapshot = {};
+  for (const key of Object.keys(EVENT_BUS_QUEUES)) {
+    const { name, counts } = await getBullMqQueueCounts(key);
+    queuesSnapshot[key] = { name, counts: counts || {} };
+  }
+
+  const dlq = queuesSnapshot.deadLetter?.counts || {};
+  return {
+    enabled: true,
+    mode: "bullmq",
+    redis: Boolean(String(process.env.REDIS_URL || "").trim()),
+    dlqDepth: (dlq.waiting || 0) + (dlq.delayed || 0) + (dlq.failed || 0),
+    queues: queuesSnapshot,
+  };
+}
+
+/**
+ * List jobs currently in the DLQ.
+ * @param {{ start?: number; limit?: number }} [opts]
+ */
+export async function listDlqJobs(opts = {}) {
+  if (!isBullMqEnabled()) return { enabled: false, items: [], count: 0 };
+
+  const start = Math.max(0, Number(opts.start) || 0);
+  const limit = Math.min(Math.max(1, Number(opts.limit) || 25), 100);
+  const queue = await getBullMqQueue("deadLetter");
+  const jobs = await queue.getJobs(
+    ["waiting", "delayed", "failed", "completed"],
+    start,
+    start + limit - 1
+  );
+  const items = jobs.map(summarizeDlqJob);
+  const counts = await queue.getJobCounts("waiting", "delayed", "failed");
+  return {
+    enabled: true,
+    queue: EVENT_BUS_QUEUES.deadLetter.name,
+    start,
+    limit,
+    count: items.length,
+    depth: (counts.waiting || 0) + (counts.delayed || 0) + (counts.failed || 0),
+    items,
+  };
+}
+
+/**
+ * Re-enqueue a DLQ job onto its original queue.
+ * @param {string} jobId
+ */
+export async function replayDlqJob(jobId) {
+  if (!isBullMqEnabled()) return { ok: false, reason: "bullmq_disabled" };
+  const id = String(jobId || "").trim();
+  if (!id) return { ok: false, reason: "job_id_required" };
+
+  const dlq = await getBullMqQueue("deadLetter");
+  const job = await dlq.getJob(id);
+  if (!job) return { ok: false, reason: "not_found", jobId: id };
+
+  const data = job.data || {};
+  const originalQueueName = data.originalQueue;
+  const event = data.event;
+  if (!originalQueueName || !event) {
+    return { ok: false, reason: "invalid_dlq_payload", jobId: id };
+  }
+
+  const queueKey = resolveQueueKeyByName(originalQueueName);
+  if (!queueKey) return { ok: false, reason: "unknown_original_queue", originalQueue: originalQueueName };
+
+  const target = await getBullMqQueue(queueKey);
+  const eventType = event.event || event.type || "dlq.replay";
+  const replayed = await target.add(String(eventType), event, { jobId: undefined });
+  await job.remove();
+
+  return {
+    ok: true,
+    jobId: id,
+    replayedJobId: replayed.id,
+    targetQueue: originalQueueName,
+    queueKey,
+    eventType,
+  };
+}
+
+/**
+ * Permanently remove a job from the DLQ without replay.
+ * @param {string} jobId
+ */
+export async function discardDlqJob(jobId) {
+  if (!isBullMqEnabled()) return { ok: false, reason: "bullmq_disabled" };
+  const id = String(jobId || "").trim();
+  if (!id) return { ok: false, reason: "job_id_required" };
+
+  const dlq = await getBullMqQueue("deadLetter");
+  const job = await dlq.getJob(id);
+  if (!job) return { ok: false, reason: "not_found", jobId: id };
+
+  await job.remove();
+  return { ok: true, jobId: id, discarded: true };
 }
