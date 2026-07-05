@@ -73,11 +73,13 @@ export const routes = {
       return { status: 400, body: { error: "validation", message: "userId must be a UUID" } };
     }
     let notificationsUnread;
+    let notificationsItems;
     const inbox = await proxyJson(config.notificationsUrl, `/v1/inbox/${encodeURIComponent(userId)}`);
-    if (inbox.status === 200 && inbox.body?.unread != null) {
-      notificationsUnread = inbox.body.unread;
+    if (inbox.status === 200 && inbox.body) {
+      if (inbox.body.unread != null) notificationsUnread = inbox.body.unread;
+      if (Array.isArray(inbox.body.items)) notificationsItems = inbox.body.items;
     }
-    return getHubDashboard(userId, { notificationsUnread });
+    return getHubDashboard(userId, { notificationsUnread, notificationsItems });
   },
 
   "GET /hub/tenant-access/:slug": async (req) => {

@@ -8,8 +8,10 @@ param(
 $ErrorActionPreference = "Stop"
 $BaseUrl = $BaseUrl.TrimEnd("/")
 
+$PlaceholderUser = $false
 if (-not $UserId) {
-    $UserId = "00000000-0000-0000-0000-000000000001"
+    $UserId = "00000000-0000-4000-8000-000000000001"
+    $PlaceholderUser = $true
     Write-Host "Tip: define DAKINIS_USER_ID (uuid en dakinis_auth.users) para probar persist inbox" -ForegroundColor DarkYellow
 }
 
@@ -63,14 +65,19 @@ if ($WaitSec -gt 0) {
     Start-Sleep -Seconds $WaitSec
 }
 
-$inbox = Invoke-Smoke -Name "notifications inbox" -Url "$BaseUrl/notifications/v1/inbox/$UserId"
-$inboxJson = $inbox.Raw | ConvertFrom-Json
-if ($inboxJson.stub -eq $true) {
-    Write-Host "Inbox stub (DATABASE_URL no configurada en worker/API)" -ForegroundColor Yellow
-} elseif (@($inboxJson.items).Count -lt 1) {
-    Write-Host "Inbox vacio - verifica worker DATABASE_URL y FK user_id en dakinis_auth.users" -ForegroundColor Yellow
+if ($PlaceholderUser) {
+    Write-Host ""
+    Write-Host "Omitido inbox persist - requiere DAKINIS_USER_ID real (FK dakinis_auth.users)" -ForegroundColor DarkYellow
 } else {
-    Write-Host "Inbox hits: $(@($inboxJson.items).Count) unread=$($inboxJson.unread)" -ForegroundColor Green
+    $inbox = Invoke-Smoke -Name "notifications inbox" -Url "$BaseUrl/notifications/v1/inbox/$UserId"
+    $inboxJson = $inbox.Raw | ConvertFrom-Json
+    if ($inboxJson.stub -eq $true) {
+        Write-Host "Inbox stub (DATABASE_URL no configurada en worker/API)" -ForegroundColor Yellow
+    } elseif (@($inboxJson.items).Count -lt 1) {
+        Write-Host "Inbox vacio - verifica worker DATABASE_URL y que el send haya persistido" -ForegroundColor Yellow
+    } else {
+        Write-Host "Inbox hits: $(@($inboxJson.items).Count) unread=$($inboxJson.unread)" -ForegroundColor Green
+    }
 }
 
 Write-Host ""

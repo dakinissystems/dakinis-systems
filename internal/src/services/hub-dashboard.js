@@ -37,11 +37,12 @@ export async function fetchMiDiaEnabled() {
 
 /**
  * @param {string} userId
- * @param {{ db?: object | null; miDiaEnabled?: boolean; notificationsUnread?: number }} [opts]
+ * @param {{ db?: object | null; miDiaEnabled?: boolean; notificationsUnread?: number; notificationsItems?: object[] }} [opts]
  */
 export function buildHubDashboardResponse(userId, opts = {}) {
   const dbRaw = opts.db;
   const unreadExternal = opts.notificationsUnread;
+  const inboxItems = Array.isArray(opts.notificationsItems) ? opts.notificationsItems : [];
   const hubAccess = opts.hubAccess || { products: ["core"], isPlatformAdmin: false };
   const enabledProducts = hubAccess.products || ["core"];
   const db = dbRaw
@@ -77,6 +78,7 @@ export function buildHubDashboardResponse(userId, opts = {}) {
       stub: !db,
     },
     widgetValues: buildWidgetValues({ db, summary: { notificationsUnread: unread } }),
+    notifications: inboxItems,
   };
 
   return payload;
@@ -84,7 +86,7 @@ export function buildHubDashboardResponse(userId, opts = {}) {
 
 /**
  * @param {string} userId
- * @param {{ notificationsUnread?: number }} [opts]
+ * @param {{ notificationsUnread?: number; notificationsItems?: object[] }} [opts]
  */
 export async function getHubDashboard(userId, opts = {}) {
   let db = null;
@@ -109,6 +111,7 @@ export async function getHubDashboard(userId, opts = {}) {
     db,
     miDiaEnabled,
     notificationsUnread: opts.notificationsUnread,
+    notificationsItems: opts.notificationsItems,
     hubAccess,
   });
 

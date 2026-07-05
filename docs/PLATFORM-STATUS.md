@@ -39,7 +39,7 @@ Vista en <1 min antes de entrar en detalle.
 | **AI Platform** | 🟡 Beta | Sí | Supabase `ai` | Christian | `OPENAI_API_KEY` prod · advisor Live |
 | **Billing** | 🟢 Activo | Sí | Supabase `billing` | Christian | Webhook Stripe 200 · checkout live |
 | **Identity** (Auth) | 🟢 Activo | Sí | Supabase `dakinis_auth` | Christian | — |
-| **Notifications** | 🟡 Scaffold | Sí | Redis + Supabase `hub` | Christian | email Resend · inbox v1 |
+| **Notifications** | 🟡 Beta | Sí | Redis + Supabase `hub` | Christian | Resend email · inbox Hub UI |
 | **Search** | 🟡 Scaffold | Sí | Redis (+ pgvector ⬜) | Christian | pgvector · index productos |
 | **Knowledge** | 🟢 Activo | Sí | Supabase `knowledge` | Christian | RAG PDF masivo · Ctrl+K JWT smoke ⬜ |
 | **Landing** | 🟢 Activo | Sí | — | Christian | Funnel One-first |
@@ -453,7 +453,7 @@ Notifications
 |---|---|
 | **Repo** | `dakinis-notifications` |
 | **Gateway** | `/notifications/` · puerto **4081** |
-| **Estado** | 🔄 v0.3.0 · API + worker · **inbox persist** ✅ `hub.notifications` · enqueue smoke ✅ |
+| **Estado** | 🔄 v0.3.1 · API + worker · **inbox persist** ✅ prod PG · **Resend email** ✅ código · Hub dashboard `notifications[]` ✅ |
 
 ---
 
@@ -868,7 +868,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
 | LifeFlow Engine + PostgreSQL | 🟡 Media | ✅ Engine v1 · PG sync v1 · migr. **030** ✅ · API prod `9f45bc2` · cutover SQLite ⬜ |
 | Hub SSO → productos | 🟠 Media | ✅ LifeFlow prod · SA `f18725b` · AkoeNet código · `smoke-hub-sso-products.ps1` ⬜ |
-| Notifications v1 inbox | 🟠 Media | ✅ persist `63684f9` · GET/PATCH inbox · redeploy + `DATABASE_URL` worker ⬜ |
+| Notifications v1 inbox | 🟠 Media | ✅ persist prod PG · Resend email código · Hub `notifications[]` · smoke enqueue ✅ · inbox JWT ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
 | AI OpenAI prod (`OPENAI_API_KEY`) | 🔴 Alta | ⬜ stub hoy |
 | Supabase `022`/`023` | 🟠 Media | ⬜ |
@@ -882,7 +882,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ · SA/AkoeNet hub-sso · smoke 3 productos ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ ✅ · activar `DAKINIS_EVENT_BUS=bullmq` en prod
 5. **LifeFlow** — ✅ API/Web prod · PG sync · migr. **030** ✅ · cutover SQLite ⬜
-6. **Notifications v1** — ✅ inbox persist `63684f9` · smoke enqueue+inbox · `DATABASE_URL` worker ⬜
+6. **Notifications v1** — ✅ inbox persist prod · Resend email · Hub dashboard items · smoke enqueue ✅ · `DAKINIS_USER_ID` inbox ⬜
 
 ### Fases (referencia)
 
@@ -892,7 +892,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | 2 | Supabase multi-schema | 🔄 |
 | 3 | AI Platform completa | 🔄 |
 | 4 | Hub «Mi día» + launcher | ✅ v0.2.1 — logos · widgets · acceso tenant |
-| 5 | Events + Notifications v1 | 🔄 BullMQ ✅ · **inbox persist** ✅ · email Resend ⬜ |
+| 5 | Events + Notifications v1 | 🔄 BullMQ ✅ · **inbox persist** ✅ prod · **Resend email** ✅ código · Hub UI wire ⬜ |
 | 6 | Search + Knowledge | ✅ Search v0.2.0 · Knowledge prod · **Hub Ctrl+K** ✅ `efbe6ee` |
 | 7 | LifeFlow Engine + PostgreSQL | 🔄 Engine v1 ✅ · migr. 030 ✅ · API prod ✅ · cutover SQLite ⬜ |
 | 8 | ~~Billing separado~~ | ✅ **plataforma prod** · E2E webhook/checkout ⬜ |
@@ -927,7 +927,7 @@ RAG PDF masivo · Calendario global Core · SSO Hub→productos (smoke live) · 
 **Core Front:** proxy `/api` · build incluye `@dakinis/shared-ux` del repo Core (sync manual desde monorepo)  
 **Billing:** `PORT=4080` · `STRIPE_*` Live · `POSTGRES_SCHEMA=billing`  
 **LifeFlow API:** `DATABASE_URL` · `POSTGRES_SCHEMA=lifeflow` · `DATABASE_SSL=true` · `FINANZAS_DB_PATH` (volume)  
-**Notifications:** `PORT=4081` · `REDIS_URL` · **`DATABASE_URL`** · `DATABASE_SSL=true` · worker mismo schema `hub`
+**Notifications:** `PORT=4081` · `REDIS_URL` · **`DATABASE_URL`** · `DATABASE_SSL=true` · **`RESEND_API_KEY`** · `RESEND_FROM` · worker mismo schema `hub`
 
 ### Checklist go-live Stripe
 

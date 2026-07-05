@@ -17,8 +17,13 @@ function sendJson(res, status, body) {
 function matchRoute(method, path) {
   const key = `${method} ${path}`;
   if (routes[key]) return routes[key];
-  if (path.startsWith("/v1/preferences/")) return routes["GET /v1/preferences/:userId"];
-  if (path.startsWith("/v1/inbox/")) return routes["GET /v1/inbox/:userId"];
+  if (method === "GET" && path.startsWith("/v1/preferences/")) return routes["GET /v1/preferences/:userId"];
+  if (method === "GET" && path.startsWith("/v1/inbox/") && !path.endsWith("/read")) {
+    return routes["GET /v1/inbox/:userId"];
+  }
+  if (method === "PATCH" && /\/v1\/inbox\/[^/]+\/read$/.test(path)) {
+    return routes["PATCH /v1/inbox/:id/read"];
+  }
   return null;
 }
 
