@@ -1,16 +1,65 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { filterCommands, SEARCH_SCOPES, DAKINIS_COMMANDS } from "../command-palette.js";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  filterCommands,
+  SEARCH_SCOPES,
+  DAKINIS_COMMANDS,
+  searchHitGroupLabel,
+} from "../command-palette.js";
 import { COMMAND_PALETTE_SHORTCUT } from "../hub-nav.js";
+
+const DEFAULT_MIN_SEARCH = 2;
+const SEARCH_DEBOUNCE_MS = 280;
 
 /**
  * Command Palette global — Ctrl+K / Cmd+K.
- * @param {{ open: boolean; onClose: () => void; onRun: (cmd: { id: string; label: string }) => void; extraCommands?: object[]; t?: (k: string) => string }} props
+ * @param {{
+ *   open: boolean;
+ *   onClose: () => void;
+ *   onRun: (cmd: { id: string; label: string }) => void;
+ *   extraCommands?: object[];
+ *   t?: (k: string) => string;
+ *   fetchSearchHits?: (query: string, scope: string, signal: AbortSignal) => Promise<object[]>;
+ *   onSelectSearchHit?: (hit: object) => void;
+ *   minSearchLength?: number;
+ * }} props
  */
-export default function CommandPalette({ open, onClose, onRun, extraCommands = [], t = (k) => k }) {
+export default function CommandPalette({
+  open,
+  onClose,
+  onRun,
+  extraCommands = [],
+  t = (k) => k,
+  fetchSearchHits,
+  onSelectSearchHit,
+  minSearchLength = DEFAULT_MIN_SEARCH,
+}) {
   const [query, setQuery] = useState("");
   const [scope, setScope] = useState("all");
+  const [searchHits, setSearchHits] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const searchSeq = useRef(0);
 
   const commands = useMemo(() => filterCommands(query, extraCommands), [query, extraCommands]);
+
+  const listItems = useMemo(() => {
+    const hits = searchHits.map((hit) => ({
+      kind: "search",
+      key: `search:${hit.scope}:${hit.id}`,
+      hit,
+      label: hit.title || hit.id || t("cmdk.searchResult"),
+      group: searchHitGroupLabel(hit.scope),
+      snippet: hit.snippet || "",
+    }));
+    const cmds = commands.map((cmd) => ({
+      kind: "command",
+      key: `cmd:${cmd.id}`,
+      cmd,
+      label: cmd.label,
+      group: cmd.group,
+      snippet: "",
+    }));
+    return [...hits, ...cmds];
+  }, [searchHits, commands, t]);
 
   const handleKey = useCallback(
     (e) => {
@@ -23,13 +72,67 @@ export default function CommandPalette({ open, onClose, onRun, extraCommands = [
     if (!open) {
       setQuery("");
       setScope("all");
+      setSearchHits([]);
+      setSearchLoading(false);
       return undefined;
     }
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
   }, [open, handleKey]);
 
+  useEffect(() => {
+    if (!open || !fetchSearchHits) {
+      setSearchHits([]);
+      setSearchLoading(false);
+      return undefined;
+    }
+
+    const trimmed = String(query || "").trim();
+    if (trimmed.length < minSearchLength) {
+      setSearchHits([]);
+      setSearchLoading(false);
+      return undefined;
+    }
+
+    const seq = ++searchSeq.current;
+    const controller = new AbortController();
+    setSearchLoading(true);
+
+    const timer = setTimeout(() => {
+      fetchSearchHits(trimmed, scope, controller.signal)
+        .then((hits) => {
+          if (seq !== searchSeq.current) return;
+          setSearchHits(Array.isArray(hits) ? hits : []);
+        })
+        .catch(() => {
+          if (seq !== searchSeq.current) return;
+          setSearchHits([]);
+        })
+        .finally(() => {
+          if (seq !== searchSeq.current) return;
+          setSearchLoading(false);
+        });
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => {
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [open, query, scope, fetchSearchHits, minSearchLength]);
+
+  function activateItem(item) {
+    if (!item) return;
+    if (item.kind === "search") {
+      onSelectSearchHit?.(item.hit);
+    } else {
+      onRun(item.cmd);
+    }
+    onClose();
+  }
+
   if (!open) return null;
+
+  const showEmpty = listItems.length === 0 && !searchLoading;
 
   return (
     <div className="dakinis-cmdk-backdrop" role="presentation" onClick={onClose}>
@@ -51,9 +154,8 @@ export default function CommandPalette({ open, onClose, onRun, extraCommands = [
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && commands[0]) {
-                onRun(commands[0]);
-                onClose();
+              if (e.key === "Enter" && listItems[0]) {
+                activateItem(listItems[0]);
               }
             }}
           />
@@ -73,22 +175,26 @@ export default function CommandPalette({ open, onClose, onRun, extraCommands = [
           ))}
         </div>
         <ul className="dakinis-cmdk__list" role="listbox">
-          {commands.length === 0 ? (
+          {searchLoading ? (
+            <li className="dakinis-cmdk__empty dakinis-cmdk__loading">{t("cmdk.searchLoading")}</li>
+          ) : showEmpty ? (
             <li className="dakinis-cmdk__empty">{t("cmdk.noResults")}</li>
           ) : (
-            commands.slice(0, 12).map((cmd) => (
-              <li key={cmd.id}>
+            listItems.slice(0, 12).map((item) => (
+              <li key={item.key}>
                 <button
                   type="button"
-                  className="dakinis-cmdk__item"
+                  className={`dakinis-cmdk__item${item.kind === "search" ? " dakinis-cmdk__item--search" : ""}`}
                   role="option"
-                  onClick={() => {
-                    onRun(cmd);
-                    onClose();
-                  }}
+                  onClick={() => activateItem(item)}
                 >
-                  <span>{cmd.label}</span>
-                  <span className="dakinis-cmdk__group">{cmd.group}</span>
+                  <span className="dakinis-cmdk__item-main">
+                    <span>{item.label}</span>
+                    {item.snippet ? (
+                      <span className="dakinis-cmdk__snippet">{item.snippet}</span>
+                    ) : null}
+                  </span>
+                  <span className="dakinis-cmdk__group">{item.group}</span>
                 </button>
               </li>
             ))

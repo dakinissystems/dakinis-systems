@@ -33,7 +33,7 @@ function Invoke-SmokeJson {
     }
     if ($Body) {
         $tmp = New-TemporaryFile
-        Set-Content -Path $tmp -Value $Body -Encoding utf8NoBOM -NoNewline
+        [System.IO.File]::WriteAllText($tmp, $Body, [System.Text.UTF8Encoding]::new($false))
         $raw = curl.exe -s -X $Method @headerArgs -H "Content-Type: application/json" --data-binary "@$tmp" $Url
         $code = [int](curl.exe -s -o NUL -w "%{http_code}" -X $Method @headerArgs -H "Content-Type: application/json" --data-binary "@$tmp" $Url)
         Remove-Item $tmp -Force
@@ -51,13 +51,13 @@ function Invoke-SmokeJson {
     return @{ Code = $code; Raw = $raw }
 }
 
-Write-Host "Billing E2E smoke — $BaseUrl" -ForegroundColor Green
+Write-Host "Billing E2E smoke - $BaseUrl" -ForegroundColor Green
 
 $health = Invoke-SmokeJson -Name "Billing health" -Url "$BillingBase/health"
 $healthJson = $health.Raw | ConvertFrom-Json
 Write-Host "Stripe: $($healthJson.stripe) · Webhook: $($healthJson.webhook) · Event bus: $($healthJson.eventBus)" -ForegroundColor Yellow
 
-Invoke-SmokeJson -Name "Webhook probe (sin firma → 400/501)" -Url "$BillingBase/v1/webhooks/stripe" -Method "POST" -Body "{}" -ExpectCodes @(400, 501)
+Invoke-SmokeJson -Name "Webhook probe (sin firma -> 400/501)" -Url "$BillingBase/v1/webhooks/stripe" -Method "POST" -Body "{}" -ExpectCodes @(400, 501)
 
 if ($InternalKey) {
     $checkoutBody = @{ plan = $Plan; planId = $Plan } | ConvertTo-Json -Compress
@@ -69,10 +69,10 @@ if ($InternalKey) {
     Invoke-SmokeJson -Name "Core checkout proxy (JWT)" -Url "$CoreBase/public/stripe/checkout-session" -Method "POST" `
         -Headers @{ Authorization = "Bearer $CoreJwt" } -Body $checkoutBody
 } else {
-    Write-Host "Omitido checkout — define INTERNAL_API_KEY o DAKINIS_CORE_JWT" -ForegroundColor DarkYellow
+    Write-Host "Omitido checkout - define INTERNAL_API_KEY o DAKINIS_CORE_JWT" -ForegroundColor DarkYellow
 }
 
 Write-Host ""
-Write-Host "OK — billing E2E probes." -ForegroundColor Green
-Write-Host "Post-pago: Stripe webhook → billing → BullMQ/list → Core sync business.plan" -ForegroundColor Yellow
+Write-Host "OK - billing E2E probes." -ForegroundColor Green
+Write-Host "Post-pago: Stripe webhook -> billing -> BullMQ/list -> Core sync business.plan" -ForegroundColor Yellow
 Write-Host "Degraded loop: .\scripts\smoke-billing-degraded.ps1" -ForegroundColor Yellow

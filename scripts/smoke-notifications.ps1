@@ -13,7 +13,7 @@ function Invoke-Smoke {
     Write-Host "$Method $Url"
     if ($Body) {
         $tmp = New-TemporaryFile
-        Set-Content -Path $tmp -Value $Body -Encoding utf8NoBOM -NoNewline
+        [System.IO.File]::WriteAllText($tmp, $Body, [System.Text.UTF8Encoding]::new($false))
         $raw = curl.exe -s -X $Method -H "Content-Type: application/json" --data-binary "@$tmp" $Url
         $code = curl.exe -s -o NUL -w "%{http_code}" -X $Method -H "Content-Type: application/json" --data-binary "@$tmp" $Url
         Remove-Item $tmp -Force

@@ -15,7 +15,7 @@ $ErrorActionPreference = "Stop"
 if (-not $AuthUrl) { $AuthUrl = "https://auth.dakinissystems.com/auth" }
 if (-not $StreamAutomatorApi) { $StreamAutomatorApi = "https://api.streamautomator.com" }
 if (-not $AkoeNetApi) { $AkoeNetApi = "https://api.akoenet.com" }
-if (-not $LifeFlowApi) { $LifeFlowApi = "https://api-finanzas.dakinissystems.com" }
+if (-not $LifeFlowApi) { $LifeFlowApi = "https://finance-api.dakinissystems.com" }
 if (-not $Email -or -not $Password) {
     Write-Host "Define DAKINIS_TEST_EMAIL y DAKINIS_TEST_PASSWORD" -ForegroundColor Yellow
     exit 1

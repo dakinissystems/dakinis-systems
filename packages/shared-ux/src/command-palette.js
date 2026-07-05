@@ -56,3 +56,38 @@ export function filterCommands(query, extra = []) {
     return hay.includes(q);
   });
 }
+
+/** Alinea scopes UI Command Palette con Search API. */
+export function mapCmdkScopeToSearch(scope) {
+  const map = {
+    customers: "clients",
+    documents: "documentation",
+    orders: "global",
+  };
+  return map[scope] || scope || "all";
+}
+
+/** Etiqueta de grupo para un hit de Search en la paleta. */
+export function searchHitGroupLabel(scope) {
+  const match = SEARCH_SCOPES.find((s) => s.id === scope);
+  if (match) return match.label;
+  if (scope === "clients") return "Clientes";
+  if (scope === "documentation") return "Documentos";
+  return scope || "Resultado";
+}
+
+/**
+ * Destino por defecto al abrir un hit (Core/Hub pueden sobreescribir).
+ * @param {{ scope?: string; id?: string; title?: string }} hit
+ */
+export function resolveSearchHitPath(hit) {
+  const scope = hit?.scope || "global";
+  const title = encodeURIComponent(hit?.title || "");
+  if (scope === "knowledge" || scope === "documentation") {
+    return title ? `/faq?q=${title}` : "/faq";
+  }
+  if (scope === "clients" || scope === "customers") return "/app/crm";
+  if (scope === "invoices" || scope === "orders") return "/app/ventas";
+  if (scope === "messages" || scope === "chats") return "/app/whatsapp";
+  return "/hub";
+}
