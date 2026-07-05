@@ -35,7 +35,7 @@ Vista en <1 min antes de entrar en detalle.
 | **Tabletop** | 🟡 MVP | Sí | SQLite (volume) | Christian | Migración Supabase |
 | **StreamAutomator** | 🟢 Activo | Sí | Supabase `stream` | Christian | Métricas · event bus |
 | **AkoeNet** | 🟡 Desarrollo | Sí | Supabase / legacy | Christian | Schema `akoenet` completo |
-| **Hub** | 🟢 Activo | Sí | Supabase `hub` | Christian | SSO hub→productos |
+| **Hub** | 🟢 Activo | Sí | Supabase `hub` | Christian | SSO hub→productos 🔄 LifeFlow ✅ |
 | **AI Platform** | 🟡 Beta | Sí | Supabase `ai` | Christian | `OPENAI_API_KEY` prod · advisor Live |
 | **Billing** | 🟢 Activo | Sí | Supabase `billing` | Christian | E2E checkout Live |
 | **Identity** (Auth) | 🟢 Activo | Sí | Supabase `dakinis_auth` | Christian | — |
@@ -297,7 +297,7 @@ Hoy en prod: Mi día → Agenda → Notificaciones → Actividad → IA → Salu
 | App | Logo | Estrategia | Comportamiento |
 |-----|------|------------|----------------|
 | Dakinis One | `core.png` | `core-session` | Login en Core (sesión propia) |
-| LifeFlow | `lifeflow.png` | `idp-exchange` + `/auth/hub-sso` | Entrada logueada |
+| LifeFlow | `lifeflow.png` | `idp-exchange` + `/auth/hub-sso` | ✅ Entrada logueada (provisiona usuario) |
 | StreamAutomator | `streamautomator.png` | `idp-exchange` + hub-sso | Login si no hay sesión en dominio |
 | AkoeNet | `akoenet.png` | `idp-exchange` + hub-sso | Entrada logueada |
 | Tabletop | `tabletop.png` | `sso: none` → URL directa | `tabletop.dakinissystems.com` |
@@ -606,6 +606,8 @@ Auth server-to-server: `Authorization: Bearer $DAKINIS_SERVICE_KEY` + header `X-
 
 Smoke: `.\scripts\smoke-lifeflow-engine.ps1 -UserId <uuid>`
 
+**Hub SSO:** Web `/auth/hub-sso` · API `POST /api/auth/hub-sso` (Bearer IdP JWT) · auto-provisiona usuario por email IdP.
+
 ---
 
 ### Tabletop
@@ -852,7 +854,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | Knowledge index sync | 🔴 Alta | 🔄 API prod · sync ⬜ |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
 | LifeFlow Engine + PostgreSQL | 🟡 Media | 🔄 Engine v1 ✅ · schema `lifeflow` ⬜ |
-| Hub SSO → productos | 🟠 Media | ⬜ |
+| Hub SSO → productos | 🟠 Media | 🔄 LifeFlow ✅ · SA/AkoeNet ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
 | AI OpenAI prod (`OPENAI_API_KEY`) | 🔴 Alta | ⬜ stub hoy |
 | Supabase `022`/`023` | 🟠 Media | ⬜ |
@@ -863,7 +865,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 1. **Billing E2E Live** — redeploy Core · checkout · webhook 200
 2. **Knowledge** — index sync Search ↔ Knowledge
-3. **Hub** — ✅ v0.2.1 · SSO hub→productos siguiente
+3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ · SA/AkoeNet ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ monitor · activar `DAKINIS_EVENT_BUS=bullmq` en prod
 5. **LifeFlow Engine** — ✅ API v1 · schema `lifeflow` cutover ⬜
 

@@ -34,7 +34,12 @@
     "urlKey": "lifeflow",
     "landingPath": "/productos/finanzas",
     "external": true,
-    "sso": { "mode": "idp-exchange", "productKey": "lifeflow", "ssoReady": false }
+    "sso": {
+      "mode": "idp-exchange",
+      "productKey": "lifeflow",
+      "ssoReady": true,
+      "hubSsoPath": "/auth/hub-sso"
+    }
   },
   {
     "id": "dnd",
