@@ -30,21 +30,21 @@ Vista en <1 min antes de entrar en detalle.
 
 | Producto / servicio | Estado | Prod | BD | Responsable | Próximo hito |
 |---------------------|--------|------|-----|-------------|--------------|
-| **Core** (Business OS) | 🟢 Activo | Sí | Supabase `dakinis_core_prod` | Christian | Cutover → `core` · E2E billing |
+| **Core** (Business OS) | 🟢 Activo | Sí | Supabase `dakinis_core_prod` | Christian | E2E billing · redeploy `efbe6ee` |
 | **LifeFlow** | 🟡 Beta | Sí | SQLite + `lifeflow` PG | Christian | Cutover SQLite completo ⬜ |
 | **Tabletop** | 🟡 MVP | Sí | SQLite (volume) | Christian | Migración Supabase |
 | **StreamAutomator** | 🟢 Activo | Sí | Supabase `stream` | Christian | Métricas · event bus |
 | **AkoeNet** | 🟡 Desarrollo | Sí | Supabase / legacy | Christian | Schema `akoenet` completo |
-| **Hub** | 🟢 Activo | Sí | Supabase `hub` | Christian | SSO hub→productos 🔄 LifeFlow ✅ |
+| **Hub** | 🟢 Activo | Sí | Supabase `hub` | Christian | SSO smoke live (3 productos) |
 | **AI Platform** | 🟡 Beta | Sí | Supabase `ai` | Christian | `OPENAI_API_KEY` prod · advisor Live |
-| **Billing** | 🟢 Activo | Sí | Supabase `billing` | Christian | E2E checkout Live |
+| **Billing** | 🟢 Activo | Sí | Supabase `billing` | Christian | Webhook Stripe 200 · checkout live |
 | **Identity** (Auth) | 🟢 Activo | Sí | Supabase `dakinis_auth` | Christian | — |
-| **Notifications** | 🟡 Scaffold | Sí | Redis (+ Supabase ⬜) | Christian | v1 email/push |
+| **Notifications** | 🟡 Scaffold | Sí | Redis + Supabase `hub` | Christian | email Resend · inbox v1 |
 | **Search** | 🟡 Scaffold | Sí | Redis (+ pgvector ⬜) | Christian | pgvector · index productos |
-| **Knowledge** | 🟢 Activo | Sí | Supabase `knowledge` | Christian | RAG PDF masivo · Ctrl+K smoke live ⬜ |
+| **Knowledge** | 🟢 Activo | Sí | Supabase `knowledge` | Christian | RAG PDF masivo · Ctrl+K JWT smoke ⬜ |
 | **Landing** | 🟢 Activo | Sí | — | Christian | Funnel One-first |
 
-**Prioridad plataforma (julio 2026):** Billing E2E Live · Hub SSO SA/AkoeNet · LifeFlow cutover Supabase.
+**Prioridad plataforma (julio 2026):** Billing E2E Live · Core redeploy Ctrl+K (`efbe6ee`) · Hub SSO smoke · LifeFlow cutover SQLite.
 
 ---
 
@@ -298,8 +298,8 @@ Hoy en prod: Mi día → Agenda → Notificaciones → Actividad → IA → Salu
 |-----|------|------------|----------------|
 | Dakinis One | `core.png` | `core-session` | Login en Core (sesión propia) |
 | LifeFlow | `lifeflow.png` | `idp-exchange` + `/auth/hub-sso` | ✅ Entrada logueada (provisiona usuario) |
-| StreamAutomator | `streamautomator.png` | `idp-exchange` + hub-sso | Login si no hay sesión en dominio |
-| AkoeNet | `akoenet.png` | `idp-exchange` + hub-sso | Entrada logueada |
+| StreamAutomator | `streamautomator.png` | `idp-exchange` + `/api/auth/hub-sso` | ✅ código `f18725b` · smoke live ⬜ |
+| AkoeNet | `akoenet.png` | `idp-exchange` + `/auth/hub-sso` | ✅ código · smoke live ⬜ |
 | Tabletop | `tabletop.png` | `sso: none` → URL directa | `tabletop.dakinissystems.com` |
 
 Assets: [`packages/shared-brand/assets/hub-logos/`](../packages/shared-brand/assets/hub-logos/) · mapa en `hub-product-logos.js`.
@@ -393,7 +393,9 @@ Contrato: [`contracts/knowledge.json`](./contracts/knowledge.json)
 
 Sync Search: `POST /knowledge/v1/sync/search` (service key) · worker Search aplica jobs BullMQ/list · smoke `.\scripts\smoke-knowledge-search-sync.ps1`
 
-Hub Ctrl+K: Core `70ace78` · `GET /api/search/query` → Search · paleta `@dakinis/shared-ux` · smoke `.\scripts\smoke-hub-search-query.ps1` ✅ gateway
+Hub Ctrl+K: Core `efbe6ee` (`70ace78` API) · `GET /core/api/search/query` → Search · paleta `@dakinis/shared-ux` · smoke `.\scripts\smoke-hub-search-query.ps1` ✅ gateway · JWT ⬜
+
+**Regla deploy Core:** cambios en `packages/shared-ux` del monorepo deben copiarse al repo `dakinis-core` (workspace local duplicado).
 
 ---
 
@@ -451,7 +453,7 @@ Notifications
 |---|---|
 | **Repo** | `dakinis-notifications` |
 | **Gateway** | `/notifications/` · puerto **4081** |
-| **Estado** | 🔄 scaffold API + worker · health ✅ · enqueue smoke ✅ (`smoke-notifications.ps1`) |
+| **Estado** | 🔄 v0.3.0 · API + worker · **inbox persist** ✅ `hub.notifications` · enqueue smoke ✅ |
 
 ---
 
@@ -470,7 +472,7 @@ Search
 |---|---|
 | **Repo** | `dakinis-search` |
 | **Gateway** | `/search/` · puerto **4082** |
-| **Estado** | 🔄 scaffold API + **indexer funcional** · **Hub Ctrl+K v1** ✅ Core `70ace78` · health ✅ |
+| **Estado** | 🔄 scaffold API + **indexer funcional** · **Hub Ctrl+K v1** ✅ Core `efbe6ee` · health ✅ |
 
 ---
 
@@ -562,6 +564,8 @@ Business OS (Core)
 | **API** | `/core/` vía gateway |
 | **Schema** | `dakinis_core_prod` → cutover `core` |
 | **Hub admin** | ✅ `PlatformHubAccessPanel` — habilitar productos Hub por tenant (`6bdcd94`) |
+| **Command Palette (Ctrl+K)** | ✅ `efbe6ee` · proxy `/api/search/query` · hits Knowledge/Search · redeploy Railway ⬜ |
+| **Billing UX** | ✅ `c7bf4c5` · banner degraded · portal · sync `access_state` en sesión |
 
 #### WhatsApp (Meta Cloud API)
 
@@ -607,10 +611,11 @@ LifeFlow
 | **Coach IA** | ✅ Pro · tools deterministas + AI |
 | **Engine v1** | ✅ `POST /v1/score` · `/v1/forecast` · `/v1/risk` · `/v1/scenario` · `/v1/cities/compare` |
 | **Deploy prod** | ✅ API `finance-api…` · Web `finance…` · `/health` postgres ok |
+| **Commits recientes** | `9f45bc2` hub-sso import fix · `076aa0f` Railpack cache · `c93d39f` pg lockfile |
 
 Auth server-to-server: `Authorization: Bearer $DAKINIS_SERVICE_KEY` + header `X-Dakinis-User-Id`.
 
-Smoke: `.\scripts\smoke-lifeflow-engine.ps1 -UserId <uuid>` · `.\scripts\smoke-lifeflow-pg-sync.ps1`
+Smoke: `.\scripts\smoke-lifeflow-engine.ps1 -UserId <uuid>` · `.\scripts\smoke-lifeflow-pg-sync.ps1` · `.\scripts\smoke-hub-sso-products.ps1 -Product lifeflow`
 
 **Hub SSO:** Web `/auth/hub-sso` · API `POST /api/auth/hub-sso` (Bearer IdP JWT) · auto-provisiona usuario por email IdP · enlace `app_user_links` en PG.
 
@@ -719,8 +724,8 @@ Orden: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
 |---------|------|--------|--------|--------|-------|-----------|--------|
 | Gateway | dakinis-systems | — | api.dakinissystems.com | — | — | Stable | ✅ |
 | Identity (Auth) | dakinis-auth | dakinis_auth | auth.dakinissystems.com | — | ✅ | Stable | ✅ |
-| Core Back | dakinis-core | dakinis_core_prod | /core/ | — | ✅ | Stable | ✅ |
-| Core Front | dakinis-core | — | core.dakinissystems.com | — | — | Stable | ✅ |
+| Core Back | dakinis-core | dakinis_core_prod | /core/ | — | ✅ | Stable | 🔄 redeploy `efbe6ee` |
+| Core Front | dakinis-core | — | core.dakinissystems.com | — | — | Stable | 🔄 redeploy `efbe6ee` |
 | Hub | dakinis-hub | hub | hub.dakinissystems.com | — | ⬜ | Stable | ✅ v0.2.1 |
 | AI | dakinis-ai | ai | ai.dakinissystems.com | — | ✅ | Active | ✅ |
 | AI Worker | dakinis-ai | ai | interno | ✅ | ✅ | Active | — |
@@ -731,7 +736,7 @@ Orden: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
 | Knowledge Worker | dakinis-knowledge-worker | knowledge | interno | ✅ | ✅ | Active | ✅ |
 | Internal API | dakinis-internal-api | hub + platform | /internal/ · `:4083` | — | ✅ | Stable | ✅ v0.3.1 + DLQ |
 | Landing | dakinis-landing | — | dakinissystems.com | — | — | Stable | ✅ |
-| LifeFlow API | lifeflow | SQLite + PG | finance-api… | — | — | Beta | ✅ v1 + sync |
+| LifeFlow API | lifeflow | SQLite + PG | finance-api… | — | — | Beta | ✅ `9f45bc2` |
 | LifeFlow Web | lifeflow | — | finance… | — | — | Beta | ✅ |
 | Tabletop API | dakinis-tabletop | SQLite | tabletop-api… | — | — | MVP | ✅ |
 | Tabletop Web | dakinis-tabletop | — | tabletop… | — | — | MVP | ✅ |
@@ -859,10 +864,11 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 |------|-----------|--------|
 | Billing E2E Live | 🔴 Alta | 🔄 checkout UI + sync + banner · smoke gateway ✅ · checkout live ⬜ |
 | Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
-| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core `70ace78` + shared-ux sync · redeploy Core ⬜ |
+| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core `efbe6ee` · build fix shared-ux · redeploy ⬜ · smoke JWT ⬜ |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
-| LifeFlow Engine + PostgreSQL | 🟡 Media | ✅ Engine v1 · PG sync v1 · migr. **030** ✅ · API prod ✅ · cutover SQLite ⬜ |
-| Hub SSO → productos | 🟠 Media | 🔄 LifeFlow ✅ prod · SA/AkoeNet ✅ código · smoke live ⬜ |
+| LifeFlow Engine + PostgreSQL | 🟡 Media | ✅ Engine v1 · PG sync v1 · migr. **030** ✅ · API prod `9f45bc2` · cutover SQLite ⬜ |
+| Hub SSO → productos | 🟠 Media | ✅ LifeFlow prod · SA `f18725b` · AkoeNet código · `smoke-hub-sso-products.ps1` ⬜ |
+| Notifications v1 inbox | 🟠 Media | ✅ persist `63684f9` · GET/PATCH inbox · redeploy + `DATABASE_URL` worker ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
 | AI OpenAI prod (`OPENAI_API_KEY`) | 🔴 Alta | ⬜ stub hoy |
 | Supabase `022`/`023` | 🟠 Media | ⬜ |
@@ -871,12 +877,12 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 ### Lista ejecutiva (referencia)
 
-1. **Billing E2E Live** — redeploy Core · `smoke-billing-e2e.ps1` ✅ gateway · webhook Stripe Dashboard ⬜
-2. **Knowledge** — ✅ index sync Search · ✅ Hub query Core `70ace78` · redeploy + smoke JWT ⬜
-3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ prod · SA/AkoeNet · `smoke-hub-sso-products.ps1` ⬜
+1. **Billing E2E Live** — `smoke-billing-e2e.ps1` ✅ gateway · webhook Stripe Dashboard ⬜ · checkout JWT ⬜
+2. **Knowledge** — ✅ index sync · ✅ Hub query `efbe6ee` · redeploy Core · smoke JWT ⬜
+3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ · SA/AkoeNet hub-sso · smoke 3 productos ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ ✅ · activar `DAKINIS_EVENT_BUS=bullmq` en prod
-5. **LifeFlow Engine** — ✅ API prod · PG sync · migr. **030** ✅ · cutover SQLite ⬜
-6. **Notifications v1** — ✅ API enqueue smoke · inbox persist ⬜
+5. **LifeFlow** — ✅ API/Web prod · PG sync · migr. **030** ✅ · cutover SQLite ⬜
+6. **Notifications v1** — ✅ inbox persist `63684f9` · smoke enqueue+inbox · `DATABASE_URL` worker ⬜
 
 ### Fases (referencia)
 
@@ -886,10 +892,10 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | 2 | Supabase multi-schema | 🔄 |
 | 3 | AI Platform completa | 🔄 |
 | 4 | Hub «Mi día» + launcher | ✅ v0.2.1 — logos · widgets · acceso tenant |
-| 5 | Events + Notifications v1 | 🔄 BullMQ ✅ · DLQ ✅ |
-| 6 | Search + Knowledge | ✅ Search v0.2.0 · Knowledge prod · **Hub Ctrl+K v1** ✅ |
-| 7 | LifeFlow Engine + PostgreSQL | 🔄 Engine v1 ✅ · migr. 030 ✅ · cutover SQLite ⬜ |
-| 8 | ~~Billing separado~~ | ✅ **plataforma prod** · E2E smoke live ⬜ |
+| 5 | Events + Notifications v1 | 🔄 BullMQ ✅ · **inbox persist** ✅ · email Resend ⬜ |
+| 6 | Search + Knowledge | ✅ Search v0.2.0 · Knowledge prod · **Hub Ctrl+K** ✅ `efbe6ee` |
+| 7 | LifeFlow Engine + PostgreSQL | 🔄 Engine v1 ✅ · migr. 030 ✅ · API prod ✅ · cutover SQLite ⬜ |
+| 8 | ~~Billing separado~~ | ✅ **plataforma prod** · E2E webhook/checkout ⬜ |
 | 9 | Async platform (no HTTP largo) | ⬜ |
 
 ### Calendario 6 semanas (referencia)
@@ -899,13 +905,13 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 | S1 | Supabase stream/core cutover · LifeFlow ✅ |
 | S2 | AI Worker batch · BullMQ |
 | S3 | Hub «Mi día» · widgets reales | ✅ v0.2.1 |
-| S4 | LifeFlow Engine API v1 · schema `lifeflow` | 🔄 v1 ✅ |
-| S5 | Billing E2E ✅ · Notifications v1 |
+| S4 | LifeFlow Engine API v1 · schema `lifeflow` | ✅ v1 + PG sync |
+| S5 | Billing E2E · Notifications v1 | 🔄 billing smoke ✅ |
 | S6 | Knowledge ingest · Observability baseline |
 
 ### Post-pilotos
 
-RAG PDF masivo · Calendario global Core · SSO Hub→productos · Customer Portal wiring Core · Event bus SA/AkoeNet
+RAG PDF masivo · Calendario global Core · SSO Hub→productos (smoke live) · Customer Portal wiring Core · Event bus SA/AkoeNet · LifeFlow cutover SQLite
 
 ---
 
@@ -917,9 +923,11 @@ RAG PDF masivo · Calendario global Core · SSO Hub→productos · Customer Port
 
 **URLs prod:** `DAKINIS_GATEWAY_URL=https://api.dakinissystems.com` · Auth `https://auth.dakinissystems.com/auth` · Billing `/billing` · AI `/ai`
 
-**Core Back:** `DAKINIS_BILLING_URL` · `DAKINIS_EVENTS_QUEUE` · sin `STRIPE_*`  
+**Core Back:** `DAKINIS_BILLING_URL` · `DAKINIS_GATEWAY_URL` (Search proxy) · `DAKINIS_EVENTS_QUEUE` · sin `STRIPE_*`  
+**Core Front:** proxy `/api` · build incluye `@dakinis/shared-ux` del repo Core (sync manual desde monorepo)  
 **Billing:** `PORT=4080` · `STRIPE_*` Live · `POSTGRES_SCHEMA=billing`  
-**Knowledge:** `PORT=4084` · `DAKINIS_SEARCH_URL` · `REDIS_URL`
+**LifeFlow API:** `DATABASE_URL` · `POSTGRES_SCHEMA=lifeflow` · `DATABASE_SSL=true` · `FINANZAS_DB_PATH` (volume)  
+**Notifications:** `PORT=4081` · `REDIS_URL` · **`DATABASE_URL`** · `DATABASE_SSL=true` · worker mismo schema `hub`
 
 ### Checklist go-live Stripe
 

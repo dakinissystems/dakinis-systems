@@ -1,13 +1,20 @@
-# Smoke test Notifications (prod or local via gateway).
+# Smoke Notifications — enqueue + inbox (v1 persist hub.notifications).
 param(
-    [string]$BaseUrl = "https://api.dakinissystems.com"
+    [string]$BaseUrl = "https://api.dakinissystems.com",
+    [string]$UserId = $env:DAKINIS_USER_ID,
+    [int]$WaitSec = 4
 )
 
 $ErrorActionPreference = "Stop"
 $BaseUrl = $BaseUrl.TrimEnd("/")
 
+if (-not $UserId) {
+    $UserId = "00000000-0000-0000-0000-000000000001"
+    Write-Host "Tip: define DAKINIS_USER_ID (uuid en dakinis_auth.users) para probar persist inbox" -ForegroundColor DarkYellow
+}
+
 function Invoke-Smoke {
-    param([string]$Name, [string]$Url, [string]$Method = "GET", [string]$Body = $null)
+    param([string]$Name, [string]$Url, [string]$Method = "GET", [string]$Body = $null, [switch]$AllowNon2xx)
     Write-Host ""
     Write-Host "== $Name ==" -ForegroundColor Cyan
     Write-Host "$Method $Url"
@@ -25,13 +32,46 @@ function Invoke-Smoke {
     if ($raw) {
         try { $raw | ConvertFrom-Json | ConvertTo-Json -Depth 6 } catch { Write-Host $raw }
     }
-    if ($code -notmatch "^2") { throw "FAIL $Name (HTTP $code)" }
+    if (-not $AllowNon2xx -and $code -notmatch "^2") { throw "FAIL $Name (HTTP $code)" }
+    return @{ Code = $code; Raw = $raw }
 }
 
 Write-Host "Notifications smoke - $BaseUrl" -ForegroundColor Green
 
-Invoke-Smoke -Name "notifications health" -Url "$BaseUrl/notifications/health"
-Invoke-Smoke -Name "notifications send" -Url "$BaseUrl/notifications/v1/send" -Method "POST" -Body '{"userId":"00000000-0000-0000-0000-000000000001","channel":"in-app","type":"smoke.test","payload":{"message":"hello worker"}}'
+$health = Invoke-Smoke -Name "notifications health" -Url "$BaseUrl/notifications/health"
+$healthJson = $health.Raw | ConvertFrom-Json
+if ($healthJson.postgres) {
+    Write-Host "Postgres: enabled=$($healthJson.postgres.enabled) ok=$($healthJson.postgres.ok)" -ForegroundColor DarkGray
+}
+
+$slug = "smoke-$(Get-Date -Format 'HHmmss')"
+$sendBody = (@{
+    userId  = $UserId
+    channel = "in-app"
+    type    = "smoke.test"
+    payload = @{
+        message = "hello inbox $slug"
+        product = "hub"
+        title   = "Smoke notification"
+    }
+} | ConvertTo-Json -Compress)
+
+Invoke-Smoke -Name "notifications send (in-app)" -Url "$BaseUrl/notifications/v1/send" -Method "POST" -Body $sendBody | Out-Null
+
+if ($WaitSec -gt 0) {
+    Write-Host "Esperando ${WaitSec}s worker..." -ForegroundColor DarkGray
+    Start-Sleep -Seconds $WaitSec
+}
+
+$inbox = Invoke-Smoke -Name "notifications inbox" -Url "$BaseUrl/notifications/v1/inbox/$UserId"
+$inboxJson = $inbox.Raw | ConvertFrom-Json
+if ($inboxJson.stub -eq $true) {
+    Write-Host "Inbox stub (DATABASE_URL no configurada en worker/API)" -ForegroundColor Yellow
+} elseif (@($inboxJson.items).Count -lt 1) {
+    Write-Host "Inbox vacio - verifica worker DATABASE_URL y FK user_id en dakinis_auth.users" -ForegroundColor Yellow
+} else {
+    Write-Host "Inbox hits: $(@($inboxJson.items).Count) unread=$($inboxJson.unread)" -ForegroundColor Green
+}
 
 Write-Host ""
-Write-Host "OK - Notifications API reachable. Check worker logs for [worker] dispatch" -ForegroundColor Green
+Write-Host "OK - Notifications smoke complete" -ForegroundColor Green

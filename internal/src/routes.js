@@ -187,6 +187,17 @@ export const routes = {
     return { status: proxied.status, body: { proxied: true, ...proxied.body } };
   },
 
+  "GET /notifications/inbox/:userId": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const userId = (req.url || "").split("?")[0].replace("/notifications/inbox/", "");
+    const proxied = await proxyJson(
+      config.notificationsUrl,
+      `/v1/inbox/${encodeURIComponent(userId)}`
+    );
+    return { status: proxied.status, body: proxied.body };
+  },
+
   "POST /search": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };

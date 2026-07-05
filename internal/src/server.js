@@ -30,6 +30,9 @@ function matchRoute(method, path) {
   if (method === "GET" && bare.startsWith("/billing/subscriptions/")) {
     return routes["GET /billing/subscriptions/:tenantId"];
   }
+  if (method === "GET" && bare.startsWith("/notifications/inbox/")) {
+    return routes["GET /notifications/inbox/:userId"];
+  }
   if (method === "GET" && bare.startsWith("/storage/")) return routes["GET /storage/:objectId"];
   return null;
 }
