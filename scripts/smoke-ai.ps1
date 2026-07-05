@@ -48,11 +48,11 @@ function Invoke-SmokeJson {
     return @{ Code = $code; Raw = $raw }
 }
 
-Write-Host "AI Platform smoke — $BaseUrl" -ForegroundColor Green
+Write-Host "AI Platform smoke - $BaseUrl" -ForegroundColor Green
 
 $health = Invoke-SmokeJson -Name "AI health (gateway)" -Url "$AiBase/health"
 $healthJson = $health.Raw | ConvertFrom-Json
-Write-Host "Provider: $($healthJson.aiProvider) · serviceKey: $($healthJson.serviceKeyConfigured) · model: $($healthJson.openaiModel)" -ForegroundColor Yellow
+Write-Host "Provider: $($healthJson.aiProvider) | serviceKey: $($healthJson.serviceKeyConfigured) | model: $($healthJson.openaiModel)" -ForegroundColor Yellow
 
 if ($healthJson.aiProvider -eq "stub") {
     Write-Host 'GO-LIVE: set OPENAI_API_KEY en dakinis-ai y worker, luego redeploy' -ForegroundColor DarkYellow
@@ -68,7 +68,8 @@ if ($AiServiceKey) {
             "X-Dakinis-Product" = "core"
         } -Body $chatBody
     $chatJson = $chat.Raw | ConvertFrom-Json
-    Write-Host "Chat provider: $($chatJson.provider)" -ForegroundColor $(if ($chatJson.provider -eq "openai") { "Green" } else { "Yellow" })
+    $chatColor = if ($chatJson.provider -eq "openai") { "Green" } else { "Yellow" }
+    Write-Host "Chat provider: $($chatJson.provider)" -ForegroundColor $chatColor
 
     $advisorBody = (@{
         userMessage = "Responde en una frase: prueba smoke advisor."
@@ -81,7 +82,7 @@ if ($AiServiceKey) {
         } -Body $advisorBody | Out-Null
 } else {
     Write-Host ""
-    Write-Host "Omitido chat/advisor — define DAKINIS_AI_SERVICE_KEY (Railway dakinis-ai = Core Back)" -ForegroundColor DarkYellow
+    Write-Host 'Omitido chat/advisor - define DAKINIS_AI_SERVICE_KEY (mismo valor en dakinis-ai y Core Back)' -ForegroundColor DarkYellow
 }
 
 if ($CoreJwt -and $BusinessId) {
@@ -93,11 +94,12 @@ if ($CoreJwt -and $BusinessId) {
         } -Body $copilotBody
     $copJson = $cop.Raw | ConvertFrom-Json
     $deg = $copJson.data.copilot.degraded
-    Write-Host "Copilot degraded=$deg reason=$($copJson.data.copilot.degradedReason)" -ForegroundColor $(if ($deg) { "Yellow" } else { "Green" })
+    $copColor = if ($deg) { "Yellow" } else { "Green" }
+    Write-Host "Copilot degraded=$deg reason=$($copJson.data.copilot.degradedReason)" -ForegroundColor $copColor
 } else {
     Write-Host ""
-    Write-Host "Omitido Core copilot — define DAKINIS_CORE_JWT + DAKINIS_BUSINESS_ID" -ForegroundColor DarkYellow
+    Write-Host "Omitido Core copilot - define DAKINIS_CORE_JWT + DAKINIS_BUSINESS_ID" -ForegroundColor DarkYellow
 }
 
 Write-Host ""
-Write-Host "OK — AI smoke complete" -ForegroundColor Green
+Write-Host "OK - AI smoke complete" -ForegroundColor Green
