@@ -743,7 +743,7 @@ Orden: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
 |---------|------|--------|--------|--------|-------|-----------|--------|
 | Gateway | dakinis-systems | — | api.dakinissystems.com | — | — | Stable | ✅ |
 | Identity (Auth) | dakinis-auth | dakinis_auth | auth.dakinissystems.com | — | ✅ | Stable | ✅ |
-| Core Back | dakinis-core | dakinis_core_prod | /core/ | — | ✅ | Stable | 🔄 redeploy `1756a6b` billing sync |
+| Core Back | dakinis-core | dakinis_core_prod | /core/ | — | ✅ | Stable | ✅ `1756a6b` |
 | Core Front | dakinis-core | — | core.dakinissystems.com | — | — | Stable | ✅ |
 | Hub | dakinis-hub | hub | hub.dakinissystems.com | — | ⬜ | Stable | ✅ v0.2.1 |
 | AI | dakinis-ai | ai | ai.dakinissystems.com | — | ✅ | Active | ✅ |
@@ -881,12 +881,12 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 | Hito | Prioridad | Estado |
 |------|-----------|--------|
-| Billing E2E Live | 🔴 Alta | 🔄 success page sync ✅ · tenantId checkout ✅ · smoke chain ✅ · checkout JWT ⬜ |
+| Billing E2E Live | 🔴 Alta | 🔄 sync prod ✅ · smoke auto-login ✅ · checkout live ⬜ |
 | Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
-| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core proxy prod · smoke JWT ⬜ |
+| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core proxy · smoke auto-login ✅ · live JWT ⬜ |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
 | LifeFlow Engine + PostgreSQL | 🟡 Media | ✅ Engine v1 · PG sync v1 · migr. **030** ✅ · API prod `9f45bc2` · cutover SQLite ⬜ |
-| Hub SSO → productos | 🟠 Media | ✅ LifeFlow prod · SA `f18725b` redeploy ⬜ · AkoeNet prod ⬜ · smoke gateway ✅ |
+| Hub SSO → productos | 🟠 Media | ✅ LifeFlow + SA prod · AkoeNet host ⬜ · smoke E2E creds ⬜ |
 | Notifications v1 inbox | 🟠 Media | ✅ prod `0.3.1` · Resend configured · Internal `c5f2ddb` · inbox JWT ⬜ |
 | WhatsApp Meta go-live | 🟠 Media | 🔄 `f3766ac` pushed · redeploy + vars Railway ⬜ |
 | AI OpenAI prod | 🔴 Alta | ⬜ **`OPENAI_API_KEY` + `DAKINIS_AI_SERVICE_KEY` pendientes Railway** · health v0.1.1 · smoke ✅ |
@@ -898,7 +898,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 
 1. **Billing E2E Live** — success page sync ✅ · webhook Stripe ⬜ · checkout JWT/browser ⬜
 2. **Knowledge** — ✅ index sync · ✅ Hub query prod · smoke JWT ⬜
-3. **Hub** — ✅ v0.2.1 · SSO LifeFlow ✅ prod · SA hub-sso **404 prod** (redeploy) · smoke gateway ✅ · E2E creds ⬜
+3. **Hub** — ✅ LifeFlow + SA hub-sso prod · AkoeNet DNS ⬜ · smoke E2E creds ⬜
 4. **Event bus BullMQ** — ✅ workers · DLQ ✅ · activar `DAKINIS_EVENT_BUS=bullmq` en prod
 5. **LifeFlow** — ✅ API/Web prod · PG sync · migr. **030** ✅ · cutover SQLite ⬜
 6. **Notifications v1** — ✅ inbox persist prod · Resend email · Hub dashboard items · smoke enqueue ✅ · `DAKINIS_USER_ID` inbox ⬜
