@@ -859,7 +859,7 @@ Documentar decisiones nuevas en [`docs/adr/`](./adr/) — no solo en este archiv
 |------|-----------|--------|
 | Billing E2E Live | 🔴 Alta | 🔄 checkout UI + sync + banner · smoke gateway ✅ · checkout live ⬜ |
 | Knowledge index sync | 🔴 Alta | ✅ worker + `POST /v1/sync/search` |
-| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core `70ace78` `/api/search/query` + paleta · redeploy Core · smoke JWT ⬜ |
+| Knowledge Hub query (Ctrl+K) | 🔴 Alta | ✅ Core `70ace78` + shared-ux sync · redeploy Core ⬜ |
 | Event bus BullMQ | 🟠 Media | ✅ prod · DLQ monitor Internal API |
 | LifeFlow Engine + PostgreSQL | 🟡 Media | ✅ Engine v1 · PG sync v1 · migr. **030** ✅ · API prod ✅ · cutover SQLite ⬜ |
 | Hub SSO → productos | 🟠 Media | 🔄 LifeFlow ✅ prod · SA/AkoeNet ✅ código · smoke live ⬜ |
