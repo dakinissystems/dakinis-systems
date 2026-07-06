@@ -389,7 +389,8 @@ Smoke: `.\scripts\smoke-notifications.ps1` → worker log: `[worker] dispatch ch
 | 3 | Stripe | E2E pago → webhook 200 → plan actualizado | [ ] |
 | 4 | Stripe | Impago → tenant degraded → restore | [ ] |
 | 5 | Stripe SA | Webhook `api.streamautomator.com/...` | [ ] |
-| 6 | Supabase | `022` + `023` + `024` + `12-tenant-access.sql` en prod | [x] |
+| 6 | Supabase | `022` + `023` en prod | [x] |
+| 6b | Supabase | `024` + `12-tenant-access.sql` en prod | [x] |
 | 7 | Tenant access | Redeploy + smoke suspend/reactivate | [ ] |
 | 8 | Deploy | Push `dakinis-core` + Railway (proxy billing `:4080`) | [x] prod OK |
 | 9 | Deploy | Push `dakinis-landing` + smoke | [ ] |

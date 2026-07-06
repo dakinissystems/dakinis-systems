@@ -1,14 +1,16 @@
 # Dakinis Systems — Productos
 
-> Catálogo de **productos** (capa Products). No incluye servicios platform — ver [`ARCHITECTURE.md`](./ARCHITECTURE.md) y [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md).
+> **Productos** (capa Products) — consumen **Platform**. Entrada usuario: **Hub** → elige producto.
 
-**Platform** (Auth, Hub, AI, Billing, Notifications, Search, Knowledge) → [`ARCHITECTURE.md § Platform`](./ARCHITECTURE.md#platform)
+**Platform** (Auth, Hub, AI, Billing, Knowledge…) → [`ARCHITECTURE.md`](./ARCHITECTURE.md)  
+**Pendientes** → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)  
+**Mensaje** → [`company/MESSAGING.md`](./company/MESSAGING.md)
 
-**Estado rápido** → [PLATFORM-STATUS § Ecosistema](./PLATFORM-STATUS.md#estado-del-ecosistema)
+**Core es Dakinis One** — un producto principal, no el nombre de toda la plataforma.
 
 ---
 
-## Core — Business OS
+## Core — Dakinis One (Business OS)
 
 **Repo:** `dakinis-core` · **Local:** `platform/core`  
 **Dominio:** [core.dakinissystems.com](https://core.dakinissystems.com) · gateway `/core/`  

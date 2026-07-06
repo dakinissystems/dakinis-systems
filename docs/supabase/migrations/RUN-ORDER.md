@@ -46,9 +46,9 @@ Verificación: [`scripts/smoke-supabase-phase-c.sql`](../../scripts/smoke-supaba
 |---|---------|------|
 | 20 | [`020_billing_plan_catalog.sql`](./020_billing_plan_catalog.sql) | Catálogo planes |
 | 21 | [`021_billing_tenant_text.sql`](./021_billing_tenant_text.sql) | ✅ tenant_id text |
-| 22 | [`022_billing_functions_tenant_text.sql`](./022_billing_functions_tenant_text.sql) | Funciones billing text |
-| 23 | [`023_security_advisor_fixes.sql`](./023_security_advisor_fixes.sql) | RLS, search_path, extensiones |
-| 24 | [`024_meta_governance.sql`](./024_meta_governance.sql) | meta: schema_versions, migration_history, feature_flags |
+| 22 | [`022_billing_functions_tenant_text.sql`](./022_billing_functions_tenant_text.sql) | ✅ Funciones billing text |
+| 23 | [`023_security_advisor_fixes.sql`](./023_security_advisor_fixes.sql) | ✅ RLS, search_path, extensiones |
+| 24 | [`024_meta_governance.sql`](./024_meta_governance.sql) | ✅ meta: schema_versions, migration_history, feature_flags |
 | 25 | [`025_knowledge_schema.sql`](./025_knowledge_schema.sql) | Schema `knowledge` — documents, chunks, embeddings, jobs |
 | 26 | [`026_knowledge_rls_policies.sql`](./026_knowledge_rls_policies.sql) | RLS deny `knowledge.*` (Security Advisor) |
 
@@ -67,4 +67,4 @@ Cuando llegue migración **050**, mover 000–020 a [`archive/`](./archive/).
 
 ## Legacy (no repetir)
 
-- `../schemas/01-dakinis-auth.sql` … `12-tenant-access.sql`
+- `../schemas/01-dakinis-auth.sql` … `12-tenant-access.sql` — **`12-tenant-access.sql` ✅ prod** (jul 2026)

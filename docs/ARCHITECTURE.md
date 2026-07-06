@@ -5,12 +5,21 @@
 
 ---
 
-## Tres capas
+## Cuatro capas
 
-No mezclar **Infrastructure**, **Platform** ni **Products**. Tabla de estado: [PLATFORM-STATUS § Ecosistema](./PLATFORM-STATUS.md#estado-del-ecosistema).
+**Foundation** (código compartido, no runtime) · **Infrastructure** · **Platform** · **Products**.
+
+Pendientes operativos → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md). No duplicar estado aquí.
+
+No mezclar capas. Reglas inmutables:
 
 ```mermaid
 flowchart TB
+  subgraph foundation [Foundation]
+    DES[DES · SDK · packages]
+    CTR[Contracts · ADR · SQL]
+  end
+
   subgraph infra [Infrastructure]
     GW[Gateway]
     REDIS[(Redis)]
@@ -42,12 +51,14 @@ flowchart TB
 
   infra --> platform
   platform --> products
+  foundation -.-> infra
+  foundation -.-> platform
+  foundation -.-> products
 ```
 
-| Capa | Qué incluye | Qué no incluye |
-|------|-------------|----------------|
+| **Foundation** | DES, SDK, `packages/`, contracts, ADR, migraciones SQL | Runtime desplegado |
 | **Infrastructure** | Gateway, Redis, Supabase, Railway, Storage, Observability | Lógica de negocio de productos |
-| **Platform** | Auth, Hub, AI, Billing, Notifications, Search, Knowledge, Events, DES, SDK | Core, LifeFlow, SA… |
+| **Platform** | Auth, Hub, AI, Billing, Notifications, Search, Knowledge, Events | Core, LifeFlow, SA… |
 | **Products** | Core (Business OS), LifeFlow, StreamAutomator, AkoeNet, Tabletop, Landing | Auth, Billing, AI engine |
 
 **Reglas:**
@@ -55,7 +66,8 @@ flowchart TB
 1. **Core es producto**, no plataforma.
 2. Los productos **solo consumen** platform vía Gateway o Internal API — nunca cross-DB.
 3. **Billing es plataforma en prod** (v0.2.0) — no roadmap.
-4. **Knowledge es servicio aparte** — AI lo consume; no al revés.
+4. **Knowledge es servicio aparte** — AI lo consume; narrativa comercial: memoria de la empresa ([`company/MESSAGING.md`](./company/MESSAGING.md)).
+5. **Hub es la experiencia de entrada** — Core es un producto bajo Hub.
 
 ---
 
@@ -71,19 +83,21 @@ Config: [`gateway/routes/default.conf`](../gateway/routes/default.conf) · regla
 
 ### Redis — ✅
 
-Cache · colas · event bus (lists → BullMQ roadmap). Referencia: `${{Redis.REDIS_URL}}`.
+Cache · colas · event bus **BullMQ prod** (`DAKINIS_EVENT_BUS=bullmq`). Referencia: `${{Redis.REDIS_URL}}`.
 
 ### Supabase — 🔄
 
 PostgreSQL multi-schema · pooler `:6543` · identidad `dakinis_auth`.
 
-Schema `meta`: `function_versions` ✅ · `schema_versions` · `migration_history` · `feature_flags` ⬜
+Schema `meta`: `function_versions` · `schema_versions` · `migration_history` · `feature_flags` ✅ (024)
+
+Cutovers pendientes (producto): `dakinis_core_prod`→`core`, `akoenet`, `audit` — ver [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)
 
 Orden SQL: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
 
 ### Railway — ✅
 
-Contenedores · mapa 22 servicios: [PLATFORM-STATUS § Railway](./PLATFORM-STATUS.md#railway--mapa-de-servicios)
+Contenedores · mapa servicios: [`GITHUB-ORG.md`](./GITHUB-ORG.md) · deploy: [`OPERATIONS.md`](./OPERATIONS.md)
 
 ### Storage — ⬜
 
@@ -102,64 +116,57 @@ Logs · metrics · tracing (Sentry) · queue health · costes IA · `/health` po
 
 ## Platform
 
-### Consumo desde productos
+**Experiencia cliente:** Login → **Hub** (escritorio) → productos (Core es uno de ellos).
 
 ```
-Product
-    ↓
-Gateway (api.dakinissystems.com)
-    ↓
-Auth · Billing · Notifications · Search · Knowledge · Storage
-    ↓
-Internal API (/internal/) — proxy opcional · mirror [`internal/`](../internal/)
+Usuario → Auth → Hub (Mi día · widgets · apps · SSO)
+                    ↓
+         Core · LifeFlow · StreamAutomator · AkoeNet …
+                    ↓
+         Platform: Billing · AI · Knowledge · Search · Notifications
 ```
 
-Contrato: [`contracts/internal-api.json`](./contracts/internal-api.json)
+Contrato Internal API: [`contracts/internal-api.json`](./contracts/internal-api.json)
+
+### Hub — centro de experiencia ✅ v0.2.1
+
+`dakinis-hub` · `hub.dakinissystems.com` · schema `hub`.
+
+**Rol:** identidad de workspace · Mi día · widgets · launcher SSO · notificaciones · acceso tenant · preferencias — **no “solo un menú”**.
+
+Mensaje comercial → [`company/MESSAGING.md`](./company/MESSAGING.md)
+
+Registries: `HUB_DASHBOARD_SECTIONS` · `HUB_WIDGET_REGISTRY` en `@dakinis/shared-ux`.
+
+Pendiente producto: SSO E2E creds · vars Internal API en Core Back → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)
 
 ### Auth — ✅
 
 `dakinis-auth` · `auth.dakinissystems.com` · schema `dakinis_auth` · JWT central.
 
-### Hub — 🔄
+### Knowledge + Search — memoria de la empresa ✅ API prod
 
-`dakinis-hub` · `hub.dakinissystems.com` · schema `hub`.
-
-**Hoy:** launcher + widgets. **Objetivo:** Mi día → Actividad → IA → Notificaciones → Widgets → Apps.
-
-Registries: `HUB_DASHBOARD_SECTIONS` · `HUB_WIDGET_REGISTRY` en `@dakinis/shared-ux`.
-
-### AI Platform — 🔄
-
-`dakinis-ai` · `:4020` · `/ai/` · schema `ai`.
+Servicio **independiente** de AI. **Activo estratégico:** docs, FAQ, RAG → Ctrl+K y copilot.
 
 ```
-AI Platform
-├── LLM · Agents
-├── Knowledge (consume RAG sources)
-├── Vision · Speech · OCR
-├── Forecast · Recommendations · Automation · Planner
-└── Embeddings (pgvector · AI Worker)
+Knowledge → Chunks → Search index → Ctrl+K (Hub/Core)
+                ↓
+           AI (consume, no posee)
 ```
 
-Contrato: [`contracts/dakinis-ai.json`](./contracts/dakinis-ai.json)
+Repo [`dakinis-knowledge`](https://github.com/dakinissystems/dakinis-knowledge) · schema `knowledge` · contrato [`knowledge.json`](./contracts/knowledge.json)
 
-Agents: `@dakinis/shared-ai/agents.js` — `core-advisor`, `lifeflow-coach`, `support-agent`, `knowledge-agent`, etc.
+Pendiente: ingest PDF masivo · pgvector → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)
 
-### Knowledge — 🔄 scaffold
+### AI Platform — ✅ OpenAI prod (jul 2026)
 
-Servicio **independiente** de AI y Search.
+`dakinis-ai` · `/ai/` · schema `ai` · `gpt-4o-mini`.
 
-```
-Knowledge
-├── Documents · Policies · FAQ · Wiki
-├── Product docs · User docs
-├── RAG sources
-└── Embeddings → Search semantic
-```
+**Cliente:** asistente que usa conocimiento del negocio en Core, Hub y productos conectados.
 
-Mirror local: `knowledge/` · puerto **4084** · repo [`dakinis-knowledge`](https://github.com/dakinissystems/dakinis-knowledge) · layout `api/` + `workers/` · schema `knowledge` ([025](./supabase/migrations/025_knowledge_schema.sql))
+**Ingeniería:** LLM · agents · OCR · embeddings (worker).
 
-Contrato: [`contracts/knowledge.json`](./contracts/knowledge.json)
+Contrato: [`dakinis-ai.json`](./contracts/dakinis-ai.json) · beneficio → [`company/MESSAGING.md`](./company/MESSAGING.md)
 
 ### Billing — ✅ prod
 
@@ -171,7 +178,7 @@ Core **no** tiene SDK Stripe — proxy `/api/public/stripe/*` hacia Billing.
 
 Contrato: [`contracts/billing.json`](./contracts/billing.json)
 
-### Notifications — 🔄 scaffold
+### Notifications — ✅ v0.3.1 (pendiente: Resend live test, push VAPID)
 
 `dakinis-notifications` · `/notifications/` · puerto 4081.
 
@@ -179,7 +186,7 @@ Canales objetivo: Email · Push · Discord · Slack · WhatsApp · SMS · In-App
 
 Catálogo: `NOTIFICATION_CHANNELS` en `@dakinis/shared-ai`. Contrato: [`contracts/notifications.json`](./contracts/notifications.json)
 
-### Search — 🔄 scaffold
+### Search — 🔄 indexer OK (pendiente: pgvector, más índices)
 
 `dakinis-search` · `/search/` · puerto 4082.
 
@@ -187,7 +194,7 @@ Global Search · Index · Autocomplete · Semantic · Knowledge Search · AI Sea
 
 Scopes UI: `SEARCH_SCOPES` en `@dakinis/shared-ux/command-palette.js`.
 
-### Events — 🔄
+### Events — 🔄 BullMQ + DLQ ✅ (expandir dominios)
 
 ```
 Events → Redis → BullMQ → Queues → Workers → Retries → DLQ
@@ -236,12 +243,12 @@ Detalle funcional por producto: [`PRODUCTS.md`](./PRODUCTS.md).
 | `billing` | Platform | Billing prod |
 | `ai` | Platform | AI + embeddings |
 | `hub` | Platform | Hub prefs, widgets |
-| `knowledge` | Platform | ⬜ |
-| `meta` | Infra/governance | function_versions, flags |
-| `dakinis_core_prod` → `core` | Product | Core ERP |
+| `knowledge` | Platform | API prod · ingest masivo ⬜ |
+| `meta` | Governance | ✅ 016 + 024 |
+| `dakinis_core_prod` → `core` | Product | Core ERP · cutover ⬜ |
 | `stream` | Product | StreamAutomator |
-| `akoenet` | Product | AkoeNet |
-| `lifeflow` | Product | ⬜ |
+| `akoenet` | Product | AkoeNet · schema ⬜ |
+| `lifeflow` | Product | sync v1 · cutover SQLite ⬜ |
 | `audit` | Platform | Logs, jobs |
 
 Tabletop hoy: SQLite volume · schema Supabase ⬜
@@ -307,7 +314,7 @@ Gateway → Auth → AI (+ Worker) → Hub → Core (API + Web)
               → Redis · Supabase (externo)
 ```
 
-Mapa completo: [PLATFORM-STATUS § Railway](./PLATFORM-STATUS.md#railway--mapa-de-servicios)
+Mapa deploy: [`OPERATIONS.md`](./OPERATIONS.md) · repos: [`GITHUB-ORG.md`](./GITHUB-ORG.md)
 
 ---
 
