@@ -11,6 +11,14 @@ $BaseUrl = $BaseUrl.TrimEnd("/")
 $AiBase = "$BaseUrl/ai"
 $CoreBase = "$BaseUrl/core/api"
 
+. "$PSScriptRoot/lib/core-smoke-auth.ps1"
+
+$auth = Get-CoreSmokeAuth -CoreBase $CoreBase -CoreJwt $CoreJwt -BusinessId $BusinessId
+if ($auth) {
+    if (-not $CoreJwt) { $CoreJwt = $auth.Jwt }
+    if ($auth.BusinessId) { $BusinessId = $auth.BusinessId }
+}
+
 function Invoke-SmokeJson {
     param(
         [string]$Name,
@@ -54,8 +62,8 @@ $health = Invoke-SmokeJson -Name "AI health (gateway)" -Url "$AiBase/health"
 $healthJson = $health.Raw | ConvertFrom-Json
 Write-Host "Provider: $($healthJson.aiProvider) | serviceKey: $($healthJson.serviceKeyConfigured) | model: $($healthJson.openaiModel)" -ForegroundColor Yellow
 
-if ($healthJson.aiProvider -eq "stub") {
-    Write-Host 'GO-LIVE: set OPENAI_API_KEY en dakinis-ai y worker, luego redeploy' -ForegroundColor DarkYellow
+if ($healthJson.aiProvider -eq "openai" -and $healthJson.serviceKeyConfigured) {
+    Write-Host "OK IA prod (health)" -ForegroundColor Green
 }
 
 if ($AiServiceKey) {
@@ -82,7 +90,7 @@ if ($AiServiceKey) {
         } -Body $advisorBody | Out-Null
 } else {
     Write-Host ""
-    Write-Host 'Omitido chat/advisor - define DAKINIS_AI_SERVICE_KEY (mismo valor en dakinis-ai y Core Back)' -ForegroundColor DarkYellow
+    Write-Host 'Omitido chat/advisor - define $env:DAKINIS_AI_SERVICE_KEY (copia de Railway, solo local)' -ForegroundColor DarkYellow
 }
 
 if ($CoreJwt -and $BusinessId) {
@@ -98,7 +106,7 @@ if ($CoreJwt -and $BusinessId) {
     Write-Host "Copilot degraded=$deg reason=$($copJson.data.copilot.degradedReason)" -ForegroundColor $copColor
 } else {
     Write-Host ""
-    Write-Host "Omitido Core copilot - define DAKINIS_CORE_JWT + DAKINIS_BUSINESS_ID" -ForegroundColor DarkYellow
+    Write-Host "Omitido Core copilot - define DAKINIS_TEST_EMAIL/PASSWORD o DAKINIS_CORE_JWT + DAKINIS_BUSINESS_ID" -ForegroundColor DarkYellow
 }
 
 Write-Host ""

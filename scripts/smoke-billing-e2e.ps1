@@ -73,6 +73,8 @@ Invoke-SmokeJson -Name "Core search proxy route (sin tenant -> 400)" -Url "$Core
 
 Invoke-SmokeJson -Name "Webhook probe (sin firma -> 400/501)" -Url $WebhookUrl -Method "POST" -Body "{}" -ExpectCodes @(400, 501)
 
+Invoke-SmokeJson -Name "Webhook GET (browser -> 405)" -Url $WebhookUrl -Method "GET" -ExpectCodes @(405)
+
 if ($InternalKey -and $BusinessId) {
     $checkoutBody = (@{
         plan       = $Plan

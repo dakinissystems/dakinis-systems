@@ -8,11 +8,20 @@ param(
 $ErrorActionPreference = "Stop"
 $BaseUrl = $BaseUrl.TrimEnd("/")
 
+. "$PSScriptRoot/lib/idp-smoke-auth.ps1"
+
 $PlaceholderUser = $false
+if (-not $UserId) {
+    $idpAuth = Get-IdpSmokeAuth
+    if ($idpAuth -and $idpAuth.UserId) {
+        $UserId = $idpAuth.UserId
+        Write-Host "IdP auth: $($idpAuth.Source) userId=$UserId" -ForegroundColor DarkGray
+    }
+}
 if (-not $UserId) {
     $UserId = "00000000-0000-4000-8000-000000000001"
     $PlaceholderUser = $true
-    Write-Host "Tip: define DAKINIS_USER_ID (uuid en dakinis_auth.users) para probar persist inbox" -ForegroundColor DarkYellow
+    Write-Host "Tip: define DAKINIS_USER_ID o DAKINIS_TEST_EMAIL/PASSWORD para probar persist inbox" -ForegroundColor DarkYellow
 }
 
 function Invoke-Smoke {

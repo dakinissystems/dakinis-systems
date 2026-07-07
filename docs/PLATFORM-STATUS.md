@@ -64,7 +64,7 @@ Checklist: [ ] webhook test **200** · [ ] checkout E2E · [ ] degraded → rest
 |----------|-----------|
 | **Dakinis One** | UX vendible · `/precios` · copilot E2E |
 | **LifeFlow** | SQLite → PostgreSQL |
-| **AkoeNet** | Schema Supabase · SSO E2E · sync repo `akoenet-backend` |
+| **AkoeNet** | Schema Supabase · SSO E2E · repo `apps/akoenet/Server` |
 | **Tabletop** | SQLite → Supabase |
 | **StreamAutomator** | Métricas · event bus platform |
 

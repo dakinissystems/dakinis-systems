@@ -138,7 +138,8 @@ Auth (roadmap SSO) · Notifications (roadmap) · Events
 
 ## AkoeNet
 
-**Repo:** `akoenet-client` + `akoenet-backend` · **Local:** `apps/akoenet`  
+**Repo:** [`akoenet-backend`](https://github.com/dakinissystems/akoenet-backend) + [`akoenet-client`](https://github.com/dakinissystems/akoenet-client)  
+**Local (único):** `apps/akoenet/Server` (API) · `apps/akoenet/Client` (web) — clonar con `.\scripts\clone-akoenet.ps1`  
 **Dominio:** [akoenet.dakinissystems.com](https://akoenet.dakinissystems.com)  
 **BD:** Supabase `akoenet` (🔄)
 
