@@ -1,5 +1,7 @@
 /** Fuentes citadas por la IA. */
-export default function AiSources({ sources = [] }) {
+import { EMPTY_SOURCES } from "./constants.js";
+
+export default function AiSources({ sources = EMPTY_SOURCES }) {
   if (!sources.length) return null;
   return (
     <div className="dakinis-ai-sources">

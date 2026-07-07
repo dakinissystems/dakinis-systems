@@ -327,8 +327,10 @@ const RULES: Rule[] = [
 ];
 
 export function suggestCombos(char: Character): ComboSuggestion[] {
-  return RULES.filter((r) => r.match(char))
-    .map((r) => ({
+  const results: ComboSuggestion[] = [];
+  for (const r of RULES) {
+    if (!r.match(char)) continue;
+    results.push({
       id: r.id,
       title: r.title,
       description: r.description,
@@ -337,13 +339,17 @@ export function suggestCombos(char: Character): ComboSuggestion[] {
       requirements: r.requirements,
       steps: r.steps,
       synergyScore: r.score(char),
-    }))
-    .sort((a, b) => b.synergyScore - a.synergyScore);
+    });
+  }
+  return results.sort((a, b) => b.synergyScore - a.synergyScore);
 }
 
 export function suggestFeats(char: Character): { name: string; reason: string }[] {
   const suggestions: { name: string; reason: string }[] = [];
-  const taken = new Set(char.feats.filter((f) => f.isTaken).map((f) => f.name));
+  const taken = new Set<string>();
+  for (const feat of char.feats) {
+    if (feat.isTaken) taken.add(feat.name);
+  }
 
   const candidates = [
     {

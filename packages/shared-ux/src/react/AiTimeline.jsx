@@ -1,5 +1,7 @@
 /** Timeline de eventos IA. */
-export default function AiTimeline({ events = [] }) {
+import { EMPTY_EVENTS } from "./constants.js";
+
+export default function AiTimeline({ events = EMPTY_EVENTS }) {
   if (!events.length) return null;
   return (
     <ol className="dakinis-ai-timeline">

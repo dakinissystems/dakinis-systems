@@ -1,7 +1,7 @@
 import type { Ability, Character } from "../types/character";
 import { classByName } from "../data/srd/classes";
 
-export function abilityModifier(score: number): number {
+function abilityModifier(score: number): number {
   return Math.floor((score - 10) / 2);
 }
 
@@ -22,7 +22,7 @@ export function spellSaveDC(char: Character): number {
   return 8 + char.proficiencyBonus + getAbilityMod(char, getSpellcastingAbility(char));
 }
 
-export function getSpellcastingAbility(char: Character): Ability {
+function getSpellcastingAbility(char: Character): Ability {
   const cls = classByName(char.classes[0]?.className ?? "");
   if (cls?.spellcasting) return cls.spellcasting.ability;
 

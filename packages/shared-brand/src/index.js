@@ -21,5 +21,6 @@ export * from "./pricing-links.js";
 export * from "./analytics.js";
 export * from "./sso.js";
 export * from "./hub-product-access.js";
+export * from "./hub-product-logos.js";
 export { default as productsCatalog } from "./products.json" with { type: "json" };
 export { default as hubModulesCatalog } from "./hub-modules.json" with { type: "json" };

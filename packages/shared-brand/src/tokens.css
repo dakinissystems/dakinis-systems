@@ -406,6 +406,34 @@
 }
 
 /* Dialog */
+dialog.dakinis-dialog.dakinis-dialog--native {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: var(--dakinis-space-base, 1rem);
+  border: none;
+  background: transparent;
+}
+dialog.dakinis-dialog.dakinis-dialog--native::backdrop {
+  background: rgba(8, 17, 29, 0.72);
+  backdrop-filter: blur(4px);
+}
+.dakinis-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
 .dakinis-dialog {
   position: fixed;
   inset: 0;
@@ -417,6 +445,8 @@
   backdrop-filter: blur(4px);
 }
 .dakinis-dialog__panel {
+  position: relative;
+  z-index: 1;
   width: min(100%, 28rem);
   max-height: min(90vh, 36rem);
   overflow: auto;

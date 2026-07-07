@@ -6,10 +6,29 @@ type Props = {
   character: Character;
 };
 
+function joinActiveNames(names: string[], noneLabel: string): string {
+  return names.length > 0 ? names.join(", ") : noneLabel;
+}
+
 export function CombosPanel({ character }: Props) {
   const { t } = useLocale();
   const combos = suggestCombos(character);
   const featSuggestions = suggestFeats(character);
+
+  const activeWeaponNames: string[] = [];
+  for (const weapon of character.weapons) {
+    if (weapon.isActive) activeWeaponNames.push(weapon.name);
+  }
+
+  const preparedSpellNames: string[] = [];
+  for (const spell of character.spells) {
+    if (spell.isPrepared) preparedSpellNames.push(spell.name);
+  }
+
+  const takenFeatNames: string[] = [];
+  for (const feat of character.feats) {
+    if (feat.isTaken) takenFeatNames.push(feat.name);
+  }
 
   return (
     <div className="grid-2">
@@ -33,9 +52,9 @@ export function CombosPanel({ character }: Props) {
                 <span className="badge" style={{ background: "rgba(201,162,39,0.15)", color: "var(--gold)" }}>
                   {t("combos.synergy", { score: combo.synergyScore })}
                 </span>
-                {combo.tags.map((t) => (
-                  <span key={t} className="tag">
-                    {t}
+                {combo.tags.map((tag) => (
+                  <span key={tag} className="tag">
+                    {tag}
                   </span>
                 ))}
               </div>
@@ -45,8 +64,8 @@ export function CombosPanel({ character }: Props) {
                 <strong>{t("combos.requirements")}</strong> {combo.requirements.join(" · ")}
               </p>
               <ol className="steps">
-                {combo.steps.map((step, i) => (
-                  <li key={i}>{step}</li>
+                {combo.steps.map((step) => (
+                  <li key={`${combo.id}-${step}`}>{step}</li>
                 ))}
               </ol>
             </article>
@@ -77,17 +96,17 @@ export function CombosPanel({ character }: Props) {
         <ul style={{ margin: 0, paddingLeft: "1.25rem", color: "var(--muted)", fontSize: "0.9rem" }}>
           <li>
             {t("combos.activeWeapons", {
-              value: character.weapons.filter((w) => w.isActive).map((w) => w.name).join(", ") || t("combos.none"),
+              value: joinActiveNames(activeWeaponNames, t("combos.none")),
             })}
           </li>
           <li>
             {t("combos.preparedSpells", {
-              value: character.spells.filter((s) => s.isPrepared).map((s) => s.name).join(", ") || t("combos.none"),
+              value: joinActiveNames(preparedSpellNames, t("combos.none")),
             })}
           </li>
           <li>
             {t("combos.feats", {
-              value: character.feats.filter((f) => f.isTaken).map((f) => f.name).join(", ") || t("combos.none"),
+              value: joinActiveNames(takenFeatNames, t("combos.none")),
             })}
           </li>
           <li>

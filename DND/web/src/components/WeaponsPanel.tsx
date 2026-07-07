@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Character, Weapon } from "../types/character";
 import { SRD_WEAPON_TEMPLATES } from "../data/srd/equipment";
 import { getAbilityMod } from "../engine/formulas";
@@ -15,8 +15,8 @@ const emptyWeapon = (attackBonus: number, damageBonus: number): Weapon => ({
   isCustom: true,
   isActive: false,
   attackBonus,
-  damageDice: "1d8",
   damageBonus,
+  damageDice: "1d8",
   damageType: "Slashing",
   range: "Melee",
   properties: [],
@@ -24,9 +24,23 @@ const emptyWeapon = (attackBonus: number, damageBonus: number): Weapon => ({
 
 export function WeaponsPanel({ character, onChange }: Props) {
   const { t } = useLocale();
-  const [showModal, setShowModal] = useState(false);
   const [draft, setDraft] = useState<Weapon | null>(null);
   const [fromSrd, setFromSrd] = useState("");
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (draft) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [draft]);
+
+  const closeModal = () => {
+    setDraft(null);
+  };
 
   const strMod = getAbilityMod(character, "str");
   const pb = character.proficiencyBonus;
@@ -47,7 +61,6 @@ export function WeaponsPanel({ character, onChange }: Props) {
       w.damageBonus = strMod;
     }
     setDraft(w);
-    setShowModal(true);
   };
 
   const saveWeapon = () => {
@@ -61,8 +74,7 @@ export function WeaponsPanel({ character, onChange }: Props) {
           : [...c.weapons, draft],
       };
     });
-    setShowModal(false);
-    setDraft(null);
+    closeModal();
   };
 
   const removeWeapon = (id: string) => {
@@ -71,7 +83,6 @@ export function WeaponsPanel({ character, onChange }: Props) {
 
   const editWeapon = (w: Weapon) => {
     setDraft({ ...w });
-    setShowModal(true);
   };
 
   return (
@@ -81,28 +92,30 @@ export function WeaponsPanel({ character, onChange }: Props) {
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
           <select
             value={fromSrd}
+            aria-label={t("weapons.srdPlaceholder")}
             onChange={(e) => setFromSrd(e.target.value)}
             style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)", padding: "0.35rem" }}
           >
             <option value="">{t("weapons.srdPlaceholder")}</option>
-            {SRD_WEAPON_TEMPLATES.map((t) => (
-              <option key={t.name} value={t.name}>
-                {t.name}
+            {SRD_WEAPON_TEMPLATES.map((weapon) => (
+              <option key={weapon.name} value={weapon.name}>
+                {weapon.name}
               </option>
             ))}
           </select>
           <button
+            type="button"
             className="btn btn-secondary btn-sm"
             disabled={!fromSrd}
             onClick={() => {
-              const t = SRD_WEAPON_TEMPLATES.find((x) => x.name === fromSrd);
-              if (t) openNew(t);
+              const template = SRD_WEAPON_TEMPLATES.find((x) => x.name === fromSrd);
+              if (template) openNew(template);
               setFromSrd("");
             }}
           >
             {t("weapons.addSrd")}
           </button>
-          <button className="btn btn-sm" onClick={() => openNew()}>
+          <button type="button" className="btn btn-sm" onClick={() => openNew()}>
             {t("weapons.addCustom")}
           </button>
         </div>
@@ -119,7 +132,7 @@ export function WeaponsPanel({ character, onChange }: Props) {
               <th>{t("weapons.type")}</th>
               <th>{t("weapons.range")}</th>
               <th>{t("weapons.extra")}</th>
-              <th></th>
+              <th>{t("inventory.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -129,6 +142,7 @@ export function WeaponsPanel({ character, onChange }: Props) {
                   <input
                     type="checkbox"
                     checked={w.isActive}
+                    aria-label={`${t("weapons.active")}: ${w.name}`}
                     onChange={(e) =>
                       onChange((c) => ({
                         ...c,
@@ -151,10 +165,15 @@ export function WeaponsPanel({ character, onChange }: Props) {
                 <td>{w.range}</td>
                 <td>{w.notes}</td>
                 <td>
-                  <button className="btn btn-secondary btn-sm" onClick={() => editWeapon(w)}>
+                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => editWeapon(w)}>
                     {t("weapons.edit")}
                   </button>{" "}
-                  <button className="btn btn-danger btn-sm" onClick={() => removeWeapon(w.id)}>
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    aria-label={t("list.deleteAria", { name: w.name })}
+                    onClick={() => removeWeapon(w.id)}
+                  >
                     ×
                   </button>
                 </td>
@@ -168,18 +187,24 @@ export function WeaponsPanel({ character, onChange }: Props) {
         <p className="empty-state">{t("weapons.empty")}</p>
       )}
 
-      {showModal && draft && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{draft.name ? t("weapons.modalEdit") : t("weapons.modalNew")}</h3>
+      {draft && (
+        <dialog
+          ref={dialogRef}
+          className="modal-overlay"
+          onClose={closeModal}
+          aria-labelledby="weapons-modal-title"
+        >
+          <div className="modal">
+            <h3 id="weapons-modal-title">{draft.name ? t("weapons.modalEdit") : t("weapons.modalNew")}</h3>
             <div className="form-row">
               <div className="form-field">
-                <label>{t("weapons.name")}</label>
-                <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+                <label htmlFor="weapon-draft-name">{t("weapons.name")}</label>
+                <input id="weapon-draft-name" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
               </div>
               <div className="form-field">
-                <label>{t("weapons.baseSrd")}</label>
+                <label htmlFor="weapon-draft-base">{t("weapons.baseSrd")}</label>
                 <input
+                  id="weapon-draft-base"
                   value={draft.baseWeapon ?? ""}
                   onChange={(e) => setDraft({ ...draft, baseWeapon: e.target.value })}
                 />
@@ -187,23 +212,26 @@ export function WeaponsPanel({ character, onChange }: Props) {
             </div>
             <div className="form-row">
               <div className="form-field">
-                <label>{t("weapons.attackBonus")}</label>
+                <label htmlFor="weapon-draft-attack">{t("weapons.attackBonus")}</label>
                 <input
+                  id="weapon-draft-attack"
                   type="number"
                   value={draft.attackBonus}
                   onChange={(e) => setDraft({ ...draft, attackBonus: +e.target.value })}
                 />
               </div>
               <div className="form-field">
-                <label>{t("weapons.damageDice")}</label>
+                <label htmlFor="weapon-draft-dice">{t("weapons.damageDice")}</label>
                 <input
+                  id="weapon-draft-dice"
                   value={draft.damageDice}
                   onChange={(e) => setDraft({ ...draft, damageDice: e.target.value })}
                 />
               </div>
               <div className="form-field">
-                <label>{t("weapons.damageBonus")}</label>
+                <label htmlFor="weapon-draft-damage-bonus">{t("weapons.damageBonus")}</label>
                 <input
+                  id="weapon-draft-damage-bonus"
                   type="number"
                   value={draft.damageBonus}
                   onChange={(e) => setDraft({ ...draft, damageBonus: +e.target.value })}
@@ -212,20 +240,22 @@ export function WeaponsPanel({ character, onChange }: Props) {
             </div>
             <div className="form-row">
               <div className="form-field">
-                <label>{t("weapons.damageType")}</label>
+                <label htmlFor="weapon-draft-type">{t("weapons.damageType")}</label>
                 <input
+                  id="weapon-draft-type"
                   value={draft.damageType}
                   onChange={(e) => setDraft({ ...draft, damageType: e.target.value })}
                 />
               </div>
               <div className="form-field">
-                <label>{t("weapons.range")}</label>
-                <input value={draft.range} onChange={(e) => setDraft({ ...draft, range: e.target.value })} />
+                <label htmlFor="weapon-draft-range">{t("weapons.range")}</label>
+                <input id="weapon-draft-range" value={draft.range} onChange={(e) => setDraft({ ...draft, range: e.target.value })} />
               </div>
             </div>
             <div className="form-field">
-              <label>{t("weapons.notes")}</label>
+              <label htmlFor="weapon-draft-notes">{t("weapons.notes")}</label>
               <textarea
+                id="weapon-draft-notes"
                 value={draft.notes ?? ""}
                 onChange={(e) => setDraft({ ...draft, notes: e.target.value })}
                 placeholder={t("weapons.notesPlaceholder")}
@@ -240,15 +270,15 @@ export function WeaponsPanel({ character, onChange }: Props) {
               {t("weapons.campaignCustom")}
             </label>
             <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+              <button type="button" className="btn btn-secondary" onClick={closeModal}>
                 {t("weapons.cancel")}
               </button>
-              <button className="btn" onClick={saveWeapon}>
+              <button type="button" className="btn" onClick={saveWeapon}>
                 {t("weapons.save")}
               </button>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </section>
   );

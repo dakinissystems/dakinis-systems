@@ -180,16 +180,3 @@ export const EXAMPLE_CHARACTER: Character = {
 };
 
 export { SRD_WEAPON_TEMPLATES } from "./srd/equipment";
-
-export const SPELL_SLOTS_BY_LEVEL: Record<number, Record<number, number>> = {
-  1: { 1: 2 },
-  2: { 1: 3 },
-  3: { 1: 4, 2: 2 },
-  4: { 1: 4, 2: 3 },
-  5: { 1: 4, 2: 3, 3: 2 },
-  6: { 1: 4, 2: 3, 3: 3 },
-  7: { 1: 4, 2: 3, 3: 3, 4: 1 },
-  8: { 1: 4, 2: 3, 3: 2 },
-  9: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 },
-  10: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
-};

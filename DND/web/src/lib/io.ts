@@ -1,10 +1,8 @@
 import type { Character } from "../types/character";
 import { isLegacyCharacter, migrateLegacyCharacter, migrateLegacyExport } from "./migrate-legacy";
 
-export const EXPORT_VERSION = 1;
-export const EXPORT_APP = "dakinis-tabletop";
-/** Alias legacy en imports antiguos */
-export const LEGACY_EXPORT_APPS = ["dnd-character-manager", "dakinis-tabletop"] as const;
+const EXPORT_VERSION = 1;
+const EXPORT_APP = "dakinis-tabletop";
 
 export interface CharacterExportBundle {
   version: number;
@@ -13,7 +11,7 @@ export interface CharacterExportBundle {
   characters: Character[];
 }
 
-export function downloadJson(data: unknown, fileName: string): void {
+function downloadJson(data: unknown, fileName: string): void {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");

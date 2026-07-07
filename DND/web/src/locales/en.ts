@@ -323,6 +323,8 @@ export const en = {
     range: "Range",
     components: "Components",
     duration: "Duration",
+    expand: "Expand details",
+    collapse: "Collapse details",
     trick: "C",
   },
   inventory: {
@@ -336,6 +338,7 @@ export const en = {
     category: "Category",
     description: "Description",
     tags: "Tags",
+    actions: "Actions",
     custom: "Custom",
     edit: "Edit",
     empty: "No items in this category.",

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   filterCommands,
   SEARCH_SCOPES,
@@ -6,9 +6,26 @@ import {
   searchHitGroupLabel,
 } from "../command-palette.js";
 import { COMMAND_PALETTE_SHORTCUT } from "../hub-nav.js";
+import { EMPTY_EXTRA_COMMANDS } from "./constants.js";
 
 const DEFAULT_MIN_SEARCH = 2;
 const SEARCH_DEBOUNCE_MS = 280;
+const defaultTranslate = (key) => key;
+
+const initialSearchState = { hits: [], loading: false };
+
+function searchReducer(state, action) {
+  switch (action.type) {
+    case "idle":
+      return initialSearchState;
+    case "loading":
+      return { ...state, loading: true };
+    case "done":
+      return { hits: action.hits, loading: false };
+    default:
+      return state;
+  }
+}
 
 /**
  * Command Palette global — Ctrl+K / Cmd+K.
@@ -27,90 +44,105 @@ export default function CommandPalette({
   open,
   onClose,
   onRun,
-  extraCommands = [],
-  t = (k) => k,
+  extraCommands = EMPTY_EXTRA_COMMANDS,
+  t = defaultTranslate,
   fetchSearchHits,
   onSelectSearchHit,
   minSearchLength = DEFAULT_MIN_SEARCH,
 }) {
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    function onCancel(e) {
+      e.preventDefault();
+      onClose();
+    }
+    dialog.addEventListener("cancel", onCancel);
+    return () => dialog.removeEventListener("cancel", onCancel);
+  }, [onClose]);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="dakinis-cmdk-dialog"
+      aria-label={t("cmdk.title")}
+    >
+      <button
+        type="button"
+        className="dakinis-cmdk-dialog__backdrop"
+        aria-label="Close"
+        onClick={onClose}
+      />
+      {open ? (
+        <CommandPaletteBody
+          onClose={onClose}
+          onRun={onRun}
+          extraCommands={extraCommands}
+          t={t}
+          fetchSearchHits={fetchSearchHits}
+          onSelectSearchHit={onSelectSearchHit}
+          minSearchLength={minSearchLength}
+        />
+      ) : null}
+    </dialog>
+  );
+}
+
+function CommandPaletteBody({
+  onClose,
+  onRun,
+  extraCommands,
+  t = defaultTranslate,
+  fetchSearchHits,
+  onSelectSearchHit,
+  minSearchLength,
+}) {
+  const inputRef = useRef(null);
+  const searchSeq = useRef(0);
   const [query, setQuery] = useState("");
   const [scope, setScope] = useState("all");
-  const [searchHits, setSearchHits] = useState([]);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const searchSeq = useRef(0);
+  const [searchState, dispatchSearch] = useReducer(searchReducer, initialSearchState);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const commands = useMemo(() => filterCommands(query, extraCommands), [query, extraCommands]);
 
-  const listItems = useMemo(() => {
-    const hits = searchHits.map((hit) => ({
-      kind: "search",
-      key: `search:${hit.scope}:${hit.id}`,
-      hit,
-      label: hit.title || hit.id || t("cmdk.searchResult"),
-      group: searchHitGroupLabel(hit.scope),
-      snippet: hit.snippet || "",
-    }));
-    const cmds = commands.map((cmd) => ({
-      kind: "command",
-      key: `cmd:${cmd.id}`,
-      cmd,
-      label: cmd.label,
-      group: cmd.group,
-      snippet: "",
-    }));
-    return [...hits, ...cmds];
-  }, [searchHits, commands, t]);
-
-  const handleKey = useCallback(
-    (e) => {
-      if (e.key === "Escape") onClose();
-    },
-    [onClose]
-  );
+  const trimmed = String(query || "").trim();
+  const canFetchSearch = Boolean(fetchSearchHits) && trimmed.length >= minSearchLength;
 
   useEffect(() => {
-    if (!open) {
-      setQuery("");
-      setScope("all");
-      setSearchHits([]);
-      setSearchLoading(false);
-      return undefined;
-    }
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [open, handleKey]);
-
-  useEffect(() => {
-    if (!open || !fetchSearchHits) {
-      setSearchHits([]);
-      setSearchLoading(false);
-      return undefined;
-    }
-
-    const trimmed = String(query || "").trim();
-    if (trimmed.length < minSearchLength) {
-      setSearchHits([]);
-      setSearchLoading(false);
+    if (!canFetchSearch) {
+      dispatchSearch({ type: "idle" });
       return undefined;
     }
 
     const seq = ++searchSeq.current;
     const controller = new AbortController();
-    setSearchLoading(true);
+    dispatchSearch({ type: "loading" });
 
     const timer = setTimeout(() => {
       fetchSearchHits(trimmed, scope, controller.signal)
         .then((hits) => {
           if (seq !== searchSeq.current) return;
-          setSearchHits(Array.isArray(hits) ? hits : []);
+          dispatchSearch({ type: "done", hits: Array.isArray(hits) ? hits : [] });
         })
         .catch(() => {
           if (seq !== searchSeq.current) return;
-          setSearchHits([]);
-        })
-        .finally(() => {
-          if (seq !== searchSeq.current) return;
-          setSearchLoading(false);
+          dispatchSearch({ type: "done", hits: [] });
         });
     }, SEARCH_DEBOUNCE_MS);
 
@@ -118,7 +150,28 @@ export default function CommandPalette({
       controller.abort();
       clearTimeout(timer);
     };
-  }, [open, query, scope, fetchSearchHits, minSearchLength]);
+  }, [canFetchSearch, trimmed, scope, fetchSearchHits, minSearchLength]);
+
+  const searchHits = canFetchSearch ? searchState.hits : [];
+  const searchLoading = canFetchSearch && searchState.loading;
+
+  const hits = searchHits.map((hit) => ({
+    kind: "search",
+    key: `search:${hit.scope}:${hit.id}`,
+    hit,
+    label: hit.title || hit.id || t("cmdk.searchResult"),
+    group: searchHitGroupLabel(hit.scope),
+    snippet: hit.snippet || "",
+  }));
+  const cmds = commands.map((cmd) => ({
+    kind: "command",
+    key: `cmd:${cmd.id}`,
+    cmd,
+    label: cmd.label,
+    group: cmd.group,
+    snippet: "",
+  }));
+  const listItems = [...hits, ...cmds];
 
   function activateItem(item) {
     if (!item) return;
@@ -130,81 +183,73 @@ export default function CommandPalette({
     onClose();
   }
 
-  if (!open) return null;
-
   const showEmpty = listItems.length === 0 && !searchLoading;
+  const visibleItems = listItems.slice(0, 12);
 
   return (
-    <div className="dakinis-cmdk-backdrop" role="presentation" onClick={onClose}>
-      <div
-        className="dakinis-cmdk"
-        role="dialog"
-        aria-modal="true"
-        aria-label={t("cmdk.title")}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="dakinis-cmdk__search-row">
-          <span className="dakinis-cmdk__kbd" aria-hidden="true">
-            ⌘K
-          </span>
-          <input
-            autoFocus
-            className="dakinis-cmdk__input"
-            placeholder={t("cmdk.placeholder")}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && listItems[0]) {
-                activateItem(listItems[0]);
-              }
-            }}
-          />
-        </div>
-        <div className="dakinis-cmdk__scopes" role="tablist">
-          {SEARCH_SCOPES.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              role="tab"
-              aria-selected={scope === s.id}
-              className={`dakinis-cmdk__scope${scope === s.id ? " is-active" : ""}`}
-              onClick={() => setScope(s.id)}
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-        <ul className="dakinis-cmdk__list" role="listbox">
-          {searchLoading ? (
-            <li className="dakinis-cmdk__empty dakinis-cmdk__loading">{t("cmdk.searchLoading")}</li>
-          ) : showEmpty ? (
-            <li className="dakinis-cmdk__empty">{t("cmdk.noResults")}</li>
-          ) : (
-            listItems.slice(0, 12).map((item) => (
-              <li key={item.key}>
-                <button
-                  type="button"
-                  className={`dakinis-cmdk__item${item.kind === "search" ? " dakinis-cmdk__item--search" : ""}`}
-                  role="option"
-                  onClick={() => activateItem(item)}
-                >
-                  <span className="dakinis-cmdk__item-main">
-                    <span>{item.label}</span>
-                    {item.snippet ? (
-                      <span className="dakinis-cmdk__snippet">{item.snippet}</span>
-                    ) : null}
-                  </span>
-                  <span className="dakinis-cmdk__group">{item.group}</span>
-                </button>
-              </li>
-            ))
-          )}
-        </ul>
-        <footer className="dakinis-cmdk__footer">
-          <span>{t("cmdk.hintNavigate")}</span>
-          <span>{t("cmdk.hintAi")}</span>
-        </footer>
+    <div className="dakinis-cmdk">
+      <div className="dakinis-cmdk__search-row">
+        <span className="dakinis-cmdk__kbd" aria-hidden="true">
+          ⌘K
+        </span>
+        <input
+          ref={inputRef}
+          className="dakinis-cmdk__input"
+          placeholder={t("cmdk.placeholder")}
+          aria-label={t("cmdk.placeholder")}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && listItems[0]) {
+              activateItem(listItems[0]);
+            }
+          }}
+        />
       </div>
+      <div className="dakinis-cmdk__scopes" role="tablist">
+        {SEARCH_SCOPES.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            role="tab"
+            aria-selected={scope === s.id}
+            className={`dakinis-cmdk__scope${scope === s.id ? " is-active" : ""}`}
+            onClick={() => setScope(s.id)}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+      <div className="dakinis-cmdk__list" role="listbox" aria-label={t("cmdk.title")}>
+        {searchLoading ? (
+          <div className="dakinis-cmdk__empty dakinis-cmdk__loading">{t("cmdk.searchLoading")}</div>
+        ) : showEmpty ? (
+          <div className="dakinis-cmdk__empty">{t("cmdk.noResults")}</div>
+        ) : (
+          visibleItems.map((item, index) => (
+            <button
+              key={item.key}
+              type="button"
+              className={`dakinis-cmdk__item${item.kind === "search" ? " dakinis-cmdk__item--search" : ""}`}
+              role="option"
+              aria-selected={index === 0}
+              onClick={() => activateItem(item)}
+            >
+              <span className="dakinis-cmdk__item-main">
+                <span>{item.label}</span>
+                {item.snippet ? (
+                  <span className="dakinis-cmdk__snippet">{item.snippet}</span>
+                ) : null}
+              </span>
+              <span className="dakinis-cmdk__group">{item.group}</span>
+            </button>
+          ))
+        )}
+      </div>
+      <footer className="dakinis-cmdk__footer">
+        <span>{t("cmdk.hintNavigate")}</span>
+        <span>{t("cmdk.hintAi")}</span>
+      </footer>
     </div>
   );
 }

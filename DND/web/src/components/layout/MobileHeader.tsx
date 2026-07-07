@@ -1,4 +1,4 @@
-import { calculateAC, className, getAbilityMod } from "../../engine/formulas";
+import { calculateAC } from "../../engine/formulas";
 import type { Character } from "../../types/character";
 import { useLocale } from "../../context/LocaleContext";
 
@@ -35,18 +35,5 @@ export function MobileHeader({ character, onBack, onSwitch, onDice }: Props) {
         <span className="chip chip--hp">{t("header.hp")} {hp}</span>
       </div>
     </header>
-  );
-}
-
-export function CharacterSummaryChips({ character }: { character: Character }) {
-  const { t } = useLocale();
-  return (
-    <div className="summary-chips">
-      <span className="chip">
-        {t("header.pb")} +{character.proficiencyBonus}
-      </span>
-      <span className="chip">FUE {getAbilityMod(character, "str") >= 0 ? "+" : ""}{getAbilityMod(character, "str")}</span>
-      <span className="chip">{className(character)}</span>
-    </div>
   );
 }

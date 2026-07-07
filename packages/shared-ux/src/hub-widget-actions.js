@@ -3,7 +3,7 @@
  */
 
 /** Widget Hub nativo → sección DOM (#id) */
-export const HUB_WIDGET_SCROLL_TARGETS = {
+const HUB_WIDGET_SCROLL_TARGETS = {
   "hub-today-agenda": "agenda",
   "hub-ai-summary": "ai-summary",
   "hub-notifications-unread": "notifications",
@@ -12,7 +12,7 @@ export const HUB_WIDGET_SCROLL_TARGETS = {
 };
 
 /** product slug del widget → id en HUB_APPS / launcher */
-export const HUB_WIDGET_PRODUCT_APP_ID = {
+const HUB_WIDGET_PRODUCT_APP_ID = {
   core: "core",
   lifeflow: "lifeflow",
   streamautomator: "streamautomator",

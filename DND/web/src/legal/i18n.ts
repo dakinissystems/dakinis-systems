@@ -7,11 +7,6 @@ export type LegalDoc = {
   sections: LegalSection[];
 };
 
-type LegalPack = {
-  docs: Record<LegalDocKey, LegalDoc>;
-  nav: { key: LegalDocKey; label: string }[];
-};
-
 export const LEGAL_DOCS: Record<"en" | "es", Record<LegalDocKey, LegalDoc>> = {
   es: {
     privacy: {
@@ -169,10 +164,3 @@ export const LEGAL_NAV: Record<"en" | "es", { key: LegalDocKey; label: string }[
     { key: "ogl", label: "OGL / SRD" },
   ],
 };
-
-export function legalPack(locale: "en" | "es"): LegalPack {
-  return {
-    docs: LEGAL_DOCS[locale],
-    nav: LEGAL_NAV[locale],
-  };
-}

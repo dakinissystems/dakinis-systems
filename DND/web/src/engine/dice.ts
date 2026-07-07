@@ -18,12 +18,8 @@ export interface RollResult {
 
 export type RollMode = "normal" | "advantage" | "disadvantage";
 
-export function rollDie(sides: number): number {
+function rollDie(sides: number): number {
   return Math.floor(Math.random() * sides) + 1;
-}
-
-export function rollDice(notation: string): number {
-  return rollDiceDetailed(notation).total;
 }
 
 export function rollDiceDetailed(
@@ -76,7 +72,7 @@ export function rollDiceDetailed(
 }
 
 /** Tirada estándar 4d6 descartando el más bajo */
-export function roll4d6DropLowest(): number {
+function roll4d6DropLowest(): number {
   const rolls = [rollDie(6), rollDie(6), rollDie(6), rollDie(6)];
   rolls.sort((a, b) => b - a);
   return rolls[0] + rolls[1] + rolls[2];
@@ -95,10 +91,6 @@ export function generateRandomAttributes(): AbilityScores {
 
 export function generateRandomName(): string {
   return FANTASY_NAMES[Math.floor(Math.random() * FANTASY_NAMES.length)] ?? "Aventurero";
-}
-
-export function abilityModifier(score: number): number {
-  return Math.floor((score - 10) / 2);
 }
 
 export function formatModifier(mod: number): string {

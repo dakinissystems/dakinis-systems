@@ -27,25 +27,15 @@ function resolveApiBase(): string {
 
 const API_BASE = resolveApiBase();
 
-export function tabletopApiBase(): string {
-  return API_BASE;
-}
-
 let authToken: string | null = null;
 
 export function tabletopSetToken(token: string | null) {
   authToken = token;
 }
 
-/** @deprecated alias interno */
-export const dndSetToken = tabletopSetToken;
-
 export function tabletopApiUrl(path: string) {
   return `${API_BASE}${path}`;
 }
-
-/** @deprecated alias interno */
-export const dndApiUrl = tabletopApiUrl;
 
 async function tabletopFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (!API_BASE && path.startsWith("/api")) {
@@ -185,13 +175,10 @@ export const tabletopApi = {
 /** @deprecated alias interno — usar tabletopApi */
 export const dndApi = tabletopApi;
 
-export const TABLETOP_SYNC_EVENT = "tabletop-characters-synced";
+const TABLETOP_SYNC_EVENT = "tabletop-characters-synced";
 /** @deprecated escucha legacy */
 export const DND_SYNC_EVENT = TABLETOP_SYNC_EVENT;
 
 export function tabletopDispatchCharacterSync(characters: Character[]) {
   window.dispatchEvent(new CustomEvent(TABLETOP_SYNC_EVENT, { detail: characters }));
 }
-
-/** @deprecated alias interno */
-export const dndDispatchCharacterSync = tabletopDispatchCharacterSync;

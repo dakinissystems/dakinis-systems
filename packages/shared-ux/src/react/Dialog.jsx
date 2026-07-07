@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-/** Modal DES — overlay + panel, cierra con Escape */
+/** Modal DES — native `<dialog>` with focus trap and Escape. */
 export default function Dialog({
   open,
   onClose,
@@ -9,30 +9,43 @@ export default function Dialog({
   footer,
   className = "",
 }) {
-  useEffect(() => {
-    if (!open) return;
-    function onKey(e) {
-      if (e.key === "Escape") onClose?.();
-    }
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [open, onClose]);
+  const dialogRef = useRef(null);
 
-  if (!open) return null;
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    function onCancel(e) {
+      e.preventDefault();
+      onClose?.();
+    }
+    dialog.addEventListener("cancel", onCancel);
+    return () => dialog.removeEventListener("cancel", onCancel);
+  }, [onClose]);
 
   return (
-    <div className="dakinis-dialog" role="presentation" onClick={onClose}>
-      <div
-        className={`dakinis-dialog__panel ${className}`.trim()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? "dakinis-dialog-title" : undefined}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <dialog
+      ref={dialogRef}
+      className={`dakinis-dialog dakinis-dialog--native ${className}`.trim()}
+      aria-labelledby={title ? "dakinis-dialog-title" : undefined}
+      aria-label={title ? undefined : "Dialog"}
+    >
+      <button
+        type="button"
+        className="dakinis-dialog__backdrop"
+        aria-label="Cerrar"
+        onClick={() => onClose?.()}
+      />
+      <div className={`dakinis-dialog__panel ${className}`.trim()}>
         {title ? (
           <header className="dakinis-dialog__header">
             <h2 id="dakinis-dialog-title" className="dakinis-dialog__title">
@@ -46,6 +59,6 @@ export default function Dialog({
         <div className="dakinis-dialog__body">{children}</div>
         {footer ? <footer className="dakinis-dialog__footer">{footer}</footer> : null}
       </div>
-    </div>
+    </dialog>
   );
 }

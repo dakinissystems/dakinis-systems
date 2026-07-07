@@ -12,7 +12,7 @@ export const DAKINIS_ONE_MODULE_TILES = dakinisSortHubModuleTiles(hubModulesJson
  * @param {typeof hubModulesJson} tiles
  */
 export function dakinisSortHubModuleTiles(tiles) {
-  return [...tiles].sort((a, b) => {
+  return tiles.toSorted((a, b) => {
     const ao = Number(a.sortOrder ?? 999);
     const bo = Number(b.sortOrder ?? 999);
     if (ao !== bo) return ao - bo;

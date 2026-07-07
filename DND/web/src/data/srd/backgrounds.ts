@@ -112,8 +112,3 @@ export const SRD_BACKGROUNDS: SrdBackground[] = [
 export function findBackground(id: string): SrdBackground | undefined {
   return SRD_BACKGROUNDS.find((b) => b.id === id);
 }
-
-export function backgroundByName(name: string): SrdBackground | undefined {
-  const n = name.toLowerCase();
-  return SRD_BACKGROUNDS.find((b) => b.name.toLowerCase() === n || b.id === n);
-}

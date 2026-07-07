@@ -233,10 +233,3 @@ export function findRace(id: string): SrdRace | undefined {
 export function findSubrace(raceId: string, subraceId: string) {
   return findRace(raceId)?.subraces?.find((s) => s.id === subraceId);
 }
-
-export function raceByName(name: string): SrdRace | undefined {
-  const n = name.toLowerCase();
-  return SRD_RACES.find(
-    (r) => r.name.toLowerCase() === n || r.nameEn.toLowerCase() === n || n.includes(r.nameEn.toLowerCase()),
-  );
-}

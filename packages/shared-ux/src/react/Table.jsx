@@ -1,7 +1,9 @@
 /** Tabla DES — thead/tbody con variantes compact y striped */
+import { EMPTY_COLUMNS, EMPTY_ROWS } from "./constants.js";
+
 export default function Table({
-  columns = [],
-  rows = [],
+  columns = EMPTY_COLUMNS,
+  rows = EMPTY_ROWS,
   compact = false,
   striped = true,
   emptyMessage = "Sin datos",

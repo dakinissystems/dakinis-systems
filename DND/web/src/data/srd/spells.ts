@@ -171,23 +171,6 @@ export const SRD_SPELLS: SrdSpell[] = [
   ...TCE_SPELLS,
 ];
 
-export function findSpell(id: string): SrdSpell | undefined {
-  return SRD_SPELLS.find((s) => s.id === id);
-}
-
 export function spellsByClass(classId: string, maxLevel = 9): SrdSpell[] {
   return SRD_SPELLS.filter((s) => s.level <= maxLevel && s.classes.includes(classId));
-}
-
-export function spellsByLevel(level: number): SrdSpell[] {
-  return SRD_SPELLS.filter((s) => s.level === level);
-}
-
-export function searchSpells(query: string, classId?: string): SrdSpell[] {
-  const q = query.toLowerCase().trim();
-  return SRD_SPELLS.filter((s) => {
-    if (classId && !s.classes.includes(classId)) return false;
-    if (!q) return true;
-    return s.name.toLowerCase().includes(q) || s.school.toLowerCase().includes(q) || s.description.toLowerCase().includes(q);
-  });
 }

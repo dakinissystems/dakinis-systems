@@ -1,5 +1,7 @@
 /** Timeline de actividad Hub. */
-export default function ActivityTimeline({ events = [], t = (k) => k }) {
+import { EMPTY_EVENTS } from "./constants.js";
+
+export default function ActivityTimeline({ events = EMPTY_EVENTS, t = (k) => k }) {
   const defaults = events.length
     ? events
     : [

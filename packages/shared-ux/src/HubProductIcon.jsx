@@ -2,6 +2,7 @@ import { DAKINIS_PRODUCT_THEMES } from "../../shared-brand/src/colors.js";
 import { getHubProductLogo } from "../../shared-brand/src/hub-product-logos.js";
 import { LucideIcon } from "./LucideIcon.jsx";
 import { HUB_APP_ICONS } from "./hub-dashboard.js";
+import "./HubProductIcon.css";
 
 const THEME_BY_APP = {
   core: "core",
@@ -27,20 +28,10 @@ export function HubProductIcon({ appId = "", product = "", size = 20, className 
     <span
       className={`dakinis-hub-product-icon ${logo ? "dakinis-hub-product-icon--logo" : ""} ${className}`.trim()}
       style={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
+        "--hub-icon-accent": theme.accent,
+        "--hub-icon-accent-dark": theme.accentDark,
         width: badge,
         height: badge,
-        borderRadius: "0.65rem",
-        background: logo
-          ? `linear-gradient(145deg, ${theme.accent}18, ${theme.accentDark}30)`
-          : `linear-gradient(145deg, ${theme.accent}28, ${theme.accentDark}44)`,
-        border: `1px solid ${theme.accent}55`,
-        color: theme.accent,
-        flexShrink: 0,
-        boxShadow: `0 2px 8px ${theme.accent}22`,
-        overflow: "hidden",
       }}
       aria-hidden
     >
@@ -52,10 +43,8 @@ export function HubProductIcon({ appId = "", product = "", size = 20, className 
           height={badge}
           loading="lazy"
           decoding="async"
+          className="dakinis-hub-product-icon__img"
           style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
             objectPosition: logo.objectPosition || "center",
             transform: logo.scale ? `scale(${logo.scale})` : undefined,
           }}

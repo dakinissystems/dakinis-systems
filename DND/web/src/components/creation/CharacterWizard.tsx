@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
-import type { Ability, Character } from "../../types/character";
+import type { Character } from "../../types/character";
 import {
   SRD_CLASSES,
   SRD_RACES,
-  SRD_BACKGROUNDS,
   applyClassToCharacter,
   applyRaceToCharacter,
   applyBackgroundToCharacter,
@@ -15,24 +14,16 @@ import {
   finalizeCharacter,
   suggestedAbilityOrder,
 } from "../../data/character-factory";
-import { getAbilityMod } from "../../engine/formulas";
-import { generateRandomAttributes, generateRandomName } from "../../engine/dice";
+import { generateRandomAttributes } from "../../engine/dice";
 import { useLocale } from "../../context/LocaleContext";
 import {
-  ALIGNMENT_KEYS,
-  alignmentLabel,
-  normalizeAlignmentKey,
-  srdDisplayName,
-} from "../../lib/locale-utils";
-
-const ABILITY_KEYS: Record<Ability, string> = {
-  str: "strength",
-  dex: "dexterity",
-  con: "constitution",
-  int: "intelligence",
-  wis: "wisdom",
-  cha: "charisma",
-};
+  WizardAbilitiesStep,
+  WizardBackgroundStep,
+  WizardClassStep,
+  WizardNameStep,
+  WizardRaceStep,
+  WizardSummaryStep,
+} from "./WizardSteps";
 
 type Props = {
   draft: Character;
@@ -42,7 +33,7 @@ type Props = {
 };
 
 export function CharacterWizard({ draft, onChange, onComplete, onCancel }: Props) {
-  const { locale, t } = useLocale();
+  const { t } = useLocale();
   const steps = [
     t("wizard.steps.name"),
     t("wizard.steps.race"),
@@ -60,7 +51,6 @@ export function CharacterWizard({ draft, onChange, onComplete, onCancel }: Props
 
   const race = SRD_RACES.find((r) => r.id === raceId);
   const cls = SRD_CLASSES.find((c) => c.id === classId);
-  const background = SRD_BACKGROUNDS.find((b) => b.id === backgroundId);
 
   const canNext = useMemo(() => {
     if (step === 0) return draft.name.trim().length >= 2;
@@ -117,13 +107,13 @@ export function CharacterWizard({ draft, onChange, onComplete, onCancel }: Props
   };
 
   const next = () => {
-    if (step < steps.length - 1) setStep(step + 1);
+    if (step < steps.length - 1) setStep((s) => s + 1);
     else finish();
   };
 
   const back = () => {
     if (step === 0) onCancel();
-    else setStep(step - 1);
+    else setStep((s) => s - 1);
   };
 
   return (
@@ -150,244 +140,45 @@ export function CharacterWizard({ draft, onChange, onComplete, onCancel }: Props
       </div>
 
       <div className="wizard-body">
-        {step === 0 && (
-          <section className="wizard-panel">
-            <p className="wizard-hint">{t("wizard.nameQuestion")}</p>
-            <div className="wizard-inline-actions">
-              <input
-                className="input-lg"
-                autoFocus
-                placeholder="Ex: Aelindra"
-                value={draft.name}
-                onChange={(e) => onChange({ ...draft, name: e.target.value })}
-              />
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => onChange({ ...draft, name: generateRandomName() })}
-              >
-                {t("wizard.random")}
-              </button>
-            </div>
-            <label className="form-field" style={{ marginTop: "1rem" }}>
-              <span>{t("wizard.alignment")}</span>
-              <select
-                value={normalizeAlignmentKey(draft.alignment)}
-                onChange={(e) => onChange({ ...draft, alignment: e.target.value })}
-              >
-                {ALIGNMENT_KEYS.map((a) => (
-                  <option key={a} value={a}>
-                    {alignmentLabel(a, t)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </section>
-        )}
-
+        {step === 0 && <WizardNameStep draft={draft} onChange={onChange} />}
         {step === 1 && (
-          <section className="wizard-panel">
-            <p className="wizard-hint">{t("wizard.raceHint")}</p>
-            <div className="card-grid">
-              {SRD_RACES.map((r) => (
-                <button
-                  key={r.id}
-                  type="button"
-                  className={`pick-card ${raceId === r.id ? "pick-card--selected" : ""}`}
-                  onClick={() => applyRace(r.id)}
-                >
-                  <strong>{srdDisplayName(r, locale)}</strong>
-                  <span>{locale === "en" ? r.name : r.nameEn}</span>
-                </button>
-              ))}
-            </div>
-            {race?.subraces && race.subraces.length > 0 && (
-              <>
-                <p className="wizard-hint" style={{ marginTop: "1rem" }}>
-                  {t("wizard.heritageHint")}
-                </p>
-                <div className="chip-row">
-                  <button
-                    type="button"
-                    className={`chip-btn ${!subraceId ? "chip-btn--on" : ""}`}
-                    onClick={() => applyRace(raceId)}
-                  >
-                    {t("wizard.base")}
-                  </button>
-                  {race.subraces.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      className={`chip-btn ${subraceId === s.id ? "chip-btn--on" : ""}`}
-                      onClick={() => applyRace(raceId, s.id)}
-                    >
-                      {s.name}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </section>
+          <WizardRaceStep
+            draft={draft}
+            onChange={onChange}
+            raceId={raceId}
+            subraceId={subraceId}
+            race={race}
+            onApplyRace={applyRace}
+          />
         )}
-
         {step === 2 && (
-          <section className="wizard-panel">
-            <p className="wizard-hint">{t("wizard.classHint")}</p>
-            <div className="card-grid">
-              {SRD_CLASSES.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  className={`pick-card ${classId === c.id ? "pick-card--selected" : ""}`}
-                  onClick={() => applyClass(c.id)}
-                >
-                  <strong>{srdDisplayName(c, locale)}</strong>
-                  <span>
-                    {t("wizard.hitDie", { die: c.hitDie })} · {locale === "en" ? c.name : c.nameEn}
-                  </span>
-                </button>
-              ))}
-            </div>
-            {cls && cls.subclasses.length > 0 && (
-              <>
-                <p className="wizard-hint" style={{ marginTop: "1rem" }}>
-                  {t("wizard.subclassHint")}
-                </p>
-                <div className="chip-row">
-                  <button
-                    type="button"
-                    className={`chip-btn ${!subclassId ? "chip-btn--on" : ""}`}
-                    onClick={() => applyClass(classId)}
-                  >
-                    {t("wizard.noSubclass")}
-                  </button>
-                  {cls.subclasses.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      className={`chip-btn ${subclassId === s.id ? "chip-btn--on" : ""}`}
-                      onClick={() => applyClass(classId, s.id)}
-                    >
-                      {s.name}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </section>
+          <WizardClassStep
+            draft={draft}
+            onChange={onChange}
+            classId={classId}
+            subclassId={subclassId}
+            cls={cls}
+            onApplyClass={applyClass}
+          />
         )}
-
         {step === 3 && (
-          <section className="wizard-panel">
-            <p className="wizard-hint">{t("wizard.backgroundHint")}</p>
-            <div className="chip-row" style={{ marginBottom: "1rem" }}>
-              <button
-                type="button"
-                className={`chip-btn ${!backgroundId ? "chip-btn--on" : ""}`}
-                onClick={() => applyBackground("")}
-              >
-                {t("wizard.noBackground")}
-              </button>
-            </div>
-            <div className="card-grid">
-              {SRD_BACKGROUNDS.map((b) => (
-                <button
-                  key={b.id}
-                  type="button"
-                  className={`pick-card ${backgroundId === b.id ? "pick-card--selected" : ""}`}
-                  onClick={() => applyBackground(b.id)}
-                >
-                  <strong>{b.name}</strong>
-                  <span>{b.skillProficiencies.join(", ")}</span>
-                </button>
-              ))}
-            </div>
-            {background && (
-              <p className="wizard-hint" style={{ marginTop: "1rem" }}>
-                {background.description}
-              </p>
-            )}
-          </section>
+          <WizardBackgroundStep
+            draft={draft}
+            onChange={onChange}
+            backgroundId={backgroundId}
+            onApplyBackground={applyBackground}
+          />
         )}
-
         {step === 4 && (
-          <section className="wizard-panel">
-            <p className="wizard-hint">{t("wizard.abilitiesHint")}</p>
-            <div className="wizard-action-row">
-              <button type="button" className="btn btn-secondary btn-block" onClick={applyStandardArray} disabled={!cls}>
-                {t("wizard.standardArray")}
-              </button>
-              <button type="button" className="btn btn-secondary btn-block" onClick={rollAttributes}>
-                {t("wizard.roll4d6")}
-              </button>
-            </div>
-            <div className="ability-row">
-              {(Object.keys(ABILITY_KEYS) as Ability[]).map((key) => {
-                const total = draft.abilities[key] + draft.abilityBonuses[key];
-                const mod = getAbilityMod(draft, key);
-                return (
-                  <div key={key} className="ability-cell">
-                    <span className="ability-cell__abbr">{key.toUpperCase()}</span>
-                    <button
-                      type="button"
-                      className="ability-cell__btn"
-                      onClick={() =>
-                        onChange({
-                          ...draft,
-                          abilities: { ...draft.abilities, [key]: Math.min(20, draft.abilities[key] + 1) },
-                        })
-                      }
-                      aria-label={t("wizard.increaseAbility", {
-                        ability: t(`abilities.full.${ABILITY_KEYS[key]}`),
-                      })}
-                    >
-                      +
-                    </button>
-                    <span className="ability-cell__score">{total}</span>
-                    <span className="ability-cell__mod">{mod >= 0 ? `+${mod}` : mod}</span>
-                    <button
-                      type="button"
-                      className="ability-cell__btn"
-                      onClick={() =>
-                        onChange({
-                          ...draft,
-                          abilities: { ...draft.abilities, [key]: Math.max(8, draft.abilities[key] - 1) },
-                        })
-                      }
-                      aria-label={t("wizard.decreaseAbility", {
-                        ability: t(`abilities.full.${ABILITY_KEYS[key]}`),
-                      })}
-                    >
-                      −
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+          <WizardAbilitiesStep
+            draft={draft}
+            onChange={onChange}
+            cls={cls}
+            onStandardArray={applyStandardArray}
+            onRollAttributes={rollAttributes}
+          />
         )}
-
-        {step === 5 && (
-          <section className="wizard-panel wizard-panel--summary">
-            <div className="summary-hero">
-              <h2>{draft.name}</h2>
-              <p>
-                {draft.race}
-                {draft.heritage ? ` · ${draft.heritage}` : ""}
-              </p>
-              <p>
-                {draft.classes[0]?.className}
-                {draft.classes[0]?.subclass ? ` — ${draft.classes[0].subclass}` : ""} · {t("list.levelShort")} {draft.level}
-              </p>
-              {draft.background && <p>{t("wizard.backgroundLabel", { name: draft.background })}</p>}
-            </div>
-            <ul className="summary-list">
-              <li>{t("wizard.estimatedHp", { value: finalizeCharacter(draft).resources.maxHP })}</li>
-              <li>{t("wizard.traits", { count: draft.traits.length })}</li>
-              {cls?.spellcasting && <li>{t("wizard.autoSpells")}</li>}
-            </ul>
-          </section>
-        )}
+        {step === 5 && <WizardSummaryStep draft={draft} onChange={onChange} cls={cls} />}
       </div>
 
       <footer className="wizard-footer">

@@ -20,6 +20,8 @@ export default function HubDashboardPage({
   userName = "Usuario",
   dashboard = null,
   headerExtra = null,
+  HeaderExtraComponent = null,
+  headerExtraProps = null,
   onAppOpen = null,
   onWidgetOpen = null,
 }) {
@@ -47,7 +49,11 @@ export default function HubDashboardPage({
                 {dashboard?.miDiaEnabled ? "Tu día en Dakinis" : "Centro de la suite Dakinis"}
               </p>
             </div>
-            {headerExtra}
+            {HeaderExtraComponent ? (
+              <HeaderExtraComponent {...(headerExtraProps || {})} />
+            ) : (
+              headerExtra
+            )}
           </div>
         </div>
       }

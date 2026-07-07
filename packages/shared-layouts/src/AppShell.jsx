@@ -20,7 +20,13 @@ export default function AppShell({
   sidebarOpen = false,
   onSidebarToggle,
 }) {
-  const [open, setOpen] = useState(sidebarOpen);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const [prevSidebarOpen, setPrevSidebarOpen] = useState(sidebarOpen);
+  if (sidebarOpen !== prevSidebarOpen) {
+    setPrevSidebarOpen(sidebarOpen);
+    setInternalOpen(sidebarOpen);
+  }
+  const open = onSidebarToggle ? sidebarOpen : internalOpen;
 
   useEffect(() => {
     applyDesTheme({ product, theme });
@@ -28,8 +34,11 @@ export default function AppShell({
 
   const toggleSidebar = () => {
     const next = !open;
-    setOpen(next);
-    onSidebarToggle?.(next);
+    if (onSidebarToggle) {
+      onSidebarToggle(next);
+    } else {
+      setInternalOpen(next);
+    }
   };
 
   const shellClass = [

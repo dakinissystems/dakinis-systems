@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, use, useCallback, useEffect, useMemo, useState } from "react";
 import type { Character } from "../types/character";
 import type { TabletopUser } from "../types/campaign";
 import { tabletopApi, tabletopDispatchCharacterSync, tabletopSetToken } from "../api/client";
@@ -56,7 +56,7 @@ async function pullAndMergeCharacters(): Promise<Character[]> {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<TabletopUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => Boolean(readStoredAuthToken()));
 
   const syncCloudCharacters = useCallback(async () => {
     if (!readStoredAuthToken()) return;
@@ -67,7 +67,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = readStoredAuthToken();
     if (!token) {
-      setLoading(false);
       return;
     }
     tabletopSetToken(token);
@@ -126,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
+  const ctx = use(AuthContext);
   if (!ctx) throw new Error("useAuth debe usarse dentro de AuthProvider");
   return ctx;
 }

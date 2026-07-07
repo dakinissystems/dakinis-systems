@@ -93,24 +93,27 @@ export function SessionNotesPanel({ character, onChange }: Props) {
       <div className="session-notes__form">
         <h3 className="dice-section-title">{editingId ? t("session.editEntry") : t("session.newEntry")}</h3>
         <div className="form-field">
-          <label>{t("session.playedDate")}</label>
+          <label htmlFor="session-played-at">{t("session.playedDate")}</label>
           <input
+            id="session-played-at"
             type="date"
             value={draft.playedAt}
             onChange={(e) => setDraft({ ...draft, playedAt: e.target.value })}
           />
         </div>
         <div className="form-field">
-          <label>{t("session.optionalTitle")}</label>
+          <label htmlFor="session-title">{t("session.optionalTitle")}</label>
           <input
+            id="session-title"
             placeholder={t("session.titlePlaceholder")}
             value={draft.title ?? ""}
             onChange={(e) => setDraft({ ...draft, title: e.target.value })}
           />
         </div>
         <div className="form-field">
-          <label>{t("session.whatHappened")}</label>
+          <label htmlFor="session-content">{t("session.whatHappened")}</label>
           <textarea
+            id="session-content"
             rows={5}
             placeholder={t("session.bodyPlaceholder")}
             value={draft.content}

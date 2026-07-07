@@ -1,15 +1,14 @@
 import type { Ability, AbilityBonuses, Character, Spell } from "../../types/character";
 import type { SrdSpell } from "./types";
 import { classByName, findClass, proficiencyBonus } from "./classes";
-import { findRace, findSubrace, raceByName } from "./races";
+import { findRace, findSubrace } from "./races";
 import { findBackground } from "./backgrounds";
 import { itemFromTemplate } from "./equipment";
-import { SRD_SPELLS } from "./spells";
 
-export { SRD_RACES, findRace, findSubrace, raceByName } from "./races";
+export { SRD_RACES, findRace, findSubrace } from "./races";
 export { SRD_CLASSES, findClass, classByName, proficiencyBonus } from "./classes";
-export { SRD_SPELLS, findSpell, spellsByClass, spellsByLevel, searchSpells } from "./spells";
-export { SRD_BACKGROUNDS, findBackground, backgroundByName } from "./backgrounds";
+export { SRD_SPELLS, spellsByClass } from "./spells";
+export { SRD_BACKGROUNDS, findBackground } from "./backgrounds";
 export {
   SRD_WEAPON_TEMPLATES,
   SRD_ARMOR_TEMPLATES,
@@ -77,9 +76,12 @@ export function applyClassToCharacter(char: Character, classId: string, subclass
   const subclass = subclassId ? cls.subclasses.find((s) => s.id === subclassId) : undefined;
   const level = char.level;
 
-  const classTraits = cls.features
-    .filter((f) => f.level <= level)
-    .map((f) => ({ name: f.name, description: f.description, source: `${cls.name} ${f.level}` }));
+  const classTraits: { name: string; description: string; source: string }[] = [];
+  for (const f of cls.features) {
+    if (f.level <= level) {
+      classTraits.push({ name: f.name, description: f.description, source: `${cls.name} ${f.level}` });
+    }
+  }
 
   const subclassTraits = (subclass?.features ?? []).map((f) => ({
     name: f.name,
@@ -123,45 +125,4 @@ export function srdSpellToCharacterSpell(spell: SrdSpell, prepared = false): Spe
 
 export function resolveClassId(char: Character): string | undefined {
   return classByName(char.classes[0]?.className ?? "")?.id;
-}
-
-export function resolveRaceId(char: Character): string | undefined {
-  return raceByName(char.race)?.id;
-}
-
-export function getSpellCount(): number {
-  return SRD_SPELLS.length;
-}
-
-// Spell slots half-caster (paladin, ranger) simplified from PHB
-export const HALF_CASTER_SLOTS: Record<number, Record<number, number>> = {
-  2: { 1: 2 },
-  3: { 1: 3 },
-  4: { 1: 3 },
-  5: { 1: 4, 2: 2 },
-  6: { 1: 4, 2: 2 },
-  7: { 1: 4, 2: 3 },
-  8: { 1: 4, 2: 3 },
-  9: { 1: 4, 2: 3, 3: 2 },
-  10: { 1: 4, 2: 3, 3: 2 },
-  11: { 1: 4, 2: 3, 3: 3 },
-  12: { 1: 4, 2: 3, 3: 3 },
-  13: { 1: 4, 2: 3, 3: 3, 4: 1 },
-  14: { 1: 4, 2: 3, 3: 3, 4: 1 },
-  15: { 1: 4, 2: 3, 3: 3, 4: 2 },
-  16: { 1: 4, 2: 3, 3: 3, 4: 2 },
-  17: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 },
-  18: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 1 },
-  19: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
-  20: { 1: 4, 2: 3, 3: 3, 4: 3, 5: 2 },
-};
-
-export function spellSlotsForClass(classId: string, level: number): Record<number, { max: number; used: number }> {
-  const table = classId === "paladin" || classId === "ranger" ? HALF_CASTER_SLOTS : {};
-  const slots = table[level] ?? table[Math.min(level, 20)] ?? {};
-  const result: Record<number, { max: number; used: number }> = {};
-  for (const [lvl, max] of Object.entries(slots)) {
-    result[+lvl] = { max, used: 0 };
-  }
-  return result;
 }

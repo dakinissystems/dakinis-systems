@@ -1,5 +1,6 @@
-import type { MorePanel } from "./BottomNav";
-import { getMoreOptions } from "./BottomNav";
+import { useEffect, useRef } from "react";
+import type { MorePanel } from "./more-options";
+import { getMoreOptions } from "./more-options";
 import { useLocale } from "../../context/LocaleContext";
 import { LanguageSwitcher } from "../LanguageSwitcher";
 
@@ -30,14 +31,30 @@ export function MoreSheet({
 }: Props) {
   const { t } = useLocale();
   const moreOptions = getMoreOptions(t);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  if (!open) return null;
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [open]);
 
   return (
-    <div className="sheet-overlay" onClick={onClose} role="presentation">
-      <div className="bottom-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal>
+    <dialog
+      ref={dialogRef}
+      className="sheet-overlay"
+      onClose={onClose}
+      aria-labelledby="more-sheet-title"
+    >
+      <div className="bottom-sheet">
         <div className="bottom-sheet__handle" />
-        <h2 className="bottom-sheet__title">{t("more.title")}</h2>
+        <h2 id="more-sheet-title" className="bottom-sheet__title">
+          {t("more.title")}
+        </h2>
         <div className="sheet-list">
           {onExportJson && (
             <button type="button" className="sheet-list__item" onClick={() => { onExportJson(); onClose(); }}>
@@ -103,6 +120,6 @@ export function MoreSheet({
           {t("more.close")}
         </button>
       </div>
-    </div>
+    </dialog>
   );
 }

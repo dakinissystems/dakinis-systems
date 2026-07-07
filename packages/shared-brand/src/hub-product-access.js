@@ -21,6 +21,8 @@ export const HUB_OPTIONAL_ECOSYSTEM_PRODUCT_IDS = [
 /** Nuevos tenants: solo Core hasta que platform admin habilite más. */
 export const HUB_DEFAULT_TENANT_PRODUCTS = ["core"];
 
+const HUB_ECOSYSTEM_PRODUCT_ID_SET = new Set(HUB_ECOSYSTEM_PRODUCT_IDS);
+
 /**
  * @param {unknown} list
  * @returns {string[]}
@@ -30,7 +32,7 @@ export function dakinisNormalizeHubProducts(list) {
   if (Array.isArray(list)) {
     for (const id of list) {
       const key = String(id || "").trim();
-      if (HUB_ECOSYSTEM_PRODUCT_IDS.includes(key)) set.add(key);
+      if (HUB_ECOSYSTEM_PRODUCT_ID_SET.has(key)) set.add(key);
     }
   }
   return HUB_ECOSYSTEM_PRODUCT_IDS.filter((id) => set.has(id));

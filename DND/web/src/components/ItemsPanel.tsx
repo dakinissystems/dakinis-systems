@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Character, InventoryItem, ItemCategory } from "../types/character";
 import { SRD_ITEM_TEMPLATES, itemFromTemplate } from "../data/srd/equipment";
 import { useLocale } from "../context/LocaleContext";
@@ -13,15 +13,29 @@ const CATEGORIES: ItemCategory[] = ["arma", "armadura", "curacion", "herreria", 
 
 export function ItemsPanel({ character, onChange }: Props) {
   const { t } = useLocale();
-  const [showModal, setShowModal] = useState(false);
   const [draft, setDraft] = useState<InventoryItem | null>(null);
   const [catFilter, setCatFilter] = useState<ItemCategory | "">("");
   const [fromSrd, setFromSrd] = useState("");
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (draft) {
+      if (!dialog.open) dialog.showModal();
+    } else if (dialog.open) {
+      dialog.close();
+    }
+  }, [draft]);
+
+  const closeModal = () => {
+    setDraft(null);
+  };
 
   const addSrdItem = () => {
-    const t = SRD_ITEM_TEMPLATES.find((x) => x.name === fromSrd);
-    if (!t) return;
-    onChange((c) => ({ ...c, inventory: [...c.inventory, itemFromTemplate(t)] }));
+    const template = SRD_ITEM_TEMPLATES.find((x) => x.name === fromSrd);
+    if (!template) return;
+    onChange((c) => ({ ...c, inventory: [...c.inventory, itemFromTemplate(template)] }));
     setFromSrd("");
   };
 
@@ -35,7 +49,6 @@ export function ItemsPanel({ character, onChange }: Props) {
       description: "",
       tags: [],
     });
-    setShowModal(true);
   };
 
   const save = () => {
@@ -49,8 +62,7 @@ export function ItemsPanel({ character, onChange }: Props) {
           : [...c.inventory, draft],
       };
     });
-    setShowModal(false);
-    setDraft(null);
+    closeModal();
   };
 
   const items = catFilter
@@ -64,21 +76,23 @@ export function ItemsPanel({ character, onChange }: Props) {
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
           <select
             value={fromSrd}
+            aria-label={t("inventory.srdItemPlaceholder")}
             onChange={(e) => setFromSrd(e.target.value)}
             style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)", padding: "0.35rem" }}
           >
             <option value="">{t("inventory.srdItemPlaceholder")}</option>
-            {SRD_ITEM_TEMPLATES.map((t) => (
-              <option key={t.name} value={t.name}>
-                {t.name}
+            {SRD_ITEM_TEMPLATES.map((item) => (
+              <option key={item.name} value={item.name}>
+                {item.name}
               </option>
             ))}
           </select>
-          <button className="btn btn-secondary btn-sm" disabled={!fromSrd} onClick={addSrdItem}>
+          <button type="button" className="btn btn-secondary btn-sm" disabled={!fromSrd} onClick={addSrdItem}>
             {t("inventory.addSrd")}
           </button>
           <select
             value={catFilter}
+            aria-label={t("inventory.allCategories")}
             onChange={(e) => setCatFilter(e.target.value as ItemCategory | "")}
             style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)", padding: "0.35rem" }}
           >
@@ -89,7 +103,7 @@ export function ItemsPanel({ character, onChange }: Props) {
               </option>
             ))}
           </select>
-          <button className="btn btn-sm" onClick={openNew}>
+          <button type="button" className="btn btn-sm" onClick={openNew}>
             {t("inventory.addItem")}
           </button>
         </div>
@@ -104,7 +118,7 @@ export function ItemsPanel({ character, onChange }: Props) {
               <th>{t("inventory.category")}</th>
               <th>{t("inventory.description")}</th>
               <th>{t("inventory.tags")}</th>
-              <th></th>
+              <th>{t("inventory.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -117,19 +131,21 @@ export function ItemsPanel({ character, onChange }: Props) {
                 </td>
                 <td>{itemCategoryLabel(item.category, t)}</td>
                 <td>{item.description}</td>
-                <td>{item.tags?.map((t) => <span key={t} className="tag">{t}</span>)}</td>
+                <td>{item.tags?.map((tag) => <span key={tag} className="tag">{tag}</span>)}</td>
                 <td>
                   <button
+                    type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={() => {
                       setDraft({ ...item });
-                      setShowModal(true);
                     }}
                   >
                     {t("inventory.edit")}
                   </button>{" "}
                   <button
+                    type="button"
                     className="btn btn-danger btn-sm"
+                    aria-label={t("list.deleteAria", { name: item.name })}
                     onClick={() =>
                       onChange((c) => ({
                         ...c,
@@ -150,18 +166,24 @@ export function ItemsPanel({ character, onChange }: Props) {
         <p className="empty-state">{t("inventory.empty")}</p>
       )}
 
-      {showModal && draft && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3>{t("inventory.modalTitle")}</h3>
+      {draft && (
+        <dialog
+          ref={dialogRef}
+          className="modal-overlay"
+          onClose={closeModal}
+          aria-labelledby="inventory-modal-title"
+        >
+          <div className="modal">
+            <h3 id="inventory-modal-title">{t("inventory.modalTitle")}</h3>
             <div className="form-row">
               <div className="form-field">
-                <label>{t("inventory.name")}</label>
-                <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+                <label htmlFor="inventory-item-name">{t("inventory.name")}</label>
+                <input id="inventory-item-name" value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
               </div>
               <div className="form-field">
-                <label>{t("inventory.quantity")}</label>
+                <label htmlFor="inventory-item-qty">{t("inventory.quantity")}</label>
                 <input
+                  id="inventory-item-qty"
                   type="number"
                   min={0}
                   value={draft.quantity}
@@ -171,8 +193,9 @@ export function ItemsPanel({ character, onChange }: Props) {
             </div>
             <div className="form-row">
               <div className="form-field">
-                <label>{t("inventory.categoryLabel")}</label>
+                <label htmlFor="inventory-item-category">{t("inventory.categoryLabel")}</label>
                 <select
+                  id="inventory-item-category"
                   value={draft.category}
                   onChange={(e) => setDraft({ ...draft, category: e.target.value as ItemCategory })}
                 >
@@ -184,35 +207,42 @@ export function ItemsPanel({ character, onChange }: Props) {
                 </select>
               </div>
               <div className="form-field">
-                <label>{t("inventory.tagsComma")}</label>
+                <label htmlFor="inventory-item-tags">{t("inventory.tagsComma")}</label>
                 <input
+                  id="inventory-item-tags"
                   value={draft.tags?.join(", ") ?? ""}
                   onChange={(e) =>
                     setDraft({
                       ...draft,
-                      tags: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
+                      tags: e.target.value
+                        .split(",")
+                        .flatMap((s) => {
+                          const trimmed = s.trim();
+                          return trimmed ? [trimmed] : [];
+                        }),
                     })
                   }
                 />
               </div>
             </div>
             <div className="form-field">
-              <label>{t("inventory.descriptionEffects")}</label>
+              <label htmlFor="inventory-item-description">{t("inventory.descriptionEffects")}</label>
               <textarea
+                id="inventory-item-description"
                 value={draft.description ?? ""}
                 onChange={(e) => setDraft({ ...draft, description: e.target.value })}
               />
             </div>
             <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+              <button type="button" className="btn btn-secondary" onClick={closeModal}>
                 {t("inventory.cancel")}
               </button>
-              <button className="btn" onClick={save}>
+              <button type="button" className="btn" onClick={save}>
                 {t("inventory.save")}
               </button>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </section>
   );

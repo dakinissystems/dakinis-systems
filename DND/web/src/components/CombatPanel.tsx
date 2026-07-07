@@ -15,9 +15,9 @@ export function CombatPanel({ character, onChange }: Props) {
   const [armorPick, setArmorPick] = useState("");
 
   const addArmor = () => {
-    const t = SRD_ARMOR_TEMPLATES.find((x) => x.name === armorPick);
-    if (!t) return;
-    onChange((c) => ({ ...c, armors: [...c.armors, armorFromTemplate(t)] }));
+    const template = SRD_ARMOR_TEMPLATES.find((x) => x.name === armorPick);
+    if (!template) return;
+    onChange((c) => ({ ...c, armors: [...c.armors, armorFromTemplate(template)] }));
     setArmorPick("");
   };
 
@@ -26,8 +26,9 @@ export function CombatPanel({ character, onChange }: Props) {
       <section className="panel">
         <h2>{t("combat.resources")}</h2>
         <div className="resource-bar">
-          <label>{t("combat.currentHp")}</label>
+          <label htmlFor="combat-current-hp">{t("combat.currentHp")}</label>
           <input
+            id="combat-current-hp"
             type="number"
             value={r.currentHP}
             onChange={(e) =>
@@ -40,8 +41,9 @@ export function CombatPanel({ character, onChange }: Props) {
           <span>/ {r.maxHP}</span>
         </div>
         <div className="resource-bar">
-          <label>{t("combat.maxHp")}</label>
+          <label htmlFor="combat-max-hp">{t("combat.maxHp")}</label>
           <input
+            id="combat-max-hp"
             type="number"
             value={r.maxHP}
             onChange={(e) =>
@@ -53,8 +55,9 @@ export function CombatPanel({ character, onChange }: Props) {
           />
         </div>
         <div className="resource-bar">
-          <label>{t("combat.layOnHands")}</label>
+          <label htmlFor="combat-lay-on-hands">{t("combat.layOnHands")}</label>
           <input
+            id="combat-lay-on-hands"
             type="number"
             value={r.layOnHandsRemaining}
             onChange={(e) =>
@@ -92,6 +95,7 @@ export function CombatPanel({ character, onChange }: Props) {
                 max={slot.max}
                 value={slot.used}
                 style={{ width: 36 }}
+                aria-label={`${t("combat.spellSlots")} ${t("combat.level")} ${lvl}`}
                 onChange={(e) =>
                   onChange((c) => ({
                     ...c,
@@ -174,17 +178,18 @@ export function CombatPanel({ character, onChange }: Props) {
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <select
               value={armorPick}
+              aria-label={t("combat.srdArmorPlaceholder")}
               onChange={(e) => setArmorPick(e.target.value)}
               style={{ background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text)", padding: "0.35rem" }}
             >
               <option value="">{t("combat.srdArmorPlaceholder")}</option>
-              {SRD_ARMOR_TEMPLATES.map((t) => (
-                <option key={t.name} value={t.name}>
-                  {t.name}
+              {SRD_ARMOR_TEMPLATES.map((armor) => (
+                <option key={armor.name} value={armor.name}>
+                  {armor.name}
                 </option>
               ))}
             </select>
-            <button className="btn btn-secondary btn-sm" disabled={!armorPick} onClick={addArmor}>
+            <button type="button" className="btn btn-secondary btn-sm" disabled={!armorPick} onClick={addArmor}>
               {t("combat.add")}
             </button>
           </div>
@@ -216,6 +221,7 @@ export function CombatPanel({ character, onChange }: Props) {
                     <input
                       type="checkbox"
                       checked={a.isEquipped}
+                      aria-label={`${t("combat.table.equipped")}: ${a.name}`}
                       onChange={(e) =>
                         onChange((c) => ({
                           ...c,

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, use, useEffect, useMemo, useState } from "react";
 import { en } from "../locales/en";
 import { es } from "../locales/es";
 
@@ -71,7 +71,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useLocale() {
-  const context = useContext(LocaleContext);
+  const context = use(LocaleContext);
   if (!context) {
     throw new Error("useLocale must be used within LocaleProvider");
   }

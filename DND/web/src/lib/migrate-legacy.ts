@@ -152,9 +152,13 @@ export function isLegacyCharacter(value: unknown): value is LegacyCharacter {
 }
 
 export function migrateLegacyExport(data: Record<string, unknown>): Character[] {
-  return Object.values(data)
-    .filter(isLegacyCharacter)
-    .map(migrateLegacyCharacter);
+  const chars: Character[] = [];
+  for (const value of Object.values(data)) {
+    if (isLegacyCharacter(value)) {
+      chars.push(migrateLegacyCharacter(value));
+    }
+  }
+  return chars;
 }
 
 export function migrateLegacyCharacter(legacy: LegacyCharacter): Character {

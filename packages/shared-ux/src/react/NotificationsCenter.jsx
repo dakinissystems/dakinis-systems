@@ -1,5 +1,7 @@
 /** Centro de notificaciones Hub (cross-producto). */
-export default function NotificationsCenter({ items = [], loading = false, t = (k) => k }) {
+import { EMPTY_ITEMS } from "./constants.js";
+
+export default function NotificationsCenter({ items = EMPTY_ITEMS, loading = false, t = (k) => k }) {
   if (loading) {
     return (
       <section className="hub-notifications card" aria-label={t("hub.notifications.title")}>

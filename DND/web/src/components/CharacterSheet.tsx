@@ -64,10 +64,10 @@ export function CharacterSheet({ character, onChange, compact }: Props) {
 
           <div className="form-field">
 
-            <label>{t("characterSheet.name")}</label>
+            <label htmlFor="character-sheet-name">{t("characterSheet.name")}</label>
 
             <input
-
+              id="character-sheet-name"
               value={character.name}
 
               onChange={(e) => onChange((c) => ({ ...c, name: e.target.value }))}
@@ -78,10 +78,10 @@ export function CharacterSheet({ character, onChange, compact }: Props) {
 
           <div className="form-field form-field--narrow">
 
-            <label>{t("characterSheet.level")}</label>
+            <label htmlFor="character-sheet-level">{t("characterSheet.level")}</label>
 
             <input
-
+              id="character-sheet-level"
               type="number"
 
               inputMode="numeric"
@@ -262,19 +262,19 @@ export function CharacterSheet({ character, onChange, compact }: Props) {
 
           <div className="trait-list">
 
-            {character.traits.map((t, i) => (
+            {character.traits.map((trait) => (
 
-              <details key={i} className="trait-card">
+              <details key={`${trait.name}-${trait.source}`} className="trait-card">
 
                 <summary>
 
-                  <strong>{t.name}</strong>
+                  <strong>{trait.name}</strong>
 
-                  <span className="trait-card__src">{t.source}</span>
+                  <span className="trait-card__src">{trait.source}</span>
 
                 </summary>
 
-                <p>{t.description}</p>
+                <p>{trait.description}</p>
 
               </details>
 
