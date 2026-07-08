@@ -14,6 +14,7 @@ const steps = [
   'sync-experience.mjs',
   'sync-shared-brand.mjs',
   'sync-shared-ai.mjs',
+  'sync-akoenet-packages.mjs',
 ]
 
 for (const script of steps) {

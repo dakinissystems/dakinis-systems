@@ -20,6 +20,8 @@ const checks = [
   { pkg: 'shared-icons', dests: ['finanzas/packages', 'hub/packages', 'platform/core/packages'] },
   { pkg: 'shared-illustrations', dests: ['finanzas/packages', 'hub/packages', 'platform/core/packages'] },
   { pkg: 'shared-ai', dests: ['internal/packages', 'billing/packages', 'search/packages', 'notifications/packages'] },
+  { pkg: 'akoenet-orchestrator', dests: ['internal/packages'] },
+  { pkg: 'akoenet-modules', dests: ['internal/packages'] },
 ]
 
 function hashTree(dir) {

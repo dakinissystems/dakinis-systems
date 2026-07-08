@@ -1,6 +1,6 @@
 {
   "service": "dakinis-internal-api",
-  "status": "scaffold",
+  "status": "partial",
   "description": "API interna platform — productos nunca hablan entre sí directamente.",
   "baseUrl": "https://api.dakinissystems.com/internal",
   "auth": "Bearer service token (DAKINIS_INTERNAL_SERVICE_KEY)",
@@ -15,7 +15,13 @@
     "GET /internal/storage/:objectId": "Signed read URL",
     "POST /internal/search": "Global search (query + scopes)",
     "POST /internal/knowledge/query": "Proxy → Knowledge /v1/query",
-    "POST /internal/notifications/send": "Encolar notificación multi-canal"
+    "POST /internal/notifications/send": "Encolar notificación multi-canal",
+    "GET /internal/workspaces/:id": "Workspace Admin — detalle (migr. 031)",
+    "GET /internal/workspaces/:id/members": "Workspace Admin — miembros",
+    "POST /internal/workspaces/:id/members/invite": "Workspace Admin — invitar",
+    "GET /internal/admin/v1/overview": "Super Admin — panorama platform",
+    "GET /internal/admin/v1/workspaces": "Super Admin — listar workspaces",
+    "GET /internal/admin/v1/audit": "Super Admin — audit timeline"
   },
   "consumers": ["core", "lifeflow", "streamautomator", "akoenet", "hub", "ai"],
   "notes": [

@@ -1,0 +1,37 @@
+{
+  "service": "dakinis-admin-api",
+  "status": "scaffold",
+  "description": "Workspace Admin + Super Admin — expuesto vía Internal API (/internal/). UI Hub /admin y admin.dakinissystems.com consumen estos endpoints.",
+  "baseUrl": "https://api.dakinissystems.com/internal",
+  "auth": "Bearer DAKINIS_INTERNAL_SERVICE_KEY (service-to-service). UI valida JWT usuario + meta.is_workspace_admin / meta.is_super_admin.",
+  "migration": "031_workspace_super_admin.sql",
+  "workspaceAdmin": {
+    "GET /workspaces/:id": "Detalle workspace (nombre, plan, status, settings)",
+    "GET /workspaces/:id/members": "Lista miembros con email y rol",
+    "POST /workspaces/:id/members/invite": "Body: { email, role?, invitedBy? } → token invitación",
+    "PATCH /workspaces/:id/members/:userId/role": "Body: { role, actorId? }",
+    "GET /workspaces/:id/usage": "Métricas: miembros activos 7d, productos, consumo IA 30d",
+    "GET /workspaces/:id/products": "Productos activos del workspace",
+    "PUT /workspaces/:id/products": "Body: { products: ['core','lifeflow',...] }"
+  },
+  "superAdmin": {
+    "GET /admin/v1/overview": "Panorama: workspaces, usuarios, incidencias, BullMQ health",
+    "GET /admin/v1/workspaces": "Query: status, plan, limit, offset",
+    "GET /admin/v1/workspaces/:id": "Detalle + suscripción Stripe cache",
+    "POST /admin/v1/workspaces/:id/suspend": "Body: { reason?, actorId? }",
+    "POST /admin/v1/workspaces/:id/activate": "Body: { actorId? }",
+    "GET /admin/v1/billing/dashboard": "Revenue stub — MRR tras sync Stripe",
+    "GET /admin/v1/audit": "Query: limit — timeline meta.audit_logs",
+    "GET /admin/v1/features": "Lista feature flags (global + rollout)",
+    "PATCH /admin/v1/features/:key": "Body: { enabled, actorId? }"
+  },
+  "planned": {
+    "POST /admin/v1/users/:id/impersonate": "JWT corto como usuario (soporte)",
+    "POST /admin/v1/billing/simulate-webhook": "Debug Stripe",
+    "GET /admin/v1/system/costs": "Railway + Supabase + OpenAI por workspace",
+    "GET /admin/v1/jobs": "BullMQ queues + DLQ (parcial en /events/bus/status)",
+    "CRUD /admin/v1/incidents": "Incident management"
+  },
+  "consumers": ["dakinis-hub", "admin-spa-future"],
+  "relatedDocs": ["HUB-WORKSPACE.md", "internal-api.json"]
+}

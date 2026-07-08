@@ -1,0 +1,14 @@
+{
+  "name": "@dakinis/akoenet-modules",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AkoeNet Assistant — module handlers (Guardian, AI, Streamer, …)",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "dependencies": {
+    "@dakinis/akoenet-orchestrator": "file:../akoenet-orchestrator"
+  }
+}

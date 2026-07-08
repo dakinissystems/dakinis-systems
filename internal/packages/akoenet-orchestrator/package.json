@@ -1,0 +1,13 @@
+{
+  "name": "@dakinis/akoenet-orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AkoeNet Assistant — module registry and command routing",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./catalog": "./src/catalog.js",
+    "./events": "./src/events.js"
+  }
+}

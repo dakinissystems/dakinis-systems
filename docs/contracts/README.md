@@ -17,5 +17,7 @@ Referencias **ligeras** (legibles por humanos y CI) para rutas y nombres expuest
 | [`knowledge.json`](./knowledge.json) | `/knowledge/` → [dakinis-knowledge](https://github.com/dakinissystems/dakinis-knowledge) |
 | [`fitness-platform-api.json`](./fitness-platform-api.json) | `/fitness/` → Fitness Platform API (demo JWT propio) |
 | [`hub.json`](./hub.json) | Origen propio `hub.dakinissystems.com` (no prefijo gateway) |
+| [`admin-api.json`](./admin-api.json) | Workspace Admin + Super Admin vía `/internal/` (migr. 031) |
+| [`akoenet-assistant.json`](./akoenet-assistant.json) | AkoeNet Assistant modular — módulos nativos (migr. 032) |
 
 Actualiza estos JSON cuando cambies prefijos en [`gateway/routes/`](../../gateway/routes/) o contratos públicos de las APIs.

@@ -1,0 +1,99 @@
+{
+  "service": "akoenet-assistant",
+  "version": "0.3.0",
+  "status": "scaffold_with_event_bridge",
+  "description": "Asistente modular nativo — reemplaza bots Discord externos",
+  "migrations": ["032_akoenet_assistant_modules.sql", "033_akoenet_assistant_expansion.sql"],
+  "packages": {
+    "orchestrator": "@dakinis/akoenet-orchestrator",
+    "modules": "@dakinis/akoenet-modules"
+  },
+  "internal_api_base": "/internal/akoenet",
+  "endpoints": {
+    "GET /akoenet/assistant/modules": "Catálogo global de módulos",
+    "GET /akoenet/servers/:serverId/modules": "Módulos activos del servidor",
+    "PUT /akoenet/servers/:serverId/modules/:moduleKey": "Activar/configurar módulo",
+    "POST /akoenet/servers/:serverId/assistant/command": "Ejecutar capability (slash, admin)",
+    "POST /akoenet/servers/:serverId/assistant/events": "Dispatch evento (message, stream, …)"
+  },
+  "ui_tree": {
+    "label": "AkoeNet Assistant",
+    "modules": [
+      { "key": "guardian", "icon": "shield", "label": "Moderation" },
+      { "key": "assistant", "icon": "bot", "label": "AI Assistant" },
+      { "key": "welcome", "icon": "hand-wave", "label": "Community" },
+      { "key": "streamer", "icon": "tv", "label": "Stream" },
+      { "key": "music", "icon": "music", "label": "Music", "phase": "future" },
+      { "key": "business", "icon": "briefcase", "label": "Business", "phase": "future" },
+      { "key": "developer", "icon": "code", "label": "Developer", "phase": "growth" },
+      { "key": "support", "icon": "ticket", "label": "Tickets", "phase": "growth" },
+      { "key": "events", "icon": "calendar", "label": "Events", "phase": "growth" },
+      { "key": "automation", "icon": "workflow", "label": "Automation", "phase": "growth" },
+      { "key": "knowledge", "icon": "book", "label": "Knowledge" }
+    ]
+  },
+  "categories": {
+    "moderation": {
+      "module": "guardian",
+      "discord_equivalent": ["Carl-bot", "Dyno", "YAGPDB", "MEE6"],
+      "capabilities": ["moderation.automod", "moderation.ban", "moderation.logs"]
+    },
+    "community": {
+      "modules": ["welcome", "reaction_roles", "levels", "economy", "polls"],
+      "capabilities": ["community.welcome", "community.reaction_roles", "community.xp"]
+    },
+    "entertainment": {
+      "modules": ["polls", "games", "music"],
+      "note": "Music: solo Spotify status — sin reproducción DMCA"
+    },
+    "stream": {
+      "module": "streamer",
+      "integration": "streamautomator",
+      "capabilities": ["stream.notify", "stream.clip", "stream.schedule"]
+    },
+    "ai": {
+      "modules": ["assistant", "guardian_ai", "translator", "knowledge", "meeting_ai", "developer_ai"],
+      "platform": "dakinis-ai",
+      "capabilities": ["ai.ask", "ai.moderate", "knowledge.search"]
+    },
+    "business": {
+      "modules": ["business", "support", "events"],
+      "integration": ["core", "billing"]
+    },
+    "developer": {
+      "module": "developer",
+      "integrations": ["github", "gitlab", "railway", "supabase"]
+    },
+    "automation": {
+      "module": "automation",
+      "pattern": "trigger → conditions → actions"
+    }
+  },
+  "phases": {
+    "mvp": ["guardian", "welcome", "assistant", "guardian_ai", "streamer", "knowledge"],
+    "growth": ["reaction_roles", "polls", "automation", "developer", "translator", "support", "events", "levels"],
+    "future": ["business", "games", "economy", "music", "meeting_ai"]
+  },
+  "events": [
+    "message.created",
+    "member.joined",
+    "stream.started",
+    "stream.clip",
+    "automation.triggered",
+    "business.invoice_paid"
+  ],
+  "queues": {
+    "akoenet:assistant": "Respuestas IA (@AI, resúmenes)",
+    "akoenet:moderation-ai": "Evaluación toxicidad contextual",
+    "akoenet:knowledge": "Búsqueda semántica Knowledge"
+  },
+  "platform_dependencies": [
+    "dakinis-ai",
+    "dakinis-knowledge",
+    "streamautomator",
+    "dakinis-internal-api",
+    "redis",
+    "bullmq"
+  ],
+  "doc": "AKOENET-ASSISTANT.md"
+}

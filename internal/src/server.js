@@ -34,6 +34,77 @@ function matchRoute(method, path) {
     return routes["GET /notifications/inbox/:userId"];
   }
   if (method === "GET" && bare.startsWith("/storage/")) return routes["GET /storage/:objectId"];
+
+  if (method === "GET" && bare.startsWith("/workspaces/me/")) {
+    return routes["GET /workspaces/me/:userId"];
+  }
+  if (method === "PATCH" && /^\/workspaces\/[^/]+$/.test(bare) && !bare.includes("/members")) {
+    return routes["PATCH /workspaces/:id"];
+  }
+  if (method === "DELETE" && /^\/workspaces\/[^/]+\/members\/[^/]+$/.test(bare)) {
+    return routes["DELETE /workspaces/:id/members/:userId"];
+  }
+  // Workspace admin (031)
+  if (method === "GET" && /^\/workspaces\/[^/]+\/members$/.test(bare)) {
+    return routes["GET /workspaces/:id/members"];
+  }
+  if (method === "POST" && /^\/workspaces\/[^/]+\/members\/invite$/.test(bare)) {
+    return routes["POST /workspaces/:id/members/invite"];
+  }
+  if (method === "PATCH" && /^\/workspaces\/[^/]+\/members\/[^/]+\/role$/.test(bare)) {
+    return routes["PATCH /workspaces/:id/members/:userId/role"];
+  }
+  if (method === "GET" && /^\/workspaces\/[^/]+\/usage$/.test(bare)) {
+    return routes["GET /workspaces/:id/usage"];
+  }
+  if (method === "GET" && /^\/workspaces\/[^/]+\/products$/.test(bare)) {
+    return routes["GET /workspaces/:id/products"];
+  }
+  if (method === "PUT" && /^\/workspaces\/[^/]+\/products$/.test(bare)) {
+    return routes["PUT /workspaces/:id/products"];
+  }
+  if (method === "GET" && /^\/workspaces\/[^/]+$/.test(bare)) {
+    return routes["GET /workspaces/:id"];
+  }
+
+  // Super admin (031)
+  if (method === "GET" && bare === "/admin/v1/overview") return routes["GET /admin/v1/overview"];
+  if (method === "GET" && bare === "/admin/v1/workspaces") return routes["GET /admin/v1/workspaces"];
+  if (method === "GET" && bare === "/admin/v1/billing/dashboard") {
+    return routes["GET /admin/v1/billing/dashboard"];
+  }
+  if (method === "GET" && bare.startsWith("/admin/v1/audit")) return routes["GET /admin/v1/audit"];
+  if (method === "GET" && bare === "/admin/v1/features") return routes["GET /admin/v1/features"];
+  if (method === "PATCH" && bare.startsWith("/admin/v1/features/")) {
+    return routes["PATCH /admin/v1/features/:key"];
+  }
+  if (method === "GET" && /^\/admin\/v1\/workspaces\/[^/]+$/.test(bare)) {
+    return routes["GET /admin/v1/workspaces/:id"];
+  }
+  if (method === "POST" && /^\/admin\/v1\/workspaces\/[^/]+\/suspend$/.test(bare)) {
+    return routes["POST /admin/v1/workspaces/:id/suspend"];
+  }
+  if (method === "POST" && /^\/admin\/v1\/workspaces\/[^/]+\/activate$/.test(bare)) {
+    return routes["POST /admin/v1/workspaces/:id/activate"];
+  }
+
+  // AkoeNet Assistant (032/033)
+  if (method === "GET" && bare === "/akoenet/assistant/modules") {
+    return routes["GET /akoenet/assistant/modules"];
+  }
+  if (method === "GET" && /^\/akoenet\/servers\/[^/]+\/modules$/.test(bare)) {
+    return routes["GET /akoenet/servers/:serverId/modules"];
+  }
+  if (method === "PUT" && /^\/akoenet\/servers\/[^/]+\/modules\/[^/]+$/.test(bare)) {
+    return routes["PUT /akoenet/servers/:serverId/modules/:moduleKey"];
+  }
+  if (method === "POST" && /^\/akoenet\/servers\/[^/]+\/assistant\/command$/.test(bare)) {
+    return routes["POST /akoenet/servers/:serverId/assistant/command"];
+  }
+  if (method === "POST" && /^\/akoenet\/servers\/[^/]+\/assistant\/events$/.test(bare)) {
+    return routes["POST /akoenet/servers/:serverId/assistant/events"];
+  }
+
   return null;
 }
 

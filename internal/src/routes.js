@@ -15,6 +15,36 @@ import {
   replayDeadLetterJob,
   discardDeadLetterJob,
 } from "./lib/bullmq-monitor.js";
+import {
+  getWorkspace,
+  getWorkspaceForUser,
+  updateWorkspace,
+  removeWorkspaceMember,
+  touchWorkspaceAccess,
+  listWorkspaceMembers,
+  listWorkspaceProducts,
+  inviteWorkspaceMember,
+  updateMemberRole,
+  getWorkspaceUsage,
+  setWorkspaceProducts,
+} from "./services/workspace-admin.js";
+import {
+  listWorkspaces,
+  getWorkspaceDetail,
+  setWorkspaceStatus,
+  getRevenueDashboard,
+  listAuditLogs,
+  listFeatureFlags,
+  setFeatureFlag,
+  getPlatformOverview,
+} from "./services/super-admin.js";
+import {
+  listAssistantModules,
+  getServerModules,
+  upsertServerModule,
+  routeAssistantCommand,
+  dispatchAssistantEvent,
+} from "./services/akoenet-assistant.js";
 
 function platformEvent(type, payload, meta = {}) {
   return {
@@ -297,4 +327,356 @@ export const routes = {
     status: 501,
     body: { error: "not_implemented", message: "Signed URL read — Supabase Storage / R2 roadmap" },
   }),
+
+  // --- Hub Workspace Admin (migr. 031) ---
+  "GET /workspaces/me/:userId": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const userId = (req.url || "").split("?")[0].replace("/workspaces/me/", "");
+    try {
+      const workspace = await getWorkspaceForUser(userId);
+      if (!workspace) return { status: 404, body: { error: "no_workspace" } };
+      if (workspace.id) await touchWorkspaceAccess(workspace.id, userId);
+      return { status: 200, body: workspace };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspaces/:id": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "");
+    try {
+      const workspace = await getWorkspace(id);
+      if (!workspace) return { status: 404, body: { error: "not_found" } };
+      return { status: 200, body: workspace };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PATCH /workspaces/:id": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "");
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const workspace = await updateWorkspace(id, body, body.actorId);
+      return { status: 200, body: workspace };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "db_error";
+      const status = message === "workspace_not_found" ? 404 : message === "nothing_to_update" ? 400 : 500;
+      return { status, body: { error: message } };
+    }
+  },
+
+  "DELETE /workspaces/:id/members/:userId": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const path = (req.url || "").split("?")[0];
+    const match = path.match(/^\/workspaces\/([^/]+)\/members\/([^/]+)$/);
+    if (!match) return { status: 400, body: { error: "invalid_path" } };
+    const body = await readJson(req);
+    try {
+      const result = await removeWorkspaceMember(match[1], match[2], body?.actorId);
+      return { status: 200, body: result };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "db_error";
+      return { status: message === "member_not_found" ? 404 : 500, body: { error: message } };
+    }
+  },
+
+  "GET /workspaces/:id/members": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/members", "");
+    try {
+      const members = await listWorkspaceMembers(id);
+      return { status: 200, body: { items: members, count: members.length } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "POST /workspaces/:id/members/invite": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/members/invite", "");
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const result = await inviteWorkspaceMember(id, body);
+      return { status: result.created ? 201 : 200, body: result };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PATCH /workspaces/:id/members/:userId/role": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const path = (req.url || "").split("?")[0];
+    const match = path.match(/^\/workspaces\/([^/]+)\/members\/([^/]+)\/role$/);
+    if (!match) return { status: 400, body: { error: "invalid_path" } };
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const member = await updateMemberRole(match[1], match[2], body.role, body.actorId);
+      return { status: 200, body: member };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "db_error";
+      const status = message === "member_not_found" ? 404 : message === "invalid_role" ? 400 : 500;
+      return { status, body: { error: message } };
+    }
+  },
+
+  "GET /workspaces/:id/usage": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/usage", "");
+    try {
+      const usage = await getWorkspaceUsage(id);
+      return { status: 200, body: usage };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspaces/:id/products": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/products", "");
+    try {
+      const products = await listWorkspaceProducts(id);
+      return { status: 200, body: { items: products } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PUT /workspaces/:id/products": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/products", "");
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    if (!Array.isArray(body.products)) {
+      return { status: 400, body: { error: "validation", message: "products array required" } };
+    }
+    try {
+      const products = await setWorkspaceProducts(id, body.products);
+      return { status: 200, body: { items: products } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  // --- Super Admin (migr. 031) — UI futura: admin.dakinissystems.com ---
+  "GET /admin/v1/overview": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    try {
+      const overview = await getPlatformOverview();
+      const eventBus = await getBusHealthSummary();
+      return { status: 200, body: { ...overview, eventBus } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /admin/v1/workspaces": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    try {
+      const data = await listWorkspaces({
+        status: url.searchParams.get("status") || undefined,
+        plan: url.searchParams.get("plan") || undefined,
+        limit: url.searchParams.get("limit") || undefined,
+        offset: url.searchParams.get("offset") || undefined,
+      });
+      return { status: 200, body: data };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /admin/v1/workspaces/:id": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "");
+    try {
+      const workspace = await getWorkspaceDetail(id);
+      if (!workspace) return { status: 404, body: { error: "not_found" } };
+      return { status: 200, body: workspace };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "POST /admin/v1/workspaces/:id/suspend": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "").replace("/suspend", "");
+    const body = await readJson(req);
+    try {
+      const workspace = await setWorkspaceStatus(id, "suspended", body?.reason, body?.actorId);
+      return { status: 200, body: workspace };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "POST /admin/v1/workspaces/:id/activate": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "").replace("/activate", "");
+    const body = await readJson(req);
+    try {
+      const workspace = await setWorkspaceStatus(id, "active", null, body?.actorId);
+      return { status: 200, body: workspace };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /admin/v1/billing/dashboard": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    try {
+      const dashboard = await getRevenueDashboard();
+      return { status: 200, body: dashboard };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /admin/v1/audit": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    try {
+      const items = await listAuditLogs({ limit: url.searchParams.get("limit") || undefined });
+      return { status: 200, body: { items, count: items.length } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /admin/v1/features": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    try {
+      const items = await listFeatureFlags();
+      return { status: 200, body: { items, count: items.length } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PATCH /admin/v1/features/:key": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const key = decodeURIComponent((req.url || "").split("?")[0].replace("/admin/v1/features/", ""));
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const flag = await setFeatureFlag(key, Boolean(body.enabled), body.actorId);
+      return { status: 200, body: flag };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "db_error";
+      return { status: message === "flag_not_found" ? 404 : 500, body: { error: message } };
+    }
+  },
+
+  // --- AkoeNet Assistant (migr. 032/033) ---
+  "GET /akoenet/assistant/modules": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    try {
+      const items = await listAssistantModules();
+      return { status: 200, body: { items, count: items.length } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /akoenet/servers/:serverId/modules": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const serverId = (req.url || "").split("?")[0].replace("/akoenet/servers/", "").replace("/modules", "");
+    try {
+      const items = await getServerModules(serverId);
+      return { status: 200, body: { items, count: items.length, serverId } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PUT /akoenet/servers/:serverId/modules/:moduleKey": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const path = (req.url || "").split("?")[0];
+    const match = path.match(/^\/akoenet\/servers\/([^/]+)\/modules\/([^/]+)$/);
+    if (!match) return { status: 400, body: { error: "invalid_path" } };
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const row = await upsertServerModule(match[1], decodeURIComponent(match[2]), body);
+      return { status: 200, body: row };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "POST /akoenet/servers/:serverId/assistant/command": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const serverId = (req.url || "").split("?")[0].replace("/akoenet/servers/", "").replace("/assistant/command", "");
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    if (!body.action) return { status: 400, body: { error: "validation", message: "action required" } };
+    try {
+      const result = await routeAssistantCommand({
+        serverId,
+        action: body.action,
+        userId: body.userId,
+        channelId: body.channelId,
+        payload: body.payload,
+        type: body.type,
+      });
+      return { status: result.ok ? 200 : 400, body: result };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "POST /akoenet/servers/:serverId/assistant/events": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const serverId = (req.url || "").split("?")[0].replace("/akoenet/servers/", "").replace("/assistant/events", "");
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    if (!body.type) return { status: 400, body: { error: "validation", message: "type required" } };
+    try {
+      const result = await dispatchAssistantEvent({
+        serverId,
+        type: body.type,
+        source: body.source,
+        data: body.payload ?? body.data,
+        metadata: body.metadata,
+      });
+      return { status: 200, body: result };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
 };
+
+function dbError(err) {
+  const message = err instanceof Error ? err.message : "db_error";
+  const status = message === "database_not_configured" ? 503 : 500;
+  return { status, body: { error: message } };
+}
