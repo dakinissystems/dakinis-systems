@@ -89,7 +89,7 @@ Cache · colas · event bus **BullMQ prod** (`DAKINIS_EVENT_BUS=bullmq`). Refere
 
 PostgreSQL multi-schema · pooler `:6543` · identidad `dakinis_auth`.
 
-Schema `meta`: `function_versions` · `schema_versions` · `migration_history` · `feature_flags` ✅ (024)
+Schema `meta`: `function_versions` · `schema_versions` · `migration_history` · `feature_flags` ✅ (024) · **`workspaces`** · `workspace_members` · `audit_logs` ⬜ (031)
 
 Cutovers pendientes (producto): `dakinis_core_prod`→`core`, `akoenet`, `audit` — ver [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)
 
@@ -130,15 +130,26 @@ Contrato Internal API: [`contracts/internal-api.json`](./contracts/internal-api.
 
 ### Hub — centro de experiencia ✅ v0.2.1
 
-`dakinis-hub` · `hub.dakinissystems.com` · schema `hub`.
+`dakinis-hub` · `hub.dakinissystems.com` · schemas `hub` + `meta` (workspace identity).
 
-**Rol:** identidad de workspace · Mi día · widgets · launcher SSO · notificaciones · acceso tenant · preferencias — **no “solo un menú”**.
+**Rol:** escritorio de la empresa — identidad de **workspace** (no solo usuario) · Mi día · widgets · launcher SSO · notificaciones · admin · integraciones — **no “solo un menú”**.
 
-Mensaje comercial → [`company/MESSAGING.md`](./company/MESSAGING.md)
+Comparable a Microsoft 365 Home / Zoho One: el cliente gestiona nombre, plan, miembros, productos y consumo IA desde Hub.
+
+```
+Hub
+├── Mi día · widgets · SSO productos
+├── Workspace Admin (/admin) — miembros, plan, productos, uso
+├── Centros (roadmap): notificaciones · ayuda · IA · integraciones · marketplace
+└── Super Admin (futuro admin.dakinissystems.com) — ops platform
+```
+
+Mensaje comercial → [`company/MESSAGING.md`](./company/MESSAGING.md)  
+Diseño admin → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) · SQL migr. `031` · contrato [`admin-api.json`](./contracts/admin-api.json)
 
 Registries: `HUB_DASHBOARD_SECTIONS` · `HUB_WIDGET_REGISTRY` en `@dakinis/shared-ux`.
 
-Pendiente producto: SSO E2E creds · vars Internal API en Core Back → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)
+Pendiente producto: SSO E2E creds · migr. 031 prod · Hub Admin UI → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)
 
 ### Auth — ✅
 

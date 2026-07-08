@@ -38,8 +38,10 @@
 
 | Objetivo |
 |----------|
+| **Hub Workspace Admin** (miembros, plan, productos) si el piloto lo pide |
 | LifeFlow → PostgreSQL |
 | Knowledge / RAG según **feedback real** |
+| Super Admin panel si **>5 clientes** (hoy: Stripe + Supabase manual) |
 | Mejoras solo lo que pidan clientes |
 
 ---

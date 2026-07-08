@@ -145,6 +145,8 @@ Auth (roadmap SSO) · Notifications (roadmap) · Events
 
 Comunidad + voz: servidores, canales, DMs, WebRTC, Capacitor/Tauri.
 
+**AkoeNet Assistant** (diferenciador): un asistente modular nativo — no bots Discord externos. Cinco categorías (moderación, comunidad, stream, IA, automation) + módulos Business/Developer. Arquitectura: `@dakinis/akoenet-orchestrator` + Internal API `/akoenet/assistant/*`. → [`AKOENET-ASSISTANT.md`](./AKOENET-ASSISTANT.md)
+
 Shell tipo Discord · bottom nav móvil `≤720px` · IdP Dakinis Auth ✅
 
 ### Platform consumida

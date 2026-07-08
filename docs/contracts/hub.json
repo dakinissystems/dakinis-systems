@@ -25,5 +25,12 @@
     "GET /health": "Health (if configured in server.js)"
   },
   "consumers": ["browser", "IdP SSO", "Internal API"],
-  "dependencies": ["dakinis-internal-api", "dakinis_auth.users", "hub.mi_dia migration 027+"]
+  "dependencies": ["dakinis-internal-api", "dakinis_auth.users", "hub.mi_dia migration 027+"],
+  "admin": {
+    "workspaceAdminPath": "/admin",
+    "superAdminOrigin": "admin.dakinissystems.com",
+    "migration": "031_workspace_super_admin.sql",
+    "contract": "admin-api.json",
+    "doc": "HUB-WORKSPACE.md"
+  }
 }

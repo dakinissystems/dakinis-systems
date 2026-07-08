@@ -1,0 +1,6 @@
+-- Super admin + workspace Hub — christiandvillar@gmail.com
+-- Ejecutar en Supabase SQL Editor (producción) tras migr. 031.
+--
+-- Script completo recomendado:
+--   provision_workspace_christiandvillar.sql
+-- (incluye super admin, core membership, workspace, productos y flags)

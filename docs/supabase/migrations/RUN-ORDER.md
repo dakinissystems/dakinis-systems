@@ -61,6 +61,28 @@ Verificación: [`scripts/smoke-supabase-phase-c.sql`](../../scripts/smoke-supaba
 
 Aplicar **después** de schema `lifeflow` activo y backfill de usuarios IdP.
 
+## Fase E — Hub workspace + Super Admin (031)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 31 | [`031_workspace_super_admin.sql`](./031_workspace_super_admin.sql) | ✅ jul 2026 · identidad workspace · miembros · audit · flags |
+
+Requiere `024` + `029`. Backfill automático desde `core.tenants` y `hub.tenant_product_access`.  
+Provisioning manual: [`scripts/provision_workspace_christiandvillar.sql`](../scripts/provision_workspace_christiandvillar.sql)  
+Internal API: `internal/src/services/workspace-admin.js` · `super-admin.js`  
+Hub UI: `hub/src/pages/admin/*` → `/admin`
+
+## Fase F — AkoeNet Assistant (032–033)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 32 | [`032_akoenet_assistant_modules.sql`](./032_akoenet_assistant_modules.sql) | ⬜ Módulos nativos · automations · moderation logs · assistant usage |
+| 33 | [`033_akoenet_assistant_expansion.sql`](./033_akoenet_assistant_expansion.sql) | ⬜ Event log · catálogo ampliado (translator, support, events, levels) |
+
+Requiere schema `akoenet` (006). Packages: `packages/akoenet-orchestrator`, `packages/akoenet-modules` → sync `internal/packages`.  
+Cliente: panel Assistant + i18n · Backend: event bridge + proxy. Internal API: `/akoenet/assistant/*`.  
+Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · Contrato: [`contracts/akoenet-assistant.json`](../../contracts/akoenet-assistant.json)
+
 ## Seeds
 
 | Archivo | Contenido |
