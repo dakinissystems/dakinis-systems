@@ -1,6 +1,6 @@
 # Dakinis Systems — Pendientes (julio 2026)
 
-> **Solo lo que falta.** Referencia estable → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Productos → [`PRODUCTS.md`](./PRODUCTS.md) · Empresa → [`COMPANY.md`](./COMPANY.md) · [`company/`](./company/)
+> **Solo lo que falta.** Los demás docs enlazan aquí para pendientes — no duplicar checklist largos.
 
 **Leyenda:** ⬜ pendiente · 🔴 bloquea go-live · 🟠 importante · 🟡 producto · 🔵 después de clientes
 
@@ -92,7 +92,7 @@ Checklist: [ ] webhook test **200** · [ ] checkout E2E · [ ] degraded → rest
 | **LifeFlow** | SQLite → PostgreSQL · migr. `030` |
 | **AkoeNet** | Prod: migr. `032`–`033` · vars Railway · workers · `@AI` real · cutover schema · [`MIGRATE-AKOENET.md`](./supabase/MIGRATE-AKOENET.md) |
 | **Tabletop** | SQLite → Supabase |
-| **StreamAutomator** | Métricas · event bus · React Doctor 61/110 |
+| **StreamAutomator** | Métricas · event bus · React Doctor 61/100 |
 
 ---
 

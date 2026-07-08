@@ -93,7 +93,7 @@ Cache · colas · event bus **BullMQ prod** (`DAKINIS_EVENT_BUS=bullmq`). Refere
 
 PostgreSQL multi-schema · pooler `:6543` · identidad `dakinis_auth`.
 
-Schema `meta`: `function_versions` · `schema_versions` · `migration_history` · `feature_flags` ✅ (024) · **`workspaces`** · `workspace_members` · `audit_logs` ⬜ (031)
+Schema `meta`: `function_versions` · `schema_versions` · `migration_history` · `feature_flags` ✅ (024) · **`workspaces`** · `workspace_members` · `audit_logs` ✅ (031 prod jul 2026)
 
 Cutovers pendientes (producto): `dakinis_core_prod`→`core`, `akoenet`, `audit` — ver [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)
 

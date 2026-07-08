@@ -79,15 +79,15 @@ Ver pasos completos: [`packages/MIGRATION.md`](../packages/MIGRATION.md).
 
 ## Platform repos (billing, notifications, search, knowledge, internal)
 
-Repos **creados** en GitHub (excepto Knowledge — scaffold local). Mirror local en control repo + push con script.
+Repos en GitHub. Mirror local en control repo + push con script. Estado prod → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md).
 
-| Repo GitHub | Mirror local | Railway |
-|-------------|--------------|---------|
-| [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) | `billing/` | ⬜ Fase 8 |
-| [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) | `notifications/` | ⬜ Fase 5–6 |
-| [dakinis-search](https://github.com/dakinissystems/dakinis-search) | `search/` | ⬜ roadmap |
-| [dakinis-knowledge](https://github.com/dakinissystems/dakinis-knowledge) | `knowledge/` | ⬜ Fase 6 |
-| [dakinis-internal-api](https://github.com/dakinissystems/dakinis-internal-api) | `internal/` | ⬜ no deploy |
+| Repo GitHub | Mirror local | Railway / gateway |
+|-------------|--------------|-------------------|
+| [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) | `billing/` | ✅ `/billing/` v0.2.0 · 🔴 E2E live |
+| [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) | `notifications/` | ✅ API `/notifications/` · 🔄 worker |
+| [dakinis-search](https://github.com/dakinissystems/dakinis-search) | `search/` | ✅ API `/search/` · 🔄 worker · pgvector ⬜ |
+| [dakinis-knowledge](https://github.com/dakinissystems/dakinis-knowledge) | `knowledge/` | ✅ API `/knowledge/` + worker ingest |
+| [dakinis-internal-api](https://github.com/dakinissystems/dakinis-internal-api) | `internal/` | ✅ `/internal/` v0.3.1+ |
 
 ```powershell
 .\scripts\push-platform-scaffolds.ps1

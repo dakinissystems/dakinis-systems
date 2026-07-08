@@ -14,6 +14,7 @@
 | [../MARKETPLACE.md](../MARKETPLACE.md) | Marketplace (diseño) |
 | [../BANKING-PLATFORM.md](../BANKING-PLATFORM.md) | Agregación bancaria global |
 | [LANDING-COPY.md](./LANDING-COPY.md) | Copy landing ES (+ EN hero) — implementado en `dakinis-landing` |
+| [INSTAGRAM-CAROUSEL.md](./INSTAGRAM-CAROUSEL.md) | Carrusel 5 slides · assets en `assets/instagram-carousel/` |
 | [../ORGANIZATION.md](../ORGANIZATION.md) | Organigrama objetivo · delegación |
 | [../ROADMAP-CEO.md](../ROADMAP-CEO.md) | Hoja de ruta jul–nov 2026 |
 | [BUSINESS-MODEL.md](./BUSINESS-MODEL.md) | Modelo SaaS · ingresos |

@@ -80,7 +80,7 @@ Detalle: [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) · Setup: [`PLATFORM-SETUP-STE
 |--------|--------|--------|
 | Workspaces + suspender/activar | ✅ API + UI scaffold | piloto |
 | Revenue dashboard (MRR/ARR) | ⬜ tras Billing E2E | post-piloto |
-| Auditoría timeline | ⬜ migr. `031` tablas | post-piloto |
+| Auditoría timeline | ⬜ UI Super Admin (tablas `031` ✅ prod) | post-piloto |
 | Feature flags global + workspace | ⬜ extiende `024` | post-piloto |
 | Customer Success + health scores | ⬜ migr. `031` | escala |
 | Jobs/BullMQ monitor | 🔄 parcial `/events/bus` | — |

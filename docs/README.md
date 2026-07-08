@@ -66,7 +66,7 @@ No mezclar: un inversor empieza en [`company/STRATEGY.md`](./company/STRATEGY.md
 
 - Estado “hecho” → git + ADR + ARCHITECTURE
 - Checklists ops → OPERATIONS
-- Pendientes → **solo** PLATFORM-STATUS
+- **Pendientes → solo [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)** (fuente canónica)
 
 ---
 

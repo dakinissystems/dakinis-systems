@@ -59,25 +59,27 @@ Plantilla variables: [`railway.env.example`](./railway.env.example).
 | **LifeFlow API** | `lifeflow` | **`finance-api.dakinissystems.com`** |
 | **Tabletop Web** | `dakinis-tabletop` | `tabletop.dakinissystems.com` |
 | **Tabletop API** | `dakinis-tabletop` | **`tabletop-api.dakinissystems.com`** |
-| Redis | plugin | interno — **hoy:** AI, StreamAutomator · **roadmap:** Notifications, Hub, Billing, Search |
+| Redis | plugin | interno — AI · StreamAutomator · Billing events · Notifications · Search · Knowledge workers |
+| **Billing** | `dakinis-billing` | `/billing/` |
+| **Notifications** | `dakinis-notifications` | `/notifications/` |
+| **Search** | `dakinis-search` | `/search/` |
+| **Knowledge** | `dakinis-knowledge` | `/knowledge/` |
+| **Internal API** | `dakinis-internal-api` | `/internal/` |
 
-### Fase 1 — operativo (no cambiar)
+### Fase 1 — operativo (prod actual)
 
-Los servicios listados arriba son la **Fase 1** coherente con producción actual.
+Servicios de producto (tabla superior) + platform vía gateway (`/billing/`, `/notifications/`, `/search/`, `/knowledge/`, `/internal/`, `/ai/`).
 
-### Reservado — Fase 2+ (solo documentar)
+Pendientes operativos por servicio → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) (Billing E2E, workers, Resend live…).
 
-No crear servicios Railway vacíos. Cuando se implementen:
+### Reservado — Fase 2+ (no crear vacíos)
 
-| Servicio | Repo (futuro) | Prefijo gateway |
-|----------|---------------|-----------------|
-| Billing | [`dakinis-billing`](https://github.com/dakinissystems/dakinis-billing) | `/billing/` | mirror [`billing/`](../billing/) |
-| Notifications | [`dakinis-notifications`](https://github.com/dakinissystems/dakinis-notifications) | `/notifications/` | mirror [`notifications/`](../notifications/) |
-| Search | [`dakinis-search`](https://github.com/dakinissystems/dakinis-search) | `/search/` | mirror [`search/`](../search/) |
-| Storage / Media | worker | `/media/` |
-| Observability | workers | interno |
+| Servicio | Notas |
+|----------|-------|
+| Storage / Media | `/media/` · R2 · post-piloto |
+| Observability | Sentry · uptime · costes por workspace |
 
-Contratos placeholder: [`docs/contracts/`](./contracts/README.md).
+Contratos: [`docs/contracts/`](./contracts/README.md).
 
 ⚠️ **No usar** `api.finance.dakinissystems.com` — SSL Cloudflare free no cubre subdominio de 2º nivel.
 

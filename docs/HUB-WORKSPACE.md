@@ -181,8 +181,8 @@ Funciones: `meta.is_super_admin`, `meta.is_workspace_admin`, `meta.log_audit`, `
 
 ### 🟠 Con piloto (semana 2–4)
 
-4. Aplicar migr. **031** en Supabase
-5. Hub Admin Nivel 1 (miembros + plan + productos)
+4. ~~Aplicar migr. **031**~~ ✅ prod jul 2026
+5. **Validar Hub Admin Nivel 1** con piloto (miembros + plan + productos + portal Billing)
 6. Centro notificaciones unificado
 
 ### 🟡 Post-piloto (5+ clientes)

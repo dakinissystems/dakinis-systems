@@ -38,7 +38,7 @@
 
 | Objetivo |
 |----------|
-| **Hub Workspace Admin** (miembros, plan, productos) si el piloto lo pide |
+| **Hub Workspace Admin en uso real** (UI `/admin` ✅ — validar invitaciones, plan, productos con piloto) |
 | LifeFlow → PostgreSQL |
 | Knowledge / RAG según **feedback real** |
 | Super Admin panel si **>5 clientes** (hoy: Stripe + Supabase manual) |
