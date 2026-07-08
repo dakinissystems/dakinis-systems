@@ -5,6 +5,9 @@
 
 **Regla marca:** cliente ve **Dakinis One** y **Hub** — no "Core".
 
+**Regenerar assets:** capturas en `refs/` (landing, core-web) + `python generate_carousel.py`  
+Colores DES: `#08111d` · `#2dd4bf` · `#7c3aed` · `#f0f4f9` (ver `packages/shared-brand/src/tokens.css`).
+
 ---
 
 ## Slides
