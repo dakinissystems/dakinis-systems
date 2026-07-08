@@ -1,7 +1,27 @@
 # Dakinis Systems — Mapa temporal (julio 2026)
 
 > **Documento temporal** de funcionalidades, estructura y roadmaps pendientes.  
-> Referencia estable: [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`PRODUCTS.md`](./PRODUCTS.md) · [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) · Hub Admin → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md)
+> Referencia estable: [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`PRODUCTS.md`](./PRODUCTS.md) · [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) · Hub Admin → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md)  
+> **Estrategia / GTM:** [`company/STRATEGY.md`](./company/STRATEGY.md) · [`company/CUSTOMER-JOURNEY.md`](./company/CUSTOMER-JOURNEY.md) · [`WHY.md`](./WHY.md)
+
+---
+
+## 0. Documentación estratégica (jul 2026)
+
+Separación **técnica vs estratégica** — salto de arquitectura a visión de producto.
+
+| Doc | Audiencia | Contenido |
+|-----|-----------|-----------|
+| [`company/STRATEGY.md`](./company/STRATEGY.md) | CEO · ventas | Competencia · FODA · posicionamiento |
+| [`company/CUSTOMER-JOURNEY.md`](./company/CUSTOMER-JOURNEY.md) | Producto · GTM | Landing → workspace → pago |
+| [`WORKSPACE-LIFECYCLE.md`](./WORKSPACE-LIFECYCLE.md) | Producto | Crear → invitar → plan → expandir |
+| [`PLATFORM-CAPABILITIES.md`](./PLATFORM-CAPABILITIES.md) | Todos | Identity · AI · Banking… (no Redis/Railway) |
+| [`WHY.md`](./WHY.md) | Devs nuevos | Por qué Hub, Core separado, sin bots |
+| [`PLATFORM-INTEGRATIONS.md`](./PLATFORM-INTEGRATIONS.md) | Producto | Catálogo conectores roadmap |
+| [`MARKETPLACE.md`](./MARKETPLACE.md) | Futuro | Apps · templates · agents |
+| [`BANKING-PLATFORM.md`](./BANKING-PLATFORM.md) | LifeFlow · Core | Agregación multi-banco global |
+
+**Tesis jul 2026:** arquitectura por delante del producto comercial — priorizar ciclo cliente completo, no nuevos componentes.
 
 ---
 
@@ -95,11 +115,12 @@ UI futura: `admin.dakinissystems.com` · Hoy: Hub `/admin` + Supabase Studio + S
 
 | Ventaja Dakinis | Riesgo |
 |-----------------|--------|
-| Gemelo financiero + 6 escenarios paralelos | Sin PSD2 = datos manuales |
+| Gemelo financiero + 6 escenarios paralelos | Sin PSD2 = datos manuales hoy |
 | Comparador ciudades (ES) | Fintonic tiene agregación bancaria |
 | Coach IA Pro | Mercado financiero competido |
+| Banking Platform diseñada | Implementación post-piloto |
 
-**Mensaje:** "El ProjectionLab español" — planificación de vida, no solo agregador.
+**Mensaje:** "El ProjectionLab español" — planificación de vida, no solo agregador. Banca → [`BANKING-PLATFORM.md`](./BANKING-PLATFORM.md)
 
 ### Dakinis One vs Holded / Odoo
 
@@ -195,6 +216,8 @@ Scripts ops: [`supabase/scripts/provision_workspace_christiandvillar.sql`](./sup
 ---
 
 ## 7. FODA resumido
+
+Detalle y comparativas → [`company/STRATEGY.md`](./company/STRATEGY.md)
 
 | | |
 |--|--|

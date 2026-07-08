@@ -108,7 +108,15 @@ El **Engine** es independiente de la UI. Consumido por Web, Android (roadmap) y 
 |------|--------|---------|
 | Lite | Gratis | Radar 90d, OCR ticket, import básico |
 | Premium | 9 €/mes | Escenarios, coach, score, logros, gemelo |
-| Pro | 19 €/mes | + IA avanzada, comparador ciudades, PSD2 roadmap |
+| Pro | 19 €/mes | + IA avanzada, comparador ciudades, **Open Banking roadmap** |
+
+### Agregación bancaria (roadmap)
+
+LifeFlow no integrará bancos uno a uno. Consumirá **Dakinis Banking Platform** — capa de agregación multi-país (GoCardless, Plaid, Belvo, CSV, PDF+IA).
+
+Hoy: importación manual y CSV. Sin PSD2 el mensaje honesto es *planificación de vida*, no *agregador tipo Fintonic*.
+
+→ [`BANKING-PLATFORM.md`](./BANKING-PLATFORM.md) · Competencia → [`company/STRATEGY.md`](./company/STRATEGY.md)
 
 ### Platform consumida
 

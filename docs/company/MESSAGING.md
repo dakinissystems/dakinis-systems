@@ -49,6 +49,16 @@ El cliente **entra por el Hub**, no por “otro ERP”.
 
 ---
 
+## Posicionamiento vs competencia
+
+**Usar en concepto / pitch técnico:** inspirados en Microsoft 365, Zoho One y Atlassian Cloud (Hub + workspace + suite).
+
+**No usar en ventas:** "comparable a Microsoft 365" — genera expectativas de escala que aún no tenemos.
+
+Comparativa completa → [`STRATEGY.md`](./STRATEGY.md)
+
+---
+
 ## Propuesta de valor (canónica jul 2026)
 
 **Headline (H1):**

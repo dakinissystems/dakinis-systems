@@ -28,6 +28,8 @@ PYME España que quiere **un solo lugar** (Hub) para operar el negocio y abrir m
 
 ## Qué NO vendemos aún
 
-Marketplace · plugins · storage enterprise — post-validación comercial.
+Marketplace · plugins · storage enterprise · banking global — post-validación comercial.
+
+Diseño documentado: [`MARKETPLACE.md`](../MARKETPLACE.md) · [`BANKING-PLATFORM.md`](../BANKING-PLATFORM.md)
 
 Detalle planes → [PRICING-STRATEGY.md](./PRICING-STRATEGY.md)

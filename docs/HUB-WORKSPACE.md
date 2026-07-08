@@ -7,7 +7,11 @@
 
 ## Visión
 
-Comparable a **Microsoft 365 Home**, **Zoho One** o **Atlassian Cloud**: el usuario entra al Hub y desde ahí gestiona su empresa, no solo abre apps.
+**Inspirado en** la experiencia de Microsoft 365, Zoho One y Atlassian Cloud: el usuario entra al Hub y desde ahí gestiona su empresa, no solo abre apps.
+
+Arquitectónicamente el patrón es similar; comercialmente Dakinis es plataforma PYME en fase piloto — ver [`company/STRATEGY.md`](./company/STRATEGY.md).
+
+Ciclo completo del workspace → [`WORKSPACE-LIFECYCLE.md`](./WORKSPACE-LIFECYCLE.md)
 
 ```
 Usuario → Auth → Hub (escritorio de la empresa)
@@ -208,7 +212,9 @@ Funciones: `meta.is_super_admin`, `meta.is_workspace_admin`, `meta.log_audit`, `
 | Salesforce | ⭐⭐⭐⭐ |
 | Odoo | ⭐⭐⭐ (ERP clásico, no ecosistema) |
 
-**Conclusión:** Dakinis se posiciona como ecosistema multi-producto con IA integrada, orientado a PYMEs españolas — no como ERP monolítico.
+**Conclusión:** Dakinis se posiciona como ecosistema multi-producto con IA integrada, orientado a PYMEs españolas — no como ERP monolítico ni como "el nuevo Microsoft 365".
+
+Integraciones roadmap → [`PLATFORM-INTEGRATIONS.md`](./PLATFORM-INTEGRATIONS.md) · Marketplace → [`MARKETPLACE.md`](./MARKETPLACE.md)
 
 ---
 

@@ -3,6 +3,10 @@
 > **Estado vigente** · julio 2026 · decisiones de arquitectura y capas.  
 > Estado operativo → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) · Productos → [`PRODUCTS.md`](./PRODUCTS.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md)
 
+**¿Por qué estas decisiones?** → [`WHY.md`](./WHY.md)  
+**Capacidades platform (vista negocio)** → [`PLATFORM-CAPABILITIES.md`](./PLATFORM-CAPABILITIES.md)  
+**Estrategia / competencia** → [`company/STRATEGY.md`](./company/STRATEGY.md)
+
 ---
 
 ## Cuatro capas
@@ -134,7 +138,7 @@ Contrato Internal API: [`contracts/internal-api.json`](./contracts/internal-api.
 
 **Rol:** escritorio de la empresa — identidad de **workspace** (no solo usuario) · Mi día · widgets · launcher SSO · notificaciones · admin · integraciones — **no “solo un menú”**.
 
-Comparable a Microsoft 365 Home / Zoho One: el cliente gestiona nombre, plan, miembros, productos y consumo IA desde Hub.
+Experiencia **inspirada en** Microsoft 365 / Zoho One (un escritorio, muchas apps); detalle comercial → [`company/STRATEGY.md`](./company/STRATEGY.md).
 
 ```
 Hub
