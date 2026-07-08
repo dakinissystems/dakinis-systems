@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import type { CampaignDetail, CampaignItem, CampaignNote } from "../../types/campaign";
 import { useLocale } from "../../context/LocaleContext";
 import { CampaignNotesTab } from "./CampaignNotesTab";
@@ -20,6 +21,7 @@ type Props = {
   onAddNote: () => void;
   onAddItem: () => void;
   onCopyInvite: () => void;
+  onRename?: (name: string) => void;
 };
 
 export function CampaignDetailView({
@@ -36,11 +38,66 @@ export function CampaignDetailView({
   onAddNote,
   onAddItem,
   onCopyInvite,
+  onRename,
 }: Props) {
   const { t } = useLocale();
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
+  const renameInputRef = useRef<HTMLInputElement>(null);
+  const canRename = detail.role === "owner" && Boolean(onRename);
+
+  const startRename = () => {
+    setNameDraft(detail.name);
+    setEditingName(true);
+    requestAnimationFrame(() => renameInputRef.current?.focus());
+  };
+
+  const cancelRename = () => {
+    setNameDraft(detail.name);
+    setEditingName(false);
+  };
+
+  const saveRename = () => {
+    const trimmed = nameDraft.trim();
+    if (trimmed.length < 2 || trimmed === detail.name) {
+      cancelRename();
+      return;
+    }
+    onRename?.(trimmed);
+    setEditingName(false);
+  };
 
   return (
     <>
+      <div className="campaign-title-bar">
+        {editingName ? (
+          <div className="campaign-rename">
+            <input
+              ref={renameInputRef}
+              aria-label={t("campaign.renamePlaceholder")}
+              value={nameDraft}
+              onChange={(e) => setNameDraft(e.target.value)}
+              maxLength={80}
+            />
+            <button type="button" className="btn btn-sm" onClick={saveRename} disabled={busy}>
+              {t("campaign.renameSave")}
+            </button>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={cancelRename} disabled={busy}>
+              {t("campaign.renameCancel")}
+            </button>
+          </div>
+        ) : (
+          <div className="campaign-title-row">
+            <h3 className="campaign-title">{detail.name}</h3>
+            {canRename && (
+              <button type="button" className="btn btn-secondary btn-sm" onClick={startRename} disabled={busy}>
+                {t("campaign.rename")}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
       <div className="campaign-invite-bar">
         <div>
           <strong>{t("campaign.inviteForFriends")}</strong>{" "}
