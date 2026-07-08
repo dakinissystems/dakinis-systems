@@ -15,5 +15,7 @@ Referencias **ligeras** (legibles por humanos y CI) para rutas y nombres expuest
 | [`notifications.json`](./notifications.json) | `/notifications/` → [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |
 | [`search.json`](./search.json) | `/search/` → [dakinis-search](https://github.com/dakinissystems/dakinis-search) |
 | [`knowledge.json`](./knowledge.json) | `/knowledge/` → [dakinis-knowledge](https://github.com/dakinissystems/dakinis-knowledge) |
+| [`fitness-platform-api.json`](./fitness-platform-api.json) | `/fitness/` → Fitness Platform API (demo JWT propio) |
+| [`hub.json`](./hub.json) | Origen propio `hub.dakinissystems.com` (no prefijo gateway) |
 
 Actualiza estos JSON cuando cambies prefijos en [`gateway/routes/`](../../gateway/routes/) o contratos públicos de las APIs.

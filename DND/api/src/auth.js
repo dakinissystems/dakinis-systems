@@ -1,8 +1,26 @@
 import jwt from "jsonwebtoken";
 import { dndFindUserById } from "./db.js";
 
+const DEV_JWT_FALLBACK = "tabletop-dev-secret-change-in-prod";
+const rawSecret =
+  process.env.TABLETOP_JWT_SECRET || process.env.DND_JWT_SECRET || "";
 const JWT_SECRET =
-  process.env.TABLETOP_JWT_SECRET || process.env.DND_JWT_SECRET || "tabletop-dev-secret-change-in-prod";
+  rawSecret ||
+  (process.env.NODE_ENV === "production" ? "" : DEV_JWT_FALLBACK);
+
+if (!JWT_SECRET) {
+  throw new Error(
+    "TABLETOP_JWT_SECRET (or DND_JWT_SECRET) is required in production"
+  );
+}
+
+if (
+  process.env.NODE_ENV === "production" &&
+  JWT_SECRET === DEV_JWT_FALLBACK
+) {
+  throw new Error("Refusing to start with default Tabletop JWT secret in production");
+}
+
 const JWT_EXPIRES = process.env.TABLETOP_JWT_EXPIRES || process.env.DND_JWT_EXPIRES || "30d";
 
 export function dndSignToken(user) {

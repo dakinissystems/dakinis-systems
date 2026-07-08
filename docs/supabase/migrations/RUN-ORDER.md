@@ -19,6 +19,7 @@ Pega **cada archivo en orden** en el SQL Editor de Supabase (proyecto **Dakinis 
 | 14a | [`014a_auth_nullable_password.sql`](./014a_auth_nullable_password.sql) | Si 014 falla OAuth |
 | 14 | [`014_backfill_legacy_map.sql`](./014_backfill_legacy_map.sql) | ✅ 7 users |
 | 15 | [`015_backfill_stream_data.sql`](./015_backfill_stream_data.sql) | ✅ 120 contents |
+| 15b | [`015b_backfill_akoenet_data.sql`](./015b_backfill_akoenet_data.sql) | ⬜ Tras import AkoeNet → ver [`MIGRATE-AKOENET.md`](../MIGRATE-AKOENET.md) |
 
 ## Fase C — Mejoras arquitectura (016–019) ⬜ pendiente en prod
 
@@ -51,6 +52,14 @@ Verificación: [`scripts/smoke-supabase-phase-c.sql`](../../scripts/smoke-supaba
 | 24 | [`024_meta_governance.sql`](./024_meta_governance.sql) | ✅ meta: schema_versions, migration_history, feature_flags |
 | 25 | [`025_knowledge_schema.sql`](./025_knowledge_schema.sql) | Schema `knowledge` — documents, chunks, embeddings, jobs |
 | 26 | [`026_knowledge_rls_policies.sql`](./026_knowledge_rls_policies.sql) | RLS deny `knowledge.*` (Security Advisor) |
+
+## Fase D+ — LifeFlow platform links (030)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 30 | [`030_lifeflow_app_links.sql`](./030_lifeflow_app_links.sql) | ⬜ Puente SQLite LifeFlow ↔ `dakinis_auth.users` (Hub widgets, score_history) |
+
+Aplicar **después** de schema `lifeflow` activo y backfill de usuarios IdP.
 
 ## Seeds
 

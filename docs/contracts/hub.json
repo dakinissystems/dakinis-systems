@@ -1,0 +1,29 @@
+{
+  "service": "dakinis-hub",
+  "status": "production",
+  "description": "Hub dashboard SPA — Mi día, widgets cross-producto, SSO IdP",
+  "publicOrigin": "https://hub.dakinissystems.com",
+  "repository": "https://github.com/dakinissystems/dakinis-hub",
+  "gatewayPrefix": null,
+  "notes": [
+    "Hub is a standalone origin (not routed via api.dakinissystems.com gateway prefix).",
+    "Runtime proxies /api/hub → Internal API with HUB_INTERNAL_SERVICE_KEY.",
+    "Build: Dockerfile (root src/, not hub/web/). Sync DES packages before push."
+  ],
+  "runtime": {
+    "startCommand": "node server.js",
+    "port": 8080,
+    "env": [
+      "HUB_INTERNAL_SERVICE_KEY",
+      "HUB_API_BASE",
+      "VITE_HUB_DEMO_USER_ID"
+    ]
+  },
+  "routes": {
+    "GET /": "SPA shell",
+    "GET /api/hub/dashboard/:userId": "Proxy → GET /internal/hub/dashboard/:userId",
+    "GET /health": "Health (if configured in server.js)"
+  },
+  "consumers": ["browser", "IdP SSO", "Internal API"],
+  "dependencies": ["dakinis-internal-api", "dakinis_auth.users", "hub.mi_dia migration 027+"]
+}

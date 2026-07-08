@@ -12,6 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Prepare compose env (stub)
         run: |
           cp docker/.env.example docker/.env
@@ -66,12 +70,15 @@ jobs:
             echo 'Skipping docker compose build: platform/ and apps/ are not in this checkout (control-repo layout).'
           fi
 
-      - name: AkoeNet Client — Vite build
+      - name: Verify vendored package drift
+        run: node scripts/verify-package-drift.mjs
+
+      - name: AkoeNet Client — deploy build (build:ci)
         if: hashFiles('apps/akoenet/Client/package.json') != ''
         working-directory: apps/akoenet/Client
         run: |
           npm ci
-          npm run build
+          npm run build:ci
 
       - name: Core — API build smoke
         if: hashFiles('platform/core/package.json') != ''
@@ -86,6 +93,25 @@ jobs:
         run: |
           npm install --omit=dev
           node --check src/app.js
+
+  platform-services:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [billing, internal, search, notifications]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax check (${{ matrix.service }})
+        run: |
+          svc="${{ matrix.service }}"
+          cd "$svc"
+          npm ci --omit=dev
+          node --check src/server.js
+          if [ -f src/worker.js ]; then node --check src/worker.js; fi
 
   security-audit:
     runs-on: ubuntu-latest
@@ -110,6 +136,14 @@ jobs:
           - name: streamautomator-api
             path: apps/streamautomator/apps/api
             optional: true
+          - name: billing
+            path: billing
+          - name: internal-api
+            path: internal
+          - name: search
+            path: search
+          - name: notifications
+            path: notifications
 
     steps:
       - uses: actions/checkout@v4
