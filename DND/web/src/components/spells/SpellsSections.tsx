@@ -26,17 +26,8 @@ export function SpellsMyList({
   const prepared = character.spells.filter((s) => s.isPrepared);
 
   return (
-    <section className="panel">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "0.5rem",
-          marginBottom: "1rem",
-        }}
-      >
+    <section className="panel spells-panel__section">
+      <div className="spells-panel__head">
         <h2>
           {t("spells.mySpells")} - {t("spells.preparedCount", { prepared: preparedCount, max: maxPrep })}
         </h2>
@@ -45,15 +36,15 @@ export function SpellsMyList({
         </button>
       </div>
 
-      <div className="table-wrap">
+      <div className="table-wrap spells-table-wrap">
         <table>
           <thead>
             <tr>
               <th>{t("spells.prepared")}</th>
               <th>{t("spells.name")}</th>
               <th>{t("spells.level")}</th>
-              <th>{t("spells.school")}</th>
-              <th>{t("spells.source")}</th>
+              <th className="spells-my-school">{t("spells.school")}</th>
+              <th className="spells-my-source">{t("spells.source")}</th>
               <th>{t("inventory.actions")}</th>
             </tr>
           </thead>
@@ -81,8 +72,8 @@ export function SpellsMyList({
                   {s.isAlwaysReady && <span className="badge badge-active"> {t("spells.alwaysReady")}</span>}
                 </td>
                 <td>{s.level === 0 ? t("spells.cantrip") : s.level}</td>
-                <td>{s.school}</td>
-                <td>
+                <td className="spells-my-school">{s.school}</td>
+                <td className="spells-my-source">
                   {s.source === "custom" ? (
                     <span className="badge badge-custom">{t("spells.customTag")}</span>
                   ) : (
@@ -151,9 +142,9 @@ export function SpellsCatalog({
   const { t } = useLocale();
 
   return (
-    <section className="panel">
+    <section className="panel spells-panel__section">
       <h2>{t("spells.catalog", { count: catalog.length })}</h2>
-      <div className="form-row" style={{ marginBottom: "0.75rem" }}>
+      <div className="form-row spells-filters">
         <div className="form-field">
           <label htmlFor="spells-search">{t("spells.search")}</label>
           <input
@@ -189,7 +180,7 @@ export function SpellsCatalog({
           </select>
         </div>
       </div>
-      <label className="checkbox-label" style={{ marginBottom: "0.75rem" }}>
+      <label className="checkbox-label spells-class-toggle">
         <input
           type="checkbox"
           checked={showClassOnly}
@@ -202,21 +193,20 @@ export function SpellsCatalog({
       {classId && (
         <button
           type="button"
-          className="btn btn-secondary btn-sm"
-          style={{ marginBottom: "0.75rem" }}
+          className="btn btn-secondary btn-sm spells-import-btn"
           onClick={onAddAllClassSpells}
         >
           {t("spells.importClassSpells")}
         </button>
       )}
-      <div className="table-wrap" style={{ maxHeight: 420, overflowY: "auto" }}>
+      <div className="table-wrap spells-table-wrap spells-table-wrap--catalog">
         <table>
           <thead>
             <tr>
               <th>{t("spells.level")}</th>
               <th>{t("spells.name")}</th>
               <th>{t("spells.source")}</th>
-              <th>{t("spells.school")}</th>
+              <th className="spells-cat-school">{t("spells.school")}</th>
               <th>{t("inventory.actions")}</th>
             </tr>
           </thead>
@@ -230,7 +220,7 @@ export function SpellsCatalog({
                   <td>
                     <span className="tag">{s.source.toUpperCase()}</span>
                   </td>
-                  <td>{s.school}</td>
+                  <td className="spells-cat-school">{s.school}</td>
                   <td>
                     <button
                       type="button"
@@ -248,7 +238,7 @@ export function SpellsCatalog({
           </tbody>
         </table>
         {catalog.length > 80 && (
-          <p style={{ fontSize: "0.85rem", color: "var(--muted)", textAlign: "center" }}>
+          <p className="spells-catalog-more">
             {t("spells.narrowResults", { count: catalog.length })}
           </p>
         )}

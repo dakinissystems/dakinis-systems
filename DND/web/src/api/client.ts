@@ -138,6 +138,12 @@ export const tabletopApi = {
   getCampaign: (id: string) =>
     tabletopFetch<{ campaign: CampaignDetail }>(`/api/campaigns/${encodeURIComponent(id)}`),
 
+  updateCampaign: (id: string, name: string) =>
+    tabletopFetch<{ campaign: CampaignDetail }>(`/api/campaigns/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify({ name }),
+    }),
+
   listNotes: (campaignId: string) =>
     tabletopFetch<{ notes: CampaignNote[] }>(`/api/campaigns/${encodeURIComponent(campaignId)}/notes`),
 

@@ -99,7 +99,7 @@ export function SpellsPanel({ character, onChange }: Props) {
     : character.spells;
 
   return (
-    <div className="grid-2">
+    <div className="grid-2 spells-panel">
       <SpellsMyList
         character={character}
         characterSpells={characterSpells}

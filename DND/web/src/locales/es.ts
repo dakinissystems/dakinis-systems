@@ -242,6 +242,10 @@ export const es = {
     addToLoot: "Añadir al botín compartido",
     addedBy: "Añadido por {name}",
     empty: "Crea una campaña o únete con un código de invitación.",
+    rename: "Renombrar",
+    renamePlaceholder: "Nombre de la campaña",
+    renameSave: "Guardar",
+    renameCancel: "Cancelar",
   },
   session: {
     title: "Diario de sesión",
@@ -274,6 +278,7 @@ export const es = {
     proficiencyBonus: "Bonificador de competencia",
     history: "Historial",
     pbLabel: "PB",
+    rolling: "Tirando…",
   },
   combos: {
     title: "Combos sugeridos para {name}",

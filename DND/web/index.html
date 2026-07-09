@@ -20,6 +20,17 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (function () {
+        var extNoise = /runtime\.lastError|Receiving end does not exist/;
+        var origError = console.error;
+        console.error = function () {
+          var msg = Array.prototype.join.call(arguments, " ");
+          if (extNoise.test(msg)) return;
+          origError.apply(console, arguments);
+        };
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

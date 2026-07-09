@@ -249,6 +249,16 @@ export function dndCreateCampaign(userId, name) {
   return dndGetCampaign(userId, id);
 }
 
+export function dndUpdateCampaignName(userId, campaignId, name) {
+  const row = db.prepare(`SELECT owner_id FROM campaigns WHERE id = ?`).get(campaignId);
+  if (!row || row.owner_id !== userId) return null;
+  const trimmed = String(name ?? "").trim();
+  if (trimmed.length < 2) return null;
+  db.prepare(`UPDATE campaigns SET name = ? WHERE id = ?`).run(trimmed, campaignId);
+  dndPersistDb();
+  return dndGetCampaign(userId, campaignId);
+}
+
 export function dndGetCampaign(userId, campaignId) {
   if (!dndIsCampaignMember(campaignId, userId)) return null;
   const row = db

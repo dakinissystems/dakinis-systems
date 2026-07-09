@@ -242,6 +242,10 @@ export const en = {
     addToLoot: "Add to shared loot",
     addedBy: "Added by {name}",
     empty: "Create a campaign or join with an invite code.",
+    rename: "Rename",
+    renamePlaceholder: "Campaign name",
+    renameSave: "Save",
+    renameCancel: "Cancel",
   },
   session: {
     title: "Session journal",
@@ -274,6 +278,7 @@ export const en = {
     proficiencyBonus: "Proficiency bonus",
     history: "History",
     pbLabel: "PB",
+    rolling: "Rolling…",
   },
   combos: {
     title: "Suggested combos for {name}",

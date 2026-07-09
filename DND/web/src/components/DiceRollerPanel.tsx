@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Character } from "../types/character";
 import { getAbilityMod } from "../engine/formulas";
 import {
@@ -19,6 +19,12 @@ type Props = {
 type HistoryEntry = RollResult & { id: string; at: string };
 
 const ABILITY_KEYS = ["str", "dex", "con", "int", "wis", "cha"] as const;
+const ROLL_MS = 720;
+
+function dieCountFromNotation(notation: string): number {
+  const match = notation.trim().toLowerCase().replace(/\s+/g, "").match(/^(\d+)d\d+/);
+  return match ? Math.min(parseInt(match[1], 10), 6) : 1;
+}
 
 export function DiceRollerPanel({ character }: Props) {
   const { locale, t } = useLocale();
@@ -27,19 +33,43 @@ export function DiceRollerPanel({ character }: Props) {
   const [mode, setMode] = useState<RollMode>("normal");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [lastRoll, setLastRoll] = useState<RollResult | null>(null);
+  const [isRolling, setIsRolling] = useState(false);
+  const [rollingLabel, setRollingLabel] = useState<string | null>(null);
+  const [rollingDice, setRollingDice] = useState(1);
+  const rollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
+    };
+  }, []);
 
   const roll = (notation: string, opts?: { modifier?: number; mode?: RollMode; label?: string }) => {
-    const result = rollDiceDetailed(notation, {
-      modifier: opts?.modifier ?? modifier,
-      mode: opts?.mode ?? mode,
-      label: opts?.label,
-    });
-    setLastRoll(result);
-    setHistory((prev) => [
-      { ...result, id: crypto.randomUUID(), at: new Date().toISOString() },
-      ...prev.slice(0, 19),
-    ]);
-    return result;
+    if (rollTimerRef.current) clearTimeout(rollTimerRef.current);
+
+    const label = opts?.label;
+    const diceCount = dieCountFromNotation(notation);
+    setRollingLabel(label ?? notation);
+    setRollingDice(Math.max(1, diceCount));
+    setIsRolling(true);
+
+    rollTimerRef.current = setTimeout(() => {
+      const result = rollDiceDetailed(notation, {
+        modifier: opts?.modifier ?? modifier,
+        mode: opts?.mode ?? mode,
+        label,
+      });
+      setLastRoll(result);
+      setIsRolling(false);
+      setRollingLabel(null);
+      setHistory((prev) => [
+        { ...result, id: crypto.randomUUID(), at: new Date().toISOString() },
+        ...prev.slice(0, 19),
+      ]);
+      rollTimerRef.current = null;
+    }, ROLL_MS);
+
+    return null;
   };
 
   const rollQuick = (sides: number) => {
@@ -76,11 +106,32 @@ export function DiceRollerPanel({ character }: Props) {
     <section className="panel dice-roller">
       <h2>{t("dice.title")}</h2>
 
-      {lastRoll && (
-        <div className="dice-result" aria-live="polite">
-          {lastRoll.label && <span className="dice-result__label">{lastRoll.label}</span>}
-          <span className="dice-result__total">{lastRoll.total}</span>
-          <span className="dice-result__detail">{formatRollSummary(lastRoll)}</span>
+      {(isRolling || lastRoll) && (
+        <div
+          className={`dice-result${isRolling ? " dice-result--rolling" : " dice-result--landed"}`}
+          aria-live="polite"
+        >
+          {isRolling ? (
+            <>
+              {rollingLabel && <span className="dice-result__label">{rollingLabel}</span>}
+              <div className="dice-roll-stage" aria-hidden="true">
+                {Array.from({ length: rollingDice }, (_, i) => (
+                  <span key={i} className="dice-die" style={{ animationDelay: `${i * 0.08}s` }}>
+                    🎲
+                  </span>
+                ))}
+              </div>
+              <span className="dice-result__detail">{t("dice.rolling")}</span>
+            </>
+          ) : (
+            lastRoll && (
+              <>
+                {lastRoll.label && <span className="dice-result__label">{lastRoll.label}</span>}
+                <span className="dice-result__total">{lastRoll.total}</span>
+                <span className="dice-result__detail">{formatRollSummary(lastRoll)}</span>
+              </>
+            )
+          )}
         </div>
       )}
 
@@ -91,6 +142,7 @@ export function DiceRollerPanel({ character }: Props) {
             type="button"
             className={`chip-btn ${mode === m ? "chip-btn--on" : ""}`}
             onClick={() => setMode(m)}
+            disabled={isRolling}
           >
             {m === "normal" ? t("dice.normal") : m === "advantage" ? t("dice.advantage") : t("dice.disadvantage")}
           </button>
@@ -101,7 +153,13 @@ export function DiceRollerPanel({ character }: Props) {
 
       <div className="dice-quick">
         {QUICK_DICE.map((sides) => (
-          <button key={sides} type="button" className="dice-quick__btn" onClick={() => rollQuick(sides)}>
+          <button
+            key={sides}
+            type="button"
+            className="dice-quick__btn"
+            onClick={() => rollQuick(sides)}
+            disabled={isRolling}
+          >
             d{sides}
           </button>
         ))}
@@ -114,6 +172,7 @@ export function DiceRollerPanel({ character }: Props) {
           onChange={(e) => setCustom(e.target.value)}
           placeholder={t("dice.notationPlaceholder")}
           aria-label={t("dice.notationAria")}
+          disabled={isRolling}
         />
         <div className="dice-custom__mod">
           <label>{t("dice.modifier")}</label>
@@ -122,9 +181,10 @@ export function DiceRollerPanel({ character }: Props) {
             value={modifier}
             onChange={(e) => setModifier(+e.target.value || 0)}
             aria-label={t("dice.modifierAria")}
+            disabled={isRolling}
           />
         </div>
-        <button type="button" className="btn" onClick={rollCustom}>
+        <button type="button" className="btn" onClick={rollCustom} disabled={isRolling}>
           {t("dice.roll")}
         </button>
       </div>
@@ -139,6 +199,7 @@ export function DiceRollerPanel({ character }: Props) {
               type="button"
               className="dice-ability-btn"
               onClick={() => rollAbility(key)}
+              disabled={isRolling}
             >
               <span>{t(`abilities.abbr.${key}`)}</span>
               <strong>{formatModifier(mod)}</strong>
@@ -148,7 +209,12 @@ export function DiceRollerPanel({ character }: Props) {
       </div>
 
       <h3 className="dice-section-title">{t("dice.proficiencyBonus")}</h3>
-      <button type="button" className="btn btn-secondary btn-block" onClick={() => rollWithPb(t("dice.pbLabel"))}>
+      <button
+        type="button"
+        className="btn btn-secondary btn-block"
+        onClick={() => rollWithPb(t("dice.pbLabel"))}
+        disabled={isRolling}
+      >
         1d20 {formatModifier(character.proficiencyBonus)} ({t("dice.pbLabel")} +{character.proficiencyBonus})
       </button>
 

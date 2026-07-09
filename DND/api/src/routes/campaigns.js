@@ -12,6 +12,7 @@ import {
   dndListCampaignItems,
   dndListCampaignNotes,
   dndListCampaigns,
+  dndUpdateCampaignName,
 } from "../db.js";
 
 const router = Router();
@@ -45,6 +46,16 @@ router.post("/join", (req, res) => {
 router.get("/:id", (req, res) => {
   const campaign = dndGetCampaign(req.dndUser.id, req.params.id);
   if (!campaign) return res.status(404).json({ error: "Campaña no encontrada" });
+  res.json({ campaign });
+});
+
+router.patch("/:id", (req, res) => {
+  const name = String(req.body?.name ?? "").trim();
+  if (name.length < 2) {
+    return res.status(400).json({ error: "Nombre de campaña requerido (mín. 2 caracteres)" });
+  }
+  const campaign = dndUpdateCampaignName(req.dndUser.id, req.params.id, name);
+  if (!campaign) return res.status(403).json({ error: "Solo el dueño puede renombrar la campaña" });
   res.json({ campaign });
 });
 

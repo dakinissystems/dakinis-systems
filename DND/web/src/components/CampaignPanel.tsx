@@ -157,6 +157,21 @@ export function CampaignPanel({ onSignIn }: Props) {
     }
   };
 
+  const renameCampaign = async (name: string) => {
+    if (!activeId) return;
+    setBusy(true);
+    setError("");
+    try {
+      const { campaign } = await dndApi.updateCampaign(activeId, name);
+      setCampaigns((prev) => prev.map((c) => (c.id === campaign.id ? { ...c, name: campaign.name } : c)));
+      dispatchView({ type: "set", detail: campaign, notes, items });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (!user) {
     return (
       <section className="panel campaign-panel">
@@ -235,6 +250,7 @@ export function CampaignPanel({ onSignIn }: Props) {
           onAddNote={addNote}
           onAddItem={addItem}
           onCopyInvite={copyInvite}
+          onRename={detail.role === "owner" ? renameCampaign : undefined}
         />
       )}
 
