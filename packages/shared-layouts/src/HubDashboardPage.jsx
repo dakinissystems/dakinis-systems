@@ -11,6 +11,7 @@ import { dakinisResolveHubWidgetOpen, dakinisRunHubWidgetAction, dakinisRunHubRe
 import { dakinisHubProductEnabled } from "../../shared-brand/src/hub-product-access.js";
 import { HubProductIcon } from "../../shared-ux/src/HubProductIcon.jsx";
 import HubActionsPanel from "../../shared-ux/src/react/HubActionsPanel.jsx";
+import { dakinisHubT } from "../../shared-ux/src/hub-i18n.js";
 import { dashboardCardStyles } from "../../shared-ux/src/DashboardCard.jsx";
 
 /**
@@ -77,6 +78,7 @@ export default function HubDashboardPage({
         {recommendedActions.length > 0 ? (
           <HubActionsPanel
             actions={recommendedActions}
+            t={dakinisHubT}
             onAction={(actionId) => dakinisRunHubRecommendedAction(actionId, { apps, onAppOpen })}
           />
         ) : null}

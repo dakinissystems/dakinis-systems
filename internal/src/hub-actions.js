@@ -4,7 +4,7 @@
  */
 
 /**
- * @typedef {{ id: string; severity: 'info'|'warning'|'critical'; title: string; detail?: string; action: string; product?: string }} HubAction
+ * @typedef {{ id: string; severity: 'info'|'warning'|'critical'; title: string; detail?: string; ctaLabel?: string; action: string; product?: string }} HubAction
  */
 
 export function buildRecommendedActions(dashboard = {}) {
@@ -19,7 +19,9 @@ export function buildRecommendedActions(dashboard = {}) {
     actions.push({
       id: "notifications-unread",
       severity: unread > 10 ? "warning" : "info",
-      title: `${unread} notificación${unread === 1 ? "" : "es"} sin leer`,
+      title: unread === 1 ? "Tienes 1 notificación nueva" : `Tienes ${unread} notificaciones nuevas`,
+      detail: "Revísalas para no perder avisos importantes",
+      ctaLabel: "Ver bandeja",
       action: "open-notifications",
       product: "hub",
     });
@@ -31,7 +33,9 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "core-orders",
         severity: "warning",
-        title: `${pending} pedido${pending === 1 ? "" : "s"} pendiente${pending === 1 ? "" : "s"}`,
+        title: pending === 1 ? "1 pedido espera tu atención" : `${pending} pedidos esperan tu atención`,
+        detail: "Confirma o prepara los pedidos pendientes",
+        ctaLabel: "Ver pedidos",
         action: "open-core-orders",
         product: "core",
       });
@@ -42,7 +46,9 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "core-stock",
         severity: "critical",
-        title: `Stock crítico en ${lowStock} producto${lowStock === 1 ? "" : "s"}`,
+        title: lowStock === 1 ? "Un producto con stock crítico" : `${lowStock} productos con stock crítico`,
+        detail: "Repón inventario antes de quedarte sin unidades",
+        ctaLabel: "Ver inventario",
         action: "open-core-inventory",
         product: "core",
       });
@@ -53,7 +59,9 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "core-appointments",
         severity: "info",
-        title: `${appointments} cita${appointments === 1 ? "" : "s"} hoy`,
+        title: appointments === 1 ? "Tienes 1 cita hoy" : `Tienes ${appointments} citas hoy`,
+        detail: "Consulta tu agenda del día",
+        ctaLabel: "Ver agenda",
         action: "open-core-calendar",
         product: "core",
       });
@@ -66,8 +74,9 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "lifeflow-score",
         severity: "warning",
-        title: "LifeFlow Score bajo — revisar finanzas",
-        detail: `Score ${Math.round(score)}`,
+        title: "Tu LifeFlow Score necesita atención",
+        detail: `Estás en ${Math.round(score)} — revisa ingresos y gastos`,
+        ctaLabel: "Abrir LifeFlow",
         action: "open-lifeflow",
         product: "lifeflow",
       });
@@ -80,7 +89,9 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "stream-schedule",
         severity: "info",
-        title: "Sin publicaciones programadas esta semana",
+        title: "Aún no tienes publicaciones programadas",
+        detail: "Organiza el contenido de esta semana en StreamAutomator",
+        ctaLabel: "Ir al calendario",
         action: "open-stream-calendar",
         product: "streamautomator",
       });
@@ -93,7 +104,9 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "akoenet-dm",
         severity: "info",
-        title: `${dm} mensaje${dm === 1 ? "" : "s"} sin leer en comunidad`,
+        title: dm === 1 ? "1 mensaje sin leer en tu comunidad" : `${dm} mensajes sin leer en tu comunidad`,
+        detail: "Responde cuando puedas para mantener el engagement",
+        ctaLabel: "Abrir AkoeNet",
         action: "open-akoenet",
         product: "akoenet",
       });
@@ -104,8 +117,9 @@ export function buildRecommendedActions(dashboard = {}) {
     actions.push({
       id: "setup-mi-dia",
       severity: "info",
-      title: "Conecta tus productos para ver acciones aquí",
-      detail: "Aplica migr. Hub 016–029 en Supabase",
+      title: "Personaliza tu Mi día",
+      detail: "Abre tus apps conectadas para ver tareas y recordatorios aquí",
+      ctaLabel: "Ver aplicaciones",
       action: "open-apps",
       product: "hub",
     });

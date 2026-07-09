@@ -16,6 +16,7 @@ export * from "./achievements.js";
 export { HubProductIcon } from "./HubProductIcon.jsx";
 export * from "./hub-widget-actions.js";
 export * from "./hub-widget-values.js";
+export * from "./hub-i18n.js";
 export { default as ActivityTimeline } from "./react/ActivityTimeline.jsx";
 export { default as AiAction } from "./react/AiAction.jsx";
 export { default as AiConfidence } from "./react/AiConfidence.jsx";
