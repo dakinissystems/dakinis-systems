@@ -1,7 +1,7 @@
 import { HUB_WIDGET_REGISTRY } from "../widgets.js";
 import { DashboardCard } from "../DashboardCard.jsx";
 import { getWidgetDisplay } from "../hub-widget-values.js";
-import { dakinisHubProductEnabled } from "../../shared-brand/src/hub-product-access.js";
+import { dakinisHubProductEnabled } from "../../../shared-brand/src/hub-product-access.js";
 
 /**
  * Grid de widgets Hub — usa `widgetValues` del Internal API (sin datos mock).
