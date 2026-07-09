@@ -1,7 +1,7 @@
 # Hub — Workspace identity y administración
 
 > **Julio 2026** · El Hub es el sistema operativo de Dakinis, no un launcher.  
-> Arquitectura → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · Estado → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) · SQL → [`supabase/migrations/031_workspace_super_admin.sql`](./supabase/migrations/031_workspace_super_admin.sql)
+> Arquitectura → [`ARCHITECTURE.md`](./ARCHITECTURE.md#arquitectura-visual) · Estado → [`STATUS.md`](./STATUS.md) · SQL → [`supabase/migrations/031_workspace_super_admin.sql`](./supabase/migrations/031_workspace_super_admin.sql)
 
 ---
 
@@ -11,16 +11,27 @@
 
 Arquitectónicamente el patrón es similar; comercialmente Dakinis es plataforma PYME en fase piloto — ver [`company/STRATEGY.md`](./company/STRATEGY.md).
 
-Ciclo completo del workspace → [`WORKSPACE-LIFECYCLE.md`](./WORKSPACE-LIFECYCLE.md)
+### Ciclo del workspace
 
+```mermaid
+flowchart LR
+  A[Crear workspace] --> B[Invitar miembros]
+  B --> C[Elegir productos]
+  C --> D[Plan Billing]
+  D --> E[SSO desde Hub]
+  E --> F[Renovar / expandir]
 ```
-Usuario → Auth → Hub (escritorio de la empresa)
-                    ├── Mi día · widgets · notificaciones
-                    ├── Workspace (nombre, plan, miembros, productos)
-                    ├── Integraciones · API keys · webhooks
-                    ├── Centro IA · ayuda · salud
-                    └── SSO → Core · LifeFlow · StreamAutomator · AkoeNet · Tabletop
-```
+
+SQL y admin UI → migr. `031` · journey → [`company/CUSTOMER-JOURNEY.md`](./company/CUSTOMER-JOURNEY.md).
+
+### UX Hub (prioridades)
+
+1. **Mi día** primero — widgets con datos reales del Internal API.
+2. **Acciones recomendadas** — tareas (pedidos, stock, notificaciones), no solo KPIs.
+3. **Copilot global** + Ctrl+K — búsqueda unificada.
+4. El Hub es **sistema operativo**, no launcher de apps.
+
+Diagrama completo → [`ARCHITECTURE.md` §4–5](./ARCHITECTURE.md#4-experiencia-hub).
 
 **Regla:** identidad de workspace vive en **Hub + schema `meta`**, no en Core, Billing ni Auth.
 
@@ -214,7 +225,7 @@ Funciones: `meta.is_super_admin`, `meta.is_workspace_admin`, `meta.log_audit`, `
 
 **Conclusión:** Dakinis se posiciona como ecosistema multi-producto con IA integrada, orientado a PYMEs españolas — no como ERP monolítico ni como "el nuevo Microsoft 365".
 
-Integraciones roadmap → [`PLATFORM-INTEGRATIONS.md`](./PLATFORM-INTEGRATIONS.md) · Marketplace → [`MARKETPLACE.md`](./MARKETPLACE.md)
+Integraciones y Marketplace → Q4+ bajo demanda · ver [`ROADMAP.md`](./ROADMAP.md).
 
 ---
 
@@ -228,4 +239,4 @@ Super Admin puede esperar hasta 5 clientes (Supabase Studio + Stripe Dashboard b
 
 ---
 
-*Actualizar al cerrar migr. 031 en prod o al lanzar UI admin en Hub.*
+*Actualizar al lanzar UI admin en Hub o al cerrar hitos de workspace.*

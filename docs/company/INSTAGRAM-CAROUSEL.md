@@ -1,79 +1,72 @@
 # Instagram — carrusel Dakinis One (PYME)
 
-> **Julio 2026** · Carrusel 5 slides · copy orientado a **beneficios y dolor**, no features.  
+> **Julio 2026** · Carrusel principal · **7 diapositivas** · solo Dakinis en redes.  
 > Assets → [`assets/instagram-carousel/`](./assets/instagram-carousel/) · Mensaje → [`MESSAGING.md`](./MESSAGING.md)
 
-**Regenerar:** `python docs/company/assets/instagram-carousel/generate_carousel.py`  
-Colores DES: `#08111d` · `#2dd4bf` · `#7c3aed` · `#f0f4f9`
+**Nota:** los PNG generados (`*.png`, `publish-6/`) están en `.gitignore` — regenerar localmente con los scripts Python.
+
+**Regenerar:** `python docs/company/assets/instagram-carousel/generate_carousel.py`
+
+**Embudo:** Problema → Coste → Solución → Módulos → Prueba social → CTA
 
 ---
 
-## Slides (v2 conversión)
+## Slides (v6 — 7 diapositivas)
 
 | # | Archivo | Mensaje |
 |---|---------|---------|
-| 1 | `instagram-carousel-01-portada.png` | **¿Tu empresa trabaja así?** — caos de herramientas (sin marca enorme) |
-| 2 | `instagram-carousel-02-problema.png` | **El problema** — dolores + flujo Excel → … → Caos |
-| 3 | `instagram-carousel-03-solucion.png` | **¿Y si todo estuviera conectado?** — Hub real + Un login → Un Hub → Toda tu empresa |
-| 4 | `instagram-carousel-04-beneficios.png` | Beneficios emocionales + módulos · *Todo incluido. Sin cambiar de aplicación.* |
-| 5 | `instagram-carousel-05-cta.png` | **Demo gratuita** · Sin compromiso · QR → `dakinissystems.com/empieza` |
+| 1 | `instagram-carousel-01-portada.png` | **¿Tu empresa trabaja así?** · iconos con jerarquía · conexiones variables |
+| 2 | `instagram-carousel-02-problema.png` | Información aislada · duplicada · horas perdidas |
+| 3 | `instagram-carousel-03-costo.png` | 10 h/sem → 480 h/año · *Estás pagando un sueldo... solo para buscar información.* |
+| 4 | `instagram-carousel-04-solucion.png` | **Así se ve una empresa conectada** · dashboard realista |
+| 5 | `instagram-carousel-05-beneficios.png` | Módulos (IA Copilot al final) · *Empieza… Crece…* |
+| 6 | `instagram-carousel-06-social.png` | Prueba social · stats · *Deja de buscar información. Empieza a tomar decisiones.* |
+| 7 | `instagram-carousel-07-cta.png` | *Descubre cómo ahorrar hasta 480 horas al año* · demo gratuita |
+
+**Paleta semántica:** turquesa (marca) · naranja (números) · verde (↑ métricas) · rojo (alertas) · violeta (IA)
+
+**Identidad:** fondo oscuro · grid sutil · sombras suaves · logo **DAKINIS** grande en footer.
 
 ---
 
-## Caption (publicar tal cual)
+## Caption (publicar)
 
 ```
 ¿Cuántas herramientas utilizas para gestionar tu empresa?
 
-Excel.
-WhatsApp.
-Facturación.
-Inventario.
-Notas.
-Correos.
-Documentos.
+Excel. WhatsApp. Facturación. Inventario. Notas. Correos.
 
-Al final pierdes tiempo cambiando de una aplicación a otra y buscando información.
+Al final pierdes tiempo cambiando de una aplicación a otra.
 
-Con Dakinis One puedes gestionar clientes, ventas, inventario, facturación e inteligencia artificial desde un único lugar.
+Dakinis reúne clientes, ventas, inventario, facturación e IA en una única plataforma.
 
-Menos aplicaciones.
-Menos errores.
-Más tiempo para hacer crecer tu negocio.
+Menos aplicaciones. Más tiempo para hacer crecer tu negocio.
 
-🚀 Solicita una demo y descubre cómo adaptamos Dakinis a tu empresa.
-
-🌐 dakinissystems.com
+🚀 Agenda una demo gratuita: dakinissystems.com/empieza
 ```
 
-**Hashtags (pocos):**  
-`#ERP #CRM #SoftwareEmpresarial #TransformacionDigital #PYMES #Negocios #Automatizacion #InteligenciaArtificial #Malaga #Dakinis`
+**Hashtags:** `#ERP #CRM #SoftwareEmpresarial #PYMES #Automatizacion #InteligenciaArtificial #Malaga #Dakinis`
 
 ---
 
-## Serie de contenido (siguiente paso)
+## Serie de carruseles (misma identidad)
 
-Cada post = un problema concreto → un módulo Dakinis One:
-
-| Hook | Módulo |
-|------|--------|
-| ¿Sigues usando Excel para tus clientes? | CRM |
-| ¿Pierdes tiempo buscando facturas? | Facturación |
-| ¿No sabes cuánto dinero ganas realmente? | Reportes |
-| ¿Tu inventario nunca coincide? | Inventario |
-| ¿Respondes los mismos mensajes todos los días? | IA Copilot |
-| ¿Pagas cinco herramientas distintas? | Hub + Dakinis One |
-
-Narrativa: no otro ERP — **sistema operativo para empresas modernas**.
+| Tema | Hook |
+|------|------|
+| 📊 Calculadora | ¿Cuánto dinero pierde tu empresa usando Excel? |
+| 📦 Inventario | 5 señales de que necesitas un sistema de inventario |
+| 💬 WhatsApp | ¿Por qué WhatsApp no es un CRM? |
+| 🤖 IA | Qué puede hacer una IA cuando conoce tu negocio |
+| 📈 Caso real | Cómo una pyme recuperó 10 horas a la semana *(con cliente)* |
 
 ---
 
 ## Publicación
 
-- Formato: carrusel 3:4 (1080×1350)
+- Formato: 3:4 (1080×1350)
 - CTA bio: `dakinissystems.com/empieza`
 - Horario: mar–jue 9–11h o 18–20h (ES)
 
 ---
 
-*Actualizar `generate_carousel.py` si cambia el copy.*
+*Actualizar `generate_carousel.py` al cambiar copy.*

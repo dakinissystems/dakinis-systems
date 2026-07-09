@@ -1,7 +1,7 @@
 # Pasos operativos — Supabase y servicios
 
 > Checklist para activar **Hub Workspace Admin** (031), **AkoeNet Assistant** (032–033) y validar deploys en producción.  
-> Arquitectura → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) · [`AKOENET-ASSISTANT.md`](./AKOENET-ASSISTANT.md) · Estado → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)
+> Arquitectura → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) · [`AKOENET-ASSISTANT.md`](./AKOENET-ASSISTANT.md) · Estado → [`STATUS.md`](./STATUS.md)
 
 ---
 
@@ -15,7 +15,7 @@
 
 Si 027–029 no están aplicadas, 031 puede ejecutarse igual; el backfill de productos usa `hub.tenant_product_access` si existe.
 
-**Estado jul 2026:** `031` ✅ · Hub `/admin` ✅ · Internal API workspace + assistant ✅ · cliente panel + i18n + event bridge ✅ · `032`–`033` ⬜ prod · workers BullMQ ⬜.
+**Estado jul 2026:** `031` ✅ · `032`–`033` ✅ prod · Hub `/admin` ✅ · Internal API workspace + assistant ✅ · cliente panel + i18n + event bridge ✅ · workers BullMQ ⬜.
 
 ---
 
@@ -42,7 +42,7 @@ Idempotente — incluye `core.tenant_memberships` (sin fila = Hub muestra `no_wo
 
 Alternativa mínima solo flags: [`grant_super_admin_christiandvillar.sql`](./supabase/scripts/grant_super_admin_christiandvillar.sql)
 
-### Paso 1.2 — Migración 032 (AkoeNet Assistant — módulos)
+### Paso 1.2 — Migración 032 (AkoeNet Assistant — módulos) ✅
 
 **Requisito:** schema `akoenet` activo ([`006_akoenet.sql`](./supabase/migrations/006_akoenet.sql)).
 
@@ -53,7 +53,7 @@ Alternativa mínima solo flags: [`grant_super_admin_christiandvillar.sql`](./sup
 SELECT key, name, phase FROM akoenet.assistant_modules ORDER BY phase, key;
 ```
 
-### Paso 1.3 — Migración 033 (AkoeNet Assistant — expansión)
+### Paso 1.3 — Migración 033 (AkoeNet Assistant — expansión) ✅
 
 1. Pega [`033_akoenet_assistant_expansion.sql`](./supabase/migrations/033_akoenet_assistant_expansion.sql) → Run
 2. Verifica:
@@ -70,9 +70,18 @@ INSERT INTO meta.migration_history (migration_file, success, notes)
 VALUES
   ('031_workspace_super_admin.sql', true, 'manual prod'),
   ('032_akoenet_assistant_modules.sql', true, 'manual prod'),
-  ('033_akoenet_assistant_expansion.sql', true, 'manual prod')
+  ('033_akoenet_assistant_expansion.sql', true, 'manual prod'),
+  ('034_rls_security_advisor_deny_policies.sql', true, 'manual prod')
 ON CONFLICT (migration_file) DO NOTHING;
 ```
+
+### Paso 1.5 — Migración 034 (RLS Security Advisor) ⬜
+
+Corrige **«RLS Enabled No Policy»** en `legacy_akoenet.*`, gaps `meta.*` y tablas nuevas post-006.
+
+1. Pega [`034_rls_security_advisor_deny_policies.sql`](./supabase/migrations/034_rls_security_advisor_deny_policies.sql) → Run
+2. La query final debe devolver **0 filas**
+3. Refresca Security Advisor en Supabase Dashboard
 
 ---
 
@@ -273,8 +282,8 @@ curl -X PATCH -H "Authorization: Bearer $k" -H "Content-Type: application/json" 
 
 ### AkoeNet Assistant
 
-- [ ] Migr. **032** aplicada
-- [ ] Migr. **033** aplicada
+- [x] Migr. **032** aplicada
+- [x] Migr. **033** aplicada
 - [x] Código orchestrator + Internal API + UI toggles + i18n EN/ES
 - [x] Backend proxy módulos + event bridge (`message.created`, `member.joined`, `@AI`)
 - [x] Sync script `scripts/sync-akoenet-packages.mjs`
@@ -338,12 +347,12 @@ git push
 | `/admin` `no_workspace` | Sin `core.tenant_memberships` | `provision_workspace_christiandvillar.sql` |
 | 401 en `/api/hub/me/workspace` | JWT IdP no enviado | Login Hub con IdP |
 | 503 `service_key` | Falta `HUB_INTERNAL_SERVICE_KEY` | Railway vars Hub |
-| Portal billing error | Billing E2E incompleto | [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) Prioridad 1 |
+| Portal billing error | Billing E2E incompleto | [`STATUS.md`](./STATUS.md) Prioridad 1 |
 | Assistant 404 en toggles | Cliente usa `api.dakinissystems.com` sin host AkoeNet | `VITE_API_URL=https://api.akoenet.dakinissystems.com` |
 | Assistant error con API correcta | Backend caído o sin `DAKINIS_INTERNAL_*` | Redeploy backend + vars |
 | Módulos en inglés con UI en ES | Sin i18n cliente | `serverAssistant.modules.*` en `enServerUi.js` / `esServerUi.js` |
-| `@AI` no responde | Workers BullMQ ⬜ | Migr. 032–033 + `akoenet:assistant` worker + AI Platform |
-| Módulos no en DB | 032 no aplicada | 006 + 032 + 033 |
+| `@AI` no responde | Workers BullMQ ⬜ | `akoenet:assistant` worker + AI Platform + vars Railway |
+| Módulos no en DB | 032 no aplicada | Verificar `akoenet.assistant_modules` (032 ✅ jul 2026) |
 
 ---
 

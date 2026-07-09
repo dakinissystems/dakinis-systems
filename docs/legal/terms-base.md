@@ -1,10 +1,10 @@
-ï»¿# TÃ©rminos de uso (sitio corporativo)
+# Términos de uso (sitio corporativo)
 
-**Ãšltima actualizaciÃ³n:** 19 mayo 2026
+**Última actualización:** 19 mayo 2026
 
 ## 1. Uso del sitio
 
-Al usar este sitio aceptas estos tÃ©rminos.
+Al usar este sitio aceptas estos términos.
 
 ## 2. Naturaleza
 
@@ -18,9 +18,9 @@ Contenidos protegidos. No copies sin permiso.
 
 No somos responsables del contenido de sitios de terceros.
 
-## 5. LimitaciÃ³n de responsabilidad
+## 5. Limitación de responsabilidad
 
-El sitio se ofrece Â«tal cualÂ».
+El sitio se ofrece «tal cual».
 
 ## 6. Contacto
 

@@ -12,6 +12,14 @@
 /docker/.env.dev
 /docker/.env.prod
 
+# --- Instagram carousel (assets generados, no versionar) ---
+/docs/company/assets/instagram-carousel/publish-6/
+/docs/company/assets/instagram-carousel/publish-6-debug/
+/docs/company/assets/instagram-carousel/_*
+/docs/company/assets/instagram-carousel/*.png
+/docs/company/assets/instagram-carousel/refs/
+/docs/company/assets/instagram-carousel/__pycache__/
+
 # --- OS / editor ---
 .DS_Store
 Thumbs.db

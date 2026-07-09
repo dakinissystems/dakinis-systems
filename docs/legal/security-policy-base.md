@@ -1,24 +1,24 @@
-ï»¿# PolÃ­tica de seguridad (ecosistema Dakinis)
+# Política de seguridad (ecosistema Dakinis)
 
-**Ãšltima actualizaciÃ³n:** 19 mayo 2026 Â· **Ãmbito:** Dakinis Systems, Dakinis One, AkoeNet, StreamAutomator e infraestructura compartida
+**Última actualización:** 19 mayo 2026 · **Ámbito:** Dakinis Systems, Dakinis One, AkoeNet, StreamAutomator e infraestructura compartida
 
-## 1. Seguridad tÃ©cnica
+## 1. Seguridad técnica
 
-| Ãrea | PrÃ¡ctica |
+| Área | Práctica |
 |------|----------|
-| **Transporte** | HTTPS/TLS obligatorio en producciÃ³n |
-| **ContraseÃ±as** | Almacenamiento con hash seguro (bcrypt u equivalente); nunca en texto plano |
+| **Transporte** | HTTPS/TLS obligatorio en producción |
+| **Contraseñas** | Almacenamiento con hash seguro (bcrypt u equivalente); nunca en texto plano |
 | **Control de acceso** | Roles y permisos (usuario, admin de tenant/servidor, platform admin) |
 | **Multi-tenant** | Aislamiento por `business_id` / tenant en API y base de datos (Dakinis One) |
-| **Backups** | Copias periÃ³dicas de PostgreSQL segÃºn procedimiento operativo |
-| **MonitorizaciÃ³n** | Registro estructurado, revisiÃ³n de incidentes y alertas operativas |
+| **Backups** | Copias periódicas de PostgreSQL según procedimiento operativo |
+| **Monitorización** | Registro estructurado, revisión de incidentes y alertas operativas |
 | **Claves API** | Almacenamiento con hash cuando aplica |
 
 ## 2. Medidas organizativas
 
-- Acceso a producciÃ³n limitado al operador
-- RotaciÃ³n de secretos si hay filtraciÃ³n
-- RevisiÃ³n de incidentes documentada
+- Acceso a producción limitado al operador
+- Rotación de secretos si hay filtración
+- Revisión de incidentes documentada
 
 ## 3. Vulnerabilidades e incidentes
 
@@ -27,11 +27,11 @@ Reportar vulnerabilidades o incidentes de seguridad:
 - **help@dakinissystems.com**
 - **legal@dakinissystems.com**
 
-Para clientes B2B con contrato marco, aplican plazos de notificaciÃ³n acordados.
+Para clientes B2B con contrato marco, aplican plazos de notificación acordados.
 
-## 4. LimitaciÃ³n
+## 4. Limitación
 
-NingÃºn sistema es 100 % seguro. Esta polÃ­tica describe medidas razonables, no una garantÃ­a absoluta.
+Ningún sistema es 100 % seguro. Esta política describe medidas razonables, no una garantía absoluta.
 
 ## 5. Productos
 

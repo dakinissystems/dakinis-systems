@@ -1,8 +1,8 @@
-ï»¿# Service level agreement (SLA) â€” Dakinis One
+# Service level agreement (SLA) — Dakinis One
 
 **Last updated:** 19 May 2026
 
-**Operator:** Christian David Villar Colodro Â· **Trading name:** Dakinis Systems Â· **Tax ID (NIF):** 18513473Z Â· **Country:** Spain
+**Operator:** Christian David Villar Colodro · **Trading name:** Dakinis Systems · **Tax ID (NIF):** 18513473Z · **Country:** Spain
 
 > B2B summary. Master agreements or commercial addenda may set different terms.
 
@@ -17,7 +17,7 @@
 | **General response** | 48 business hours |
 | **Critical incidents** (general tenant outage or widespread loss of access) | 24 hours |
 
-Contact: help@dakinissystems.com Â· legal@dakinissystems.com
+Contact: help@dakinissystems.com · legal@dakinissystems.com
 
 ## Exclusions
 

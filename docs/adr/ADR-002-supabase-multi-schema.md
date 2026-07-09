@@ -11,5 +11,5 @@ Un proyecto Supabase **Dakinis Production** con **schemas por dominio** (`dakini
 ## Consecuencias
 
 - Migraciones ordenadas en `docs/supabase/migrations/` con RUN-ORDER.
-- Cada equipo/servicio es owner de su schema (ver PLATFORM-STATUS § Supabase Ownership).
+- Cada equipo/servicio es owner de su schema (ver [`STATUS.md`](../STATUS.md) § Supabase).
 - Cutover gradual: `dakinis_core_prod` → `core` sin big-bang.

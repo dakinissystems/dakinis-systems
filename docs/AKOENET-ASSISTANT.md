@@ -319,7 +319,7 @@ const result = await orchestrator.route(
 | ✅ | i18n módulos EN/ES en cliente (`assistantModuleI18n.js`) |
 | ✅ | Event bridge — `message.created` / `member.joined` → Internal API |
 | ✅ | Trigger `@AI` en chat → `POST .../assistant/command` (`ai.ask`) |
-| ⬜ | Migr. `032`–`033` en Supabase prod |
+| ✅ | Migr. `032`–`033` en Supabase prod (jul 2026) |
 | ⬜ | Worker Railway cola `akoenet:assistant` (respuesta real vía AI Platform) |
 | ⬜ | Worker `akoenet:moderation-ai` (Guardian AI) |
 | ⬜ | `AI_PLATFORM_URL` + service key en akoenet-backend / workers |

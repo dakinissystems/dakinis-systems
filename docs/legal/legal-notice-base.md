@@ -1,6 +1,6 @@
-ï»¿# Aviso legal (sitio corporativo)
+# Aviso legal (sitio corporativo)
 
-**Ãšltima actualizaciÃ³n:** 19 mayo 2026 Â· Fuente: `company.json`
+**Última actualización:** 19 mayo 2026 · Fuente: `company.json`
 
 ## 1. Titular del sitio (LSSI)
 
@@ -9,7 +9,7 @@
 | **Titular** | Christian David Villar Colodro |
 | **Nombre comercial** | Dakinis Systems |
 | **NIF** | 18513473Z |
-| **Domicilio** | MÃ¡laga, EspaÃ±a |
+| **Domicilio** | Málaga, España |
 | **Correo** | legal@dakinissystems.com |
 | **Contacto general** | hello@dakinissystems.com |
 
@@ -19,16 +19,16 @@ Este sitio presenta servicios de desarrollo de software a medida y los productos
 
 ## 3. Propiedad intelectual
 
-Los contenidos, diseÃ±os, logotipos y cÃ³digo son titularidad del titular o de sus licenciantes. Queda prohibida su reproducciÃ³n sin autorizaciÃ³n.
+Los contenidos, diseños, logotipos y código son titularidad del titular o de sus licenciantes. Queda prohibida su reproducción sin autorización.
 
 ## 4. Enlaces a terceros
 
-Los enlaces a productos (Dakinis One, StreamAutomator, AkoeNet, etc.) llevan a sitios con sus propias condiciones y polÃ­ticas de privacidad.
+Los enlaces a productos (Dakinis One, StreamAutomator, AkoeNet, etc.) llevan a sitios con sus propias condiciones y políticas de privacidad.
 
 ## 5. Responsabilidad
 
-Dakinis Systems no se hace responsable del uso indebido de la informaciÃ³n publicada ni de daÃ±os derivados de interferencias o virus ajenos a su control razonable.
+Dakinis Systems no se hace responsable del uso indebido de la información publicada ni de daños derivados de interferencias o virus ajenos a su control razonable.
 
 ## 6. Ley aplicable
 
-LegislaciÃ³n espaÃ±ola. Para controversias, tribunales competentes segÃºn normativa de consumidores y usuarios.
+Legislación española. Para controversias, tribunales competentes según normativa de consumidores y usuarios.

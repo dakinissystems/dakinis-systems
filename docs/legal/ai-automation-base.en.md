@@ -1,4 +1,4 @@
-﻿# Automated systems and AI (base)
+# Automated systems and AI (base)
 
 **Last updated:** 19 May 2026
 

@@ -138,8 +138,8 @@ Ver [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md)
 
 ## Lo que NO prometer hasta clientes
 
-Marketplace · Storage · multi-provider IA — [`../PLATFORM-STATUS.md`](../PLATFORM-STATUS.md) 🔵
+Marketplace · Storage · multi-provider IA — [`../STATUS.md`](../STATUS.md) 🔵
 
 **Valores:** Consolidar antes de ampliar · Cliente pagador > feature lista
 
-Pendientes mensaje/landing → [`../PLATFORM-STATUS.md`](../PLATFORM-STATUS.md) § Prioridad 2.  
+Pendientes mensaje/landing → [`../STATUS.md`](../STATUS.md) § Prioridad 2.  

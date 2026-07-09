@@ -1,6 +1,6 @@
-﻿# Security policy (Dakinis ecosystem)
+# Security policy (Dakinis ecosystem)
 
-**Last updated:** 19 May 2026 · **Scope:** Dakinis Systems, Dakinis One, AkoeNet, StreamAutomator, and shared infrastructure
+**Last updated:** 19 May 2026 � **Scope:** Dakinis Systems, Dakinis One, AkoeNet, StreamAutomator, and shared infrastructure
 
 ## 1. Technical security
 

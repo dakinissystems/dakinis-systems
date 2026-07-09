@@ -1,28 +1,28 @@
-ï»¿# Acuerdo de nivel de servicio (SLA) â€” Dakinis One
+# Acuerdo de nivel de servicio (SLA) — Dakinis One
 
-**Ãšltima actualizaciÃ³n:** 19 mayo 2026
+**Última actualización:** 19 mayo 2026
 
-**Operador:** Christian David Villar Colodro Â· **Nombre comercial:** Dakinis Systems Â· **NIF:** 18513473Z Â· **PaÃ­s:** EspaÃ±a
+**Operador:** Christian David Villar Colodro · **Nombre comercial:** Dakinis Systems · **NIF:** 18513473Z · **País:** España
 
 > Resumen orientativo para clientes B2B. Contratos marco o anexos comerciales pueden establecer condiciones distintas.
 
 ## Disponibilidad
 
-**Objetivo de disponibilidad del servicio:** 99,5 % mensual (excluye mantenimiento programado comunicado con antelaciÃ³n razonable).
+**Objetivo de disponibilidad del servicio:** 99,5 % mensual (excluye mantenimiento programado comunicado con antelación razonable).
 
 ## Soporte
 
 | Tipo | Plazo orientativo |
 |------|-------------------|
 | **Respuesta general** | 48 horas laborables |
-| **Incidentes crÃ­ticos** (indisponibilidad general del tenant o pÃ©rdida de acceso masiva) | 24 horas |
+| **Incidentes críticos** (indisponibilidad general del tenant o pérdida de acceso masiva) | 24 horas |
 
-Contacto: help@dakinissystems.com Â· legal@dakinissystems.com
+Contacto: help@dakinissystems.com · legal@dakinissystems.com
 
 ## Exclusiones
 
-Fuerza mayor, fallos de terceros fuera de nuestro control razonable (p. ej. caÃ­das de proveedor cloud), mantenimiento anunciado y uso indebido del servicio.
+Fuerza mayor, fallos de terceros fuera de nuestro control razonable (p. ej. caídas de proveedor cloud), mantenimiento anunciado y uso indebido del servicio.
 
-## CrÃ©ditos
+## Créditos
 
-Los crÃ©ditos de servicio, si aplican, se regirÃ¡n por el contrato comercial suscrito con el cliente.
+Los créditos de servicio, si aplican, se regirán por el contrato comercial suscrito con el cliente.

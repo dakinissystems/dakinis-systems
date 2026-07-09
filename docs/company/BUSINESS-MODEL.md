@@ -30,6 +30,6 @@ PYME España que quiere **un solo lugar** (Hub) para operar el negocio y abrir m
 
 Marketplace · plugins · storage enterprise · banking global — post-validación comercial.
 
-Diseño documentado: [`MARKETPLACE.md`](../MARKETPLACE.md) · [`BANKING-PLATFORM.md`](../BANKING-PLATFORM.md)
+Roadmap futuro: ver [`../ROADMAP.md`](../ROADMAP.md) § Q4 (Marketplace · Banking bajo demanda).
 
 Detalle planes → [PRICING-STRATEGY.md](./PRICING-STRATEGY.md)

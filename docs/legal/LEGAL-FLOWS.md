@@ -1,46 +1,46 @@
-﻿# Flujos legales — referencia rápida
+# Flujos legales � referencia r�pida
 
-> Comentarios en código: `apps/akoenet/Server/src/routes/{dpo,dmca}.routes.js`, `lib/legal-mail.js`, `Client/src/pages/PrivacyRequestsPage.jsx`
+> Comentarios en c�digo: `apps/akoenet/Server/src/routes/{dpo,dmca}.routes.js`, `lib/legal-mail.js`, `Client/src/pages/PrivacyRequestsPage.jsx`
 
-## Solicitudes de privacidad (RGPD) — AkoeNet
+## Solicitudes de privacidad (RGPD) � AkoeNet
 
 ```
-Usuario → /legal/privacy-requests | /legal/privacidad-solicitudes
-       → PrivacyRequestsPage (GET /dpo/contact, POST /dpo/message)
-       → INSERT dpo_requests
-       → Resend: copia operador + confirmación usuario
-       → Consulta estado: GET /dpo/request/:id?email=…
+Usuario ? /legal/privacy-requests | /legal/privacidad-solicitudes
+       ? PrivacyRequestsPage (GET /dpo/contact, POST /dpo/message)
+       ? INSERT dpo_requests
+       ? Resend: copia operador + confirmaci�n usuario
+       ? Consulta estado: GET /dpo/request/:id?email=�
 ```
 
-- **Rutas públicas UI:** `/legal/privacy-requests` (EN), `/legal/privacidad-solicitudes` (ES)
-- **Legacy:** `/legal/dpo` redirige según idioma
+- **Rutas p�blicas UI:** `/legal/privacy-requests` (EN), `/legal/privacidad-solicitudes` (ES)
+- **Legacy:** `/legal/dpo` redirige seg�n idioma
 - **API:** `/dpo/*` y alias `/privacy-requests/*` (mismo router)
-- **Email operador (privacy):** `LEGAL_INBOX_EMAIL` / `PRIVACY_INBOX_EMAIL` → default `privacy@dakinissystems.com` (Cloudflare → Gmail)
-- **Email operador (DMCA):** `DMCA_NOTIFY_EMAIL` → default `legal@dakinissystems.com`
+- **Email operador (privacy):** `LEGAL_INBOX_EMAIL` / `PRIVACY_INBOX_EMAIL` ? default `privacy@dakinissystems.com` (Cloudflare ? Gmail)
+- **Email operador (DMCA):** `DMCA_NOTIFY_EMAIL` ? default `legal@dakinissystems.com`
 - **Remitente Resend:** `akonet@streamautomator.com`
-- **Sin DPO designado:** canal «Privacy Requests», no usar ese término en UI pública
+- **Sin DPO designado:** canal �Privacy Requests�, no usar ese t�rmino en UI p�blica
 
-## Copyright / DMCA — AkoeNet
-
-```
-Usuario → /legal/dmca
-       → POST /dmca/takedown
-       → INSERT dmca_takedowns
-       → Resend: equipo (getDmcaNotifyRecipients) + confirmación reclamante
-```
-
-## Documentos estáticos — AkoeNet
+## Copyright / DMCA � AkoeNet
 
 ```
-/legal/:slug → LegalDocPage (importa apps/akoenet/Client/docs/legal/*.md)
+Usuario ? /legal/dmca
+       ? POST /dmca/takedown
+       ? INSERT dmca_takedowns
+       ? Resend: equipo (getDmcaNotifyRecipients) + confirmaci�n reclamante
+```
+
+## Documentos est�ticos � AkoeNet
+
+```
+/legal/:slug ? LegalDocPage (importa apps/akoenet/Client/docs/legal/*.md)
 ```
 
 Slugs: `privacidad`, `terminos`, `seguridad`, `transparencia`, `child-safety`, etc.
 
 ## Dakinis One (Core)
 
-Textos en `platform/core/web/src/locales/legal-core.js` → rutas `/privacy`, `/terms`, `/legal`, `/security`, `/sla`.
+Textos en `platform/core/web/src/locales/legal-core.js` ? rutas `/privacy`, `/terms`, `/legal`, `/security`, `/sla`.
 
 ## Fuente de verdad titular
 
-`docs/legal/company.json` → `packages/shared-brand` → `node scripts/sync-shared-brand.mjs`
+`docs/legal/company.json` ? `packages/shared-brand` ? `node scripts/sync-shared-brand.mjs`

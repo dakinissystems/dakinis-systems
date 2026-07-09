@@ -1,4 +1,4 @@
-ï»¿# Privacy requests channel (GDPR)
+# Privacy requests channel (GDPR)
 
 **Last updated:** 19 May 2026
 
@@ -14,7 +14,7 @@
 
 - Access
 - Rectification
-- Erasure (Â«right to be forgottenÂ»)
+- Erasure («right to be forgotten»)
 - Objection
 - Restriction of processing
 - Data portability (copy in a structured, commonly used format)

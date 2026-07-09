@@ -1,8 +1,8 @@
-ï»¿# Transparency report (DSA) â€” AkoeNet
+# Transparency report (DSA) — AkoeNet
 
 **Last updated:** 19 May 2026
 
-**Operator:** Christian David Villar Colodro Â· **Trading name:** Dakinis Systems Â· **Tax ID (NIF):** 18513473Z Â· **Country:** Spain
+**Operator:** Christian David Villar Colodro · **Trading name:** Dakinis Systems · **Tax ID (NIF):** 18513473Z · **Country:** Spain
 
 Reference period: from public launch through the date of this publication.
 
@@ -15,6 +15,6 @@ Reference period: from public launch through the date of this publication.
 
 > **Note:** No reports were recorded in the moderation system during this period. We will update this report periodically.
 
-DSA / legal contact: legal@dakinissystems.com Â· Privacy: privacy@dakinissystems.com
+DSA / legal contact: legal@dakinissystems.com · Privacy: privacy@dakinissystems.com
 
 Privacy requests form: https://akoenet.dakinissystems.com/legal/privacy-requests

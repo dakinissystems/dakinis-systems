@@ -43,7 +43,7 @@ Orquestación service-to-service (Hub dashboard, workspace admin, AkoeNet Assist
 
 LifeFlow **no compite con Fintonic** (agregador). Compite con la idea de **planificación de vida** — gemelo financiero, escenarios, coach IA. Océano azul en España; comparable internacional: ProjectionLab.
 
-Sin agregación bancaria el valor es manual; con [`BANKING-PLATFORM.md`](./BANKING-PLATFORM.md) el coach IA trabaja sobre datos reales.
+Sin agregación bancaria el valor es manual; agregación PSD2 está en roadmap Q4 → [`ROADMAP.md`](./ROADMAP.md).
 
 ### ¿Por qué AkoeNet no usa bots externos como Discord?
 
@@ -87,9 +87,9 @@ Usar: *"Inspirado en la experiencia de Microsoft 365 y Zoho One."*
 
 | Tema | Doc |
 |------|-----|
-| Capacidades platform | [`PLATFORM-CAPABILITIES.md`](./PLATFORM-CAPABILITIES.md) |
+| Capacidades platform | [`ARCHITECTURE.md`](./ARCHITECTURE.md) § Capacidades |
 | Competencia y FODA | [`company/STRATEGY.md`](./company/STRATEGY.md) |
-| Ciclo workspace | [`WORKSPACE-LIFECYCLE.md`](./WORKSPACE-LIFECYCLE.md) |
+| Ciclo workspace | [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) |
 | Mensaje comercial | [`company/MESSAGING.md`](./company/MESSAGING.md) |
 
 ---

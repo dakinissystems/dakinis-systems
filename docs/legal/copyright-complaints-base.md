@@ -1,8 +1,8 @@
-ï»¿# Reclamaciones de copyright y propiedad intelectual
+# Reclamaciones de copyright y propiedad intelectual
 
-**Ãšltima actualizaciÃ³n:** 19 mayo 2026
+**Última actualización:** 19 mayo 2026
 
-## Ãmbito
+## Ámbito
 
 Para contenido alojado en servicios Dakinis (p. ej. AkoeNet, mensajes de usuarios, archivos compartidos).
 
@@ -12,18 +12,18 @@ Para contenido alojado en servicios Dakinis (p. ej. AkoeNet, mensajes de usuario
 
 ## Por email
 
-**legal@dakinissystems.com** â€” asunto: Â«ReclamaciÃ³n copyright / PIÂ»
+**legal@dakinissystems.com** — asunto: «Reclamación copyright / PI»
 
-## InformaciÃ³n mÃ­nima
+## Información mínima
 
-- IdentificaciÃ³n del titular de derechos o representante autorizado
-- URL o ubicaciÃ³n del contenido presuntamente infractor
-- DescripciÃ³n de la obra protegida
-- DeclaraciÃ³n de buena fe de que el uso no estÃ¡ autorizado
+- Identificación del titular de derechos o representante autorizado
+- URL o ubicación del contenido presuntamente infractor
+- Descripción de la obra protegida
+- Declaración de buena fe de que el uso no está autorizado
 - Datos de contacto
 
 ## Proceso
 
-Revisamos la notificaciÃ³n y, si procede, retiramos o restringimos el contenido. Podemos solicitar informaciÃ³n adicional.
+Revisamos la notificación y, si procede, retiramos o restringimos el contenido. Podemos solicitar información adicional.
 
-> En servicios con usuarios en EE.UU. tambiÃ©n aceptamos notificaciones al estilo DMCA; el formulario de AkoeNet recoge los campos habituales.
+> En servicios con usuarios en EE.UU. también aceptamos notificaciones al estilo DMCA; el formulario de AkoeNet recoge los campos habituales.

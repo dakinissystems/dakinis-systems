@@ -1,6 +1,6 @@
-ï»¿# Legal notice (corporate site)
+# Legal notice (corporate site)
 
-**Last updated:** 19 May 2026 Â· Source: `company.json`
+**Last updated:** 19 May 2026 · Source: `company.json`
 
 ## 1. Site owner (Spanish LSSI)
 
@@ -9,7 +9,7 @@
 | **Owner** | Christian David Villar Colodro |
 | **Trading name** | Dakinis Systems |
 | **Tax ID (NIF)** | 18513473Z |
-| **Address** | MÃ¡laga, Spain |
+| **Address** | Málaga, Spain |
 | **Email** | legal@dakinissystems.com |
 | **General contact** | hello@dakinissystems.com |
 

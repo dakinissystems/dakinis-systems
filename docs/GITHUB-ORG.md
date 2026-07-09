@@ -1,6 +1,6 @@
 # GitHub — organización y descripciones
 
-> Guía para alinear repos GitHub con [PLATFORM-STATUS.md](./PLATFORM-STATUS.md) y [ARCHITECTURE.md](./ARCHITECTURE.md).  
+> Guía para alinear repos GitHub con [STATUS.md](./STATUS.md) y [ARCHITECTURE.md](./ARCHITECTURE.md).  
 > **No cambiar Railway** por servicios futuros; solo documentar huecos reservados → [OPERATIONS.md](./OPERATIONS.md).
 
 ---
@@ -79,7 +79,7 @@ Ver pasos completos: [`packages/MIGRATION.md`](../packages/MIGRATION.md).
 
 ## Platform repos (billing, notifications, search, knowledge, internal)
 
-Repos en GitHub. Mirror local en control repo + push con script. Estado prod → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md).
+Repos en GitHub. Mirror local en control repo + push con script. Estado prod → [`STATUS.md`](./STATUS.md).
 
 | Repo GitHub | Mirror local | Railway / gateway |
 |-------------|--------------|-------------------|
@@ -153,7 +153,7 @@ gh repo edit dakinissystems/dakinis-knowledge --description "Knowledge platform 
 
 ## README por repo
 
-Cada repo mantiene su README en GitHub. DES local: [`../packages/README.md`](../packages/README.md) · estado plataforma: [PLATFORM-STATUS.md](./PLATFORM-STATUS.md).
+Cada repo mantiene su README en GitHub. DES local: [`../packages/README.md`](../packages/README.md) · estado plataforma: [STATUS.md](./STATUS.md).
 
 ---
 

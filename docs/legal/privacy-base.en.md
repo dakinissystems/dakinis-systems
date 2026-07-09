@@ -1,4 +1,4 @@
-ï»¿# Privacy policy (corporate site)
+# Privacy policy (corporate site)
 
 **Last updated:** 19 May 2026
 
@@ -9,7 +9,7 @@
 | **Owner / Operator** | Christian David Villar Colodro |
 | **Trading name** | Dakinis Systems |
 | **Tax ID (NIF)** | 18513473Z |
-| **Address** | MÃ¡laga, Spain |
+| **Address** | Málaga, Spain |
 | **Country** | Spain |
 | **Privacy** | privacy@dakinissystems.com |
 | **Billing** | billing@dakinissystems.com |
@@ -37,7 +37,7 @@ See [retention policy](./retention-policy-base.en.md). Summary:
 - Account/contact data: as long as needed for the purpose.
 - Security logs: up to 12 months.
 - Support communications: up to 24 months.
-- Billing / payment inquiries: **billing@dakinissystems.com** Â· retention per applicable tax obligations.
+- Billing / payment inquiries: **billing@dakinissystems.com** · retention per applicable tax obligations.
 
 ## 6. International transfers
 
@@ -63,7 +63,7 @@ Each product (Dakinis One, StreamAutomator, AkoeNet) has its own policy on its d
 
 ## 11. WhatsApp and Meta (Dakinis One)
 
-If a customer enables WhatsApp Business API or other Meta tools from Dakinis One, [Metaâ€™s terms](https://www.facebook.com/legal/terms/businesstools) apply. **Dakinis Systems does not control Metaâ€™s independent processing activities.** Customers should review Metaâ€™s own legal documentation before enabling integrations. See [`whatsapp-meta-business-tools-base.md`](./whatsapp-meta-business-tools-base.md).
+If a customer enables WhatsApp Business API or other Meta tools from Dakinis One, [Meta’s terms](https://www.facebook.com/legal/terms/businesstools) apply. **Dakinis Systems does not control Meta’s independent processing activities.** Customers should review Meta’s own legal documentation before enabling integrations. See [`whatsapp-meta-business-tools-base.md`](./whatsapp-meta-business-tools-base.md).
 
 ## 12. Automation and AI
 

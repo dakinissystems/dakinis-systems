@@ -1,4 +1,4 @@
-ï»¿# Terms of use (corporate site)
+# Terms of use (corporate site)
 
 **Last updated:** 19 May 2026
 
@@ -20,7 +20,7 @@ We are not responsible for third-party site content.
 
 ## 5. Limitation of liability
 
-The site is provided Â«as isÂ».
+The site is provided «as is».
 
 ## 6. Contact
 

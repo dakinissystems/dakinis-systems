@@ -70,7 +70,7 @@ Plantilla variables: [`railway.env.example`](./railway.env.example).
 
 Servicios de producto (tabla superior) + platform vía gateway (`/billing/`, `/notifications/`, `/search/`, `/knowledge/`, `/internal/`, `/ai/`).
 
-Pendientes operativos por servicio → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) (Billing E2E, workers, Resend live…).
+Pendientes operativos por servicio → [`STATUS.md`](./STATUS.md) (Billing E2E, workers, Resend live…).
 
 ### Reservado — Fase 2+ (no crear vacíos)
 
@@ -83,7 +83,7 @@ Contratos: [`docs/contracts/`](./contracts/README.md).
 
 ⚠️ **No usar** `api.finance.dakinissystems.com` — SSL Cloudflare free no cubre subdominio de 2º nivel.
 
-**Workers roadmap:** Notifications · Scheduler · Media · Search — ver [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md).
+**Workers roadmap:** Notifications · Scheduler · Media · Search — ver [`STATUS.md`](./STATUS.md).
 
 ---
 
@@ -430,3 +430,54 @@ Smoke: `.\scripts\smoke-notifications.ps1` → worker log: `[worker] dispatch ch
 ---
 
 *Actualizar al cerrar tareas de deploy o cambiar secrets en Railway/Supabase.*
+
+---
+
+## Runbook — incidencias comunes
+
+Estado y Done → [`STATUS.md`](./STATUS.md).
+
+### Webhook Stripe falla (Billing)
+
+**Síntomas:** plan no actualiza · webhook 4xx/5xx · `smoke-billing-e2e.ps1` falla
+
+Flujo esperado → [`ARCHITECTURE.md` §13](./ARCHITECTURE.md#13-billing-e2e).
+
+1. Stripe → Webhooks → `https://api.dakinissystems.com/billing/v1/webhooks/stripe`
+2. Railway → `dakinis-billing` → logs (`webhook`)
+3. Verificar `STRIPE_WEBHOOK_SECRET` y `STRIPE_SECRET_KEY` (test vs live)
+4. SQL: `SELECT * FROM billing.subscriptions ORDER BY updated_at DESC LIMIT 5;`
+5. Replay evento en Stripe → `.\scripts\smoke-billing-e2e.ps1`
+
+### Gateway 502
+
+1. Identificar prefijo (`/billing/`, `/core/`, …)
+2. Railway → upstream → health directo
+3. Verificar `DATABASE_URL`, `PORT` · redeploy si crash loop
+
+### AkoeNet 503 `database_schema_outdated`
+
+1. Logs `akoenet-backend` · `npm run migrate`
+2. [`supabase/scripts/akoenet_backend_schema_check.sql`](./supabase/scripts/akoenet_backend_schema_check.sql)
+
+### `@AI` no responde
+
+1. `DAKINIS_INTERNAL_SERVICE_KEY` + `DAKINIS_INTERNAL_URL` en akoenet-backend
+2. Redis / worker BullMQ · `.\scripts\smoke-ai.ps1`
+3. Ver [`AKOENET-ASSISTANT.md`](./AKOENET-ASSISTANT.md)
+
+### Hub dashboard vacío / stub
+
+1. migr. `016`–`019`, `027`–`029` en prod
+2. `SELECT hub.v1_get_dashboard('user-id');` en SQL Editor
+3. Internal API logs · [`STATUS.md`](./STATUS.md) § Hub Mi día
+
+### Supabase RLS sin política
+
+Ejecutar [`034_rls_security_advisor_deny_policies.sql`](./supabase/migrations/034_rls_security_advisor_deny_policies.sql)
+
+### Post-incidente
+
+- [ ] Causa en CHANGELOG o issue
+- [ ] Smoke relevante OK
+- [ ] Riesgo en STATUS si aplica

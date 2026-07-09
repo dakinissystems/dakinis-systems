@@ -3,7 +3,7 @@
 Pega **cada archivo en orden** en el SQL Editor de Supabase (proyecto **Dakinis Production**).
 
 > **Identidad:** `dakinis_auth` (no `auth`). **ERP activo:** `dakinis_core_prod` hasta cutover → `core`.  
-> **Convenciones y estado:** [`PLATFORM-STATUS.md`](../../PLATFORM-STATUS.md)
+> **Convenciones y estado:** [`STATUS.md`](../../STATUS.md)
 
 ## Fase A — Estructura (000–013)
 
@@ -76,12 +76,20 @@ Hub UI: `hub/src/pages/admin/*` → `/admin`
 
 | # | Archivo | Prod |
 |---|---------|------|
-| 32 | [`032_akoenet_assistant_modules.sql`](./032_akoenet_assistant_modules.sql) | ⬜ Módulos nativos · automations · moderation logs · assistant usage |
-| 33 | [`033_akoenet_assistant_expansion.sql`](./033_akoenet_assistant_expansion.sql) | ⬜ Event log · catálogo ampliado (translator, support, events, levels) |
+| 32 | [`032_akoenet_assistant_modules.sql`](./032_akoenet_assistant_modules.sql) | ✅ jul 2026 · Módulos nativos · automations · moderation logs · assistant usage |
+| 33 | [`033_akoenet_assistant_expansion.sql`](./033_akoenet_assistant_expansion.sql) | ✅ jul 2026 · Event log · catálogo ampliado (translator, support, events, levels) |
 
 Requiere schema `akoenet` (006). Packages: `packages/akoenet-orchestrator`, `packages/akoenet-modules` → sync `internal/packages`.  
 Cliente: panel Assistant + i18n · Backend: event bridge + proxy. Internal API: `/akoenet/assistant/*`.  
 Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · Contrato: [`contracts/akoenet-assistant.json`](../../contracts/akoenet-assistant.json)
+
+## Fase G — Security Advisor RLS (034)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 34 | [`034_rls_security_advisor_deny_policies.sql`](./034_rls_security_advisor_deny_policies.sql) | ⬜ Políticas `dakinis_block_anon_authenticated` en tablas con RLS sin policy (`legacy_akoenet`, `meta.*` gaps, `akoenet.assistant_events`) |
+
+Re-ejecutable: también [`../006b-rls-policies-missing-tables.sql`](../006b-rls-policies-missing-tables.sql) (mismo patrón, sin registrar versión).
 
 ## Seeds
 

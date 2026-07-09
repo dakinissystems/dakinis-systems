@@ -1,16 +1,16 @@
-ï»¿# PolÃ­tica de retenciÃ³n de datos
+# Política de retención de datos
 
-**Ãšltima actualizaciÃ³n:** 19 mayo 2026 Â· **Titular:** Christian David Villar Colodro (Dakinis Systems) Â· NIF 18513473Z
+**Última actualización:** 19 mayo 2026 · **Titular:** Christian David Villar Colodro (Dakinis Systems) · NIF 18513473Z
 
-Plazos orientativos; pueden variar segÃºn obligaciÃ³n legal, litigio o seguridad.
+Plazos orientativos; pueden variar según obligación legal, litigio o seguridad.
 
-| CategorÃ­a | Plazo |
+| Categoría | Plazo |
 |-----------|--------|
-| **Datos de cuenta** | Mientras la cuenta permanezca activa; eliminaciÃ³n o anonimizaciÃ³n tras baja confirmada |
+| **Datos de cuenta** | Mientras la cuenta permanezca activa; eliminación o anonimización tras baja confirmada |
 | **Logs de seguridad** | Hasta **12 meses** |
 | **Comunicaciones de soporte** | Hasta **24 meses** |
-| **Registros de facturaciÃ³n** | SegÃºn obligaciones fiscales aplicables en EspaÃ±a |
-| **Registros de moderaciÃ³n / DSA** | El tiempo necesario para gestionar la incidencia y obligaciones legales |
-| **Copias de respaldo** | Ciclo operativo de backups; purga segÃºn procedimiento |
+| **Registros de facturación** | Según obligaciones fiscales aplicables en España |
+| **Registros de moderación / DSA** | El tiempo necesario para gestionar la incidencia y obligaciones legales |
+| **Copias de respaldo** | Ciclo operativo de backups; purga según procedimiento |
 
-Solicitudes de supresiÃ³n: [canal de solicitudes de privacidad](./privacy-requests-base.md) o privacy@dakinissystems.com
+Solicitudes de supresión: [canal de solicitudes de privacidad](./privacy-requests-base.md) o privacy@dakinissystems.com

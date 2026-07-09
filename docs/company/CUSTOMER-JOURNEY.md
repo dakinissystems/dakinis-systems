@@ -1,7 +1,7 @@
 # Customer journey
 
 > **Guía de producto y GTM.** Entrada = **Hub** · Cliente nunca ve "Core".  
-> Ciclo workspace → [`../WORKSPACE-LIFECYCLE.md`](../WORKSPACE-LIFECYCLE.md) · Estrategia → [`STRATEGY.md`](./STRATEGY.md)
+> Ciclo workspace → [`../HUB-WORKSPACE.md`](../HUB-WORKSPACE.md) · Estrategia → [`STRATEGY.md`](./STRATEGY.md)
 
 **Regla:** Toda nueva funcionalidad debe preguntarse si mejora este recorrido. Si no → posponer hasta después del primer cliente piloto.
 
@@ -173,4 +173,4 @@ StreamAutomator → AkoeNet servidor → módulo Streamer → comunidad automati
 
 **1 piloto** que use **Hub + Dakinis One** (o LifeFlow) **2+ semanas** y **pague** o confirme piloto de pago.
 
-Técnico → [`../PLATFORM-STATUS.md`](../PLATFORM-STATUS.md)
+Técnico → [`../STATUS.md`](../STATUS.md)

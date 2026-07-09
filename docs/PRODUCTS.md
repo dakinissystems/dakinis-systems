@@ -3,7 +3,7 @@
 > **Productos** (capa Products) — consumen **Platform**. Entrada usuario: **Hub** → elige producto.
 
 **Platform** (Auth, Hub, AI, Billing, Knowledge…) → [`ARCHITECTURE.md`](./ARCHITECTURE.md)  
-**Pendientes** → [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md)  
+**Pendientes** → [`STATUS.md`](./STATUS.md)  
 **Mensaje** → [`company/MESSAGING.md`](./company/MESSAGING.md)
 
 **Core es Dakinis One** — un producto principal, no el nombre de toda la plataforma.
@@ -116,7 +116,7 @@ LifeFlow no integrará bancos uno a uno. Consumirá **Dakinis Banking Platform**
 
 Hoy: importación manual y CSV. Sin PSD2 el mensaje honesto es *planificación de vida*, no *agregador tipo Fintonic*.
 
-→ [`BANKING-PLATFORM.md`](./BANKING-PLATFORM.md) · Competencia → [`company/STRATEGY.md`](./company/STRATEGY.md)
+→ [`ROADMAP.md`](./ROADMAP.md) § Q4 · Competencia → [`company/STRATEGY.md`](./company/STRATEGY.md)
 
 ### Platform consumida
 
@@ -252,7 +252,7 @@ Objetivo Hub: «Mi día» primero, launcher secundario — ver [ARCHITECTURE § 
 | Auth, Billing, AI, Notifications, Search, Knowledge | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Hub (centro ecosistema) | [ARCHITECTURE.md § Hub](./ARCHITECTURE.md#hub--) |
 | Gateway, Redis, Supabase, DES, SDK | [ARCHITECTURE.md § Infrastructure / Platform](./ARCHITECTURE.md) |
-| Estado operativo y roadmap | [PLATFORM-STATUS.md](./PLATFORM-STATUS.md) |
+| Estado operativo y roadmap | [STATUS.md](./STATUS.md) |
 
 ---
 

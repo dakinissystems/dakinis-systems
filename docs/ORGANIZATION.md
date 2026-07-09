@@ -94,9 +94,9 @@ Detalle: [`company/HIRING.md`](./company/HIRING.md)
 | Doc | Contenido |
 |-----|-----------|
 | [`company/README.md`](./company/README.md) | Índice documentación empresa |
-| [`ROADMAP-CEO.md`](./ROADMAP-CEO.md) | Julio–noviembre 2026 |
+| [`ROADMAP.md`](./ROADMAP.md) | Julio–Q4 2026 |
 | [`COMPANY.md`](./COMPANY.md) | Misión · visión · valores |
-| [`PLATFORM-STATUS.md`](./PLATFORM-STATUS.md) | Pendientes técnicos |
+| [`STATUS.md`](./STATUS.md) | Pendientes técnicos |
 
 ---
 

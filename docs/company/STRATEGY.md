@@ -1,7 +1,7 @@
 # Estrategia y posicionamiento competitivo
 
 > **Julio 2026** · Documentación **estratégica** (CEO, ventas, inversores).  
-> Técnico → [`ARCHITECTURE.md`](../ARCHITECTURE.md) · Ops → [`PLATFORM-STATUS.md`](../PLATFORM-STATUS.md) · Mensaje → [`MESSAGING.md`](./MESSAGING.md)
+> Técnico → [`ARCHITECTURE.md`](../ARCHITECTURE.md) · Ops → [`STATUS.md`](../STATUS.md) · Mensaje → [`MESSAGING.md`](./MESSAGING.md)
 
 **Tesis:** La arquitectura ya está varios pasos por delante del producto comercial. El mayor retorno ahora es **cerrar el ciclo completo de un cliente**, no añadir componentes.
 
@@ -59,7 +59,7 @@ Eso permite crecer como **SaaS multiempresa** — patrón Zoho One / Atlassian C
 | Coach IA | ✅ Pro | ❌ | ❌ | ❌ |
 | PSD2 | ⬜ | ✅ | ❌ | ❌ |
 
-**Estrategia:** *El ProjectionLab español* — océano azul en planificación, no en agregación. PSD2 vía [`BANKING-PLATFORM.md`](../BANKING-PLATFORM.md).
+**Estrategia:** *El ProjectionLab español* — océano azul en planificación, no en agregación. PSD2 → roadmap Q4 [`../ROADMAP.md`](../ROADMAP.md).
 
 ### AkoeNet vs Discord
 
@@ -165,7 +165,7 @@ Toda feature nueva debe mejorar:
 Landing → Registro → Workspace → Hub → Primer producto → Invita equipo → Pago → Uso diario → Marketplace
 ```
 
-Detalle → [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md) · Ciclo workspace → [`WORKSPACE-LIFECYCLE.md`](../WORKSPACE-LIFECYCLE.md)
+Detalle → [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md) · Ciclo workspace → [`../HUB-WORKSPACE.md`](../HUB-WORKSPACE.md)
 
 ---
 
@@ -180,7 +180,7 @@ Detalle → [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md) · Ciclo workspace �
 ### 🟠 Durante piloto
 
 4. Hub Admin en uso real (miembros + plan)  
-5. AkoeNet Assistant E2E (migr. 032–033 + workers)  
+5. AkoeNet Assistant E2E (migr. `032`–`033` ✅ · workers)  
 6. LifeFlow / Tabletop → Supabase  
 
 ### 🟡 Post-piloto (5+ clientes)

@@ -1,0 +1,211 @@
+# Dakinis — Estado actual
+
+> **Fuente canónica de estado** · actualizar al cerrar hitos · julio 2026  
+> Arquitectura → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · Plan → [`ROADMAP.md`](./ROADMAP.md) · Cambios → [`CHANGELOG.md`](./CHANGELOG.md)
+
+**Leyenda madurez:** 🟢 Production · 🟡 Beta · 🟠 MVP · ⚪ Experimental
+
+---
+
+## Go-Live Score
+
+```
+████████░░  82%
+```
+
+| Área | Score | Bloqueador |
+|------|-------|------------|
+| Billing | 80% | E2E live sin cliente real |
+| Hub | 95% | Mi día DB + screenshot landing |
+| Core | 90% | UX piloto restaurante |
+| AI | 100% | — |
+| Support / ops | 70% | Sin staging · backups auto |
+| Security | 85% | migr. `034` ⬜ |
+
+**Piloto comercial:** 🔴 0 clientes de pago
+
+---
+
+## KPIs del proyecto
+
+| Métrica | Valor | Notas |
+|---------|-------|-------|
+| Productos | 5 | Core, LifeFlow, AkoeNet, StreamAutomator, Tabletop |
+| Repos GitHub | ~18 | Ver [`GITHUB-ORG.md`](./GITHUB-ORG.md) |
+| Servicios Railway | 11+ | Gateway, platform, productos |
+| Workers activos | 4 | AI, Knowledge, Notifications (parcial), SA |
+| Clientes de pago | 0 | Objetivo ago 2026 |
+| Tenants prod | 1+ | demo + provision manual |
+| Usuarios IdP | 3+ | smoke / demo |
+| MRR | 0 € | — |
+| Tiempo deploy medio | ~6 min | Dockerfile services |
+| React Doctor (media apps) | ~92% | LF/TT 100 · SA 61 |
+| Último release platform | Jul 2026 | Internal API v0.3.1+ |
+| Último backup auto | ⬜ | `BACKUP_DATABASE_URL` pendiente |
+
+Métricas negocio → [`company/KPIS.md`](./company/KPIS.md)
+
+---
+
+## Catálogo de servicios (resumen)
+
+URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
+
+| Servicio | Madurez | Owner | Versión | Pendiente clave |
+|----------|---------|-------|---------|-----------------|
+| Gateway | 🟢 Production | Platform | nginx 1.27 | — |
+| Auth | 🟢 Production | Platform | — | — |
+| Hub | 🟡 Beta | Platform | v0.2.1+ | Mi día DB · demo OS |
+| Billing | 🟡 Beta | Platform | v0.2.0 | **E2E live** |
+| Notifications | 🟠 MVP | Platform | v0.3.1 | Resend live |
+| Search | 🟠 MVP | Platform | — | pgvector |
+| Knowledge | 🟠 MVP | Platform | — | ingest masivo |
+| AI | 🟢 Production | Platform | — | costes/workspace |
+| Internal API | 🟡 Beta | Platform | v0.3.1+ | hub-dashboard sin stub |
+| Core (Dakinis One) | 🟡 Beta | ERP | — | UX piloto |
+| LifeFlow | 🟢 Production | Finance | — | SQLite → PG |
+| AkoeNet | 🟡 Beta | Social | client v1.5.19 | workers `@AI` |
+| StreamAutomator | 🟡 Beta | Social | — | React Doctor |
+| Tabletop | 🟠 MVP | Games | — | SQLite → Supabase |
+| Landing | 🟢 Production | GTM | — | screenshot Hub real |
+| Redis / BullMQ | 🟡 Beta | Platform | — | workers Assistant |
+
+---
+
+## Supabase prod
+
+| Fase | Migraciones | Estado |
+|------|-------------|--------|
+| A–B | `000`–`015` | ✅ |
+| C | `016`–`019` | ⬜ Hub Mi día base |
+| C+ | `027`–`029` | ⬜ widgets + product access |
+| D | `020`–`026`, `024` | ✅ |
+| D+ | `030` | ⬜ LifeFlow ↔ IdP |
+| E | `031` | ✅ workspace admin |
+| F | `032`–`033` | ✅ AkoeNet Assistant |
+| G | `034` | ⬜ RLS Security Advisor |
+
+Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
+
+---
+
+## Despliegue pendiente (código listo)
+
+| # | Sistema | Acción |
+|---|---------|--------|
+| 1 | akoenet-backend | `DAKINIS_INTERNAL_SERVICE_KEY` + `DAKINIS_INTERNAL_URL` → redeploy |
+| 2 | akoenet-client | Redeploy Assistant UI |
+| 3 | dakinis-internal-api | Redeploy release Jul 2026 |
+| 4 | Billing | E2E live |
+
+---
+
+## Definición de Done (hitos)
+
+Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
+
+### Billing E2E Live
+
+- [ ] `smoke-billing-e2e.ps1` OK
+- [ ] Checkout Stripe test completo
+- [ ] Webhook prod **200**
+- [ ] `billing.subscriptions` actualizado en Supabase
+- [ ] Plan reflejado en Core (`business.plan`)
+- [ ] Degrade: `smoke-billing-degraded.ps1` OK
+- [ ] Restore tras pago OK
+- [ ] Portal Billing desde Hub `/admin` OK
+- [ ] Logs sin error 5xx en webhook 24h
+
+### Hub SSO E2E
+
+- [ ] `smoke-prod-suite.ps1 -E2E` 3/3 productos
+- [ ] JWT válido en Core, LifeFlow, AkoeNet
+- [ ] Logout / re-login OK
+
+### Primer cliente piloto
+
+- [ ] Workspace provisionado (`031`)
+- [ ] ≥1 usuario invitado y aceptado
+- [ ] Demo Hub → Core completada en reunión
+- [ ] Feedback documentado
+- [ ] Uso real ≥2 sesiones/semana durante 2 semanas
+
+### Hub Mi día (DB)
+
+- [ ] migr. `016`–`019` + `027`–`029` en prod
+- [ ] `hub.v1_get_dashboard` sin stub
+- [ ] Widgets con datos reales ≥2 productos
+
+### AkoeNet Assistant Fase 1
+
+- [ ] migr. `032`–`033` ✅
+- [ ] Vars Railway backend ✅
+- [ ] Worker BullMQ consume eventos
+- [ ] `@AI` respuesta en canal &lt;30s
+- [ ] Toggle módulos persiste
+
+---
+
+## Smokes prod
+
+| Script | Requiere |
+|--------|----------|
+| `smoke-prod-suite.ps1` | probes · `-E2E` + creds |
+| `smoke-billing-e2e.ps1` | creds o `INTERNAL_API_KEY` |
+| `smoke-billing-degraded.ps1` | `INTERNAL_API_KEY` + `DAKINIS_BUSINESS_ID` |
+| `smoke-ai.ps1` | `DAKINIS_AI_SERVICE_KEY` |
+| `smoke-hub-search-query.ps1` | creds Core |
+| `smoke-notifications.ps1` | creds IdP |
+| `smoke-knowledge-search-sync.ps1` | `DAKINIS_INTERNAL_SERVICE_KEY` |
+
+---
+
+## Prioridad por capacidad (negocio)
+
+| Capacidad | Componentes | Estado |
+|-----------|-------------|--------|
+| **Cobrar** | Billing → Stripe → Hub `/admin` → Gateway → Auth | 🔴 E2E |
+| **Invitar equipo** | Hub → Notifications → Internal API → `031` | 🟡 UI lista |
+| **Usar IA** | AI → Knowledge → BullMQ → Assistant | 🟡 workers |
+| **Operar negocio** | Core → Hub widgets | 🟡 |
+| **Comunidad** | AkoeNet → Assistant | 🟡 |
+
+Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
+
+---
+
+## Riesgos
+
+| ID | Riesgo | Impacto | Mitigación |
+|----|--------|---------|------------|
+| R1 | Sin staging | Alto | Espejo Railway Q3 · smokes con cuidado |
+| R2 | Backups no auto | Crítico | `BACKUP_DATABASE_URL` + workflow |
+| R3 | Billing sin cliente real | Alto | E2E + piloto jul–ago |
+| R4 | Bus factor (1 dev) | Alto | Onboarding · hire Q4 |
+| R5 | SQLite LF/Tabletop | Medio | migr. `030` |
+| R6 | Monitorización parcial | Medio | Sentry ago |
+| R7 | migr. manual Supabase | Medio | `meta.migration_history` |
+| R8 | Workers BullMQ parciales | Medio | Redeploy Assistant |
+| R9 | Stripe webhook mal config | Alto | [`OPERATIONS.md`](./OPERATIONS.md) § Runbook |
+| R11 | RLS sin política | Alto | migr. `034` |
+
+**Producto:** Hub no debe percibirse como launcher — priorizar Mi día, acciones recomendadas y Copilot (ver [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md)).
+
+Incidencia prod → [`OPERATIONS.md`](./OPERATIONS.md) § Runbook.
+
+---
+
+## Automatización de este documento
+
+Partes generables → [`scripts/generate-docs-status.mjs`](../scripts/generate-docs-status.mjs):
+
+- Versiones desde `package.json` de scaffolds
+- Migraciones desde `meta.migration_history` (cuando exista en prod)
+- Health desde endpoints públicos
+- React Doctor desde CI (futuro)
+
+**Manual obligatorio:** clientes, MRR, piloto, decisiones de prioridad.
+
+---
+
+*Pregunta guía: ¿Qué necesita un cliente para pagar por Dakinis este mes?*

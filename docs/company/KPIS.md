@@ -1,6 +1,6 @@
 # KPIs
 
-> Revisar **mensualmente** con [`ROADMAP-CEO.md`](../ROADMAP-CEO.md). Pocos KPIs; accionables.
+> Revisar **mensualmente** con [`../ROADMAP.md`](../ROADMAP.md). Pocos KPIs; accionables.
 
 ## Julio 2026 (go-live)
 

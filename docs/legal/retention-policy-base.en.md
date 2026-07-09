@@ -1,6 +1,6 @@
-ï»¿# Data retention policy
+# Data retention policy
 
-**Last updated:** 19 May 2026 Â· **Controller:** Christian David Villar Colodro (Dakinis Systems) Â· Tax ID (NIF) 18513473Z
+**Last updated:** 19 May 2026 · **Controller:** Christian David Villar Colodro (Dakinis Systems) · Tax ID (NIF) 18513473Z
 
 Indicative periods; may vary due to legal duty, litigation, or security needs.
 
