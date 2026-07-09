@@ -1,18 +1,30 @@
-import * as Lucide from "lucide-react";
-
-function toComponentName(name) {
-  return String(name || "")
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join("");
-}
+import { LUCIDE_ICON_PATHS } from "./lucide-icon-paths.js";
 
 /**
- * Render Lucide icon by kebab-case name (Hub widgets registry).
+ * Icono stroke estilo Lucide — sin dependencia npm (vendored DES en Core/Hub/LF).
  * @param {{ name?: string; size?: number; className?: string }} props
  */
 export function LucideIcon({ name, size = 20, className = "" }) {
   if (!name) return null;
-  const Icon = Lucide[toComponentName(name)] || Lucide.Circle;
-  return <Icon size={size} strokeWidth={1.75} className={className} aria-hidden />;
+  const spec = LUCIDE_ICON_PATHS[name] || LUCIDE_ICON_PATHS.circle;
+  const paths = Array.isArray(spec) ? spec : [spec];
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      {paths.map((d) => (
+        <path key={d} d={d} />
+      ))}
+    </svg>
+  );
 }

@@ -25,8 +25,8 @@
     "./react/AiWarning.jsx": "./src/react/AiWarning.jsx",
     "./react/AiAction.jsx": "./src/react/AiAction.jsx",
     "./react/AiTimeline.jsx": "./src/react/AiTimeline.jsx"
+  },
   "peerDependencies": {
-    "react": ">=18",
-    "lucide-react": ">=0.400.0"
+    "react": ">=18"
   }
 }
