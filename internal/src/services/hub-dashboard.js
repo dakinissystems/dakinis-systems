@@ -1,6 +1,7 @@
 import { query } from "../lib/db.js";
 import { HUB_APPS, HUB_SECTIONS } from "../hub-data.js";
 import { buildWidgetValues } from "../hub-widget-values.js";
+import { buildRecommendedActions } from "../hub-actions.js";
 import {
   fetchUserHubProducts,
   dakinisFilterHubApps,
@@ -80,6 +81,12 @@ export function buildHubDashboardResponse(userId, opts = {}) {
     widgetValues: buildWidgetValues({ db, summary: { notificationsUnread: unread } }),
     notifications: inboxItems,
   };
+
+  payload.actions = buildRecommendedActions({
+    db,
+    summary: payload.summary,
+    enabledProducts,
+  });
 
   return payload;
 }

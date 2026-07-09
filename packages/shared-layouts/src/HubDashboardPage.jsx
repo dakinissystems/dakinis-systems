@@ -7,9 +7,10 @@ import {
 } from "../../shared-ux/src/hub-dashboard.js";
 import { getWidgetsForSection } from "../../shared-ux/src/widgets.js";
 import { getWidgetDisplay } from "../../shared-ux/src/hub-widget-values.js";
-import { dakinisResolveHubWidgetOpen, dakinisRunHubWidgetAction } from "../../shared-ux/src/hub-widget-actions.js";
+import { dakinisResolveHubWidgetOpen, dakinisRunHubWidgetAction, dakinisRunHubRecommendedAction } from "../../shared-ux/src/hub-widget-actions.js";
 import { dakinisHubProductEnabled } from "../../shared-brand/src/hub-product-access.js";
 import { HubProductIcon } from "../../shared-ux/src/HubProductIcon.jsx";
+import HubActionsPanel from "../../shared-ux/src/react/HubActionsPanel.jsx";
 import { dashboardCardStyles } from "../../shared-ux/src/DashboardCard.jsx";
 
 /**
@@ -19,6 +20,7 @@ import { dashboardCardStyles } from "../../shared-ux/src/DashboardCard.jsx";
 export default function HubDashboardPage({
   userName = "Usuario",
   dashboard = null,
+  sidebar = null,
   headerExtra = null,
   HeaderExtraComponent = null,
   headerExtraProps = null,
@@ -29,6 +31,7 @@ export default function HubDashboardPage({
   const widgetValues = dashboard?.widgetValues || {};
   const apps = dashboard?.apps || [];
   const enabledProducts = dashboard?.enabledProducts || null;
+  const recommendedActions = dashboard?.actions || [];
 
   function widgetsForSection(sectionId) {
     const widgets = getWidgetsForSection(sectionId);
@@ -40,6 +43,7 @@ export default function HubDashboardPage({
 
   return (
     <HubShell
+      sidebar={sidebar}
       header={
         <div className="dakinis-hub-header">
           <div className="dakinis-hub-header__row">
@@ -70,6 +74,12 @@ export default function HubDashboardPage({
         .dakinis-dashboard-card--app-launcher .dakinis-dashboard-card__value { font-size: 1.15rem; font-weight: 600; }
       `}</style>
       <div className="dakinis-hub-dashboard">
+        {recommendedActions.length > 0 ? (
+          <HubActionsPanel
+            actions={recommendedActions}
+            onAction={(actionId) => dakinisRunHubRecommendedAction(actionId, { apps, onAppOpen })}
+          />
+        ) : null}
         {sections.map((section) => {
           const widgets = widgetsForSection(section.id);
           return (

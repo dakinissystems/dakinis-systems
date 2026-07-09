@@ -33,6 +33,7 @@ export {
   DAKINIS_COMMANDS,
 } from "./react/CommandPalette.jsx";
 export { default as HubWidgetGrid } from "./react/HubWidgetGrid.jsx";
+export { default as HubActionsPanel } from "./react/HubActionsPanel.jsx";
 export {
   getIllustration,
   ILLUSTRATION_KEYS,

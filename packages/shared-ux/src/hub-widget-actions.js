@@ -62,3 +62,36 @@ export function dakinisRunHubWidgetAction(action, handlers = {}) {
     window.location.href = action.href;
   }
 }
+
+/** Acciones recomendadas del panel «Mi día» → scroll o abrir app */
+const RECOMMENDED_ACTION_TARGETS = {
+  "open-notifications": { type: "scroll", targetId: "notifications" },
+  "open-apps": { type: "scroll", targetId: "apps" },
+  "open-core-orders": { product: "core" },
+  "open-core-inventory": { product: "core" },
+  "open-core-calendar": { product: "core" },
+  "open-lifeflow": { product: "lifeflow" },
+  "open-stream-calendar": { product: "streamautomator" },
+  "open-akoenet": { product: "akoenet" },
+};
+
+/**
+ * @param {string} actionId
+ * @param {Array<{ id: string; product?: string }>} apps
+ */
+export function dakinisResolveHubRecommendedAction(actionId, apps = []) {
+  const spec = RECOMMENDED_ACTION_TARGETS[actionId];
+  if (!spec) return null;
+  if (spec.type === "scroll") return spec;
+  const app = apps.find((a) => a.id === spec.product || a.product === spec.product);
+  return app ? { type: "app", app } : null;
+}
+
+/**
+ * @param {string} actionId
+ * @param {{ apps?: object[]; onAppOpen?: (app: object) => void }} ctx
+ */
+export function dakinisRunHubRecommendedAction(actionId, ctx = {}) {
+  const resolved = dakinisResolveHubRecommendedAction(actionId, ctx.apps || []);
+  dakinisRunHubWidgetAction(resolved, { onAppOpen: ctx.onAppOpen });
+}
