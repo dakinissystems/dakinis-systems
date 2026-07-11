@@ -22,9 +22,11 @@ El servicio `gateway` en [`docker/compose.full.yml`](../docker/compose.full.yml)
 
 ### Upstreams Railway (prod)
 
-En Railway el gateway **no debe** usar `https://*.up.railway.app` ni dominios públicos como upstream — devuelven **504**. Usar **`*.railway.internal` + HTTP** (mismo patrón que `/billing/`, `/search/`). Puertos en `set $p_*` alineados con `PORT` de cada servicio.
+**Productos** (auth, core, StreamAutomator, AkoeNet, Finanzas): dominio público con **`proxy_pass https://…` literal** (sin `$variable`). El patrón `proxy_pass https://$u_*` + `resolver [fd12::10]` devolvía **504** desde el gateway.
 
-Si un producto devuelve **502** vía gateway: comprobar en Railway → Networking que el servicio comparte **private network** con el gateway y que el alias DNS coincide (`dakinis-auth`, `lifeflow`, …).
+**Platform** (`/billing/`, `/search/`, …): `*.railway.internal` + HTTP + puerto explícito (`$p_billing`, …).
+
+Si un producto devuelve **502**: comprobar `Host` / SNI (`$u_*_host`) y health directo del dominio.
 
 ### Imagen Docker (Railway y similares)
 
