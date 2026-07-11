@@ -512,7 +512,7 @@ Flujo esperado → [`ARCHITECTURE.md` §13](./ARCHITECTURE.md#13-billing-e2e).
 
 1. Identificar prefijo (`/billing/`, `/core/`, …)
 2. Railway → upstream → health directo (dominio del producto o `*.railway.internal:PORT`)
-3. **504 en `/core/` o `/auth/`:** gateway no alcanza upstreams HTTPS públicos — usar `*.railway.internal` HTTP en [`gateway/routes/default.conf`](../gateway/routes/default.conf)
+3. **504 en `/core/` o `/auth/`:** suele ser `proxy_pass` con variable + resolver — productos usan dominio público literal en [`gateway/routes/default.conf`](../gateway/routes/default.conf)
 4. Verificar private networking entre gateway y servicio
 5. Verificar `DATABASE_URL`, `PORT` · redeploy si crash loop
 
