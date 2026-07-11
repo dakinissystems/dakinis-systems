@@ -96,6 +96,10 @@ Contratos: [`docs/contracts/`](./contracts/README.md).
 | `FINANZAS_DB_PATH` | `/data/finanzas.db` (**requiere volume** en `/data`) |
 | `FINANZAS_JWT_SECRET` | Secret **estable** (no regenerar en cada deploy) |
 | `FINANZAS_CORS_ORIGINS` | `https://finance.dakinissystems.com` |
+| `FRONTEND_URL` | `https://finance.dakinissystems.com` (enlaces en correos reset; alias: `FINANZAS_WEB_URL`, `LIFEFLOW_WEB_URL`) |
+| `RESEND_API_KEY` | Clave Resend (**obligatoria** en prod para reset por email) |
+| `RESEND_FROM` | `Dakinis Finanzas <noreply@dakinissystems.com>` |
+| `DAKINIS_AUTH_URL` | `https://auth.dakinissystems.com` (Hub SSO / Google exchange; **sin** `/auth`) |
 | `PORT` | Railway auto |
 
 ### Web
@@ -145,6 +149,61 @@ npm run reset-password -w @finanzas/api -- tu@email.com TuNuevaClave123 --create
 
 - `FINANZAS_DB_PATH=/data/finanzas.db`
 - `FINANZAS_JWT_SECRET=<secreto fijo>`
+
+---
+
+## dakinis-auth — reset + Google OAuth
+
+Servicio **dakinis-auth** en Railway (`auth.dakinissystems.com`). Tras cambios en código, **redeploy obligatorio**.
+
+| Variable | Valor prod |
+|----------|------------|
+| `AUTH_PUBLIC_URL` | `https://auth.dakinissystems.com` |
+| `JWT_SECRET` | Igual que Core Back |
+| `DATABASE_URL` | Supabase pooler 6543 |
+| `AUTH_SCHEMA` | `dakinis_auth` |
+| `CORS_ORIGINS` | Orígenes de todos los frontends (hub, finance, tabletop, core, akoenet, streamautomator) |
+| `RESEND_API_KEY` | Clave Resend |
+| `RESEND_FROM` | `Dakinis Systems <noreply@dakinissystems.com>` (o remitente verificado) |
+| `GOOGLE_CLIENT_ID` | Mismo OAuth client que StreamAutomator |
+| `GOOGLE_CLIENT_SECRET` | Mismo que StreamAutomator |
+| `GOOGLE_REDIRECT_URI` | `https://auth.dakinissystems.com/auth/oauth/google/callback` |
+| `HUB_WEB_URL` | `https://hub.dakinissystems.com` (fallback enlaces reset Hub) |
+| `FINANZAS_WEB_URL` | `https://finance.dakinissystems.com` |
+
+**Google Cloud Console:** añadir redirect URI anterior al OAuth client.
+
+**Convención `VITE_DAKINIS_AUTH_URL` (build Vite):**
+
+| App | Valor | Motivo |
+|-----|-------|--------|
+| Hub, AkoeNet client | `https://auth.dakinissystems.com/auth` | El cliente llama `/login`, `/password-reset/start` |
+| Tabletop web | `https://auth.dakinissystems.com` | El cliente añade `/auth/oauth/...` |
+| Tabletop API | `DAKINIS_AUTH_URL=https://auth.dakinissystems.com` | El servidor añade `/auth/me` |
+
+⚠️ **No mezclar:** si Hub usa URL sin `/auth`, el login apunta a `/login` (404). Si Tabletop usa URL con `/auth`, Google OAuth va a `/auth/auth/oauth/...` (404).
+
+**Smoke prod (tras redeploy):**
+
+```powershell
+curl.exe -sS -o NUL -w "%{http_code}" -X POST https://auth.dakinissystems.com/auth/password-reset/start -H "Content-Type: application/json" -d "{\"email\":\"test@example.com\",\"product\":\"hub\"}"
+# Esperado: 200 (body {"sent":true}) — no 404
+```
+
+---
+
+## Hub — env Railway
+
+### Web (build)
+
+| Variable | Valor |
+|----------|-------|
+| `VITE_DAKINIS_AUTH_URL` | `https://auth.dakinissystems.com/auth` |
+| `VITE_CORE_URL` | `https://core.dakinissystems.com` |
+| `VITE_GATEWAY_URL` | `https://api.dakinissystems.com` |
+| `VITE_HUB_URL` | `https://hub.dakinissystems.com` |
+
+Reset de contraseña del Hub usa **dakinis-auth** (no variables Resend en el servicio Hub). Tras solicitar reset, el correo debe decir **Dakinis Hub** y el enlace apuntar a `hub.dakinissystems.com/login/reset`.
 
 ---
 
@@ -449,11 +508,13 @@ Flujo esperado → [`ARCHITECTURE.md` §13](./ARCHITECTURE.md#13-billing-e2e).
 4. SQL: `SELECT * FROM billing.subscriptions ORDER BY updated_at DESC LIMIT 5;`
 5. Replay evento en Stripe → `.\scripts\smoke-billing-e2e.ps1`
 
-### Gateway 502
+### Gateway 502 / 504
 
 1. Identificar prefijo (`/billing/`, `/core/`, …)
-2. Railway → upstream → health directo
-3. Verificar `DATABASE_URL`, `PORT` · redeploy si crash loop
+2. Railway → upstream → health directo (dominio del producto o `*.railway.internal:PORT`)
+3. **504 en `/core/` o `/auth/`:** gateway no alcanza upstreams HTTPS públicos — usar `*.railway.internal` HTTP en [`gateway/routes/default.conf`](../gateway/routes/default.conf)
+4. Verificar private networking entre gateway y servicio
+5. Verificar `DATABASE_URL`, `PORT` · redeploy si crash loop
 
 ### AkoeNet 503 `database_schema_outdated`
 

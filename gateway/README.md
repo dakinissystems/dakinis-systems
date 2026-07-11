@@ -20,6 +20,12 @@ Logs de acceso → **stdout**, errores → **stderr** (adecuado para `docker log
 
 El servicio `gateway` en [`docker/compose.full.yml`](../docker/compose.full.yml) monta este árbol en el contenedor.
 
+### Upstreams Railway (prod)
+
+En Railway el gateway **no debe** usar `https://*.up.railway.app` ni dominios públicos como upstream — devuelven **504**. Usar **`*.railway.internal` + HTTP** (mismo patrón que `/billing/`, `/search/`). Puertos en `set $p_*` alineados con `PORT` de cada servicio.
+
+Si un producto devuelve **502** vía gateway: comprobar en Railway → Networking que el servicio comparte **private network** con el gateway y que el alias DNS coincide (`dakinis-auth`, `lifeflow`, …).
+
 ### Imagen Docker (Railway y similares)
 
 - [`Dockerfile`](./Dockerfile) — copia `nginx.conf` y `routes/` a `/etc/nginx/`. Compatible con Railway cuando el **Root directory** del servicio es `gateway/`.
