@@ -1,8 +1,8 @@
-# Smoke: billing sync degrade → restore vía Core internal API + verificación /api/config.
+# Smoke: billing sync degrade -> restore via Core internal API + /api/config check.
 param(
     [string]$CoreBase = "https://api.dakinissystems.com/core/api",
     [string]$BusinessId = $env:DAKINIS_BUSINESS_ID,
-    [string]$InternalKey = $env:INTERNAL_API_KEY,
+    [string]$InternalKey = $(if ($env:INTERNAL_API_KEY) { $env:INTERNAL_API_KEY } else { $env:DAKINIS_INTERNAL_SERVICE_KEY }),
     [string]$CoreJwt = $env:DAKINIS_CORE_JWT
 )
 
@@ -22,7 +22,7 @@ function Invoke-BillingSync {
     param([string]$Event, [hashtable]$Payload)
     $body = @{ event = $Event; payload = $Payload } | ConvertTo-Json -Compress
     $tmp = New-TemporaryFile
-    Set-Content -Path $tmp -Value $body -Encoding utf8NoBOM -NoNewline
+    [System.IO.File]::WriteAllText($tmp, $body, [System.Text.UTF8Encoding]::new($false))
     $url = "$CoreBase/internal/billing/sync"
     Write-Host ""
     Write-Host "== $Event ==" -ForegroundColor Cyan
@@ -37,7 +37,7 @@ function Invoke-BillingSync {
 function Get-TenantConfig {
     param([string]$Label)
     if (-not $CoreJwt) {
-        Write-Host "Omitido GET /api/config ($Label) — define DAKINIS_CORE_JWT" -ForegroundColor DarkYellow
+        Write-Host "Omitido GET /api/config ($Label) - define DAKINIS_CORE_JWT" -ForegroundColor DarkYellow
         return $null
     }
     Write-Host ""
@@ -59,7 +59,7 @@ function Get-TenantConfig {
     return $null
 }
 
-Write-Host "Billing degraded sync smoke — tenant $BusinessId" -ForegroundColor Green
+Write-Host "Billing degraded sync smoke - tenant $BusinessId" -ForegroundColor Green
 
 Invoke-BillingSync -Event "billing.payment_failed" -Payload @{
     businessId = $BusinessId
@@ -94,4 +94,4 @@ if ($activeConfig) {
 }
 
 Write-Host ""
-Write-Host "OK — degrade + restore sync." -ForegroundColor Green
+Write-Host "OK - degrade + restore sync." -ForegroundColor Green
