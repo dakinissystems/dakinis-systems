@@ -10,12 +10,14 @@
 ```
 027–029 (Hub Mi día) → 031 (Workspace) → deploy Internal API + Hub
   → 032 (Assistant módulos) → 033 (Assistant expansión)
+  → 035 (Dakinis Desktop addons) → 036 (tiers + Settings/Monitor/AI Actions)
+  → provision workspace addons
   → deploy akoenet-backend + akoenet-client
 ```
 
 Si 027–029 no están aplicadas, 031 puede ejecutarse igual; el backfill de productos usa `hub.tenant_product_access` si existe.
 
-**Estado jul 2026:** `031` ✅ · `032`–`033` ✅ prod · Hub `/admin` ✅ · Internal API workspace + assistant ✅ · cliente panel + i18n + event bridge ✅ · workers BullMQ ⬜.
+**Estado jul 2026:** `031` ✅ · `032`–`033` ✅ · `035` ✅ · `036` 🚧 (tiers + 3 addons + layout profiles) · cliente `/workspace` v1.5.26 ✅ · modelo capabilities documentado ✅.
 
 ---
 
@@ -71,7 +73,8 @@ VALUES
   ('031_workspace_super_admin.sql', true, 'manual prod'),
   ('032_akoenet_assistant_modules.sql', true, 'manual prod'),
   ('033_akoenet_assistant_expansion.sql', true, 'manual prod'),
-  ('034_rls_security_advisor_deny_policies.sql', true, 'manual prod')
+  ('034_rls_security_advisor_deny_policies.sql', true, 'manual prod'),
+  ('035_dakinis_workspace_addons.sql', true, 'manual prod jul 2026')
 ON CONFLICT (migration_file) DO NOTHING;
 ```
 
@@ -82,6 +85,39 @@ Corrige **«RLS Enabled No Policy»** en `legacy_akoenet.*`, gaps `meta.*` y tab
 1. Pega [`034_rls_security_advisor_deny_policies.sql`](./supabase/migrations/034_rls_security_advisor_deny_policies.sql) → Run
 2. La query final debe devolver **0 filas**
 3. Refresca Security Advisor en Supabase Dashboard
+
+### Paso 1.6 — Migración 035 (Dakinis Desktop — catálogo addons) ✅
+
+**Requisito:** schema `meta` + workspace `dakinis-platform` (031 + provisioning).
+
+1. Pega [`035_dakinis_workspace_addons.sql`](./supabase/migrations/035_dakinis_workspace_addons.sql) → Run
+2. Verifica:
+
+```sql
+SELECT count(*) FROM meta.workspace_addon_catalog;
+```
+
+3. **Provisioning addons** para super admin (23 installs activos):
+
+[`supabase/scripts/provision_workspace_addons_christiandvillar.sql`](./supabase/scripts/provision_workspace_addons_christiandvillar.sql)
+
+4. **Provisioning Assistant** (opcional — requiere `owner_id` del servidor = tu user auth):
+
+[`supabase/scripts/provision_akoenet_assistant_christiandvillar.sql`](./supabase/scripts/provision_akoenet_assistant_christiandvillar.sql)
+
+Scripts CLI: `node scripts/run-supabase-sql-files.mjs` · `.\scripts\provision-platform-workspace.ps1`
+
+### Paso 1.7 — Migración 036 (Capabilities — tiers + addons nuevos) 🚧
+
+1. Pega [`036_dakinis_workspace_capabilities.sql`](./supabase/migrations/036_dakinis_workspace_capabilities.sql) → Run
+2. Verifica:
+
+```sql
+SELECT key, tier FROM meta.workspace_addons WHERE key IN ('settings', 'monitor', 'ai-actions');
+SELECT count(*) FROM meta.workspace_desktop_profiles;
+```
+
+3. Re-ejecutar provision addons si añades filas nuevas al catálogo.
 
 ---
 
@@ -196,7 +232,9 @@ curl -s -o /dev/null -w "%{http_code}" https://api.akoenet.dakinissystems.com/he
 
 Panel **Assistant** en ajustes del servidor → `GET/PUT /servers/:id/assistant/modules`.
 
-**Commits referencia:** `eabcb95` (panel) · `8b8d91f` (apiBase fix).
+Ruta **Dakinis Desktop** → `/workspace` (launcher addons, Ctrl+K). Requiere Client **v1.5.26+** (fix build `e89d77a`).
+
+**Commits referencia:** `eabcb95` (panel) · `8b8d91f` (apiBase fix) · `2c9fef9` (workspace) · `e89d77a` (build fix deploy).
 
 ### 5.4 Internal API — rutas Assistant
 
@@ -292,6 +330,15 @@ curl -X PATCH -H "Authorization: Bearer $k" -H "Content-Type: application/json" 
 - [ ] @AI responde vía AI Platform
 - [ ] Stream live anuncia en AkoeNet
 - [ ] `assistant_usage` registra tokens
+
+### Dakinis Desktop (`/workspace`)
+
+- [x] Migr. **035** aplicada + catálogo 23 addons
+- [x] Provision addons `dakinis-platform` (christiandvillar)
+- [x] Internal API + Hub `workspaceAddons` en dashboard
+- [x] Client v1.5.26 desplegado — `/workspace` accesible
+- [ ] Assistant modules provisionados (owner servidor alineado)
+- [ ] UI real por addon (Terminal, AI, …) — hoy preview
 
 ---
 

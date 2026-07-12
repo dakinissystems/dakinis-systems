@@ -200,7 +200,7 @@ Auth SSO 📅 · Notifications 📅 · Events
 | **API** | [api.akoenet.dakinissystems.com](https://api.akoenet.dakinissystems.com) |
 | **BD** | Supabase `akoenet` 🚧 cutover |
 | **Stack** | React 19 · Express · Socket.IO · WebRTC · Tauri · Capacitor |
-| **Versiones** | Client v1.5.21 · Backend v1.5.12 |
+| **Versiones** | Client v1.5.26 · Backend v1.5.13 |
 
 ### Qué ofrece
 
@@ -211,11 +211,14 @@ Auth SSO 📅 · Notifications 📅 · Events
 | Auth IdP + Google + Twitch + Steam | ✅ |
 | Desktop Tauri + Android Capacitor | ✅ |
 | StreamAutomator integration | ✅ |
+| **Dakinis Desktop** (`/workspace`) | 🚧 26 addons · 5 capabilities · solo Media Player live |
 | **AkoeNet Assistant** (módulos nativos) | 🚧 |
 | **Dakinis Media Player** (`/media`) | 🚧 MVP |
 | Listen together / presence musical | 📅 |
 
 **Diferenciador:** [AkoeNet Assistant](./AKOENET-ASSISTANT.md) — `@dakinis/akoenet-orchestrator` + Internal API `/akoenet/assistant/*`.
+
+**Dakinis Desktop:** [`DAKINIS-WORKSPACE.md`](./DAKINIS-WORKSPACE.md) — Platform Services → Capabilities → **Desktop Runtime** → Addons. Kernel: [`DESKTOP-RUNTIME.md`](../projects/workspace/docs/DESKTOP-RUNTIME.md).
 
 **Media Player:** mini-app con ventanas flotantes — valida el futuro **Dakinis Desktop** (`@dakinis/window-manager`). → [`AKOENET-ESTADO.md`](./AKOENET-ESTADO.md)
 
@@ -226,7 +229,8 @@ AkoeNet
 ├── Client (SPA + Tauri + Capacitor)
 ├── Backend (REST + Socket.IO)
 ├── Assistant (orchestrator + modules)
-└── Addons: Media Player, …
+├── Dakinis Desktop (capabilities → 26 addons)
+└── Widgets cross-product (Hub · AkoeNet · Core)
 ```
 
 ### Platform consumida

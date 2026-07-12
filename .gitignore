@@ -7,6 +7,14 @@
 /hub/
 /ai/
 
+# --- Dakinis Studio Mobile (repo propio; APK, Android, node_modules) ---
+/projects/dakinis-studio-mobile/
+**/dakinis-studio-mobile/
+/dakinis-studio-mobile/
+**/*studio-mobile*.apk
+**/*studio-mobile*.aab
+**/dakinis-studio-mobile/**
+
 # --- Secretos locales del stack Docker ---
 /docker/.env
 /docker/.env.dev
@@ -19,6 +27,11 @@
 /docs/company/assets/instagram-carousel/*.png
 /docs/company/assets/instagram-carousel/refs/
 /docs/company/assets/instagram-carousel/__pycache__/
+
+# --- Docs personales / temporales (uso local, no versionar) ---
+/docs/PLAYBOOK-NETWORKING.md
+/docs/DAKINIS-ESTRUCTURA-TEMP.md
+/docs/company/sales/
 
 # --- OS / editor ---
 .DS_Store

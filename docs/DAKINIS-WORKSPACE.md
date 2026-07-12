@@ -1,98 +1,157 @@
 # Dakinis Workspace
 
-> **Julio 2026** — Escritorio modular: addons nativos, no plugins estilo Discord.  
-> Scaffold → [`projects/workspace/`](../projects/workspace/) · Hub → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) · SQL → [`supabase/migrations/035_dakinis_workspace_addons.sql`](./supabase/migrations/035_dakinis_workspace_addons.sql)
+> **Julio 2026** — Plataforma con SO propio: **Platform Services → Capabilities → Desktop Runtime → Addons → Widgets**  
+> Kernel → [`projects/workspace/docs/DESKTOP-RUNTIME.md`](../projects/workspace/docs/DESKTOP-RUNTIME.md)
 
 ---
 
 ## Visión
 
-**Dakinis Desktop** agrupa mini-aplicaciones (Terminal, AI Workspace, Media Player, Kanban…) bajo la misma arquitectura:
-
-- **Platform** — Auth, AI, Billing, Notifications, Storage, Knowledge, Events, Search, Marketplace
-- **Workspace shell** — launcher, dock, command palette (`Ctrl+K`), activity center
-- **Addons** — instalables, actualizables, desinstalables sin romper el resto
-- **Widgets** — cada addon expone tiles al Hub y al escritorio
-
-Media Player en AkoeNet es el **primer addon en producción** (`apps/akoenet/Client/src/modules/media-player/`).
-
-## Catálogo (23 addons)
-
-| Categoría | Addons |
-|-----------|--------|
-| **Sistema** | command-palette, activity-center, dashboard, marketplace, theme-studio, file-explorer, downloads |
-| **Productividad** | ai-workspace, whiteboard, kanban, calendar, notes, live-dashboard |
-| **Desarrollo** | terminal, code-editor, devops, automation-builder |
-| **Streaming** | stream-deck, obs-companion, clip-studio |
-| **Media** | media-player |
-| **Entretenimiento** | soundboard, game-launcher |
-
-Textos **EN + ES** en [`projects/workspace/catalog/workspace-addons.json`](../projects/workspace/catalog/workspace-addons.json) y `@dakinis/shared-brand/workspace-addons`.
-
-## Estructura de repo
+Dakinis Desktop es un **framework**, no un listado de apps.
 
 ```
-projects/workspace/
-├── desktop/          # Shell (launcher, dock, command-palette…)
-├── addons/           # 23 carpetas uniformes (manifest + src/)
-├── packages/         # window-manager, addon-sdk, ui, widgets
-├── services/         # desktop-api, sync, storage
-├── catalog/          # workspace-addons.json, widgets.json
-└── docs/             # ARCHITECTURE.md, ADDON-SDK.md
+Platform Services    Auth · AI · Storage · Billing · Events · Metrics…
+        ↓
+Capabilities         Window Manager · Addon SDK · Widgets · Command Palette · Marketplace
+        ↓
+Desktop Runtime      lifecycle · event bus · permisos · layouts
+        ↓
+Addons (26)          mini-apps ensambladas
+        ↓
+Widgets              tiles en Hub · Workspace · AkoeNet · Core
 ```
 
-Regenerar árbol de addons:
+**Media Player** = Hello World. El producto real: Runtime + Window Manager + SDK + Marketplace + Widget Framework.
 
-```powershell
-node projects/workspace/scripts/scaffold-addons.mjs
+---
+
+## Platform Services ≠ Capabilities
+
+| Capa | Qué es | Ejemplo |
+|------|--------|---------|
+| **Platform Service** | Backend compartido | `auth`, `storage`, `ai` |
+| **Capability** | API de escritorio versionada | `window-manager@v1` |
+| **Addon** | App instalable | Media Player, Terminal |
+
+Terminal usa Platform `auth` + Capability `window-manager` — conceptos distintos.
+
+---
+
+## Desktop Runtime (kernel)
+
+Orquesta el escritorio:
+
+- Carga capabilities versionadas
+- Registra addons (contrato `WorkspaceAddon`)
+- **Event Bus** — `media.play`, `layout.changed`, `stream.started`, `voice.connected`…
+- **Lifecycle** — `onInstall` → `onStart` → `onWorkspaceLoaded` → `onStop`
+- Restaura layouts (Gaming, Developer, Office…)
+- Permission Gate para Platform Services
+
+Doc completa → [`DESKTOP-RUNTIME.md`](../projects/workspace/docs/DESKTOP-RUNTIME.md)
+
+---
+
+## Capabilities (5)
+
+| Capability | Core addon (si aplica) |
+|------------|------------------------|
+| Window Manager | — |
+| Addon SDK | — |
+| Widget Framework | — |
+| **Command Palette** | **Command Center** (`command-palette`) |
+| Marketplace | Marketplace addon |
+
+**Naming:** Command Palette = capability. Command Center = addon Core.
+
+Versiones → [`catalog/capability-versions.json`](../projects/workspace/catalog/capability-versions.json)
+
+---
+
+## Contrato WorkspaceAddon
+
+```typescript
+interface WorkspaceAddon {
+  id, version, tier
+  permissions      // Platform Services
+  capabilities     // { id, version }
+  widgets, commands, windows, routes, settings
+  lifecycle        // onInstall … onWorkspaceClosed
+  dependencies     // required · optional · conflicts
+}
 ```
 
-## Base de datos
+→ [`ADDON-SDK.md`](../projects/workspace/docs/ADDON-SDK.md)
 
-| Tabla | Uso |
-|-------|-----|
-| `meta.workspace_addons` | Catálogo global |
-| `meta.workspace_addon_installs` | ON/OFF por workspace Hub |
+---
 
-## Estado de implementación (jul 2026)
+## Tiers (26 addons)
 
-| Capa | Estado |
+| Tier | Addons |
 |------|--------|
-| Catálogo 23 addons EN/ES | ✅ `projects/workspace/catalog/` |
-| Scaffold addons + window manager | ✅ `projects/workspace/addons/` |
-| AkoeNet Desktop `/workspace` | ✅ Client v1.5.25+ — launcher, Ctrl+K, Activity Center, preview runtime |
-| API AkoeNet `GET /workspace/addons` | ✅ Server v1.5.13 — admin/platform = todos activos |
-| Internal API + Hub dashboard | ✅ `workspaceAddons` en `/hub/dashboard/:userId` |
-| Hub admin toggles | ✅ `HubWorkspaceAdminPage` + `POST .../addons/enable-all` |
-| SQL Supabase 035 + provision | ⬜ Ejecutar en Supabase (scripts listos) |
-| UI real por addon (Terminal, AI, …) | 🚧 Preview/scaffold — solo Media Player live |
+| **Core** | Command Center, Activity Center, Dashboard, Marketplace, Settings |
+| **Productivity** | Calendar, Notes, Kanban, AI Workspace, AI Actions… |
+| **Developer** | Terminal, DevOps, Monitor, Code, Automation |
+| **Stream / Media / Entertainment** | OBS, Stream Deck, Media Player, Soundboard… |
+| **System** | File Explorer, Theme Studio, Downloads |
 
-Sync catálogo: `node scripts/sync-workspace-addons-catalog.mjs`  
-Provision: `.\scripts\provision-platform-workspace.ps1`
+---
 
-## Activar perfil platform admin (christiandvillar)
+## Dependencias entre addons
 
-En Supabase SQL Editor, **en orden**:
+| Tipo | Ejemplo |
+|------|---------|
+| `required` | OBS Companion → Stream Deck |
+| `optional` | OBS → Media Player, Soundboard |
+| `conflicts` | (reservado) |
 
-1. [`035_dakinis_workspace_addons.sql`](./supabase/migrations/035_dakinis_workspace_addons.sql)
-2. [`scripts/provision_workspace_addons_christiandvillar.sql`](./supabase/scripts/provision_workspace_addons_christiandvillar.sql) — todos los addons en workspace `dakinis-platform`
-3. [`scripts/provision_akoenet_assistant_christiandvillar.sql`](./supabase/scripts/provision_akoenet_assistant_christiandvillar.sql) — todos los módulos Assistant en servidores AkoeNet (email o Twitch `christiandvillar`)
+→ [`catalog/addon-dependencies.json`](../projects/workspace/catalog/addon-dependencies.json)
 
-El script AkoeNet también vincula `twitch_username = 'christiandvillar'` al perfil si falta.
+---
 
-## Exclusivos Dakinis
+## Marketplace
 
-1. **Command Center** — `Ctrl+K` cross-product
-2. **Activity Center** — notificaciones, streams, deploys, facturas
-3. **Live Dashboard** — reunión con voz + notas + resumen IA
-4. **Widgets** compartidos entre Hub, AkoeNet y StreamAutomator
+Addons · skins · widgets · themes · layouts · AI prompts · automation packs · sound packs
 
-## Evitar
+→ [`catalog/marketplace-types.json`](../projects/workspace/catalog/marketplace-types.json)
 
-Navegador completo, cliente de correo, editor de imágenes pro, Word/Excel, torrents — no refuerzan la identidad de AkoeNet/Dakinis.
+---
+
+## Layouts y persistencia
+
+Presets Gaming / Streaming / Developer / Office + perfiles Morning / Coding / Music
+
+→ [`catalog/desktop-layouts.json`](../projects/workspace/catalog/desktop-layouts.json)
+
+---
+
+## Catálogos
+
+| Archivo | Contenido |
+|---------|-----------|
+| `workspace-addons.json` | 26 addons, tiers, admission |
+| `addon-dependencies.json` | Platform + capabilities + required/optional/conflicts |
+| `capability-versions.json` | window-manager@v1… |
+| `event-bus.json` | Eventos del Runtime |
+| `desktop-layouts.json` | Presets + perfiles |
+| `widgets.json` | Surfaces cross-product |
+
+---
+
+## Estado (jul 2026)
+
+| Componente | Estado |
+|------------|--------|
+| DESKTOP-RUNTIME.md + contrato SDK | ✅ |
+| Event bus + capability versioning | ✅ catálogo |
+| Media Player Hello World | 🚧 AkoeNet live |
+| `@dakinis/desktop-runtime` código | 📅 |
+| SQL 036 | 🚧 |
+
+---
 
 ## Relacionado
 
-- AkoeNet Assistant (módulos servidor) → [`AKOENET-ASSISTANT.md`](./AKOENET-ASSISTANT.md)
-- Media Player → [`projects/media-player/`](../projects/media-player/)
-- Window Manager → [`projects/akoenet-media-player/packages/window-manager/`](../projects/akoenet-media-player/packages/window-manager/)
+- [`CAPABILITIES.md`](../projects/workspace/docs/CAPABILITIES.md)
+- [`ARCHITECTURE.md`](../projects/workspace/docs/ARCHITECTURE.md)
+- SQL → [`035`](./supabase/migrations/035_dakinis_workspace_addons.sql) · [`036`](./supabase/migrations/036_dakinis_workspace_capabilities.sql)
