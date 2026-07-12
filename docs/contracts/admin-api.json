@@ -12,7 +12,11 @@
     "PATCH /workspaces/:id/members/:userId/role": "Body: { role, actorId? }",
     "GET /workspaces/:id/usage": "Métricas: miembros activos 7d, productos, consumo IA 30d",
     "GET /workspaces/:id/products": "Productos activos del workspace",
-    "PUT /workspaces/:id/products": "Body: { products: ['core','lifeflow',...] }"
+    "PUT /workspaces/:id/products": "Body: { products: ['core','lifeflow',...] }",
+    "GET /workspace-addons/catalog": "Catálogo global Dakinis Workspace addons",
+    "GET /workspaces/:id/addons": "Addons instalados + catálogo merged",
+    "PUT /workspaces/:id/addons/:key": "Body: { enabled, pinned?, config? }",
+    "POST /workspaces/:id/addons/enable-all": "Activa todos los addons (platform admin provisioning)"
   },
   "superAdmin": {
     "GET /admin/v1/overview": "Panorama: workspaces, usuarios, incidencias, BullMQ health",

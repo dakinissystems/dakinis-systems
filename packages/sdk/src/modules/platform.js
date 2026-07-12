@@ -63,6 +63,34 @@ export class HubClient extends PlatformClient {
 }
 
 /** @extends PlatformClient */
+export class WorkspaceClient extends PlatformClient {
+  catalog() {
+    return this.request("/workspace-addons/catalog");
+  }
+
+  /** @param {string} workspaceId */
+  addons(workspaceId) {
+    return this.request(`/workspaces/${encodeURIComponent(workspaceId)}/addons`);
+  }
+
+  /** @param {string} workspaceId @param {string} key @param {{ enabled?: boolean; pinned?: boolean; config?: object }} body */
+  upsertAddon(workspaceId, key, body) {
+    return this.request(`/workspaces/${encodeURIComponent(workspaceId)}/addons/${encodeURIComponent(key)}`, {
+      method: "PUT",
+      body: JSON.stringify(body),
+    });
+  }
+
+  /** @param {string} workspaceId */
+  enableAllAddons(workspaceId) {
+    return this.request(`/workspaces/${encodeURIComponent(workspaceId)}/addons/enable-all`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+  }
+}
+
+/** @extends PlatformClient */
 export class NotificationsClient extends PlatformClient {
   /** @param {{ userId: string; type: string; channel?: string; payload: object }} body */
   send(body) {

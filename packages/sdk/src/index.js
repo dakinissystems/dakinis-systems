@@ -3,6 +3,7 @@ export {
   AuthClient,
   BillingClient,
   HubClient,
+  WorkspaceClient,
   NotificationsClient,
   StorageClient,
   SearchClient,

@@ -6,6 +6,7 @@ import {
   fetchUserHubProducts,
   dakinisFilterHubApps,
 } from "./hub-product-access.js";
+import { listWorkspaceAddonsForUser } from "./workspace-addons.js";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -64,6 +65,8 @@ export function buildHubDashboardResponse(userId, opts = {}) {
     landing: opts.miDiaEnabled ? "my-day" : "apps",
     sections: HUB_SECTIONS,
     apps,
+    workspaceAddons: opts.workspaceAddons || [],
+    workspaceId: opts.workspaceId ?? null,
     enabledProducts,
     isPlatformAdmin: Boolean(hubAccess.isPlatformAdmin),
     db: db ?? null,
@@ -114,12 +117,26 @@ export async function getHubDashboard(userId, opts = {}) {
     }
   }
 
+  let workspaceAddons = [];
+  let workspaceId = null;
+  try {
+    const ws = await listWorkspaceAddonsForUser(userId, {
+      isPlatformAdmin: Boolean(hubAccess.isPlatformAdmin),
+    });
+    workspaceAddons = ws.items.filter((a) => a.enabled);
+    workspaceId = ws.workspaceId;
+  } catch (err) {
+    console.warn("[internal] workspace addons:", err?.message || err);
+  }
+
   const body = buildHubDashboardResponse(userId, {
     db,
     miDiaEnabled,
     notificationsUnread: opts.notificationsUnread,
     notificationsItems: opts.notificationsItems,
     hubAccess,
+    workspaceAddons,
+    workspaceId,
   });
 
   return {

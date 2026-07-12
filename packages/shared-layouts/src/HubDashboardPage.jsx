@@ -9,6 +9,7 @@ import { getWidgetsForSection } from "../../shared-ux/src/widgets.js";
 import { getWidgetDisplay } from "../../shared-ux/src/hub-widget-values.js";
 import { dakinisResolveHubWidgetOpen, dakinisRunHubWidgetAction, dakinisRunHubRecommendedAction } from "../../shared-ux/src/hub-widget-actions.js";
 import { dakinisHubProductEnabled } from "../../shared-brand/src/hub-product-access.js";
+import { dakinisWorkspaceAddonField } from "../../shared-brand/src/workspace-addons.js";
 import { HubProductIcon } from "../../shared-ux/src/HubProductIcon.jsx";
 import HubActionsPanel from "../../shared-ux/src/react/HubActionsPanel.jsx";
 import { dakinisHubT } from "../../shared-ux/src/hub-i18n.js";
@@ -27,10 +28,12 @@ export default function HubDashboardPage({
   headerExtraProps = null,
   onAppOpen = null,
   onWidgetOpen = null,
+  locale = "es",
 }) {
   const sections = getHubSectionsBeforeApps();
   const widgetValues = dashboard?.widgetValues || {};
   const apps = dashboard?.apps || [];
+  const workspaceAddons = dashboard?.workspaceAddons || [];
   const enabledProducts = dashboard?.enabledProducts || null;
   const recommendedActions = dashboard?.actions || [];
 
@@ -78,7 +81,7 @@ export default function HubDashboardPage({
         {recommendedActions.length > 0 ? (
           <HubActionsPanel
             actions={recommendedActions}
-            t={dakinisHubT}
+            t={(key) => dakinisHubT(key, locale)}
             onAction={(actionId) => dakinisRunHubRecommendedAction(actionId, { apps, onAppOpen })}
           />
         ) : null}
@@ -120,9 +123,42 @@ export default function HubDashboardPage({
             </section>
           );
         })}
+        {workspaceAddons.length > 0 ? (
+          <section id="workspace" className="dakinis-hub-section">
+            <h2 className="dakinis-hub-section__title">{dakinisHubT("hub.workspace.title", locale)}</h2>
+            <div className="dakinis-hub-section__grid">
+              {workspaceAddons.map((addon) => (
+                <DashboardCard
+                  key={addon.id || addon.key}
+                  className="dakinis-dashboard-card--app-launcher"
+                  icon="layout-grid"
+                  value={dakinisWorkspaceAddonField(addon, "name", locale)}
+                  status={
+                    addon.phase === "future"
+                      ? dakinisHubT("hub.workspace.roadmap", locale)
+                      : addon.category
+                  }
+                  actionLabel={dakinisHubT("hub.workspace.open", locale)}
+                  onAction={
+                    onAppOpen
+                      ? () =>
+                          onAppOpen({
+                            id: addon.id || addon.key,
+                            name: dakinisWorkspaceAddonField(addon, "name", locale),
+                            url: `https://akoenet.dakinissystems.com/workspace/${encodeURIComponent(addon.id || addon.key)}`,
+                            product: "akoenet",
+                          })
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
         <section id="apps" className="dakinis-hub-section">
           <h2 className="dakinis-hub-section__title">
-            {HUB_DASHBOARD_SECTIONS.find((s) => s.id === "apps")?.title}
+            {dakinisHubT("hub.workspace.appsTitle", locale) ||
+              HUB_DASHBOARD_SECTIONS.find((s) => s.id === "apps")?.title}
           </h2>
           <div className="dakinis-hub-section__grid">
             {apps.length > 0

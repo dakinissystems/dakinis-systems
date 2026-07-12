@@ -29,6 +29,13 @@ import {
   setWorkspaceProducts,
 } from "./services/workspace-admin.js";
 import {
+  listAddonCatalog,
+  listWorkspaceAddons,
+  upsertWorkspaceAddon,
+  enableAllWorkspaceAddons,
+  listWorkspaceAddonsForUser,
+} from "./services/workspace-addons.js";
+import {
   listWorkspaces,
   getWorkspaceDetail,
   setWorkspaceStatus,
@@ -468,6 +475,58 @@ export const routes = {
     try {
       const products = await setWorkspaceProducts(id, body.products);
       return { status: 200, body: { items: products } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspace-addons/catalog": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    try {
+      const items = await listAddonCatalog();
+      return { status: 200, body: { items } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspaces/:id/addons": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/addons", "");
+    try {
+      const items = await listWorkspaceAddons(id);
+      return { status: 200, body: { items } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PUT /workspaces/:id/addons/:key": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const parts = (req.url || "").split("?")[0].split("/").filter(Boolean);
+    const id = parts[1];
+    const key = parts[3];
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const row = await upsertWorkspaceAddon(id, key, body);
+      return { status: 200, body: row };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "POST /workspaces/:id/addons/enable-all": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/addons/enable-all", "");
+    const body = (await readJson(req)) || {};
+    try {
+      const rows = await enableAllWorkspaceAddons(id, { pinKeys: body.pinKeys });
+      return { status: 200, body: { enabled: rows.length, items: rows } };
     } catch (err) {
       return dbError(err);
     }

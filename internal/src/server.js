@@ -63,6 +63,18 @@ function matchRoute(method, path) {
   if (method === "PUT" && /^\/workspaces\/[^/]+\/products$/.test(bare)) {
     return routes["PUT /workspaces/:id/products"];
   }
+  if (method === "GET" && bare === "/workspace-addons/catalog") {
+    return routes["GET /workspace-addons/catalog"];
+  }
+  if (method === "GET" && /^\/workspaces\/[^/]+\/addons$/.test(bare)) {
+    return routes["GET /workspaces/:id/addons"];
+  }
+  if (method === "PUT" && /^\/workspaces\/[^/]+\/addons\/[^/]+$/.test(bare)) {
+    return routes["PUT /workspaces/:id/addons/:key"];
+  }
+  if (method === "POST" && /^\/workspaces\/[^/]+\/addons\/enable-all$/.test(bare)) {
+    return routes["POST /workspaces/:id/addons/enable-all"];
+  }
   if (method === "GET" && /^\/workspaces\/[^/]+$/.test(bare)) {
     return routes["GET /workspaces/:id"];
   }
