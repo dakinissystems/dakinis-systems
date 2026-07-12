@@ -1,0 +1,220 @@
+{
+  "$schema": "./runtime.schema.json",
+  "version": 1,
+  "description": "Runtime Manager catalog — language-agnostic stacks (Docker). Any language with a Linux toolchain can add a runtime entry.",
+  "runtimes": [
+    {
+      "id": "node-22",
+      "label": "Node.js 22",
+      "languageIds": ["javascript", "typescript", "jsx", "tsx", "json"],
+      "image": "dakinis/runtime-node:22",
+      "packageManagers": ["npm", "pnpm", "yarn", "bun"],
+      "defaultBuild": "npm run build",
+      "defaultDev": "npm run dev",
+      "phase": "mvp"
+    },
+    {
+      "id": "bun-1",
+      "label": "Bun",
+      "languageIds": ["javascript", "typescript"],
+      "image": "oven/bun:1",
+      "packageManagers": ["bun"],
+      "phase": "growth"
+    },
+    {
+      "id": "deno-2",
+      "label": "Deno 2",
+      "languageIds": ["javascript", "typescript"],
+      "image": "denoland/deno:2",
+      "phase": "growth"
+    },
+    {
+      "id": "python-3.13",
+      "label": "Python 3.13",
+      "languageIds": ["python"],
+      "image": "dakinis/runtime-python:3.13",
+      "packageManagers": ["pip", "uv", "poetry"],
+      "defaultBuild": "python -m build",
+      "defaultDev": "uvicorn main:app --reload",
+      "phase": "mvp"
+    },
+    {
+      "id": "php-8.4",
+      "label": "PHP 8.4",
+      "languageIds": ["php"],
+      "image": "dakinis/runtime-php:8.4",
+      "packageManagers": ["composer"],
+      "phase": "growth"
+    },
+    {
+      "id": "java-24",
+      "label": "Java 24 (Temurin)",
+      "languageIds": ["java"],
+      "image": "eclipse-temurin:24-jdk",
+      "buildTools": ["maven", "gradle"],
+      "phase": "growth"
+    },
+    {
+      "id": "kotlin-jvm",
+      "label": "Kotlin JVM",
+      "languageIds": ["kotlin"],
+      "image": "dakinis/runtime-kotlin:latest",
+      "buildTools": ["gradle"],
+      "phase": "future"
+    },
+    {
+      "id": "go-1.24",
+      "label": "Go 1.24",
+      "languageIds": ["go"],
+      "image": "golang:1.24",
+      "defaultBuild": "go build ./...",
+      "phase": "growth"
+    },
+    {
+      "id": "rust-1",
+      "label": "Rust stable",
+      "languageIds": ["rust"],
+      "image": "rust:1",
+      "defaultBuild": "cargo build",
+      "phase": "growth"
+    },
+    {
+      "id": "ruby-3.4",
+      "label": "Ruby 3.4",
+      "languageIds": ["ruby"],
+      "image": "ruby:3.4",
+      "packageManagers": ["bundler"],
+      "phase": "future"
+    },
+    {
+      "id": "dotnet-9",
+      "label": ".NET 9",
+      "languageIds": ["csharp", "fsharp"],
+      "image": "mcr.microsoft.com/dotnet/sdk:9.0",
+      "phase": "growth"
+    },
+    {
+      "id": "swift-6",
+      "label": "Swift 6 (Linux)",
+      "languageIds": ["swift"],
+      "image": "swift:6",
+      "phase": "future",
+      "notes": "Linux server-side Swift; iOS builds need macOS runner or remote Xcode"
+    },
+    {
+      "id": "dart-flutter",
+      "label": "Dart / Flutter",
+      "languageIds": ["dart"],
+      "image": "dakinis/runtime-flutter:latest",
+      "defaultBuild": "flutter build apk",
+      "phase": "growth"
+    },
+    {
+      "id": "elixir-1.18",
+      "label": "Elixir",
+      "languageIds": ["elixir"],
+      "image": "elixir:1.18",
+      "phase": "future"
+    },
+    {
+      "id": "scala-3",
+      "label": "Scala 3",
+      "languageIds": ["scala"],
+      "image": "dakinis/runtime-scala:3",
+      "phase": "future"
+    },
+    {
+      "id": "cpp-gcc",
+      "label": "C / C++ (GCC)",
+      "languageIds": ["c", "cpp"],
+      "image": "dakinis/runtime-cpp:gcc",
+      "buildTools": ["cmake", "make"],
+      "phase": "growth",
+      "lspOptional": true
+    },
+    {
+      "id": "zig",
+      "label": "Zig",
+      "languageIds": ["zig"],
+      "image": "dakinis/runtime-zig:latest",
+      "phase": "future"
+    },
+    {
+      "id": "haskell",
+      "label": "Haskell (GHC)",
+      "languageIds": ["haskell"],
+      "image": "haskell:9",
+      "phase": "future"
+    },
+    {
+      "id": "r-lang",
+      "label": "R",
+      "languageIds": ["r"],
+      "image": "r-base:4.4",
+      "phase": "future"
+    },
+    {
+      "id": "julia-1",
+      "label": "Julia",
+      "languageIds": ["julia"],
+      "image": "julia:1.11",
+      "phase": "future"
+    },
+    {
+      "id": "lua-5",
+      "label": "Lua",
+      "languageIds": ["lua"],
+      "image": "dakinis/runtime-lua:5.4",
+      "phase": "future"
+    },
+    {
+      "id": "perl-5",
+      "label": "Perl",
+      "languageIds": ["perl"],
+      "image": "perl:5.40",
+      "phase": "future"
+    },
+    {
+      "id": "shell",
+      "label": "Shell / Bash",
+      "languageIds": ["shell", "bash", "sh"],
+      "image": "dakinis/runtime-shell:latest",
+      "phase": "mvp",
+      "lspOptional": true
+    },
+    {
+      "id": "sql-pg",
+      "label": "SQL (Postgres)",
+      "languageIds": ["sql"],
+      "image": "postgres:16",
+      "sidecar": true,
+      "phase": "growth"
+    },
+    {
+      "id": "mobile-capacitor",
+      "label": "Capacitor / Android SDK",
+      "languageIds": ["javascript", "typescript", "java", "kotlin"],
+      "image": "dakinis/runtime-android-capacitor:latest",
+      "defaultBuild": "npm run android:debug",
+      "phase": "growth",
+      "liveDevice": true
+    },
+    {
+      "id": "docker-compose",
+      "label": "Polyglot (Docker Compose)",
+      "languageIds": ["*"],
+      "image": "docker:cli",
+      "phase": "growth",
+      "notes": "Any language via compose services; editor + terminal + git always work"
+    },
+    {
+      "id": "custom",
+      "label": "Custom Dockerfile",
+      "languageIds": ["*"],
+      "image": null,
+      "userDockerfile": true,
+      "phase": "growth",
+      "notes": "Bring your own image — full compatibility with any Linux toolchain"
+    }
+  ]
+}

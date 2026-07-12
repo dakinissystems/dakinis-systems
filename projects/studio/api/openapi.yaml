@@ -1,0 +1,587 @@
+openapi: 3.1.0
+info:
+  title: Dakinis Studio API
+  version: 0.1.0
+  description: |
+    Facade for Dakinis Studio Cloud — Session Manager, File Sync, catalog.
+    **Language-agnostic:** paths and ops work for any programming language.
+    Auth via Dakinis JWT (platform/auth). Gateway prefix `/studio/v1`.
+  contact:
+    name: Dakinis Systems
+
+servers:
+  - url: https://api.dakinissystems.com/studio/v1
+    description: Production (via gateway)
+  - url: http://127.0.0.1:4090/v1
+    description: Local dev
+
+tags:
+  - name: health
+  - name: sessions
+  - name: files
+  - name: catalog
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      tags: [health]
+      summary: Service health
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /sessions:
+    get:
+      tags: [sessions]
+      summary: List studio sessions (workspaces) for current user
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+      responses:
+        "200":
+          description: Session list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionListResponse"
+    post:
+      tags: [sessions]
+      summary: Create or attach session to a dev workspace
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSessionRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{sessionId}:
+    get:
+      tags: [sessions]
+      summary: Get session metadata
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+    delete:
+      tags: [sessions]
+      summary: Detach session (workspace runtime may stay persistent)
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      responses:
+        "204":
+          description: Detached
+
+  /sessions/{sessionId}/state:
+    get:
+      tags: [sessions]
+      summary: Hydrate UI state (tabs, cursor, panels, terminals)
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionState"
+    put:
+      tags: [sessions]
+      summary: Persist UI state snapshot
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionState"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionState"
+
+  /sessions/{sessionId}/switch:
+    post:
+      tags: [sessions]
+      summary: Mark session as active (multi-workspace focus)
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{sessionId}/files/tree:
+    get:
+      tags: [files]
+      summary: File tree snapshot (optional; prefer sync ops for live)
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+        - name: path
+          in: query
+          schema:
+            type: string
+            default: /
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileTreeResponse"
+
+  /sessions/{sessionId}/files/ops:
+    post:
+      tags: [files]
+      summary: Apply one or more file operations (language-agnostic)
+      description: |
+        Batch of operational transforms. Does not depend on language —
+        works for source code, JSON, markdown, or binary via `blob` op.
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FileOpsRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileOpsResponse"
+        "409":
+          description: Revision conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileOpsConflict"
+
+  /sessions/{sessionId}/files/read:
+    get:
+      tags: [files]
+      summary: Read file content (text or blob metadata)
+      parameters:
+        - $ref: "#/components/parameters/sessionId"
+        - name: path
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: revision
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileReadResponse"
+
+  /catalog/runtimes:
+    get:
+      tags: [catalog]
+      summary: Runtime Manager catalog (Docker stacks)
+      security: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeCatalog"
+
+  /catalog/lsp:
+    get:
+      tags: [catalog]
+      summary: LSP server registry by languageId
+      security: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LspCatalog"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    sessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        maximum: 100
+    offset:
+      name: offset
+      in: query
+      schema:
+        type: integer
+        default: 0
+
+  schemas:
+    HealthResponse:
+      type: object
+      required: [ok, service, version]
+      properties:
+        ok:
+          type: boolean
+        service:
+          type: string
+          example: dakinis-studio-api
+        version:
+          type: string
+        languageAgnostic:
+          type: boolean
+          description: API designed for any programming language
+
+    Session:
+      type: object
+      required: [id, name, runtimeId, workspaceId, revision]
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: dakinis-platform
+        workspaceId:
+          type: string
+          format: uuid
+          description: Hub/meta workspace id
+        runtimeId:
+          type: string
+          example: node-22
+          description: From catalog/runtimes.json — any Linux toolchain
+        repoUrl:
+          type: string
+          format: uri
+          nullable: true
+        branch:
+          type: string
+          example: main
+        revision:
+          type: integer
+          description: Monotonic session revision for optimistic concurrency
+        lastActiveAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateSessionRequest:
+      type: object
+      required: [name, runtimeId]
+      properties:
+        name:
+          type: string
+        runtimeId:
+          type: string
+        workspaceId:
+          type: string
+          format: uuid
+        repoUrl:
+          type: string
+        branch:
+          type: string
+          default: main
+        templateId:
+          type: string
+          description: Marketplace template (optional)
+
+    SessionListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Session"
+        total:
+          type: integer
+
+    EditorCursor:
+      type: object
+      properties:
+        path:
+          type: string
+        line:
+          type: integer
+        column:
+          type: integer
+        languageId:
+          type: string
+          description: VS Code language id — opaque to API
+
+    TerminalRef:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        cwd:
+          type: string
+
+    SessionState:
+      type: object
+      properties:
+        openFiles:
+          type: array
+          items:
+            type: string
+        activeFile:
+          type: string
+          nullable: true
+        cursors:
+          type: array
+          items:
+            $ref: "#/components/schemas/EditorCursor"
+        terminals:
+          type: array
+          items:
+            $ref: "#/components/schemas/TerminalRef"
+        activeTerminalId:
+          type: string
+          nullable: true
+        gitBranch:
+          type: string
+        panelLayout:
+          type: object
+          additionalProperties: true
+        revision:
+          type: integer
+
+    FileTreeNode:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+          enum: [file, folder]
+        languageId:
+          type: string
+          nullable: true
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/FileTreeNode"
+
+    FileTreeResponse:
+      type: object
+      properties:
+        root:
+          $ref: "#/components/schemas/FileTreeNode"
+        revision:
+          type: integer
+
+    FileOp:
+      oneOf:
+        - $ref: "#/components/schemas/OpPatch"
+        - $ref: "#/components/schemas/OpInsert"
+        - $ref: "#/components/schemas/OpDelete"
+        - $ref: "#/components/schemas/OpRename"
+        - $ref: "#/components/schemas/OpMove"
+        - $ref: "#/components/schemas/OpBlob"
+      discriminator:
+        propertyName: op
+
+    OpPatch:
+      type: object
+      required: [op, path, baseRevision, patch]
+      properties:
+        op:
+          const: patch
+        path:
+          type: string
+        baseRevision:
+          type: integer
+        patch:
+          type: string
+          description: Unified diff or OT patch — language-agnostic bytes
+
+    OpInsert:
+      type: object
+      required: [op, path, offset, text]
+      properties:
+        op:
+          const: insert
+        path:
+          type: string
+        offset:
+          type: integer
+        text:
+          type: string
+
+    OpDelete:
+      type: object
+      required: [op, path, start, end]
+      properties:
+        op:
+          const: delete
+        path:
+          type: string
+        start:
+          type: integer
+        end:
+          type: integer
+
+    OpRename:
+      type: object
+      required: [op, from, to]
+      properties:
+        op:
+          const: rename
+        from:
+          type: string
+        to:
+          type: string
+
+    OpMove:
+      type: object
+      required: [op, from, to]
+      properties:
+        op:
+          const: move
+        from:
+          type: string
+        to:
+          type: string
+
+    OpBlob:
+      type: object
+      required: [op, path, storageRef]
+      properties:
+        op:
+          const: blob
+        path:
+          type: string
+        storageRef:
+          type: string
+          description: Dakinis Storage presigned upload id
+        mimeType:
+          type: string
+
+    FileOpsRequest:
+      type: object
+      required: [ops]
+      properties:
+        baseRevision:
+          type: integer
+        ops:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/FileOp"
+
+    FileOpsResponse:
+      type: object
+      properties:
+        revision:
+          type: integer
+        applied:
+          type: integer
+        paths:
+          type: array
+          items:
+            type: string
+
+    FileOpsConflict:
+      type: object
+      properties:
+        error:
+          type: string
+          example: revision_conflict
+        serverRevision:
+          type: integer
+        conflictingPaths:
+          type: array
+          items:
+            type: string
+
+    FileReadResponse:
+      type: object
+      properties:
+        path:
+          type: string
+        revision:
+          type: integer
+        languageId:
+          type: string
+        encoding:
+          type: string
+          enum: [utf-8, binary]
+        content:
+          type: string
+          description: Text content when encoding=utf-8
+        storageRef:
+          type: string
+          description: When encoding=binary
+
+    RuntimeCatalog:
+      type: object
+      properties:
+        version:
+          type: integer
+        runtimes:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
+    LspCatalog:
+      type: object
+      properties:
+        version:
+          type: integer
+        servers:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
+  # WebSocket (documented; not OpenAPI path)
+  x-websocket:
+    url: wss://api.dakinissystems.com/studio/ws
+    description: |
+      Multiplexed channels: `file:ops`, `terminal`, `logs`, `ai:stream`.
+      Subscribe with `{ "channel", "sessionId", "token" }`.
+      Language-agnostic binary/text frames.

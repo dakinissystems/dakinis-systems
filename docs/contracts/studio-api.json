@@ -1,0 +1,54 @@
+{
+  "service": "dakinis-studio-api",
+  "status": "scaffold",
+  "version": "0.1.0",
+  "description": "Dakinis Studio Cloud — Session Manager + File Sync. Language-agnostic API.",
+  "baseUrl": "https://api.dakinissystems.com/studio/v1",
+  "localUrl": "http://127.0.0.1:4090/v1",
+  "openApi": "projects/studio/api/openapi.yaml",
+  "auth": "Bearer JWT (platform/auth) — MVP scaffold open on /health and /catalog/*",
+  "languageAgnostic": true,
+  "catalogs": {
+    "runtimes": "projects/studio/catalog/runtimes.json",
+    "lsp": "projects/studio/catalog/lsp-servers.json",
+    "compatibilityDoc": "projects/studio/docs/LANGUAGE-COMPATIBILITY.md"
+  },
+  "sessions": {
+    "GET /sessions": "List dev sessions (multi-workspace)",
+    "POST /sessions": "Body: { name, runtimeId, workspaceId?, repoUrl?, branch? }",
+    "GET /sessions/:id": "Session metadata",
+    "DELETE /sessions/:id": "Detach session",
+    "GET /sessions/:id/state": "UI state: tabs, cursors, terminals, git branch",
+    "PUT /sessions/:id/state": "Persist UI snapshot",
+    "POST /sessions/:id/switch": "Focus workspace"
+  },
+  "fileSync": {
+    "GET /sessions/:id/files/tree": "Tree snapshot",
+    "GET /sessions/:id/files/read": "Query: path, revision?",
+    "POST /sessions/:id/files/ops": "Body: { baseRevision?, ops: [ patch|insert|delete|rename|move|blob ] }"
+  },
+  "catalog": {
+    "GET /catalog/runtimes": "Docker runtime stacks (any Linux language)",
+    "GET /catalog/lsp": "LSP registry by languageId"
+  },
+  "websocket": {
+    "url": "wss://api.dakinissystems.com/studio/ws",
+    "channels": ["file:ops", "terminal", "logs", "ai:stream"],
+    "status": "planned"
+  },
+  "plannedServices": [
+    "pty",
+    "lsp-gateway",
+    "git",
+    "runtime-manager",
+    "deploy-engine",
+    "agent-runtime",
+    "telemetry"
+  ],
+  "consumers": ["dakinis-studio-mobile", "studio-web-future"],
+  "relatedDocs": [
+    "projects/studio/README.md",
+    "projects/studio/docs/LANGUAGE-COMPATIBILITY.md",
+    "projects/dakinis-studio-mobile/docs/VISION.md"
+  ]
+}
