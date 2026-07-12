@@ -10,7 +10,25 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const catalogPath = path.join(root, "catalog", "workspace-addons.json");
+const depsPath = path.join(root, "catalog", "addon-dependencies.json");
 const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
+const depsCatalog = JSON.parse(fs.readFileSync(depsPath, "utf8"));
+
+function depsFor(addonId) {
+  const row = depsCatalog.matrix?.[addonId];
+  if (!row) return { required: [], optional: [], conflicts: [] };
+  const a = row.addons;
+  if (a && typeof a === "object" && !Array.isArray(a)) return a;
+  return { required: Array.isArray(a) ? a : [], optional: [], conflicts: [] };
+}
+
+function capabilitiesFor(addonId) {
+  const row = depsCatalog.matrix?.[addonId];
+  if (!row?.capabilities) return [{ id: "addon-sdk", version: "1" }];
+  return row.capabilities.map((c) =>
+    typeof c === "string" ? { id: c, version: "1" } : c
+  );
+}
 
 const ADDON_DIRS = [
   "src/index.jsx",
@@ -33,9 +51,13 @@ function manifestFor(addon) {
     name: addon.i18n.name.en,
     version: "0.1.0",
     icon: addon.icon,
+    tier: addon.tier,
     category: addon.category,
     phase: addon.phase,
+    admission: addon.admission || [],
     permissions: addon.permissions || [],
+    capabilities: capabilitiesFor(addon.id),
+    dependencies: depsFor(addon.id),
     windows: addon.windows || [],
     i18n: addon.i18n,
   };
@@ -47,7 +69,7 @@ function readmeFor(addon) {
   const wins = (addon.windows || []).map((w) => `- \`${w}\``).join("\n");
   return `# ${addon.i18n.name.en} / ${addon.i18n.name.es}
 
-> **Phase:** \`${addon.phase}\` · **Category:** \`${addon.category}\`
+> **Tier:** \`${addon.tier}\` · **Phase:** \`${addon.phase}\` · **Category:** \`${addon.category}\`
 
 ${en}
 

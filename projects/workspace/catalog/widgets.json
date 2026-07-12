@@ -1,63 +1,80 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "surfaces": [
+    { "id": "hub", "i18n": { "en": "Hub", "es": "Hub" } },
+    { "id": "workspace", "i18n": { "en": "Dakinis Desktop", "es": "Dakinis Desktop" } },
+    { "id": "akoenet", "i18n": { "en": "AkoeNet", "es": "AkoeNet" } },
+    { "id": "core", "i18n": { "en": "Dakinis One", "es": "Dakinis One" } },
+    { "id": "dashboard", "i18n": { "en": "Dashboard", "es": "Panel" } }
+  ],
   "widgets": [
     {
       "id": "media.now-playing",
       "addonId": "media-player",
+      "surfaces": ["hub", "workspace", "akoenet", "dashboard"],
       "i18n": { "name": { "en": "Now Playing", "es": "Reproduciendo" } },
       "size": "medium"
     },
     {
       "id": "media.mini-player",
       "addonId": "media-player",
+      "surfaces": ["hub", "workspace", "akoenet"],
       "i18n": { "name": { "en": "Mini Player", "es": "Mini reproductor" } },
       "size": "small"
     },
     {
       "id": "media.playlist",
       "addonId": "media-player",
+      "surfaces": ["workspace", "akoenet"],
       "i18n": { "name": { "en": "Playlist", "es": "Lista de reproducción" } },
       "size": "medium"
     },
     {
       "id": "calendar.next-meeting",
       "addonId": "calendar",
+      "surfaces": ["hub", "workspace", "core", "dashboard"],
       "i18n": { "name": { "en": "Next meeting", "es": "Próxima reunión" } },
       "size": "small"
     },
     {
       "id": "calendar.day-agenda",
       "addonId": "calendar",
+      "surfaces": ["hub", "workspace", "dashboard"],
       "i18n": { "name": { "en": "Today's agenda", "es": "Agenda del día" } },
       "size": "medium"
     },
     {
       "id": "notes.quick-note",
       "addonId": "notes",
+      "surfaces": ["hub", "workspace", "core"],
       "i18n": { "name": { "en": "Quick note", "es": "Nota rápida" } },
       "size": "small"
     },
     {
       "id": "notes.favorites",
       "addonId": "notes",
+      "surfaces": ["workspace", "dashboard"],
       "i18n": { "name": { "en": "Favorites", "es": "Favoritos" } },
       "size": "medium"
     },
     {
       "id": "dashboard.cpu",
-      "addonId": "dashboard",
+      "addonId": "monitor",
+      "surfaces": ["workspace", "dashboard"],
       "i18n": { "name": { "en": "CPU", "es": "CPU" } },
       "size": "small"
     },
     {
       "id": "dashboard.railway-status",
-      "addonId": "dashboard",
+      "addonId": "monitor",
+      "surfaces": ["hub", "workspace", "dashboard"],
       "i18n": { "name": { "en": "Railway status", "es": "Estado Railway" } },
       "size": "small"
     },
     {
       "id": "dashboard.github-activity",
       "addonId": "dashboard",
+      "surfaces": ["hub", "workspace", "dashboard"],
       "i18n": { "name": { "en": "GitHub activity", "es": "Actividad GitHub" } },
       "size": "medium"
     },
@@ -65,6 +82,7 @@
       "id": "lifeflow.score",
       "addonId": "lifeflow",
       "product": "lifeflow",
+      "surfaces": ["hub", "workspace", "akoenet", "core", "dashboard"],
       "i18n": { "name": { "en": "LifeFlow score", "es": "Score LifeFlow" } },
       "size": "small"
     },
@@ -72,6 +90,7 @@
       "id": "lifeflow.cash-flow",
       "addonId": "lifeflow",
       "product": "lifeflow",
+      "surfaces": ["hub", "workspace", "core", "dashboard"],
       "i18n": { "name": { "en": "Cash flow", "es": "Flujo de caja" } },
       "size": "medium"
     },
@@ -79,6 +98,7 @@
       "id": "core.sales",
       "addonId": "core",
       "product": "core",
+      "surfaces": ["hub", "workspace", "core", "dashboard"],
       "i18n": { "name": { "en": "Sales", "es": "Ventas" } },
       "size": "medium"
     },
@@ -86,6 +106,7 @@
       "id": "core.inventory-alerts",
       "addonId": "core",
       "product": "core",
+      "surfaces": ["hub", "workspace", "core", "dashboard"],
       "i18n": { "name": { "en": "Inventory alerts", "es": "Alertas de inventario" } },
       "size": "small"
     },
@@ -93,6 +114,7 @@
       "id": "streamautomator.next-stream",
       "addonId": "stream-deck",
       "product": "streamautomator",
+      "surfaces": ["hub", "workspace", "akoenet", "dashboard"],
       "i18n": { "name": { "en": "Next stream", "es": "Próximo stream" } },
       "size": "small"
     },
@@ -100,6 +122,7 @@
       "id": "streamautomator.obs-status",
       "addonId": "obs-companion",
       "product": "streamautomator",
+      "surfaces": ["hub", "workspace", "akoenet", "dashboard"],
       "i18n": { "name": { "en": "OBS status", "es": "Estado OBS" } },
       "size": "small"
     },
@@ -107,6 +130,7 @@
       "id": "akoenet.friends-online",
       "addonId": "media-player",
       "product": "akoenet",
+      "surfaces": ["hub", "workspace", "akoenet", "dashboard"],
       "i18n": { "name": { "en": "Friends online", "es": "Amigos conectados" } },
       "size": "small"
     },
@@ -114,6 +138,7 @@
       "id": "akoenet.recent-messages",
       "addonId": "media-player",
       "product": "akoenet",
+      "surfaces": ["hub", "workspace", "akoenet"],
       "i18n": { "name": { "en": "Recent messages", "es": "Mensajes recientes" } },
       "size": "medium"
     },
@@ -121,8 +146,16 @@
       "id": "akoenet.voice-channels",
       "addonId": "media-player",
       "product": "akoenet",
+      "surfaces": ["hub", "workspace", "akoenet"],
       "i18n": { "name": { "en": "Voice channels", "es": "Canales de voz" } },
       "size": "medium"
+    },
+    {
+      "id": "ai-actions.quick",
+      "addonId": "ai-actions",
+      "surfaces": ["hub", "workspace", "akoenet", "core", "dashboard"],
+      "i18n": { "name": { "en": "Quick AI action", "es": "Acción IA rápida" } },
+      "size": "small"
     }
   ]
 }

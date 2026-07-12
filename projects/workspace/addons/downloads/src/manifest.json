@@ -3,8 +3,12 @@
   "name": "Downloads",
   "version": "0.1.0",
   "icon": "download",
+  "tier": "system",
   "category": "system",
   "phase": "future",
+  "admission": [
+    "reusable"
+  ],
   "permissions": [
     "storage"
   ],

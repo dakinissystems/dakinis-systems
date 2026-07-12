@@ -1,6 +1,6 @@
 # Kanban / Kanban
 
-> **Phase:** `growth` · **Category:** `productivity`
+> **Tier:** `productivity` · **Phase:** `growth` · **Category:** `productivity`
 
 Todo → Doing → Review → Done without leaving Dakinis.
 

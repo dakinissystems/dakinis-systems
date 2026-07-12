@@ -3,8 +3,13 @@
   "name": "OBS Companion",
   "version": "0.1.0",
   "icon": "video",
+  "tier": "stream",
   "category": "stream",
   "phase": "growth",
+  "admission": [
+    "improves-akoenet",
+    "improves-product"
+  ],
   "permissions": [
     "obs",
     "streamautomator"

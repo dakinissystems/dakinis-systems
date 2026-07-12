@@ -1,21 +1,19 @@
 # AI Workspace / Espacio de IA
 
-> **Phase:** `mvp` · **Category:** `productivity`
+> **Tier:** `productivity` · **Phase:** `mvp` · **Category:** `productivity`
 
-Multi-window AI desktop — conversations, prompts, knowledge and actions.
+Multi-window AI desktop — conversations, prompts and knowledge.
 
-Escritorio de IA con ventanas — conversaciones, prompts, conocimiento y acciones.
+Escritorio de IA con ventanas — conversaciones, prompts y conocimiento.
 
 ## Windows
 
 - `conversation`
 - `prompt-library`
 - `knowledge`
-- `actions`
 - `files`
 - `models`
 - `history`
-- `settings`
 
 ## Structure
 

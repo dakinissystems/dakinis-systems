@@ -1,6 +1,6 @@
 # Stream Deck / Stream Deck virtual
 
-> **Phase:** `growth` · **Category:** `stream`
+> **Tier:** `stream` · **Phase:** `growth` · **Category:** `stream`
 
 Virtual deck for StreamAutomator — OBS, Twitch, macros and hotkeys.
 

@@ -91,11 +91,12 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · Contrato: [`contrac
 
 Re-ejecutable: también [`../006b-rls-policies-missing-tables.sql`](../006b-rls-policies-missing-tables.sql) (mismo patrón, sin registrar versión).
 
-## Fase H — Dakinis Workspace addons (035)
+## Fase H — Dakinis Workspace (035–036)
 
 | # | Archivo | Prod |
 |---|---------|------|
-| 35 | [`035_dakinis_workspace_addons.sql`](./035_dakinis_workspace_addons.sql) | ⬜ Catálogo 23 addons + `meta.workspace_addon_installs` |
+| 35 | [`035_dakinis_workspace_addons.sql`](./035_dakinis_workspace_addons.sql) | ✅ Catálogo addons + `meta.workspace_addon_installs` |
+| 36 | [`036_dakinis_workspace_capabilities.sql`](./036_dakinis_workspace_capabilities.sql) | ⬜ Tiers, Settings/Monitor/AI Actions, `meta.workspace_desktop_profiles` |
 
 Provisioning platform admin (todos los addons + productos Hub):  
 [`scripts/provision_workspace_christiandvillar.sql`](../scripts/provision_workspace_christiandvillar.sql) · paso 8 addons  

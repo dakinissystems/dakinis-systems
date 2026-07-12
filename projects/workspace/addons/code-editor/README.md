@@ -1,6 +1,6 @@
 # Code Editor / Editor de código
 
-> **Phase:** `growth` · **Category:** `developer`
+> **Tier:** `developer` · **Phase:** `growth` · **Category:** `developer`
 
 Lightweight editor to share files during voice calls.
 

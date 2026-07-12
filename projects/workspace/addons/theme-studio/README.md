@@ -1,6 +1,6 @@
 # Theme Studio / Theme Studio
 
-> **Phase:** `growth` · **Category:** `system`
+> **Tier:** `system` · **Phase:** `growth` · **Category:** `system`
 
 Create skins, preview and publish to the Marketplace.
 

@@ -1,0 +1,124 @@
+{
+  "version": "1.0.0",
+  "description": "In-process Event Bus owned by Desktop Runtime — not Platform Redis events.",
+  "scopes": ["runtime", "addon", "platform-bridge"],
+  "events": [
+    {
+      "name": "workspace.loading",
+      "scope": "runtime",
+      "payload": { "workspaceId": "uuid" },
+      "i18n": { "en": "Workspace boot started", "es": "Arranque del workspace iniciado" }
+    },
+    {
+      "name": "workspace.loaded",
+      "scope": "runtime",
+      "payload": { "workspaceId": "uuid", "profileKey": "string?" },
+      "i18n": { "en": "Workspace ready", "es": "Workspace listo" }
+    },
+    {
+      "name": "workspace.closed",
+      "scope": "runtime",
+      "payload": { "workspaceId": "uuid" },
+      "i18n": { "en": "Workspace shutting down", "es": "Cierre del workspace" }
+    },
+    {
+      "name": "layout.changed",
+      "scope": "runtime",
+      "payload": { "profileKey": "string", "dirty": "boolean" },
+      "i18n": { "en": "User changed window layout", "es": "Usuario cambió el layout" }
+    },
+    {
+      "name": "layout.restored",
+      "scope": "runtime",
+      "payload": { "presetId": "string?", "profileKey": "string?" },
+      "i18n": { "en": "Layout restored from preset or profile", "es": "Layout restaurado" }
+    },
+    {
+      "name": "theme.changed",
+      "scope": "addon",
+      "emitter": "settings",
+      "payload": { "themeId": "string" },
+      "i18n": { "en": "Theme updated", "es": "Tema actualizado" }
+    },
+    {
+      "name": "media.play",
+      "scope": "addon",
+      "emitter": "media-player",
+      "payload": { "trackId": "string", "title": "string" },
+      "i18n": { "en": "Track started", "es": "Pista iniciada" }
+    },
+    {
+      "name": "media.pause",
+      "scope": "addon",
+      "emitter": "media-player",
+      "payload": { "trackId": "string?" },
+      "i18n": { "en": "Playback paused", "es": "Reproducción pausada" }
+    },
+    {
+      "name": "stream.started",
+      "scope": "platform-bridge",
+      "emitter": "obs-companion",
+      "payload": { "platform": "twitch", "title": "string", "url": "string" },
+      "i18n": { "en": "Live stream started", "es": "Stream en vivo iniciado" }
+    },
+    {
+      "name": "stream.ended",
+      "scope": "platform-bridge",
+      "emitter": "obs-companion",
+      "payload": { "platform": "string" },
+      "i18n": { "en": "Live stream ended", "es": "Stream finalizado" }
+    },
+    {
+      "name": "voice.connected",
+      "scope": "platform-bridge",
+      "emitter": "akoenet",
+      "payload": { "channelId": "string", "serverId": "string" },
+      "i18n": { "en": "User joined voice channel", "es": "Usuario entró a canal de voz" }
+    },
+    {
+      "name": "voice.disconnected",
+      "scope": "platform-bridge",
+      "emitter": "akoenet",
+      "payload": { "channelId": "string" },
+      "i18n": { "en": "User left voice channel", "es": "Usuario salió de canal de voz" }
+    },
+    {
+      "name": "addon.enabled",
+      "scope": "runtime",
+      "payload": { "addonId": "string" },
+      "i18n": { "en": "Addon enabled for workspace", "es": "Addon activado" }
+    },
+    {
+      "name": "addon.disabled",
+      "scope": "runtime",
+      "payload": { "addonId": "string" },
+      "i18n": { "en": "Addon disabled for workspace", "es": "Addon desactivado" }
+    },
+    {
+      "name": "command.executed",
+      "scope": "runtime",
+      "payload": { "commandId": "string", "source": "command-palette" },
+      "i18n": { "en": "Command Palette action ran", "es": "Acción de Command Palette ejecutada" }
+    },
+    {
+      "name": "widget.updated",
+      "scope": "runtime",
+      "payload": { "widgetId": "string", "surface": "string" },
+      "i18n": { "en": "Widget tile refreshed", "es": "Widget actualizado" }
+    },
+    {
+      "name": "deploy.started",
+      "scope": "addon",
+      "emitter": "devops",
+      "payload": { "service": "string", "environment": "string" },
+      "i18n": { "en": "Deploy started", "es": "Deploy iniciado" }
+    },
+    {
+      "name": "deploy.finished",
+      "scope": "addon",
+      "emitter": "devops",
+      "payload": { "service": "string", "success": "boolean" },
+      "i18n": { "en": "Deploy finished", "es": "Deploy finalizado" }
+    }
+  ]
+}

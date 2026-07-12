@@ -3,8 +3,13 @@
   "name": "Live Dashboard",
   "version": "0.1.0",
   "icon": "users",
+  "tier": "productivity",
   "category": "productivity",
   "phase": "future",
+  "admission": [
+    "improves-akoenet",
+    "sellable"
+  ],
   "permissions": [
     "voice",
     "ai",

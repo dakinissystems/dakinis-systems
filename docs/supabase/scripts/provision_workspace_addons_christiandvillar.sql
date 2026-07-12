@@ -6,7 +6,7 @@
 
 INSERT INTO meta.workspace_addon_installs (workspace_id, addon_key, enabled, pinned, config)
 SELECT w.id, wa.key, true,
-  wa.key IN ('command-palette', 'activity-center', 'dashboard', 'ai-workspace', 'media-player'),
+  wa.key IN ('command-palette', 'activity-center', 'dashboard', 'marketplace', 'settings', 'ai-workspace', 'media-player'),
   '{}'::jsonb
 FROM meta.workspaces w
 CROSS JOIN meta.workspace_addons wa

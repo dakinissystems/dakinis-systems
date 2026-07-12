@@ -1,6 +1,6 @@
 # Dashboard / Panel
 
-> **Phase:** `mvp` · **Category:** `system`
+> **Tier:** `core` · **Phase:** `mvp` · **Category:** `system`
 
 Configurable widgets — CPU, Railway, GitHub, Stripe and live streams.
 

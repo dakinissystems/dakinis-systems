@@ -3,8 +3,13 @@
   "name": "Dakinis Terminal",
   "version": "0.1.0",
   "icon": "terminal",
+  "tier": "developer",
   "category": "developer",
   "phase": "growth",
+  "admission": [
+    "reusable",
+    "improves-product"
+  ],
   "permissions": [
     "storage",
     "notifications",

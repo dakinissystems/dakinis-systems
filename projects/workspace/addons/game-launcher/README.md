@@ -1,6 +1,6 @@
 # Game Launcher / Lanzador de juegos
 
-> **Phase:** `future` · **Category:** `entertainment`
+> **Tier:** `entertainment` · **Phase:** `future` · **Category:** `entertainment`
 
 Manage libraries and presence across Steam, Epic, GOG and Battle.net.
 

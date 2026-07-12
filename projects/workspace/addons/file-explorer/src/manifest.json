@@ -3,8 +3,12 @@
   "name": "File Explorer",
   "version": "0.1.0",
   "icon": "folder",
+  "tier": "system",
   "category": "system",
   "phase": "growth",
+  "admission": [
+    "reusable"
+  ],
   "permissions": [
     "storage"
   ],

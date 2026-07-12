@@ -1,0 +1,115 @@
+{
+  "$schema": "./desktop-layouts.schema.json",
+  "version": "1.0.0",
+  "description": "Preset layouts open a curated set of addon windows. Saved profiles persist user arrangements.",
+  "presetLayouts": [
+    {
+      "id": "gaming",
+      "icon": "gamepad-2",
+      "i18n": {
+        "name": { "en": "Gaming", "es": "Gaming" },
+        "description": {
+          "en": "Media, chat, friends and voice — social play without leaving Dakinis.",
+          "es": "Media, chat, amigos y voz — jugar en social sin salir de Dakinis."
+        }
+      },
+      "opens": [
+        { "addonId": "media-player", "windows": ["player", "friends"] },
+        { "addonId": "akoenet-chat", "product": "akoenet", "windows": ["channels", "dms"] },
+        { "addonId": "soundboard", "windows": ["favorites", "hotkeys"] }
+      ]
+    },
+    {
+      "id": "streaming",
+      "icon": "radio",
+      "i18n": {
+        "name": { "en": "Streaming", "es": "Streaming" },
+        "description": {
+          "en": "OBS, chat, media and live dashboard for creators.",
+          "es": "OBS, chat, media y panel en vivo para creadores."
+        }
+      },
+      "opens": [
+        { "addonId": "obs-companion", "windows": ["scenes", "streaming", "chat"] },
+        { "addonId": "stream-deck", "windows": ["buttons", "macros"] },
+        { "addonId": "media-player", "windows": ["mini-player"] },
+        { "addonId": "dashboard", "windows": ["streams", "analytics"] },
+        { "addonId": "live-dashboard", "windows": ["meeting", "notes"] }
+      ]
+    },
+    {
+      "id": "developer",
+      "icon": "terminal",
+      "i18n": {
+        "name": { "en": "Developer", "es": "Desarrollo" },
+        "description": {
+          "en": "Terminal, logs, GitHub, AI and notes — ship from one desktop.",
+          "es": "Terminal, logs, GitHub, IA y notas — deploy desde un solo escritorio."
+        }
+      },
+      "opens": [
+        { "addonId": "terminal", "windows": ["terminal", "logs", "railway"] },
+        { "addonId": "devops", "windows": ["deployments", "metrics"] },
+        { "addonId": "monitor", "windows": ["overview"] },
+        { "addonId": "ai-actions", "windows": ["actions"] },
+        { "addonId": "notes", "windows": ["editor"] },
+        { "addonId": "code-editor", "windows": ["editor", "git"] }
+      ]
+    },
+    {
+      "id": "office",
+      "icon": "briefcase",
+      "i18n": {
+        "name": { "en": "Office", "es": "Oficina" },
+        "description": {
+          "en": "Calendar, kanban, notes and Core widgets for daily work.",
+          "es": "Calendario, kanban, notas y widgets Core para el día a día."
+        }
+      },
+      "opens": [
+        { "addonId": "calendar", "windows": ["agenda", "week"] },
+        { "addonId": "kanban", "windows": ["boards", "tasks"] },
+        { "addonId": "notes", "windows": ["wiki", "search"] },
+        { "addonId": "dashboard", "windows": ["widgets"] },
+        { "addonId": "core", "product": "core", "windows": ["crm", "inventory"] }
+      ]
+    }
+  ],
+  "savedProfiles": [
+    {
+      "id": "morning",
+      "icon": "sunrise",
+      "i18n": { "name": { "en": "Morning", "es": "Mañana" } },
+      "hint": "Calendar + Activity Center + quick notes"
+    },
+    {
+      "id": "streaming-session",
+      "icon": "video",
+      "i18n": { "name": { "en": "Streaming", "es": "Streaming" } },
+      "baseLayout": "streaming"
+    },
+    {
+      "id": "office-day",
+      "icon": "building-2",
+      "i18n": { "name": { "en": "Office", "es": "Oficina" } },
+      "baseLayout": "office"
+    },
+    {
+      "id": "coding",
+      "icon": "code",
+      "i18n": { "name": { "en": "Coding", "es": "Coding" } },
+      "baseLayout": "developer"
+    },
+    {
+      "id": "music",
+      "icon": "music",
+      "i18n": { "name": { "en": "Music", "es": "Música" } },
+      "opens": [{ "addonId": "media-player", "windows": ["player", "playlist", "visualizer"] }]
+    }
+  ],
+  "persistence": {
+    "storage": "meta.workspace_desktop_profiles",
+    "syncs": ["window-positions", "z-index", "dock-pins", "widget-grid", "active-profile"],
+    "api": "desktop-api/v1/layouts"
+  }
+}

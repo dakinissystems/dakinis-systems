@@ -1,6 +1,6 @@
 # Live Dashboard / Panel en vivo
 
-> **Phase:** `future` · **Category:** `productivity`
+> **Tier:** `productivity` · **Phase:** `future` · **Category:** `productivity`
 
 Meeting mode — voice, screen, notes, AI summary and tasks together.
 

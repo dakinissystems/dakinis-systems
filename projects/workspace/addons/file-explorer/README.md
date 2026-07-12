@@ -1,6 +1,6 @@
 # File Explorer / Explorador de archivos
 
-> **Phase:** `growth` · **Category:** `system`
+> **Tier:** `system` · **Phase:** `growth` · **Category:** `system`
 
 Workspace files — uploads, shared media and documents.
 

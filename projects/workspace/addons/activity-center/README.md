@@ -1,6 +1,6 @@
 # Activity Center / Centro de actividad
 
-> **Phase:** `mvp` · **Category:** `system`
+> **Tier:** `core` · **Phase:** `mvp` · **Category:** `system`
 
 Notifications, streams, deploys, invoices, messages and AI alerts.
 

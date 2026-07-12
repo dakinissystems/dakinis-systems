@@ -1,6 +1,6 @@
 # Notes / Notas
 
-> **Phase:** `growth` · **Category:** `productivity`
+> **Tier:** `productivity` · **Phase:** `growth` · **Category:** `productivity`
 
 Obsidian-style markdown wiki with backlinks and AI summaries.
 

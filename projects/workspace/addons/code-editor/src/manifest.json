@@ -3,8 +3,13 @@
   "name": "Code Editor",
   "version": "0.1.0",
   "icon": "code",
+  "tier": "developer",
   "category": "developer",
   "phase": "growth",
+  "admission": [
+    "reusable",
+    "improves-akoenet"
+  ],
   "permissions": [
     "storage",
     "git"

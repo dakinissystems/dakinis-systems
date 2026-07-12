@@ -1,6 +1,6 @@
 # Whiteboard / Pizarra colaborativa
 
-> **Phase:** `growth` · **Category:** `productivity`
+> **Tier:** `productivity` · **Phase:** `growth` · **Category:** `productivity`
 
 Excalidraw-style board for brainstorming, architecture and voice meetings.
 

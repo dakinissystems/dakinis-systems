@@ -1,0 +1,67 @@
+{
+  "$schema": "./marketplace-types.schema.json",
+  "version": "1.0.0",
+  "description": "Dakinis Marketplace distributes more than installable addons.",
+  "types": [
+    {
+      "id": "addons",
+      "i18n": { "en": "Addons", "es": "Addons" },
+      "description": { "en": "Full mini-apps for Dakinis Desktop", "es": "Mini-aplicaciones completas para Dakinis Desktop" }
+    },
+    {
+      "id": "skins",
+      "i18n": { "en": "Skins", "es": "Skins" },
+      "description": { "en": "Window chrome and addon UI skins", "es": "Skins de ventanas y UI de addons" }
+    },
+    {
+      "id": "widgets",
+      "i18n": { "en": "Widgets", "es": "Widgets" },
+      "description": { "en": "Tiles embeddable in Hub, Workspace, AkoeNet and Core", "es": "Tiles embebibles en Hub, Workspace, AkoeNet y Core" }
+    },
+    {
+      "id": "themes",
+      "i18n": { "en": "Themes", "es": "Temas" },
+      "description": { "en": "Color, typography and motion presets", "es": "Presets de color, tipografía y animación" }
+    },
+    {
+      "id": "icon-packs",
+      "i18n": { "en": "Icon packs", "es": "Paquetes de iconos" },
+      "description": { "en": "Launcher, dock and command palette icons", "es": "Iconos de launcher, dock y command palette" }
+    },
+    {
+      "id": "visualizers",
+      "i18n": { "en": "Visualizers", "es": "Visualizadores" },
+      "description": { "en": "Audio and stream visualizers for Media Player", "es": "Visualizadores de audio y stream para Media Player" }
+    },
+    {
+      "id": "layouts",
+      "i18n": { "en": "Desktop layouts", "es": "Layouts de escritorio" },
+      "description": { "en": "Preset and saved window arrangements", "es": "Disposiciones de ventanas predefinidas y guardadas" }
+    },
+    {
+      "id": "ai-prompts",
+      "i18n": { "en": "AI prompt packs", "es": "Paquetes de prompts IA" },
+      "description": { "en": "Curated prompts for AI Actions and AI Workspace", "es": "Prompts curados para AI Actions y AI Workspace" }
+    },
+    {
+      "id": "automation-packs",
+      "i18n": { "en": "Automation packs", "es": "Paquetes de automatización" },
+      "description": { "en": "Pre-built flows for Automation Builder", "es": "Flujos preconstruidos para Automation Builder" }
+    },
+    {
+      "id": "dashboard-templates",
+      "i18n": { "en": "Dashboard templates", "es": "Plantillas de panel" },
+      "description": { "en": "Widget grids for Dashboard and Monitor", "es": "Grids de widgets para Dashboard y Monitor" }
+    },
+    {
+      "id": "whiteboard-templates",
+      "i18n": { "en": "Whiteboard templates", "es": "Plantillas de pizarra" },
+      "description": { "en": "Architecture, retro and workshop boards", "es": "Pizarras de arquitectura, retrospectivas y workshops" }
+    },
+    {
+      "id": "sound-packs",
+      "i18n": { "en": "Sound packs", "es": "Paquetes de sonido" },
+      "description": { "en": "Soundboard clips and voice-channel effects", "es": "Clips de soundboard y efectos en canales de voz" }
+    }
+  ]
+}

@@ -7,6 +7,7 @@ export const HUB_SECTIONS = [
   { id: "ai-summary", title: "Resumen IA", order: 4 },
   { id: "health", title: "Salud", order: 5 },
   { id: "widgets", title: "Widgets", order: 6 },
+  { id: "workspace", title: "Dakinis Workspace", order: 7 },
   { id: "apps", title: "Aplicaciones", order: 99 },
 ];
 

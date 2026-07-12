@@ -1,0 +1,37 @@
+{
+  "id": "monitor",
+  "name": "Monitor",
+  "version": "0.1.0",
+  "icon": "activity",
+  "tier": "developer",
+  "category": "developer",
+  "phase": "growth",
+  "admission": [
+    "reusable",
+    "improves-product"
+  ],
+  "permissions": [
+    "metrics",
+    "network"
+  ],
+  "windows": [
+    "overview",
+    "cpu",
+    "ram",
+    "network",
+    "railway",
+    "api",
+    "redis",
+    "supabase"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Monitor",
+      "es": "Monitor"
+    },
+    "description": {
+      "en": "CPU, RAM, network, Railway, API, Redis and Supabase at a glance.",
+      "es": "CPU, RAM, red, Railway, API, Redis y Supabase de un vistazo."
+    }
+  }
+}

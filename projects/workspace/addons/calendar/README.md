@@ -1,6 +1,6 @@
 # Calendar / Calendario
 
-> **Phase:** `growth` · **Category:** `productivity`
+> **Tier:** `productivity` · **Phase:** `growth` · **Category:** `productivity`
 
 Streams, events, meetings, bookings and birthdays with Assistant reminders.
 

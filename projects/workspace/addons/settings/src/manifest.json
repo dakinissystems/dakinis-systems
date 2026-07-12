@@ -1,0 +1,37 @@
+{
+  "id": "settings",
+  "name": "Settings",
+  "version": "0.1.0",
+  "icon": "settings",
+  "tier": "core",
+  "category": "system",
+  "phase": "mvp",
+  "admission": [
+    "reusable"
+  ],
+  "permissions": [
+    "auth",
+    "storage",
+    "notifications"
+  ],
+  "windows": [
+    "appearance",
+    "themes",
+    "accounts",
+    "language",
+    "privacy",
+    "notifications",
+    "storage",
+    "developer"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Settings",
+      "es": "Ajustes"
+    },
+    "description": {
+      "en": "Appearance, themes, accounts, language, privacy, notifications and developer options.",
+      "es": "Apariencia, temas, cuentas, idioma, privacidad, notificaciones y opciones de desarrollador."
+    }
+  }
+}

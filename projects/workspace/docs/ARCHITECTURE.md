@@ -2,99 +2,156 @@
 
 ## Vision
 
-**Dakinis Desktop** is not a launcher of unrelated apps. It is a **workspace shell** where every addon:
+**Dakinis Desktop** is a modular desktop OS — not a plugin marketplace. Addons are assembled from **capabilities** and orchestrated by the **Desktop Runtime**.
 
-- Shares Auth, AI, Storage, Notifications and Billing from Platform
-- Uses the same **Window Manager** (floating windows, snap, z-index, persistence)
-- Exposes **widgets** to the Hub, dock and other addons
-- Installs via **Marketplace** without breaking siblings
+Read first: [`CAPABILITIES.md`](./CAPABILITIES.md) · Kernel: [`DESKTOP-RUNTIME.md`](./DESKTOP-RUNTIME.md)
 
-## Layers
+```
+Platform Services → Capabilities → Desktop Runtime → Addons → Widgets
+```
+
+Media Player is the **Hello World** — proof that Window Manager + Runtime + SDK work. The real product is the runtime stack.
+
+---
+
+## Three layers (do not mix)
+
+| Layer | What | Example |
+|-------|------|---------|
+| **Platform Services** | Shared backend | `auth`, `storage`, `ai` |
+| **Capabilities** | Versioned desktop APIs | `window-manager@v1` |
+| **Addons** | Installable mini-apps | `media-player`, `terminal` |
+
+Terminal needs Platform `auth` + Capability `window-manager` — different concepts.
+
+---
+
+## Stack diagram
 
 ```mermaid
 flowchart TB
-  subgraph platform [Dakinis Platform]
+  subgraph platform [Platform Services]
     Auth
     AI
-    Billing
-    Notifications
     Storage
-    Knowledge
     Events
-    Search
-    Marketplace
+    Notifications
+    Metrics
   end
 
-  subgraph workspace [Dakinis Workspace]
-    Shell[desktop-shell]
+  subgraph capabilities [Capabilities v1]
     WM[window-manager]
     SDK[addon-sdk]
+    WF[widget-framework]
     CP[command-palette]
-    AC[activity-center]
+    MPcap[marketplace]
+  end
+
+  subgraph runtime [Desktop Runtime]
+    Loader
+    Registry
+    Bus[Event Bus]
+    Perm[Permission Gate]
+    Layout[Layout Engine]
   end
 
   subgraph addons [Addons]
-    MP[media-player]
-    AIW[ai-workspace]
-    TERM[terminal]
-    More[...]
+    CC[Command Center]
+    Media[media-player]
+    Term[terminal]
   end
 
-  platform --> workspace
-  workspace --> addons
-  addons --> WM
+  platform --> Perm
+  capabilities --> Loader
+  Loader --> runtime
+  runtime --> Registry
+  Registry --> addons
+  addons --> Bus
+  Bus --> addons
+  runtime --> WM
+  runtime --> Layout
 ```
+
+---
+
+## Naming: Command Palette vs Command Center
+
+| Term | Meaning |
+|------|---------|
+| **Command Palette** | Capability — global `Ctrl+K` action system |
+| **Command Center** | Core addon (`id: command-palette`) that implements the capability |
+
+Use consistently in docs, catalog and UI copy.
+
+---
 
 ## Directory layout
 
 ```
 projects/workspace/
-├── desktop/           # Shell UX (not installable addons)
-├── addons/            # Installable mini-apps (uniform tree)
-├── packages/          # Shared libs (@dakinis/window-manager, addon-sdk)
-├── services/          # desktop-api, sync, storage
-├── catalog/           # workspace-addons.json, widgets.json
+├── desktop/
+│   └── desktop-shell/       # Runtime entry
+├── packages/
+│   ├── desktop-runtime/     # Kernel (planned)
+│   ├── window-manager/
+│   ├── addon-sdk/           # WorkspaceAddon contract
+│   └── widgets/
+├── catalog/
+│   ├── workspace-addons.json
+│   ├── addon-dependencies.json   # platform + capabilities + required/optional/conflicts
+│   ├── capability-versions.json
+│   ├── event-bus.json
+│   ├── desktop-layouts.json
+│   └── widgets.json
 └── docs/
+    ├── DESKTOP-RUNTIME.md     # Kernel spec
+    ├── CAPABILITIES.md
+    ├── ARCHITECTURE.md
+    └── ADDON-SDK.md
 ```
 
-## Addon categories
+---
 
-| Category | Examples |
-|----------|----------|
-| **system** | dashboard, marketplace, command-palette, file-explorer |
-| **productivity** | ai-workspace, notes, kanban, calendar, whiteboard |
-| **developer** | terminal, code-editor, devops, automation-builder |
-| **stream** | stream-deck, obs-companion, clip-studio |
-| **media** | media-player |
-| **entertainment** | soundboard, game-launcher |
+## Event Bus
+
+Runtime-owned in-process bus — addons communicate without direct imports.
+
+Examples: `workspace.loaded` · `layout.changed` · `media.play` · `stream.started` · `voice.connected`
+
+→ [`catalog/event-bus.json`](../catalog/event-bus.json)
+
+---
+
+## Capability versioning
+
+`window-manager` v1 today → v2 later with `supported: ["1","2"]`. Addons declare `{ id, version }` in manifest.
+
+→ [`catalog/capability-versions.json`](../catalog/capability-versions.json)
+
+---
 
 ## Database (Supabase `meta`)
 
 | Table | Purpose |
 |-------|---------|
-| `meta.workspace_addons` | Global catalog (synced from JSON) |
-| `meta.workspace_addon_installs` | Per-workspace enabled addons + config |
+| `meta.workspace_addons` | Global catalog |
+| `meta.workspace_addon_installs` | Per-workspace ON/OFF |
+| `meta.workspace_desktop_profiles` | Saved layouts |
 
-## Exclusives (Dakinis differentiation)
+---
 
-1. **Command Center** (`Ctrl+K`) — cross-product search and actions
-2. **Activity Center** — streams, deploys, invoices, AI in one feed
-3. **Live Dashboard** — meeting mode (voice + notes + AI summary)
-4. **Widgets** — addons expose tiles without opening full windows
+## Implementation status
 
-## Avoid
+| Layer | Status |
+|-------|--------|
+| Docs: Runtime, contract, event bus, deps | ✅ |
+| `@dakinis/desktop-runtime` code | 📅 |
+| Media Player Hello World | 🚧 live AkoeNet |
+| Layout persistence API | 📅 |
 
-Full browser, email client, professional image editor, Word/Excel clones, torrent client — high complexity, weak identity fit.
+---
 
-## 5-year hub map
+## Related
 
-```
-Dakinis Desktop
-├── File Explorer    ├── AI Workspace    ├── AkoeNet Chat
-├── Media Player     ├── CRM / Core      ├── LifeFlow
-├── Calendar         ├── Kanban          ├── Notes
-├── Terminal         ├── Dashboard       ├── Stream Studio
-├── Tabletop         ├── Marketplace     └── Settings
-```
-
-Reuse: Window Manager + Addon SDK + Marketplace + Platform services → each new mini-app is cheaper than a standalone product.
+- [`DESKTOP-RUNTIME.md`](./DESKTOP-RUNTIME.md)
+- [`../../../docs/DAKINIS-WORKSPACE.md`](../../../docs/DAKINIS-WORKSPACE.md)

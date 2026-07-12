@@ -3,8 +3,13 @@
   "name": "Notes",
   "version": "0.1.0",
   "icon": "file-text",
+  "tier": "productivity",
   "category": "productivity",
   "phase": "growth",
+  "admission": [
+    "improves-product",
+    "reusable"
+  ],
   "permissions": [
     "storage",
     "ai",

@@ -3,8 +3,13 @@
   "name": "DevOps",
   "version": "0.1.0",
   "icon": "server",
+  "tier": "developer",
   "category": "developer",
   "phase": "growth",
+  "admission": [
+    "improves-product",
+    "reusable"
+  ],
   "permissions": [
     "railway",
     "supabase",

@@ -3,8 +3,13 @@
   "name": "Kanban",
   "version": "0.1.0",
   "icon": "columns",
+  "tier": "productivity",
   "category": "productivity",
   "phase": "growth",
+  "admission": [
+    "improves-product",
+    "reusable"
+  ],
   "permissions": [
     "storage",
     "notifications"

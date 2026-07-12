@@ -3,8 +3,13 @@
   "name": "Calendar",
   "version": "0.1.0",
   "icon": "calendar",
+  "tier": "productivity",
   "category": "productivity",
   "phase": "growth",
+  "admission": [
+    "improves-product",
+    "reusable"
+  ],
   "permissions": [
     "events",
     "notifications"

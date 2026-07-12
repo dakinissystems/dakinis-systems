@@ -3,8 +3,13 @@
   "name": "Marketplace",
   "version": "0.1.0",
   "icon": "store",
+  "tier": "core",
   "category": "system",
   "phase": "growth",
+  "admission": [
+    "sellable",
+    "reusable"
+  ],
   "permissions": [
     "marketplace",
     "billing"
@@ -14,8 +19,9 @@
     "installed",
     "updates",
     "themes",
-    "plugins",
-    "ratings",
+    "widgets",
+    "layouts",
+    "prompts",
     "developer"
   ],
   "i18n": {
@@ -24,8 +30,8 @@
       "es": "Marketplace"
     },
     "description": {
-      "en": "Browse, install and update addons, themes and plugins.",
-      "es": "Explora, instala y actualiza addons, temas y plugins."
+      "en": "Addons, skins, widgets, themes, layouts, AI prompts and automation packs.",
+      "es": "Addons, skins, widgets, temas, layouts, prompts IA y paquetes de automatización."
     }
   }
 }

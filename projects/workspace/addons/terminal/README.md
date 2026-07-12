@@ -1,6 +1,6 @@
 # Dakinis Terminal / Terminal Dakinis
 
-> **Phase:** `growth` · **Category:** `developer`
+> **Tier:** `developer` · **Phase:** `growth` · **Category:** `developer`
 
 Shell for developers — Railway, Docker, Git, Supabase and deploy logs with AI hints.
 

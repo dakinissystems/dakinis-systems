@@ -3,8 +3,12 @@
   "name": "Game Launcher",
   "version": "0.1.0",
   "icon": "gamepad-2",
+  "tier": "entertainment",
   "category": "entertainment",
   "phase": "future",
+  "admission": [
+    "improves-akoenet"
+  ],
   "permissions": [
     "steam",
     "presence"

@@ -1,6 +1,6 @@
 # Clip Studio / Clip Studio
 
-> **Phase:** `future` · **Category:** `stream`
+> **Tier:** `stream` · **Phase:** `future` · **Category:** `stream`
 
 Create, edit and share clips for streamers.
 

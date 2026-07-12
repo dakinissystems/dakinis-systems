@@ -1,0 +1,44 @@
+{
+  "version": "1.0.0",
+  "description": "Versioned Dakinis Desktop capabilities. Addons declare { id, version } — Runtime loads supported adapters.",
+  "capabilities": {
+    "window-manager": {
+      "current": "1",
+      "supported": ["1"],
+      "deprecated": [],
+      "package": "@dakinis/window-manager",
+      "i18n": { "en": "Window Manager", "es": "Window Manager" }
+    },
+    "addon-sdk": {
+      "current": "1",
+      "supported": ["1"],
+      "deprecated": [],
+      "package": "@dakinis/addon-sdk",
+      "i18n": { "en": "Addon SDK", "es": "Addon SDK" }
+    },
+    "widget-framework": {
+      "current": "1",
+      "supported": ["1"],
+      "deprecated": [],
+      "package": "@dakinis/widgets",
+      "i18n": { "en": "Widget Framework", "es": "Widget Framework" }
+    },
+    "command-palette": {
+      "current": "1",
+      "supported": ["1"],
+      "deprecated": [],
+      "package": "@dakinis/command-palette",
+      "i18n": { "en": "Command Palette", "es": "Command Palette" },
+      "coreAddonId": "command-palette",
+      "coreAddonName": { "en": "Command Center", "es": "Centro de comandos" }
+    },
+    "marketplace": {
+      "current": "1",
+      "supported": ["1"],
+      "deprecated": [],
+      "package": "@dakinis/marketplace",
+      "i18n": { "en": "Marketplace", "es": "Marketplace" },
+      "coreAddonId": "marketplace"
+    }
+  }
+}

@@ -3,8 +3,13 @@
   "name": "Activity Center",
   "version": "0.1.0",
   "icon": "bell",
+  "tier": "core",
   "category": "system",
   "phase": "mvp",
+  "admission": [
+    "reusable",
+    "improves-product"
+  ],
   "permissions": [
     "notifications"
   ],

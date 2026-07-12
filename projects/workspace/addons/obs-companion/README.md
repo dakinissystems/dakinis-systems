@@ -1,6 +1,6 @@
 # OBS Companion / OBS Companion
 
-> **Phase:** `growth` · **Category:** `stream`
+> **Tier:** `stream` · **Phase:** `growth` · **Category:** `stream`
 
 Switch scenes, read chat and control mic/camera from Dakinis.
 

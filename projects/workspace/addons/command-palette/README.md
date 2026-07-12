@@ -1,10 +1,10 @@
 # Command Center / Centro de comandos
 
-> **Phase:** `mvp` · **Category:** `system`
+> **Tier:** `core` · **Phase:** `mvp` · **Category:** `system`
 
-Ctrl+K — open apps, search messages, deploy Railway, play music.
+Ctrl+K — Open CRM, Media, Deploy Railway, Search Messages, Ask AI, Call John.
 
-Ctrl+K — abrir apps, buscar mensajes, deploy Railway, reproducir música.
+Ctrl+K — Abrir CRM, Media, Deploy Railway, buscar mensajes, preguntar a IA, llamar a John.
 
 ## Windows
 

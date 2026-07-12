@@ -1,6 +1,6 @@
 # Soundboard / Soundboard
 
-> **Phase:** `growth` · **Category:** `entertainment`
+> **Tier:** `entertainment` · **Phase:** `growth` · **Category:** `entertainment`
 
 Voice-channel soundboard with favorites and hotkeys.
 

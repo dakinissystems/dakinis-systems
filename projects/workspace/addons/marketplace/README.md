@@ -1,10 +1,10 @@
 # Marketplace / Marketplace
 
-> **Phase:** `growth` · **Category:** `system`
+> **Tier:** `core` · **Phase:** `growth` · **Category:** `system`
 
-Browse, install and update addons, themes and plugins.
+Addons, skins, widgets, themes, layouts, AI prompts and automation packs.
 
-Explora, instala y actualiza addons, temas y plugins.
+Addons, skins, widgets, temas, layouts, prompts IA y paquetes de automatización.
 
 ## Windows
 
@@ -12,8 +12,9 @@ Explora, instala y actualiza addons, temas y plugins.
 - `installed`
 - `updates`
 - `themes`
-- `plugins`
-- `ratings`
+- `widgets`
+- `layouts`
+- `prompts`
 - `developer`
 
 ## Structure

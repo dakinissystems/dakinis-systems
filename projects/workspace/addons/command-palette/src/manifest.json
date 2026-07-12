@@ -3,8 +3,12 @@
   "name": "Command Center",
   "version": "0.1.0",
   "icon": "command",
+  "tier": "core",
   "category": "system",
   "phase": "mvp",
+  "admission": [
+    "reusable"
+  ],
   "permissions": [
     "search"
   ],
@@ -17,8 +21,8 @@
       "es": "Centro de comandos"
     },
     "description": {
-      "en": "Ctrl+K — open apps, search messages, deploy Railway, play music.",
-      "es": "Ctrl+K — abrir apps, buscar mensajes, deploy Railway, reproducir música."
+      "en": "Ctrl+K — Open CRM, Media, Deploy Railway, Search Messages, Ask AI, Call John.",
+      "es": "Ctrl+K — Abrir CRM, Media, Deploy Railway, buscar mensajes, preguntar a IA, llamar a John."
     }
   }
 }

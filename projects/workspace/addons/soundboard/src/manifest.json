@@ -3,8 +3,13 @@
   "name": "Soundboard",
   "version": "0.1.0",
   "icon": "volume-2",
+  "tier": "entertainment",
   "category": "entertainment",
   "phase": "growth",
+  "admission": [
+    "improves-akoenet",
+    "sellable"
+  ],
   "permissions": [
     "storage",
     "voice"

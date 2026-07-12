@@ -1,6 +1,6 @@
 # Automation Builder / Automation Builder
 
-> **Phase:** `growth` · **Category:** `developer`
+> **Tier:** `developer` · **Phase:** `growth` · **Category:** `developer`
 
 Visual flows — message → AI → condition → action (n8n style).
 

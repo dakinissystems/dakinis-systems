@@ -3,8 +3,13 @@
   "name": "Clip Studio",
   "version": "0.1.0",
   "icon": "scissors",
+  "tier": "stream",
   "category": "stream",
   "phase": "future",
+  "admission": [
+    "sellable",
+    "improves-akoenet"
+  ],
   "permissions": [
     "storage",
     "streamautomator"

@@ -1,6 +1,6 @@
 # DevOps / DevOps
 
-> **Phase:** `growth` · **Category:** `developer`
+> **Tier:** `developer` · **Phase:** `growth` · **Category:** `developer`
 
 Deploy, logs and metrics for Railway, Supabase and Redis.
 

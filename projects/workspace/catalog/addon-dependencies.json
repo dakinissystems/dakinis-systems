@@ -1,0 +1,161 @@
+{
+  "$schema": "./addon-dependencies.schema.json",
+  "version": "1.1.0",
+  "description": "Platform Services vs Capabilities vs Addon dependencies (required / optional / conflicts).",
+  "platformServices": [
+    { "id": "auth", "i18n": { "en": "Auth", "es": "Auth" } },
+    { "id": "ai", "i18n": { "en": "AI", "es": "IA" } },
+    { "id": "storage", "i18n": { "en": "Storage", "es": "Almacenamiento" } },
+    { "id": "billing", "i18n": { "en": "Billing", "es": "Facturación" } },
+    { "id": "search", "i18n": { "en": "Search", "es": "Búsqueda" } },
+    { "id": "knowledge", "i18n": { "en": "Knowledge", "es": "Conocimiento" } },
+    { "id": "events", "i18n": { "en": "Events", "es": "Eventos" } },
+    { "id": "notifications", "i18n": { "en": "Notifications", "es": "Notificaciones" } },
+    { "id": "metrics", "i18n": { "en": "Metrics", "es": "Métricas" } },
+    { "id": "network", "i18n": { "en": "Network", "es": "Red" } },
+    { "id": "realtime", "i18n": { "en": "Realtime", "es": "Tiempo real" } },
+    { "id": "voice", "i18n": { "en": "Voice", "es": "Voz" } },
+    { "id": "git", "i18n": { "en": "Git", "es": "Git" } },
+    { "id": "redis", "i18n": { "en": "Redis", "es": "Redis" } },
+    { "id": "marketplace", "i18n": { "en": "Marketplace", "es": "Marketplace" } }
+  ],
+  "capabilities": [
+    { "id": "window-manager", "version": "1", "package": "@dakinis/window-manager" },
+    { "id": "addon-sdk", "version": "1", "package": "@dakinis/addon-sdk" },
+    { "id": "widget-framework", "version": "1", "package": "@dakinis/widgets" },
+    { "id": "command-palette", "version": "1", "package": "@dakinis/command-palette", "coreAddonId": "command-palette" },
+    { "id": "marketplace", "version": "1", "package": "@dakinis/marketplace", "coreAddonId": "marketplace" }
+  ],
+  "matrix": {
+    "command-palette": {
+      "platform": ["auth", "search"],
+      "capabilities": [{ "id": "command-palette", "version": "1" }],
+      "addons": { "required": [], "optional": [], "conflicts": [] }
+    },
+    "activity-center": {
+      "platform": ["auth", "notifications", "events"],
+      "capabilities": [{ "id": "widget-framework", "version": "1" }],
+      "addons": { "required": [], "optional": ["dashboard"], "conflicts": [] }
+    },
+    "dashboard": {
+      "platform": ["auth", "metrics", "notifications"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }, { "id": "widget-framework", "version": "1" }],
+      "addons": { "required": [], "optional": ["monitor"], "conflicts": [] }
+    },
+    "marketplace": {
+      "platform": ["auth", "billing", "marketplace", "search"],
+      "capabilities": [{ "id": "addon-sdk", "version": "1" }, { "id": "marketplace", "version": "1" }],
+      "addons": { "required": [], "optional": ["theme-studio"], "conflicts": [] }
+    },
+    "settings": {
+      "platform": ["auth", "storage", "notifications"],
+      "capabilities": [{ "id": "addon-sdk", "version": "1" }],
+      "addons": { "required": [], "optional": ["marketplace"], "conflicts": [] }
+    },
+    "terminal": {
+      "platform": ["auth", "storage", "ai", "notifications", "network"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }, { "id": "command-palette", "version": "1" }],
+      "addons": { "required": [], "optional": ["ai-actions"], "conflicts": [] }
+    },
+    "devops": {
+      "platform": ["auth", "ai", "events", "redis", "metrics"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": ["terminal"], "optional": ["monitor", "ai-actions"], "conflicts": [] }
+    },
+    "monitor": {
+      "platform": ["auth", "metrics", "network"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }, { "id": "widget-framework", "version": "1" }],
+      "addons": { "required": [], "optional": ["dashboard", "devops"], "conflicts": [] }
+    },
+    "code-editor": {
+      "platform": ["auth", "storage", "git"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["terminal"], "conflicts": [] }
+    },
+    "automation-builder": {
+      "platform": ["auth", "ai", "notifications", "events"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["ai-actions", "terminal"], "conflicts": [] }
+    },
+    "ai-actions": {
+      "platform": ["auth", "ai", "notifications"],
+      "capabilities": [{ "id": "command-palette", "version": "1" }],
+      "addons": { "required": [], "optional": ["ai-workspace"], "conflicts": [] }
+    },
+    "ai-workspace": {
+      "platform": ["auth", "ai", "storage", "knowledge", "notifications"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["ai-actions", "notes"], "conflicts": [] }
+    },
+    "media-player": {
+      "platform": ["auth", "storage", "notifications"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }, { "id": "widget-framework", "version": "1" }],
+      "addons": { "required": [], "optional": ["soundboard"], "conflicts": [] }
+    },
+    "obs-companion": {
+      "platform": ["auth", "events"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": ["stream-deck"], "optional": ["media-player", "soundboard"], "conflicts": [] }
+    },
+    "stream-deck": {
+      "platform": ["auth", "events"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }, { "id": "command-palette", "version": "1" }],
+      "addons": { "required": [], "optional": ["obs-companion"], "conflicts": [] }
+    },
+    "clip-studio": {
+      "platform": ["auth", "storage"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["obs-companion", "media-player"], "conflicts": [] }
+    },
+    "soundboard": {
+      "platform": ["auth", "storage", "voice"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["media-player"], "conflicts": [] }
+    },
+    "game-launcher": {
+      "platform": ["auth"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["media-player"], "conflicts": [] }
+    },
+    "notes": {
+      "platform": ["auth", "storage", "ai", "knowledge", "search"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }, { "id": "widget-framework", "version": "1" }],
+      "addons": { "required": [], "optional": ["ai-actions"], "conflicts": [] }
+    },
+    "kanban": {
+      "platform": ["auth", "storage", "notifications"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["calendar"], "conflicts": [] }
+    },
+    "whiteboard": {
+      "platform": ["auth", "storage", "realtime", "voice"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["live-dashboard"], "conflicts": [] }
+    },
+    "calendar": {
+      "platform": ["auth", "events", "notifications"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }, { "id": "widget-framework", "version": "1" }],
+      "addons": { "required": [], "optional": ["kanban"], "conflicts": [] }
+    },
+    "live-dashboard": {
+      "platform": ["auth", "voice", "ai", "events"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["whiteboard", "notes", "ai-workspace"], "conflicts": [] }
+    },
+    "file-explorer": {
+      "platform": ["auth", "storage"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["downloads"], "conflicts": [] }
+    },
+    "theme-studio": {
+      "platform": ["auth", "storage", "marketplace"],
+      "capabilities": [{ "id": "marketplace", "version": "1" }],
+      "addons": { "required": ["marketplace"], "optional": [], "conflicts": [] }
+    },
+    "downloads": {
+      "platform": ["auth", "storage"],
+      "capabilities": [{ "id": "window-manager", "version": "1" }],
+      "addons": { "required": [], "optional": ["file-explorer"], "conflicts": [] }
+    }
+  }
+}

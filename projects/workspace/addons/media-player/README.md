@@ -1,6 +1,6 @@
 # Media Player / Reproductor multimedia
 
-> **Phase:** `mvp` · **Category:** `media`
+> **Tier:** `media` · **Phase:** `mvp` · **Category:** `media`
 
 Winamp-style player — albums, lyrics, visualizer and listen together.
 

@@ -1,6 +1,6 @@
 # Downloads / Descargas
 
-> **Phase:** `future` · **Category:** `system`
+> **Tier:** `system` · **Phase:** `future` · **Category:** `system`
 
 Download manager with history and queue.
 

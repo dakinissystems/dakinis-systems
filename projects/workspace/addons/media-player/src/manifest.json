@@ -3,8 +3,14 @@
   "name": "Media Player",
   "version": "0.1.0",
   "icon": "music",
+  "tier": "media",
   "category": "media",
   "phase": "mvp",
+  "admission": [
+    "improves-akoenet",
+    "reusable",
+    "sellable"
+  ],
   "permissions": [
     "storage",
     "media",

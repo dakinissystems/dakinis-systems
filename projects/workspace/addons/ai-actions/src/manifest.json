@@ -1,0 +1,38 @@
+{
+  "id": "ai-actions",
+  "name": "AI Actions",
+  "version": "0.1.0",
+  "icon": "zap",
+  "tier": "productivity",
+  "category": "productivity",
+  "phase": "growth",
+  "admission": [
+    "reusable",
+    "improves-akoenet",
+    "improves-product"
+  ],
+  "permissions": [
+    "ai",
+    "notifications"
+  ],
+  "windows": [
+    "actions",
+    "summarize",
+    "translate",
+    "explain",
+    "generate",
+    "deploy",
+    "fix",
+    "review"
+  ],
+  "i18n": {
+    "name": {
+      "en": "AI Actions",
+      "es": "Acciones IA"
+    },
+    "description": {
+      "en": "Action list, not chat — Summarize, Translate, Explain, Generate, Deploy, Fix, Review.",
+      "es": "Lista de acciones, no chat — Resumir, Traducir, Explicar, Generar, Deploy, Corregir, Revisar."
+    }
+  }
+}

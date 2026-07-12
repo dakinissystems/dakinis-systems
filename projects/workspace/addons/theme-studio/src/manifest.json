@@ -3,8 +3,13 @@
   "name": "Theme Studio",
   "version": "0.1.0",
   "icon": "palette",
+  "tier": "system",
   "category": "system",
   "phase": "growth",
+  "admission": [
+    "sellable",
+    "reusable"
+  ],
   "permissions": [
     "storage",
     "marketplace"
