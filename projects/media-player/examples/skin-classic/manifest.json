@@ -1,0 +1,45 @@
+{
+  "id": "dakinis/classic",
+  "name": "Classic LED",
+  "version": "1.0.0",
+  "author": "Dakinis Systems",
+  "description": "Homage retro — green LED on dark metal. Not a Winamp clone.",
+  "windows": {
+    "player": "assets/player.png",
+    "playlist": "assets/playlist.png",
+    "eq": "assets/eq.png"
+  },
+  "sprites": {
+    "buttons": {
+      "play": { "x": 0, "y": 0, "w": 23, "h": 18 },
+      "pause": { "x": 23, "y": 0, "w": 23, "h": 18 },
+      "stop": { "x": 46, "y": 0, "w": 23, "h": 18 },
+      "prev": { "x": 69, "y": 0, "w": 23, "h": 18 },
+      "next": { "x": 92, "y": 0, "w": 23, "h": 18 }
+    }
+  },
+  "colors": {
+    "text": "#00ff41",
+    "textDim": "#00aa2a",
+    "background": "#1a1a1a",
+    "titlebar": "#2d2d2d",
+    "accent": "#00ff41"
+  },
+  "fonts": {
+    "main": "fonts/led.ttf",
+    "sizeTitle": 11,
+    "sizeList": 10
+  },
+  "metrics": {
+    "titlebarHeight": 14,
+    "playerWidth": 320,
+    "playerHeight": 116,
+    "playlistWidth": 275,
+    "playlistHeight": 232,
+    "eqWidth": 275,
+    "eqHeight": 116
+  },
+  "sounds": {
+    "click": "sounds/click.wav"
+  }
+}

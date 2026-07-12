@@ -1,0 +1,8 @@
+{
+  "name": "@dakinis/window-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "description": "Ventanas flotantes reutilizables estilo Winamp para Dakinis"
+}

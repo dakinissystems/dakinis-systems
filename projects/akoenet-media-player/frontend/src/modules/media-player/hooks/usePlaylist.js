@@ -1,0 +1,43 @@
+import { useCallback, useState } from "react";
+import { mediaApi } from "../services/mediaApi.js";
+
+const DEMO_TRACKS = [
+  {
+    id: "demo-track-1",
+    title: "One More Time",
+    artist: "Daft Punk",
+    album: "Discovery",
+    durationMs: 320000,
+    sourceRef: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+  },
+  {
+    id: "demo-track-2",
+    title: "Time",
+    artist: "Hans Zimmer",
+    album: "Inception",
+    durationMs: 277000,
+    sourceRef: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+  },
+];
+
+export function usePlaylist() {
+  const [tracks, setTracks] = useState(DEMO_TRACKS);
+  const [playlistName, setPlaylistName] = useState("Dakinis Classics");
+
+  const loadDemo = useCallback(async () => {
+    try {
+      const data = await mediaApi.listTracks();
+      if (data?.items?.length) setTracks(data.items);
+    } catch {
+      /* fallback demo tracks */
+    }
+  }, []);
+
+  const loadPlaylist = useCallback(async (id) => {
+    const pl = await mediaApi.getPlaylist(id);
+    setPlaylistName(pl.name);
+    setTracks(pl.trackIds?.map((tid) => ({ id: tid, title: tid })) ?? []);
+  }, []);
+
+  return { tracks, playlistName, loadDemo, loadPlaylist, setTracks };
+}

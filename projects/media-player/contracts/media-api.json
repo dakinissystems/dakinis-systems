@@ -1,0 +1,62 @@
+{
+  "service": "dakinis-media",
+  "repo": "dakinis-media",
+  "gatewayPrefix": "/media/",
+  "upstreamProd": {
+    "api": "https://media-api.dakinissystems.com",
+    "websocket": "wss://media-api.dakinissystems.com/v1/ws"
+  },
+  "auth": "Bearer JWT (AkoeNet / IdP)",
+  "publicRoutes": [
+    "GET /media/health",
+    "GET /media/v1/skins/catalog"
+  ],
+  "protectedRoutes": {
+    "tracks": [
+      "GET /media/v1/tracks",
+      "POST /media/v1/tracks",
+      "GET /media/v1/tracks/:id",
+      "DELETE /media/v1/tracks/:id"
+    ],
+    "playlists": [
+      "GET /media/v1/playlists",
+      "POST /media/v1/playlists",
+      "PATCH /media/v1/playlists/:id",
+      "DELETE /media/v1/playlists/:id",
+      "PUT /media/v1/playlists/:id/tracks"
+    ],
+    "favorites": [
+      "GET /media/v1/favorites",
+      "POST /media/v1/favorites/:trackId",
+      "DELETE /media/v1/favorites/:trackId"
+    ],
+    "rooms": [
+      "POST /media/v1/rooms",
+      "GET /media/v1/rooms/:id",
+      "POST /media/v1/rooms/:id/join",
+      "POST /media/v1/rooms/:id/leave",
+      "PATCH /media/v1/rooms/:id/state"
+    ],
+    "streams": [
+      "GET /media/v1/streams/resolve?url="
+    ],
+    "skins": [
+      "GET /media/v1/skins/mine",
+      "POST /media/v1/skins/install"
+    ]
+  },
+  "websocket": {
+    "path": "/media/v1/ws",
+    "events": [
+      "room.state",
+      "room.join",
+      "room.leave",
+      "room.chat"
+    ]
+  },
+  "notes": [
+    "Addon AkoeNet — ver projects/media-player/docs/",
+    "Gateway: añadir location /media/ en gateway/routes/default.conf",
+    "POSTGRES_SCHEMA=media"
+  ]
+}

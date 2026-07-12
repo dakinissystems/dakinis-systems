@@ -1,0 +1,14 @@
+{
+  "name": "@dakinis/akoenet-media-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "API referencia Media Player — mover a akoenet-backend o servicio dedicado",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

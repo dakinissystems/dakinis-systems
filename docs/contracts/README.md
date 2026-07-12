@@ -19,5 +19,6 @@ Referencias **ligeras** (legibles por humanos y CI) para rutas y nombres expuest
 | [`hub.json`](./hub.json) | Origen propio `hub.dakinissystems.com` (no prefijo gateway) |
 | [`admin-api.json`](./admin-api.json) | Workspace Admin + Super Admin vía `/internal/` (migr. 031) |
 | [`akoenet-assistant.json`](./akoenet-assistant.json) | AkoeNet Assistant modular — módulos nativos (migr. 032) |
+| [`media-api.json`](./media-api.json) | `/media/` → Dakinis Media Player addon AkoeNet (diseño en [`projects/media-player/`](../../projects/media-player/)) |
 
 Actualiza estos JSON cuando cambies prefijos en [`gateway/routes/`](../../gateway/routes/) o contratos públicos de las APIs.
