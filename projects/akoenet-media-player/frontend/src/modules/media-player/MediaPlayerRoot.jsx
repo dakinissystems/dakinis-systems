@@ -82,6 +82,14 @@ function MediaPlayerDesktop() {
     setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, rect } : w)));
   }, []);
 
+  const resizeWindow = useCallback((id, rect) => {
+    setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, rect } : w)));
+  }, []);
+
+  const finishResize = useCallback((id, rect) => {
+    setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, rect } : w)));
+  }, []);
+
   const toggleWindow = useCallback(
     (id) => {
       setWindows((prev) =>
@@ -204,6 +212,8 @@ function MediaPlayerDesktop() {
             focused={focusedId === w.id}
             onFocus={() => focus(w.id)}
             onMove={(rect) => moveWindow(w.id, rect)}
+            onResize={(rect) => resizeWindow(w.id, rect)}
+            onResizeEnd={(rect) => finishResize(w.id, rect)}
             onClose={() => toggleWindow(w.id)}
           >
             {windowContent[w.id]}
