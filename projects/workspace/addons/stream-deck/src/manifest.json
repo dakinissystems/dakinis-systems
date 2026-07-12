@@ -1,0 +1,33 @@
+{
+  "id": "stream-deck",
+  "name": "Stream Deck",
+  "version": "0.1.0",
+  "icon": "grid-3x3",
+  "category": "stream",
+  "phase": "growth",
+  "permissions": [
+    "streamautomator",
+    "obs",
+    "twitch"
+  ],
+  "windows": [
+    "buttons",
+    "pages",
+    "macros",
+    "obs",
+    "twitch",
+    "akoenet",
+    "keyboard",
+    "automation"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Stream Deck",
+      "es": "Stream Deck virtual"
+    },
+    "description": {
+      "en": "Virtual deck for StreamAutomator — OBS, Twitch, macros and hotkeys.",
+      "es": "Deck virtual para StreamAutomator — OBS, Twitch, macros y atajos."
+    }
+  }
+}

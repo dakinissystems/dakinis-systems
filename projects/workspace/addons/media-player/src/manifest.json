@@ -1,0 +1,31 @@
+{
+  "id": "media-player",
+  "name": "Media Player",
+  "version": "0.1.0",
+  "icon": "music",
+  "category": "media",
+  "phase": "mvp",
+  "permissions": [
+    "storage",
+    "media",
+    "realtime"
+  ],
+  "windows": [
+    "player",
+    "playlist",
+    "library",
+    "equalizer",
+    "visualizer",
+    "friends"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Media Player",
+      "es": "Reproductor multimedia"
+    },
+    "description": {
+      "en": "Winamp-style player — albums, lyrics, visualizer and listen together.",
+      "es": "Reproductor estilo Winamp — álbumes, letras, visualizer y escuchar juntos."
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "whiteboard",
+  "name": "Whiteboard",
+  "version": "0.1.0",
+  "icon": "pen-tool",
+  "category": "productivity",
+  "phase": "growth",
+  "permissions": [
+    "storage",
+    "realtime",
+    "voice"
+  ],
+  "windows": [
+    "canvas",
+    "sticky-notes",
+    "shapes",
+    "mind-map",
+    "flowchart",
+    "draw",
+    "export"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Whiteboard",
+      "es": "Pizarra colaborativa"
+    },
+    "description": {
+      "en": "Excalidraw-style board for brainstorming, architecture and voice meetings.",
+      "es": "Pizarra estilo Excalidraw para brainstorming, arquitectura y reuniones con voz."
+    }
+  }
+}

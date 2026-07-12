@@ -1,0 +1,24 @@
+{
+  "id": "command-palette",
+  "name": "Command Center",
+  "version": "0.1.0",
+  "icon": "command",
+  "category": "system",
+  "phase": "mvp",
+  "permissions": [
+    "search"
+  ],
+  "windows": [
+    "palette"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Command Center",
+      "es": "Centro de comandos"
+    },
+    "description": {
+      "en": "Ctrl+K — open apps, search messages, deploy Railway, play music.",
+      "es": "Ctrl+K — abrir apps, buscar mensajes, deploy Railway, reproducir música."
+    }
+  }
+}

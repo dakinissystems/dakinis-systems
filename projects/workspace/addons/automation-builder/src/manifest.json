@@ -1,0 +1,32 @@
+{
+  "id": "automation-builder",
+  "name": "Automation Builder",
+  "version": "0.1.0",
+  "icon": "workflow",
+  "category": "developer",
+  "phase": "growth",
+  "permissions": [
+    "automation",
+    "ai",
+    "notifications"
+  ],
+  "windows": [
+    "canvas",
+    "triggers",
+    "conditions",
+    "actions",
+    "variables",
+    "history",
+    "logs"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Automation Builder",
+      "es": "Automation Builder"
+    },
+    "description": {
+      "en": "Visual flows — message → AI → condition → action (n8n style).",
+      "es": "Flujos visuales — mensaje → IA → condición → acción (estilo n8n)."
+    }
+  }
+}

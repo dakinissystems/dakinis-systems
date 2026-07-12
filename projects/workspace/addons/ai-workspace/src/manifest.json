@@ -1,0 +1,34 @@
+{
+  "id": "ai-workspace",
+  "name": "AI Workspace",
+  "version": "0.1.0",
+  "icon": "sparkles",
+  "category": "productivity",
+  "phase": "mvp",
+  "permissions": [
+    "ai",
+    "storage",
+    "knowledge",
+    "notifications"
+  ],
+  "windows": [
+    "conversation",
+    "prompt-library",
+    "knowledge",
+    "actions",
+    "files",
+    "models",
+    "history",
+    "settings"
+  ],
+  "i18n": {
+    "name": {
+      "en": "AI Workspace",
+      "es": "Espacio de IA"
+    },
+    "description": {
+      "en": "Multi-window AI desktop — conversations, prompts, knowledge and actions.",
+      "es": "Escritorio de IA con ventanas — conversaciones, prompts, conocimiento y acciones."
+    }
+  }
+}

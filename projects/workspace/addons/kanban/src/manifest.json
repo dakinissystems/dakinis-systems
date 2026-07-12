@@ -1,0 +1,31 @@
+{
+  "id": "kanban",
+  "name": "Kanban",
+  "version": "0.1.0",
+  "icon": "columns",
+  "category": "productivity",
+  "phase": "growth",
+  "permissions": [
+    "storage",
+    "notifications"
+  ],
+  "windows": [
+    "boards",
+    "columns",
+    "tasks",
+    "comments",
+    "labels",
+    "members",
+    "calendar"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Kanban",
+      "es": "Kanban"
+    },
+    "description": {
+      "en": "Todo → Doing → Review → Done without leaving Dakinis.",
+      "es": "Todo → Doing → Review → Done sin salir de Dakinis."
+    }
+  }
+}

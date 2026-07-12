@@ -1,0 +1,32 @@
+{
+  "id": "live-dashboard",
+  "name": "Live Dashboard",
+  "version": "0.1.0",
+  "icon": "users",
+  "category": "productivity",
+  "phase": "future",
+  "permissions": [
+    "voice",
+    "ai",
+    "calendar"
+  ],
+  "windows": [
+    "meeting",
+    "voice",
+    "screen",
+    "notes",
+    "ai-summary",
+    "tasks",
+    "calendar"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Live Dashboard",
+      "es": "Panel en vivo"
+    },
+    "description": {
+      "en": "Meeting mode — voice, screen, notes, AI summary and tasks together.",
+      "es": "Modo reunión — voz, pantalla, notas, resumen IA y tareas juntos."
+    }
+  }
+}

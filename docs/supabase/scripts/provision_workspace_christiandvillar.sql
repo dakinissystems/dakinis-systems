@@ -80,3 +80,14 @@ FROM meta.workspace_products wp
 JOIN meta.workspaces w ON w.id = wp.workspace_id
 WHERE lower(w.slug) = 'dakinis-platform'
 ORDER BY product_slug;
+
+-- 8. Addons Dakinis Workspace (requiere migración 035)
+-- Ver también: provision_workspace_addons_christiandvillar.sql
+INSERT INTO meta.workspace_addon_installs (workspace_id, addon_key, enabled, pinned, config)
+SELECT w.id, wa.key, true,
+  wa.key IN ('command-palette', 'activity-center', 'dashboard', 'ai-workspace', 'media-player'),
+  '{}'::jsonb
+FROM meta.workspaces w
+CROSS JOIN meta.workspace_addons wa
+WHERE lower(w.slug) = 'dakinis-platform'
+ON CONFLICT (workspace_id, addon_key) DO UPDATE SET enabled = true, updated_at = now();

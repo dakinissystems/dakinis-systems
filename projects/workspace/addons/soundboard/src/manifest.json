@@ -1,0 +1,30 @@
+{
+  "id": "soundboard",
+  "name": "Soundboard",
+  "version": "0.1.0",
+  "icon": "volume-2",
+  "category": "entertainment",
+  "phase": "growth",
+  "permissions": [
+    "storage",
+    "voice"
+  ],
+  "windows": [
+    "categories",
+    "favorites",
+    "hotkeys",
+    "history",
+    "upload",
+    "share"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Soundboard",
+      "es": "Soundboard"
+    },
+    "description": {
+      "en": "Voice-channel soundboard with favorites and hotkeys.",
+      "es": "Soundboard en canales de voz con favoritos y atajos."
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "code-editor",
+  "name": "Code Editor",
+  "version": "0.1.0",
+  "icon": "code",
+  "category": "developer",
+  "phase": "growth",
+  "permissions": [
+    "storage",
+    "git"
+  ],
+  "windows": [
+    "explorer",
+    "editor",
+    "terminal",
+    "git",
+    "problems",
+    "outline"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Code Editor",
+      "es": "Editor de código"
+    },
+    "description": {
+      "en": "Lightweight editor to share files during voice calls.",
+      "es": "Editor ligero para compartir archivos durante llamadas de voz."
+    }
+  }
+}

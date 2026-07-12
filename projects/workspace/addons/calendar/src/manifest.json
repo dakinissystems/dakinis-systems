@@ -1,0 +1,31 @@
+{
+  "id": "calendar",
+  "name": "Calendar",
+  "version": "0.1.0",
+  "icon": "calendar",
+  "category": "productivity",
+  "phase": "growth",
+  "permissions": [
+    "events",
+    "notifications"
+  ],
+  "windows": [
+    "agenda",
+    "week",
+    "month",
+    "meetings",
+    "bookings",
+    "birthdays",
+    "reminders"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Calendar",
+      "es": "Calendario"
+    },
+    "description": {
+      "en": "Streams, events, meetings, bookings and birthdays with Assistant reminders.",
+      "es": "Streams, eventos, reuniones, reservas y cumpleaños con recordatorios del Assistant."
+    }
+  }
+}

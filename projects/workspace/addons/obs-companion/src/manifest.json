@@ -1,0 +1,31 @@
+{
+  "id": "obs-companion",
+  "name": "OBS Companion",
+  "version": "0.1.0",
+  "icon": "video",
+  "category": "stream",
+  "phase": "growth",
+  "permissions": [
+    "obs",
+    "streamautomator"
+  ],
+  "windows": [
+    "scenes",
+    "sources",
+    "audio",
+    "streaming",
+    "recording",
+    "chat",
+    "statistics"
+  ],
+  "i18n": {
+    "name": {
+      "en": "OBS Companion",
+      "es": "OBS Companion"
+    },
+    "description": {
+      "en": "Switch scenes, read chat and control mic/camera from Dakinis.",
+      "es": "Cambia escenas, lee el chat y controla mic/cámara desde Dakinis."
+    }
+  }
+}

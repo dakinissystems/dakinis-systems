@@ -1,0 +1,24 @@
+{
+  "id": "activity-center",
+  "name": "Activity Center",
+  "version": "0.1.0",
+  "icon": "bell",
+  "category": "system",
+  "phase": "mvp",
+  "permissions": [
+    "notifications"
+  ],
+  "windows": [
+    "feed"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Activity Center",
+      "es": "Centro de actividad"
+    },
+    "description": {
+      "en": "Notifications, streams, deploys, invoices, messages and AI alerts.",
+      "es": "Notificaciones, streams, deploys, facturas, mensajes y alertas de IA."
+    }
+  }
+}

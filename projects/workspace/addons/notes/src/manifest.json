@@ -1,0 +1,33 @@
+{
+  "id": "notes",
+  "name": "Notes",
+  "version": "0.1.0",
+  "icon": "file-text",
+  "category": "productivity",
+  "phase": "growth",
+  "permissions": [
+    "storage",
+    "ai",
+    "knowledge",
+    "search"
+  ],
+  "windows": [
+    "folders",
+    "editor",
+    "wiki",
+    "tags",
+    "backlinks",
+    "search",
+    "ai-summary"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Notes",
+      "es": "Notas"
+    },
+    "description": {
+      "en": "Obsidian-style markdown wiki with backlinks and AI summaries.",
+      "es": "Wiki Markdown estilo Obsidian con backlinks y resúmenes de IA."
+    }
+  }
+}

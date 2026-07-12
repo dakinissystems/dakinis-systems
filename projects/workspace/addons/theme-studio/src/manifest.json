@@ -1,0 +1,31 @@
+{
+  "id": "theme-studio",
+  "name": "Theme Studio",
+  "version": "0.1.0",
+  "icon": "palette",
+  "category": "system",
+  "phase": "growth",
+  "permissions": [
+    "storage",
+    "marketplace"
+  ],
+  "windows": [
+    "colors",
+    "fonts",
+    "borders",
+    "icons",
+    "animations",
+    "preview",
+    "export"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Theme Studio",
+      "es": "Theme Studio"
+    },
+    "description": {
+      "en": "Create skins, preview and publish to the Marketplace.",
+      "es": "Crea skins, previsualiza y publica en el Marketplace."
+    }
+  }
+}

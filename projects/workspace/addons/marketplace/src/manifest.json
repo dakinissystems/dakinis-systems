@@ -1,0 +1,31 @@
+{
+  "id": "marketplace",
+  "name": "Marketplace",
+  "version": "0.1.0",
+  "icon": "store",
+  "category": "system",
+  "phase": "growth",
+  "permissions": [
+    "marketplace",
+    "billing"
+  ],
+  "windows": [
+    "browse",
+    "installed",
+    "updates",
+    "themes",
+    "plugins",
+    "ratings",
+    "developer"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Marketplace",
+      "es": "Marketplace"
+    },
+    "description": {
+      "en": "Browse, install and update addons, themes and plugins.",
+      "es": "Explora, instala y actualiza addons, temas y plugins."
+    }
+  }
+}

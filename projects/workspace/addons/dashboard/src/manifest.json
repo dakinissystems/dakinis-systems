@@ -1,0 +1,35 @@
+{
+  "id": "dashboard",
+  "name": "Dashboard",
+  "version": "0.1.0",
+  "icon": "layout-dashboard",
+  "category": "system",
+  "phase": "mvp",
+  "permissions": [
+    "metrics",
+    "notifications"
+  ],
+  "windows": [
+    "widgets",
+    "cpu",
+    "memory",
+    "stripe",
+    "railway",
+    "github",
+    "supabase",
+    "analytics",
+    "calendar",
+    "weather",
+    "streams"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Dashboard",
+      "es": "Panel"
+    },
+    "description": {
+      "en": "Configurable widgets — CPU, Railway, GitHub, Stripe and live streams.",
+      "es": "Widgets configurables — CPU, Railway, GitHub, Stripe y streams en vivo."
+    }
+  }
+}

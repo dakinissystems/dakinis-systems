@@ -13,6 +13,7 @@
     "./product-urls": "./src/product-urls.js",
     "./products": "./src/products.js",
     "./hub-modules": "./src/hub-modules.js",
+    "./workspace-addons": "./src/workspace-addons.js",
     "./colors": "./src/colors.js",
     "./surfaces": "./src/surfaces.js",
     "./semantic-colors": "./src/semantic-colors.js",
@@ -34,6 +35,8 @@
     "./hub-product-logos": "./src/hub-product-logos.js",
     "./i18n": "./src/i18n.js",
     "./products.json": "./src/products.json",
-    "./hub-modules.json": "./src/hub-modules.json"
+    "./hub-modules.json": "./src/hub-modules.json",
+    "./workspace-addons.json": "./src/workspace-addons.json",
+    "./workspace-widgets.json": "./src/workspace-widgets.json"
   }
 }

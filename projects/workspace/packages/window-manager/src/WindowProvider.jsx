@@ -1,0 +1,1 @@
+// WindowProvider.jsx — scaffold

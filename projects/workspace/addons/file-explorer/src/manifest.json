@@ -1,0 +1,30 @@
+{
+  "id": "file-explorer",
+  "name": "File Explorer",
+  "version": "0.1.0",
+  "icon": "folder",
+  "category": "system",
+  "phase": "growth",
+  "permissions": [
+    "storage"
+  ],
+  "windows": [
+    "recent",
+    "shared",
+    "uploads",
+    "downloads",
+    "cloud",
+    "trash",
+    "favorites"
+  ],
+  "i18n": {
+    "name": {
+      "en": "File Explorer",
+      "es": "Explorador de archivos"
+    },
+    "description": {
+      "en": "Workspace files — uploads, shared media and documents.",
+      "es": "Archivos del workspace — subidas, media compartida y documentos."
+    }
+  }
+}

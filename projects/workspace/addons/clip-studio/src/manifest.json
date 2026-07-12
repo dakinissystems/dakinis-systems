@@ -1,0 +1,28 @@
+{
+  "id": "clip-studio",
+  "name": "Clip Studio",
+  "version": "0.1.0",
+  "icon": "scissors",
+  "category": "stream",
+  "phase": "future",
+  "permissions": [
+    "storage",
+    "streamautomator"
+  ],
+  "windows": [
+    "clips",
+    "editor",
+    "export",
+    "share"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Clip Studio",
+      "es": "Clip Studio"
+    },
+    "description": {
+      "en": "Create, edit and share clips for streamers.",
+      "es": "Crea, edita y comparte clips para streamers."
+    }
+  }
+}

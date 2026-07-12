@@ -91,6 +91,19 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · Contrato: [`contrac
 
 Re-ejecutable: también [`../006b-rls-policies-missing-tables.sql`](../006b-rls-policies-missing-tables.sql) (mismo patrón, sin registrar versión).
 
+## Fase H — Dakinis Workspace addons (035)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 35 | [`035_dakinis_workspace_addons.sql`](./035_dakinis_workspace_addons.sql) | ⬜ Catálogo 23 addons + `meta.workspace_addon_installs` |
+
+Provisioning platform admin (todos los addons + productos Hub):  
+[`scripts/provision_workspace_christiandvillar.sql`](../scripts/provision_workspace_christiandvillar.sql) · paso 8 addons  
+[`scripts/provision_workspace_addons_christiandvillar.sql`](../scripts/provision_workspace_addons_christiandvillar.sql)  
+AkoeNet Assistant (perfil Twitch / admin): [`scripts/provision_akoenet_assistant_christiandvillar.sql`](../scripts/provision_akoenet_assistant_christiandvillar.sql)
+
+Scaffold: [`projects/workspace/`](../../projects/workspace/) · Doc: [`DAKINIS-WORKSPACE.md`](../../DAKINIS-WORKSPACE.md)
+
 ## Seeds
 
 | Archivo | Contenido |

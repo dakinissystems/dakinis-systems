@@ -1,0 +1,1 @@
+// WindowRegistry.js — scaffold

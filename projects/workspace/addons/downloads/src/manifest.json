@@ -1,0 +1,27 @@
+{
+  "id": "downloads",
+  "name": "Downloads",
+  "version": "0.1.0",
+  "icon": "download",
+  "category": "system",
+  "phase": "future",
+  "permissions": [
+    "storage"
+  ],
+  "windows": [
+    "active",
+    "history",
+    "queue",
+    "settings"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Downloads",
+      "es": "Descargas"
+    },
+    "description": {
+      "en": "Download manager with history and queue.",
+      "es": "Administrador de descargas con historial y cola."
+    }
+  }
+}

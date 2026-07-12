@@ -1,0 +1,33 @@
+{
+  "id": "devops",
+  "name": "DevOps",
+  "version": "0.1.0",
+  "icon": "server",
+  "category": "developer",
+  "phase": "growth",
+  "permissions": [
+    "railway",
+    "supabase",
+    "metrics"
+  ],
+  "windows": [
+    "deployments",
+    "logs",
+    "containers",
+    "railway",
+    "supabase",
+    "redis",
+    "cron",
+    "metrics"
+  ],
+  "i18n": {
+    "name": {
+      "en": "DevOps",
+      "es": "DevOps"
+    },
+    "description": {
+      "en": "Deploy, logs and metrics for Railway, Supabase and Redis.",
+      "es": "Deploy, logs y métricas de Railway, Supabase y Redis."
+    }
+  }
+}

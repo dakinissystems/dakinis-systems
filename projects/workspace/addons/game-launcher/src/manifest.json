@@ -1,0 +1,30 @@
+{
+  "id": "game-launcher",
+  "name": "Game Launcher",
+  "version": "0.1.0",
+  "icon": "gamepad-2",
+  "category": "entertainment",
+  "phase": "future",
+  "permissions": [
+    "steam",
+    "presence"
+  ],
+  "windows": [
+    "library",
+    "steam",
+    "epic",
+    "gog",
+    "battlenet",
+    "presence"
+  ],
+  "i18n": {
+    "name": {
+      "en": "Game Launcher",
+      "es": "Lanzador de juegos"
+    },
+    "description": {
+      "en": "Manage libraries and presence across Steam, Epic, GOG and Battle.net.",
+      "es": "Gestiona bibliotecas y presencia en Steam, Epic, GOG y Battle.net."
+    }
+  }
+}
