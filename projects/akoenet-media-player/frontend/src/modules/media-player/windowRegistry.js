@@ -1,35 +1,35 @@
+import { STRINGS } from "../i18n/strings.js";
+
 export const WINDOW_REGISTRY = [
   {
     id: "player.main",
-    title: "Player",
-    defaultRect: { x: 80, y: 80, width: 320, height: 140 },
+    title: STRINGS.windows["player.main"],
+    defaultRect: { x: 48, y: 72, width: 360, height: 420 },
     defaultVisible: true,
-    snapTo: ["player.playlist", "player.eq"],
+    essential: true,
   },
   {
     id: "player.playlist",
-    title: "Playlist",
-    defaultRect: { x: 80, y: 230, width: 320, height: 260 },
-    defaultVisible: true,
-    snapTo: ["player.main"],
+    title: STRINGS.windows["player.playlist"],
+    defaultRect: { x: 420, y: 72, width: 300, height: 360 },
+    defaultVisible: false,
   },
   {
     id: "player.eq",
-    title: "Equalizer",
-    defaultRect: { x: 410, y: 80, width: 320, height: 180 },
-    defaultVisible: true,
-    snapTo: ["player.main"],
+    title: STRINGS.windows["player.eq"],
+    defaultRect: { x: 48, y: 500, width: 360, height: 320 },
+    defaultVisible: false,
   },
   {
     id: "player.library",
-    title: "Library",
-    defaultRect: { x: 410, y: 270, width: 320, height: 280 },
+    title: STRINGS.windows["player.library"],
+    defaultRect: { x: 420, y: 440, width: 300, height: 280 },
     defaultVisible: false,
   },
   {
     id: "player.visualizer",
-    title: "Visualizer",
-    defaultRect: { x: 740, y: 80, width: 280, height: 200 },
+    title: STRINGS.windows["player.visualizer"],
+    defaultRect: { x: 740, y: 72, width: 300, height: 220 },
     defaultVisible: false,
   },
 ];
