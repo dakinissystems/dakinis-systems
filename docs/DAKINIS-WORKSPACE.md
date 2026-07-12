@@ -54,6 +54,22 @@ node projects/workspace/scripts/scaffold-addons.mjs
 | `meta.workspace_addons` | Catálogo global |
 | `meta.workspace_addon_installs` | ON/OFF por workspace Hub |
 
+## Estado de implementación (jul 2026)
+
+| Capa | Estado |
+|------|--------|
+| Catálogo 23 addons EN/ES | ✅ `projects/workspace/catalog/` |
+| Scaffold addons + window manager | ✅ `projects/workspace/addons/` |
+| AkoeNet Desktop `/workspace` | ✅ Client v1.5.25+ — launcher, Ctrl+K, Activity Center, preview runtime |
+| API AkoeNet `GET /workspace/addons` | ✅ Server v1.5.13 — admin/platform = todos activos |
+| Internal API + Hub dashboard | ✅ `workspaceAddons` en `/hub/dashboard/:userId` |
+| Hub admin toggles | ✅ `HubWorkspaceAdminPage` + `POST .../addons/enable-all` |
+| SQL Supabase 035 + provision | ⬜ Ejecutar en Supabase (scripts listos) |
+| UI real por addon (Terminal, AI, …) | 🚧 Preview/scaffold — solo Media Player live |
+
+Sync catálogo: `node scripts/sync-workspace-addons-catalog.mjs`  
+Provision: `.\scripts\provision-platform-workspace.ps1`
+
 ## Activar perfil platform admin (christiandvillar)
 
 En Supabase SQL Editor, **en orden**:
