@@ -9,7 +9,13 @@ import { useCharacter } from "./hooks/useCharacter";
 import { useAuth } from "./context/AuthContext";
 import { useLocale } from "./context/LocaleContext";
 
+import { tabletopApi, tabletopSetToken } from "./api/client";
+import { AUTH_TOKEN_KEY } from "./lib/auth-storage";
+import { clearPlatformTokenFromUrl, readPlatformTokenFromLocation } from "./lib/platform-auth";
 import { AuthScreen } from "./components/AuthScreen";
+import { ForgotPasswordScreen } from "./components/ForgotPasswordScreen";
+import { PasswordResetScreen } from "./components/PasswordResetScreen";
+import { RegisterCompleteScreen } from "./components/RegisterCompleteScreen";
 
 import { CharacterWizard } from "./components/creation/CharacterWizard";
 
@@ -29,6 +35,16 @@ import { AppCharacterListView } from "./components/app/AppCharacterListView";
 import { AppPlayShell } from "./components/app/AppPlayShell";
 
 const OFFLINE_KEY = "dnd_offline";
+
+type AuthRoute = "default" | "forgot-password" | "password-reset" | "register-complete";
+
+function resolveAuthRoute(): AuthRoute {
+  const path = window.location.pathname.replace(/\/+$/, "") || "/";
+  if (path === "/login/reset") return "password-reset";
+  if (path === "/register/complete") return "register-complete";
+  if (path === "/login/forgot") return "forgot-password";
+  return "default";
+}
 
 type AppView = "list" | "wizard" | "play" | "legal";
 
@@ -219,6 +235,34 @@ export default function App() {
   const { t } = useLocale();
 
   const [offline, setOffline] = useState(() => localStorage.getItem(OFFLINE_KEY) === "1");
+  const [authRoute, setAuthRoute] = useState<AuthRoute>(() => resolveAuthRoute());
+  const [googleBusy, setGoogleBusy] = useState(false);
+
+  useEffect(() => {
+    const platformToken = readPlatformTokenFromLocation();
+    if (!platformToken || user) return;
+    setGoogleBusy(true);
+    void tabletopApi
+      .platformExchange(platformToken)
+      .then(({ user: u, token }) => {
+        localStorage.setItem(AUTH_TOKEN_KEY, token);
+        tabletopSetToken(token);
+        clearPlatformTokenFromUrl();
+        window.location.reload();
+        void u;
+      })
+      .catch(() => {
+        clearPlatformTokenFromUrl();
+      })
+      .finally(() => setGoogleBusy(false));
+  }, [user]);
+
+  useEffect(() => {
+    setAuthRoute(resolveAuthRoute());
+    const onPop = () => setAuthRoute(resolveAuthRoute());
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   useEffect(() => {
     if (user) localStorage.removeItem(OFFLINE_KEY);
@@ -239,7 +283,7 @@ export default function App() {
     showAuth();
   };
 
-  if (loading) {
+  if (loading || googleBusy) {
     return (
       <div className="screen screen--loading">
         <p>{t("app.loading")}</p>
@@ -248,7 +292,31 @@ export default function App() {
   }
 
   if (!user && !offline) {
-    return <AuthScreen onContinueOffline={enterOffline} />;
+    if (authRoute === "password-reset") {
+      return <PasswordResetScreen />;
+    }
+    if (authRoute === "register-complete") {
+      return <RegisterCompleteScreen />;
+    }
+    if (authRoute === "forgot-password") {
+      return (
+        <ForgotPasswordScreen
+          onBack={() => {
+            window.history.replaceState({}, "", "/");
+            setAuthRoute("default");
+          }}
+        />
+      );
+    }
+    return (
+      <AuthScreen
+        onContinueOffline={enterOffline}
+        onForgotPassword={() => {
+          window.history.pushState({}, "", "/login/forgot");
+          setAuthRoute("forgot-password");
+        }}
+      />
+    );
   }
 
   return <AppMain user={user} onLogout={handleLogout} onSignIn={showAuth} />;

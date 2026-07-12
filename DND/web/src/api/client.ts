@@ -90,6 +90,56 @@ export const tabletopApi = {
       }),
     ),
 
+  registerStart: async (email: string) =>
+    tabletopFetch<{ sent: boolean; dev_verify_url?: string; warning?: string }>(
+      "/api/auth/register/start",
+      {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      },
+    ),
+
+  registerPending: (token: string) =>
+    tabletopFetch<{ email_masked: string }>(
+      `/api/auth/register/pending?token=${encodeURIComponent(token)}`,
+    ),
+
+  registerComplete: async (token: string, password: string, displayName: string) =>
+    assertAuthResponse(
+      await tabletopFetch<{ user?: TabletopUser; token?: string }>("/api/auth/register/complete", {
+        method: "POST",
+        body: JSON.stringify({ token, password, displayName }),
+      }),
+    ),
+
+  passwordResetStart: async (email: string) =>
+    tabletopFetch<{ sent: boolean; dev_reset_url?: string; warning?: string }>(
+      "/api/auth/password-reset/start",
+      {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      },
+    ),
+
+  passwordResetPending: (token: string) =>
+    tabletopFetch<{ email_masked: string }>(
+      `/api/auth/password-reset/pending?token=${encodeURIComponent(token)}`,
+    ),
+
+  passwordResetComplete: async (token: string, password: string) =>
+    tabletopFetch<{ user: TabletopUser; email: string }>("/api/auth/password-reset/complete", {
+      method: "POST",
+      body: JSON.stringify({ token, password }),
+    }),
+
+  platformExchange: async (platformToken: string) =>
+    assertAuthResponse(
+      await tabletopFetch<{ user?: TabletopUser; token?: string }>("/api/auth/platform-exchange", {
+        method: "POST",
+        body: JSON.stringify({ platformToken }),
+      }),
+    ),
+
   login: async (email: string, password: string) =>
     assertAuthResponse(
       await tabletopFetch<{ user?: TabletopUser; token?: string }>("/api/auth/login", {

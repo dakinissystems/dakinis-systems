@@ -17,6 +17,7 @@ Alternativa Web con root `web/`: Build `npm run build` · Start `npm run start` 
 |----------|------------|
 | `VITE_TABLETOP_API_URL` | `https://tabletop-api.dakinissystems.com` |
 | `VITE_API_URL` | alias aceptado (mismo valor, con `https://`) |
+| `VITE_DAKINIS_AUTH_URL` | `https://auth.dakinissystems.com` (**sin** `/auth` — login Google vía IdP) |
 
 ⚠️ Tras cambiar variables, **redeploy obligatorio** (Vite las embebe en el build). Sin URL de API, el registro falla en silencio.
 
@@ -36,6 +37,10 @@ Build: `npm run build` · Start: `npm run start` · Salida: `web/dist` · Puerto
 | `TABLETOP_JWT_SECRET` | secreto estable |
 | `TABLETOP_DB_PATH` | ruta en volume persistente |
 | `TABLETOP_CORS_ORIGINS` | `https://tabletop.dakinissystems.com,https://hub.dakinissystems.com` |
+| `FRONTEND_URL` | `https://tabletop.dakinissystems.com` (enlaces en correos de registro y reset) |
+| `DAKINIS_AUTH_URL` | `https://auth.dakinissystems.com` (Google OAuth exchange; **sin** `/auth`) |
+| `RESEND_API_KEY` | clave Resend (obligatoria en prod para correos) |
+| `RESEND_FROM` | `Dakinis Tabletop <noreply@dakinissystems.com>` (remitente verificado en Resend) |
 
 Start: `npm run start:api` · Health: `GET /health` → `{"ok":true,"service":"tabletop-api",...}`
 

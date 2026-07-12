@@ -803,6 +803,47 @@ dialog.modal-overlay::backdrop {
   min-height: var(--touch);
 }
 
+.password-field {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.password-field input {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+
+.password-field__toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  padding: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  cursor: pointer;
+  min-height: var(--touch);
+}
+
+.password-field__toggle svg {
+  display: block;
+}
+
+.password-field__toggle:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.password-field__toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .grid-2 {
   display: flex;
   flex-direction: column;
@@ -1750,6 +1791,20 @@ th {
 
 .auth-offline-btn {
   margin-top: 0.75rem;
+}
+
+.auth-forgot-link {
+  display: block;
+  width: 100%;
+  margin: 0.25rem 0 0.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .auth-offline-hint {

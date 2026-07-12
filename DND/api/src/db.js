@@ -98,6 +98,20 @@ function dndInitSchema() {
       description TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS registration_tokens (
+      email_norm TEXT NOT NULL,
+      token_hash TEXT NOT NULL PRIMARY KEY,
+      expires_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_registration_tokens_email ON registration_tokens(email_norm);
+
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      email_norm TEXT NOT NULL,
+      token_hash TEXT NOT NULL PRIMARY KEY,
+      expires_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_email ON password_reset_tokens(email_norm);
   `);
 }
 
@@ -142,6 +156,79 @@ export function dndCreateUser(email, password, displayName) {
     `INSERT INTO users (id, email, password_hash, display_name) VALUES (?, ?, ?, ?)`,
   ).run(id, email.toLowerCase(), dndHashPassword(password), displayName || "");
   return id;
+}
+
+export function dndUpdateUserPassword(emailNorm, password) {
+  const result = db
+    .prepare(
+      `UPDATE users SET password_hash = ? WHERE email = ?`,
+    )
+    .run(dndHashPassword(password), emailNorm.toLowerCase());
+  return result.changes > 0;
+}
+
+export function dndDeleteRegistrationTokensForEmail(emailNorm) {
+  db.prepare(`DELETE FROM registration_tokens WHERE email_norm = ?`).run(emailNorm.toLowerCase());
+}
+
+export function dndInsertRegistrationToken(emailNorm, tokenHash, expiresAt) {
+  db.prepare(
+    `INSERT INTO registration_tokens (email_norm, token_hash, expires_at) VALUES (?, ?, ?)`,
+  ).run(emailNorm.toLowerCase(), tokenHash, expiresAt);
+}
+
+export function dndDeleteRegistrationToken(tokenHash) {
+  db.prepare(`DELETE FROM registration_tokens WHERE token_hash = ?`).run(tokenHash);
+}
+
+export function dndFindRegistrationToken(tokenHash) {
+  return db
+    .prepare(`SELECT email_norm, expires_at FROM registration_tokens WHERE token_hash = ?`)
+    .get(tokenHash);
+}
+
+export function dndConsumeRegistrationToken(tokenHash) {
+  const row = db
+    .prepare(
+      `SELECT email_norm FROM registration_tokens
+       WHERE token_hash = ? AND expires_at > datetime('now')`,
+    )
+    .get(tokenHash);
+  if (!row) return null;
+  db.prepare(`DELETE FROM registration_tokens WHERE token_hash = ?`).run(tokenHash);
+  return row;
+}
+
+export function dndDeletePasswordResetTokensForEmail(emailNorm) {
+  db.prepare(`DELETE FROM password_reset_tokens WHERE email_norm = ?`).run(emailNorm.toLowerCase());
+}
+
+export function dndInsertPasswordResetToken(emailNorm, tokenHash, expiresAt) {
+  db.prepare(
+    `INSERT INTO password_reset_tokens (email_norm, token_hash, expires_at) VALUES (?, ?, ?)`,
+  ).run(emailNorm.toLowerCase(), tokenHash, expiresAt);
+}
+
+export function dndDeletePasswordResetToken(tokenHash) {
+  db.prepare(`DELETE FROM password_reset_tokens WHERE token_hash = ?`).run(tokenHash);
+}
+
+export function dndFindPasswordResetToken(tokenHash) {
+  return db
+    .prepare(`SELECT email_norm, expires_at FROM password_reset_tokens WHERE token_hash = ?`)
+    .get(tokenHash);
+}
+
+export function dndConsumePasswordResetToken(tokenHash) {
+  const row = db
+    .prepare(
+      `SELECT email_norm FROM password_reset_tokens
+       WHERE token_hash = ? AND expires_at > datetime('now')`,
+    )
+    .get(tokenHash);
+  if (!row) return null;
+  db.prepare(`DELETE FROM password_reset_tokens WHERE token_hash = ?`).run(tokenHash);
+  return row;
 }
 
 export function dndListCharacters(userId) {
