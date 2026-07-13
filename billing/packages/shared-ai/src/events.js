@@ -33,6 +33,8 @@ export const DAKINIS_EVENTS = {
 
   // StreamAutomator
   STREAM_SCHEDULED: "stream.scheduled",
+  STREAM_STARTED: "stream.started",
+  STREAM_ENDED: "stream.ended",
   STREAM_PUBLISHED: "stream.published",
   POST_PUBLISHED: "stream.post_published",
 

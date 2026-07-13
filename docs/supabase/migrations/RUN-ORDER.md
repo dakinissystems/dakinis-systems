@@ -107,6 +107,16 @@ AkoeNet Assistant (perfil Twitch / admin): [`scripts/provision_akoenet_assistant
 
 Scaffold: [`projects/workspace/`](../../projects/workspace/) · Doc: [`DAKINIS-WORKSPACE.md`](../../DAKINIS-WORKSPACE.md)
 
+## Fase I — StreamAutomator Creator Suite (037)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 37 | [`037_streamautomator_creator_suite.sql`](./037_streamautomator_creator_suite.sql) | ⬜ Tablas automation + director (public + stream) + sync triggers |
+
+Requiere schema `stream` (005) y `dakinis_auth.legacy_id_map` (014) para sync UUID.  
+Verificación: [`scripts/verify_streamautomator_creator_suite.sql`](../scripts/verify_streamautomator_creator_suite.sql)  
+App Sequelize: migración `20260713120000-creator-automation-director.js` (equivalente en `public`).
+
 ## Seeds
 
 | Archivo | Contenido |
