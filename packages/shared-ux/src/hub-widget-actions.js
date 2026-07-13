@@ -55,7 +55,7 @@ export function dakinisRunHubWidgetAction(action, handlers = {}) {
     return;
   }
   if (action.type === "app" && action.app && handlers.onAppOpen) {
-    handlers.onAppOpen(action.app);
+    handlers.onAppOpen(action.app, action.path);
     return;
   }
   if (action.type === "url" && action.href) {
@@ -72,6 +72,9 @@ const RECOMMENDED_ACTION_TARGETS = {
   "open-core-calendar": { product: "core" },
   "open-lifeflow": { product: "lifeflow" },
   "open-stream-calendar": { product: "streamautomator" },
+  "open-stream-director": { product: "streamautomator", path: "/director" },
+  "open-stream-automation": { product: "streamautomator", path: "/automation" },
+  "open-stream-campaigns": { product: "streamautomator", path: "/creator/campaign-kits" },
   "open-akoenet": { product: "akoenet" },
 };
 
@@ -83,6 +86,10 @@ export function dakinisResolveHubRecommendedAction(actionId, apps = []) {
   const spec = RECOMMENDED_ACTION_TARGETS[actionId];
   if (!spec) return null;
   if (spec.type === "scroll") return spec;
+  if (spec.path) {
+    const app = apps.find((a) => a.id === spec.product || a.product === spec.product);
+    return app ? { type: "app", app, path: spec.path } : null;
+  }
   const app = apps.find((a) => a.id === spec.product || a.product === spec.product);
   return app ? { type: "app", app } : null;
 }

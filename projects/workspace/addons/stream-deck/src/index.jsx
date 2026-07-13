@@ -33,12 +33,22 @@ export function registerAddon(ctx) {
       {
         id: 'stream-deck.open-director',
         title: { en: 'Open Director mode', es: 'Abrir Modo Director' },
-        run: () => ctx.navigate?.('/streamautomator/director'),
+        run: () => ctx.navigate?.('/streamautomator/director') ?? ctx.openUrl?.('https://streamautomator.com/director'),
       },
       {
         id: 'stream-deck.open-automation',
         title: { en: 'Open Automation', es: 'Abrir Automatización' },
-        run: () => ctx.navigate?.('/streamautomator/automation'),
+        run: () => ctx.navigate?.('/streamautomator/automation') ?? ctx.openUrl?.('https://streamautomator.com/automation'),
+      },
+      {
+        id: 'stream-deck.start-director',
+        title: { en: 'Start Director session', es: 'Iniciar sesión Director' },
+        keywords: ['live', 'stream', 'directo'],
+        run: async () => {
+          const base = ctx.config?.streamautomatorApi || 'https://api.streamautomator.com/api';
+          await ctx.fetch?.(`${base}/director/start`, { method: 'POST', credentials: 'include' });
+          ctx.navigate?.('/streamautomator/director');
+        },
       },
     ],
     windows: {},

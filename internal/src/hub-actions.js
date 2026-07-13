@@ -85,7 +85,22 @@ export function buildRecommendedActions(dashboard = {}) {
 
   if (products.has("streamautomator")) {
     const upcoming = Number(db.stream_upcoming ?? db.scheduled_contents ?? 0);
-    if (upcoming === 0) {
+    const nextAt = db.stream_next_at ? new Date(db.stream_next_at) : null;
+    const now = Date.now();
+    const soonMs = 60 * 60 * 1000;
+
+    if (nextAt && !Number.isNaN(nextAt.getTime()) && nextAt.getTime() - now > 0 && nextAt.getTime() - now <= soonMs) {
+      const mins = Math.max(1, Math.round((nextAt.getTime() - now) / 60000));
+      actions.push({
+        id: "stream-live-soon",
+        severity: "warning",
+        title: mins <= 60 ? `Directo en ${mins} min` : "Tienes un directo pronto",
+        detail: db.stream_next_title || "Prepara OBS, Discord y anuncios",
+        ctaLabel: "Abrir Director",
+        action: "open-stream-director",
+        product: "streamautomator",
+      });
+    } else if (upcoming === 0) {
       actions.push({
         id: "stream-schedule",
         severity: "info",
@@ -93,6 +108,16 @@ export function buildRecommendedActions(dashboard = {}) {
         detail: "Organiza el contenido de esta semana en StreamAutomator",
         ctaLabel: "Ir al calendario",
         action: "open-stream-calendar",
+        product: "streamautomator",
+      });
+    } else if (upcoming > 0) {
+      actions.push({
+        id: "stream-automation",
+        severity: "info",
+        title: `${upcoming} publicación${upcoming === 1 ? "" : "es"} programada${upcoming === 1 ? "" : "s"}`,
+        detail: "Revisa reglas IF/THEN para automatizar anuncios",
+        ctaLabel: "Automatización",
+        action: "open-stream-automation",
         product: "streamautomator",
       });
     }

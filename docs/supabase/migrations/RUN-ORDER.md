@@ -117,6 +117,23 @@ Requiere schema `stream` (005) y `dakinis_auth.legacy_id_map` (014) para sync UU
 Verificación: [`scripts/verify_streamautomator_creator_suite.sql`](../scripts/verify_streamautomator_creator_suite.sql)  
 App Sequelize: migración `20260713120000-creator-automation-director.js` (equivalente en `public`).
 
+## Fase J — RLS Security Advisor gaps (038)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 38 | [`038_rls_security_advisor_gaps.sql`](./038_rls_security_advisor_gaps.sql) | ⬜ Deny policies en `media.*`, `meta.workspace_*`, `stream.*` Creator, `public` Sequelize |
+
+Corrige **RLS Enabled No Policy** tras 034b/035/036/037. Idempotente; re-ejecutable.  
+Verificación: [`scripts/verify_rls_no_policy_gaps.sql`](../scripts/verify_rls_no_policy_gaps.sql)
+
+## Fase K — Director sync resilience (039)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 39 | [`039_director_sync_trigger_resilience.sql`](./039_director_sync_trigger_resilience.sql) | ⬜ Tras 037 — evita 500 en `POST /api/director/start` si falla sync a `stream.director_sessions` |
+
+Idempotente. El INSERT en `public."StreamDirectorSessions"` ya no se revierte si el trigger de sync falla.
+
 ## Seeds
 
 | Archivo | Contenido |
