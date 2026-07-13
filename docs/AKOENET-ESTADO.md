@@ -901,7 +901,7 @@ Presets Gaming / Streaming / Developer / Office + perfiles Morning / Coding / Mu
 | Event bus + capability versioning | ✅ catálogo |
 | Media Player Hello World | 🚧 AkoeNet live |
 | `@dakinis/desktop-runtime` código | 📅 |
-| SQL 036 | 🚧 |
+| SQL 034–036 (RLS, media, tiers) | ✅ prod jul 2026 |
 
 ---
 
@@ -1656,14 +1656,14 @@ Examples: `workspace.loaded` · `layout.changed` · `media.play` · `stream.star
 ```
 027–029 (Hub Mi día) → 031 (Workspace) → deploy Internal API + Hub
   → 032 (Assistant módulos) → 033 (Assistant expansión)
-  → 035 (Dakinis Desktop addons) → 036 (tiers + Settings/Monitor/AI Actions)
-  → provision workspace addons
+  → 034 (RLS + media schema) → 035 (Dakinis Desktop addons) → 036 (tiers + Settings/Monitor/AI Actions)
+  → provision workspace addons (26)
   → deploy akoenet-backend + akoenet-client
 ```
 
 Si 027–029 no están aplicadas, 031 puede ejecutarse igual; el backfill de productos usa `hub.tenant_product_access` si existe.
 
-**Estado jul 2026:** `031` ✅ · `032`–`033` ✅ · `035` ✅ · `036` 🚧 (tiers + 3 addons + layout profiles) · cliente `/workspace` v1.5.26 ✅ · modelo capabilities documentado ✅.
+**Estado jul 2026:** `031` ✅ · `032`–`033` ✅ · `034`–`036` ✅ · cliente `/workspace` v1.5.30+ ✅ · modelo capabilities documentado ✅ · **siguiente:** re-provision addons (26) + workers Assistant.
 
 ---
 
@@ -1720,17 +1720,21 @@ VALUES
   ('032_akoenet_assistant_modules.sql', true, 'manual prod'),
   ('033_akoenet_assistant_expansion.sql', true, 'manual prod'),
   ('034_rls_security_advisor_deny_policies.sql', true, 'manual prod'),
-  ('035_dakinis_workspace_addons.sql', true, 'manual prod jul 2026')
+  ('034_akoenet_media_player.sql', true, 'manual prod'),
+  ('035_dakinis_workspace_addons.sql', true, 'manual prod jul 2026'),
+  ('036_dakinis_workspace_capabilities.sql', true, 'manual prod jul 2026')
 ON CONFLICT (migration_file) DO NOTHING;
 ```
 
-### Paso 1.5 — Migración 034 (RLS Security Advisor) ⬜
+### Paso 1.5 — Migración 034 (RLS Security Advisor) ✅
 
 Corrige **«RLS Enabled No Policy»** en `legacy_akoenet.*`, gaps `meta.*` y tablas nuevas post-006.
 
 1. Pega [`034_rls_security_advisor_deny_policies.sql`](./supabase/migrations/034_rls_security_advisor_deny_policies.sql) → Run
 2. La query final debe devolver **0 filas**
 3. Refresca Security Advisor en Supabase Dashboard
+
+**Media Player (misma fase 034):** [`034_akoenet_media_player.sql`](./supabase/migrations/034_akoenet_media_player.sql) — schema `media.*` + RLS base.
 
 ### Paso 1.6 — Migración 035 (Dakinis Desktop — catálogo addons) ✅
 
@@ -1743,9 +1747,11 @@ Corrige **«RLS Enabled No Policy»** en `legacy_akoenet.*`, gaps `meta.*` y tab
 SELECT count(*) FROM meta.workspace_addon_catalog;
 ```
 
-3. **Provisioning addons** para super admin (23 installs activos):
+3. **Provisioning addons** para super admin (26 installs activos tras 036):
 
 [`supabase/scripts/provision_workspace_addons_christiandvillar.sql`](./supabase/scripts/provision_workspace_addons_christiandvillar.sql)
+
+Verificar: `node scripts/verify-workspace-provisioning.mjs`
 
 4. **Provisioning Assistant** (opcional — requiere `owner_id` del servidor = tu user auth):
 
@@ -1753,7 +1759,7 @@ SELECT count(*) FROM meta.workspace_addon_catalog;
 
 Scripts CLI: `node scripts/run-supabase-sql-files.mjs` · `.\scripts\provision-platform-workspace.ps1`
 
-### Paso 1.7 — Migración 036 (Capabilities — tiers + addons nuevos) 🚧
+### Paso 1.7 — Migración 036 (Capabilities — tiers + addons nuevos) ✅
 
 1. Pega [`036_dakinis_workspace_capabilities.sql`](./supabase/migrations/036_dakinis_workspace_capabilities.sql) → Run
 2. Verifica:
@@ -1763,7 +1769,7 @@ SELECT key, tier FROM meta.workspace_addons WHERE key IN ('settings', 'monitor',
 SELECT count(*) FROM meta.workspace_desktop_profiles;
 ```
 
-3. Re-ejecutar provision addons si añades filas nuevas al catálogo.
+3. **Re-ejecutar** [`provision_workspace_addons_christiandvillar.sql`](./supabase/scripts/provision_workspace_addons_christiandvillar.sql) para activar Settings, Monitor y AI Actions.
 
 ---
 

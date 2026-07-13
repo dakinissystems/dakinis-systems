@@ -540,10 +540,12 @@ export const routes = {
   "GET /workspaces/me/:userId/desktop/profiles": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
-    const bare = (req.url || "").split("?")[0];
+    const url = new URL(req.url || "/", "http://internal.local");
+    const bare = url.pathname;
     const userId = bare.replace("/workspaces/me/", "").replace("/desktop/profiles", "");
+    const email = url.searchParams.get("email") || undefined;
     try {
-      const data = await listDesktopProfilesForUser(userId);
+      const data = await listDesktopProfilesForUser(userId, { email });
       return { status: 200, body: data };
     } catch (err) {
       return dbError(err);
@@ -559,8 +561,9 @@ export const routes = {
     const userId = parts[2];
     const addonId = parts[5];
     const profileKey = url.searchParams.get("profileKey") || undefined;
+    const email = url.searchParams.get("email") || undefined;
     try {
-      const data = await getAddonLayoutForUser(userId, addonId, { profileKey });
+      const data = await getAddonLayoutForUser(userId, addonId, { profileKey, email });
       return { status: 200, body: data };
     } catch (err) {
       return dbError(err);
@@ -570,10 +573,12 @@ export const routes = {
   "PUT /workspaces/me/:userId/desktop/layout/:addonId": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
-    const bare = (req.url || "").split("?")[0];
+    const url = new URL(req.url || "/", "http://internal.local");
+    const bare = url.pathname;
     const parts = bare.split("/").filter(Boolean);
     const userId = parts[2];
     const addonId = parts[5];
+    const email = url.searchParams.get("email") || undefined;
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     if (!Array.isArray(body.windows)) {
@@ -583,6 +588,7 @@ export const routes = {
       const result = await saveAddonLayoutForUser(userId, addonId, {
         profileKey: body.profileKey,
         windows: body.windows,
+        email: body.email || email,
       });
       if (!result.stored) {
         return { status: 404, body: { error: result.reason || "not_stored" } };

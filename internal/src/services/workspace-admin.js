@@ -3,10 +3,38 @@ import { randomBytes } from "node:crypto";
 
 const MEMBER_ROLES = new Set(["owner", "admin", "member", "viewer"]);
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function normalizeUuid(value) {
+  const s = String(value || "").trim();
+  return UUID_RE.test(s) ? s : null;
+}
+
+/**
+ * @param {string} email
+ */
+async function resolveAuthUserIdByEmail(email) {
+  const norm = String(email || "").trim().toLowerCase();
+  if (!norm) return null;
+  const { rows } = await query(
+    `SELECT id FROM dakinis_auth.users WHERE lower(trim(email)) = $1 LIMIT 1`,
+    [norm],
+  );
+  return rows[0]?.id ? String(rows[0].id) : null;
+}
+
 /**
  * @param {string} userId
+ * @param {{ email?: string }} [opts]
  */
-export async function getWorkspaceForUser(userId) {
+export async function getWorkspaceForUser(userId, opts = {}) {
+  let uid = normalizeUuid(userId);
+  if (!uid && opts.email) {
+    uid = await resolveAuthUserIdByEmail(opts.email);
+  }
+  if (!uid) return null;
+
   try {
     const { rows } = await query(
       `SELECT w.id, w.name, w.slug, w.core_tenant_slug, w.owner_id, w.plan, w.status,
@@ -17,7 +45,7 @@ export async function getWorkspaceForUser(userId) {
        WHERE wm.user_id = $1::uuid AND wm.status = 'active'
        ORDER BY wm.last_accessed_at DESC NULLS LAST, wm.created_at DESC
        LIMIT 1`,
-      [userId]
+      [uid]
     );
     if (rows[0]) {
       return {
@@ -36,7 +64,7 @@ export async function getWorkspaceForUser(userId) {
      WHERE tm.user_id = $1::uuid
      ORDER BY tm.created_at ASC
      LIMIT 1`,
-    [userId]
+    [uid]
   );
   const core = coreRows[0];
   if (core) {
@@ -68,7 +96,7 @@ export async function getWorkspaceForUser(userId) {
        ON wm.workspace_id = w.id AND wm.user_id = u.id AND wm.status = 'active'
      WHERE u.id = $1::uuid
      LIMIT 1`,
-    [userId]
+    [uid]
   );
   const auth = authRows[0];
   if (!auth) return null;

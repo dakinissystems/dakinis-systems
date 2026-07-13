@@ -113,6 +113,7 @@ FROM meta.workspaces w
 WHERE p.workspace_id = w.id AND lower(w.slug) = 'dakinis-platform';
 
 -- Verificación (usa enabled, NO status)
+-- NULL en window_state->'addons'->'media-player' es NORMAL hasta el primer guardado desde el cliente.
 SELECT p.profile_key, p.name, p.base_layout, p.is_default
 FROM meta.workspace_desktop_profiles p
 JOIN meta.workspaces w ON w.id = p.workspace_id
