@@ -119,12 +119,20 @@
       "size": "small"
     },
     {
-      "id": "streamautomator.obs-status",
-      "addonId": "obs-companion",
+      "id": "streamautomator.director",
+      "addonId": "stream-deck",
       "product": "streamautomator",
       "surfaces": ["hub", "workspace", "akoenet", "dashboard"],
-      "i18n": { "name": { "en": "OBS status", "es": "Estado OBS" } },
-      "size": "small"
+      "i18n": { "name": { "en": "Director mode", "es": "Modo Director" } },
+      "size": "medium"
+    },
+    {
+      "id": "streamautomator.automation",
+      "addonId": "stream-deck",
+      "product": "streamautomator",
+      "surfaces": ["workspace", "dashboard"],
+      "i18n": { "name": { "en": "Automation rules", "es": "Reglas automáticas" } },
+      "size": "medium"
     },
     {
       "id": "akoenet.friends-online",
