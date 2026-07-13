@@ -10,14 +10,14 @@
 ```
 027–029 (Hub Mi día) → 031 (Workspace) → deploy Internal API + Hub
   → 032 (Assistant módulos) → 033 (Assistant expansión)
-  → 035 (Dakinis Desktop addons) → 036 (tiers + Settings/Monitor/AI Actions)
-  → provision workspace addons
+  → 034 (RLS + media schema) → 035 (Dakinis Desktop addons) → 036 (tiers + Settings/Monitor/AI Actions)
+  → provision workspace addons (26)
   → deploy akoenet-backend + akoenet-client
 ```
 
 Si 027–029 no están aplicadas, 031 puede ejecutarse igual; el backfill de productos usa `hub.tenant_product_access` si existe.
 
-**Estado jul 2026:** `031` ✅ · `032`–`033` ✅ · `035` ✅ · `036` 🚧 (tiers + 3 addons + layout profiles) · cliente `/workspace` v1.5.26 ✅ · modelo capabilities documentado ✅.
+**Estado jul 2026:** `031` ✅ · `032`–`033` ✅ · `034`–`036` ✅ · cliente `/workspace` v1.5.30+ ✅ · modelo capabilities documentado ✅ · **siguiente:** re-provision addons (26) + workers Assistant.
 
 ---
 
@@ -74,17 +74,21 @@ VALUES
   ('032_akoenet_assistant_modules.sql', true, 'manual prod'),
   ('033_akoenet_assistant_expansion.sql', true, 'manual prod'),
   ('034_rls_security_advisor_deny_policies.sql', true, 'manual prod'),
-  ('035_dakinis_workspace_addons.sql', true, 'manual prod jul 2026')
+  ('034_akoenet_media_player.sql', true, 'manual prod'),
+  ('035_dakinis_workspace_addons.sql', true, 'manual prod jul 2026'),
+  ('036_dakinis_workspace_capabilities.sql', true, 'manual prod jul 2026')
 ON CONFLICT (migration_file) DO NOTHING;
 ```
 
-### Paso 1.5 — Migración 034 (RLS Security Advisor) ⬜
+### Paso 1.5 — Migración 034 (RLS Security Advisor) ✅
 
 Corrige **«RLS Enabled No Policy»** en `legacy_akoenet.*`, gaps `meta.*` y tablas nuevas post-006.
 
 1. Pega [`034_rls_security_advisor_deny_policies.sql`](./supabase/migrations/034_rls_security_advisor_deny_policies.sql) → Run
 2. La query final debe devolver **0 filas**
 3. Refresca Security Advisor en Supabase Dashboard
+
+**Media Player (misma fase 034):** [`034_akoenet_media_player.sql`](./supabase/migrations/034_akoenet_media_player.sql) — schema `media.*` + RLS base.
 
 ### Paso 1.6 — Migración 035 (Dakinis Desktop — catálogo addons) ✅
 
@@ -94,12 +98,14 @@ Corrige **«RLS Enabled No Policy»** en `legacy_akoenet.*`, gaps `meta.*` y tab
 2. Verifica:
 
 ```sql
-SELECT count(*) FROM meta.workspace_addon_catalog;
+SELECT count(*) FROM meta.workspace_addons;
 ```
 
-3. **Provisioning addons** para super admin (23 installs activos):
+3. **Provisioning addons** para super admin (26 installs activos tras 036):
 
 [`supabase/scripts/provision_workspace_addons_christiandvillar.sql`](./supabase/scripts/provision_workspace_addons_christiandvillar.sql)
+
+Verificar: `node scripts/verify-workspace-provisioning.mjs`
 
 4. **Provisioning Assistant** (opcional — requiere `owner_id` del servidor = tu user auth):
 
@@ -107,17 +113,40 @@ SELECT count(*) FROM meta.workspace_addon_catalog;
 
 Scripts CLI: `node scripts/run-supabase-sql-files.mjs` · `.\scripts\provision-platform-workspace.ps1`
 
-### Paso 1.7 — Migración 036 (Capabilities — tiers + addons nuevos) 🚧
+### Paso 1.7 — Migración 036 (Capabilities — tiers + addons nuevos) ✅
 
 1. Pega [`036_dakinis_workspace_capabilities.sql`](./supabase/migrations/036_dakinis_workspace_capabilities.sql) → Run
 2. Verifica:
 
 ```sql
+-- Catálogo 036 (3 addons nuevos + tier)
 SELECT key, tier FROM meta.workspace_addons WHERE key IN ('settings', 'monitor', 'ai-actions');
+
+-- Instalaciones activas en workspace platform (columna enabled, no status)
+SELECT count(*) AS enabled_installs
+FROM meta.workspace_addon_installs wai
+JOIN meta.workspaces w ON w.id = wai.workspace_id
+WHERE lower(w.slug) = 'dakinis-platform' AND wai.enabled = true;
+
+-- Perfiles de layout Desktop
 SELECT count(*) FROM meta.workspace_desktop_profiles;
 ```
 
-3. Re-ejecutar provision addons si añades filas nuevas al catálogo.
+3. **Re-ejecutar** [`provision_workspace_addons_christiandvillar.sql`](./supabase/scripts/provision_workspace_addons_christiandvillar.sql) para activar Settings, Monitor y AI Actions.
+
+4. **Perfiles Desktop** (9 presets — Gaming, Developer, Morning, Music…):
+
+[`supabase/scripts/seed_workspace_desktop_profiles.sql`](./supabase/scripts/seed_workspace_desktop_profiles.sql)
+
+5. **Desktop Runtime API** — tras deploy Internal API + akoenet-backend con `DAKINIS_INTERNAL_*`:
+
+```text
+GET  /workspace/desktop/profiles
+GET  /workspace/desktop/layout/media-player
+PUT  /workspace/desktop/layout/media-player  { windows: [{ id, rect, visible }] }
+```
+
+El Media Player (`/media`) carga/guarda layout en el perfil por defecto (`morning`) con fallback localStorage.
 
 ---
 

@@ -383,7 +383,7 @@ projects/workspace/
 | Documento kernel + contrato | ✅ |
 | Event bus catalog + lifecycle spec | ✅ |
 | Capability versioning catalog | ✅ |
-| `@dakinis/desktop-runtime` package | 📅 scaffold |
+| `@dakinis/desktop-runtime` package | 🚧 API layout en AkoeNet Client |
 | Layout Engine wired | 📅 |
 | Permission Gate E2E | 📅 |
 | Media Player como Hello World | 🚧 live en AkoeNet |

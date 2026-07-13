@@ -36,6 +36,11 @@ import {
   listWorkspaceAddonsForUser,
 } from "./services/workspace-addons.js";
 import {
+  listDesktopProfilesForUser,
+  getAddonLayoutForUser,
+  saveAddonLayoutForUser,
+} from "./services/workspace-desktop-profiles.js";
+import {
   listWorkspaces,
   getWorkspaceDetail,
   setWorkspaceStatus,
@@ -527,6 +532,62 @@ export const routes = {
     try {
       const rows = await enableAllWorkspaceAddons(id, { pinKeys: body.pinKeys });
       return { status: 200, body: { enabled: rows.length, items: rows } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspaces/me/:userId/desktop/profiles": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const bare = (req.url || "").split("?")[0];
+    const userId = bare.replace("/workspaces/me/", "").replace("/desktop/profiles", "");
+    try {
+      const data = await listDesktopProfilesForUser(userId);
+      return { status: 200, body: data };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspaces/me/:userId/desktop/layout/:addonId": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const bare = url.pathname;
+    const parts = bare.split("/").filter(Boolean);
+    const userId = parts[2];
+    const addonId = parts[5];
+    const profileKey = url.searchParams.get("profileKey") || undefined;
+    try {
+      const data = await getAddonLayoutForUser(userId, addonId, { profileKey });
+      return { status: 200, body: data };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PUT /workspaces/me/:userId/desktop/layout/:addonId": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const bare = (req.url || "").split("?")[0];
+    const parts = bare.split("/").filter(Boolean);
+    const userId = parts[2];
+    const addonId = parts[5];
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    if (!Array.isArray(body.windows)) {
+      return { status: 400, body: { error: "windows_required" } };
+    }
+    try {
+      const result = await saveAddonLayoutForUser(userId, addonId, {
+        profileKey: body.profileKey,
+        windows: body.windows,
+      });
+      if (!result.stored) {
+        return { status: 404, body: { error: result.reason || "not_stored" } };
+      }
+      return { status: 200, body: result };
     } catch (err) {
       return dbError(err);
     }

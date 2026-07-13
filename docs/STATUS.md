@@ -20,7 +20,7 @@
 | Core | 90% | UX piloto restaurante |
 | AI | 100% | — |
 | Support / ops | 70% | Sin staging · backups auto |
-| Security | 85% | migr. `034` ⬜ |
+| Security | 92% | Security Advisor post-034 |
 
 **Piloto comercial:** 🔴 0 clientes de pago
 
@@ -83,7 +83,8 @@ URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
 | D+ | `030` | ⬜ LifeFlow ↔ IdP |
 | E | `031` | ✅ workspace admin |
 | F | `032`–`033` | ✅ AkoeNet Assistant |
-| G | `034` | ⬜ RLS Security Advisor |
+| G | `034` (RLS + `media`) | ✅ jul 2026 |
+| H | `035`–`036` | ✅ Workspace addons + capabilities |
 
 Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md)
 
@@ -187,7 +188,7 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 | R7 | migr. manual Supabase | Medio | `meta.migration_history` |
 | R8 | Workers BullMQ parciales | Medio | Redeploy Assistant |
 | R9 | Stripe webhook mal config | Alto | [`OPERATIONS.md`](./OPERATIONS.md) § Runbook |
-| R11 | RLS sin política | Alto | migr. `034` |
+| R11 | RLS sin política | Medio | migr. `034` ✅ — revisar Security Advisor periódicamente |
 
 **Producto:** Hub no debe percibirse como launcher — priorizar Mi día, acciones recomendadas y Copilot (ver [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md)).
 

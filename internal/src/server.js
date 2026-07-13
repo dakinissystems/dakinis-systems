@@ -35,6 +35,15 @@ function matchRoute(method, path) {
   }
   if (method === "GET" && bare.startsWith("/storage/")) return routes["GET /storage/:objectId"];
 
+  if (method === "GET" && /^\/workspaces\/me\/[^/]+\/desktop\/profiles$/.test(bare)) {
+    return routes["GET /workspaces/me/:userId/desktop/profiles"];
+  }
+  if (method === "GET" && /^\/workspaces\/me\/[^/]+\/desktop\/layout\/[^/]+$/.test(bare)) {
+    return routes["GET /workspaces/me/:userId/desktop/layout/:addonId"];
+  }
+  if (method === "PUT" && /^\/workspaces\/me\/[^/]+\/desktop\/layout\/[^/]+$/.test(bare)) {
+    return routes["PUT /workspaces/me/:userId/desktop/layout/:addonId"];
+  }
   if (method === "GET" && bare.startsWith("/workspaces/me/")) {
     return routes["GET /workspaces/me/:userId"];
   }

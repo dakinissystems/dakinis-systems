@@ -83,11 +83,12 @@ Requiere schema `akoenet` (006). Packages: `packages/akoenet-orchestrator`, `pac
 Cliente: panel Assistant + i18n · Backend: event bridge + proxy. Internal API: `/akoenet/assistant/*`.  
 Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · Contrato: [`contracts/akoenet-assistant.json`](../../contracts/akoenet-assistant.json)
 
-## Fase G — Security Advisor RLS (034)
+## Fase G — Security Advisor RLS + Media Player (034)
 
 | # | Archivo | Prod |
 |---|---------|------|
-| 34 | [`034_rls_security_advisor_deny_policies.sql`](./034_rls_security_advisor_deny_policies.sql) | ⬜ Políticas `dakinis_block_anon_authenticated` en tablas con RLS sin policy (`legacy_akoenet`, `meta.*` gaps, `akoenet.assistant_events`) |
+| 34a | [`034_rls_security_advisor_deny_policies.sql`](./034_rls_security_advisor_deny_policies.sql) | ✅ jul 2026 · Políticas `dakinis_block_anon_authenticated` en tablas con RLS sin policy |
+| 34b | [`034_akoenet_media_player.sql`](./034_akoenet_media_player.sql) | ✅ jul 2026 · Schema `media.*` + RLS base (tracks, playlists, listening rooms) |
 
 Re-ejecutable: también [`../006b-rls-policies-missing-tables.sql`](../006b-rls-policies-missing-tables.sql) (mismo patrón, sin registrar versión).
 
@@ -95,12 +96,13 @@ Re-ejecutable: también [`../006b-rls-policies-missing-tables.sql`](../006b-rls-
 
 | # | Archivo | Prod |
 |---|---------|------|
-| 35 | [`035_dakinis_workspace_addons.sql`](./035_dakinis_workspace_addons.sql) | ✅ Catálogo addons + `meta.workspace_addon_installs` |
-| 36 | [`036_dakinis_workspace_capabilities.sql`](./036_dakinis_workspace_capabilities.sql) | ⬜ Tiers, Settings/Monitor/AI Actions, `meta.workspace_desktop_profiles` |
+| 35 | [`035_dakinis_workspace_addons.sql`](./035_dakinis_workspace_addons.sql) | ✅ jul 2026 · Catálogo addons + `meta.workspace_addon_installs` |
+| 36 | [`036_dakinis_workspace_capabilities.sql`](./036_dakinis_workspace_capabilities.sql) | ✅ jul 2026 · Tiers, Settings/Monitor/AI Actions, `meta.workspace_desktop_profiles` |
 
-Provisioning platform admin (todos los addons + productos Hub):  
+Provisioning platform admin (todos los addons + perfiles Desktop):  
 [`scripts/provision_workspace_christiandvillar.sql`](../scripts/provision_workspace_christiandvillar.sql) · paso 8 addons  
 [`scripts/provision_workspace_addons_christiandvillar.sql`](../scripts/provision_workspace_addons_christiandvillar.sql)  
+[`scripts/seed_workspace_desktop_profiles.sql`](../scripts/seed_workspace_desktop_profiles.sql)  
 AkoeNet Assistant (perfil Twitch / admin): [`scripts/provision_akoenet_assistant_christiandvillar.sql`](../scripts/provision_akoenet_assistant_christiandvillar.sql)
 
 Scaffold: [`projects/workspace/`](../../projects/workspace/) · Doc: [`DAKINIS-WORKSPACE.md`](../../DAKINIS-WORKSPACE.md)

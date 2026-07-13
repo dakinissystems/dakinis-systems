@@ -16,6 +16,7 @@ node (Join-Path $root "scripts\sync-workspace-addons-catalog.mjs")
 $sqlFiles = @(
   (Join-Path $root "docs\supabase\migrations\035_dakinis_workspace_addons.sql"),
   (Join-Path $root "docs\supabase\scripts\provision_workspace_addons_christiandvillar.sql"),
+  (Join-Path $root "docs\supabase\scripts\seed_workspace_desktop_profiles.sql"),
   (Join-Path $root "docs\supabase\scripts\provision_akoenet_assistant_christiandvillar.sql")
 )
 

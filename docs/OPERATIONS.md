@@ -535,7 +535,10 @@ Flujo esperado → [`ARCHITECTURE.md` §13](./ARCHITECTURE.md#13-billing-e2e).
 
 ### Supabase RLS sin política
 
-Ejecutar [`034_rls_security_advisor_deny_policies.sql`](./supabase/migrations/034_rls_security_advisor_deny_policies.sql)
+Migr. `034` aplicada en prod (jul 2026). Si Security Advisor reporta tablas nuevas sin policy:
+
+1. Ejecutar [`034_rls_security_advisor_deny_policies.sql`](./supabase/migrations/034_rls_security_advisor_deny_policies.sql) (idempotente)
+2. O [`006b-rls-policies-missing-tables.sql`](./supabase/006b-rls-policies-missing-tables.sql) para gaps puntuales
 
 ### Post-incidente
 

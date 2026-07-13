@@ -33,11 +33,24 @@ const { rows: assistantRows } = await pool.query(
    WHERE sm.enabled`,
 );
 
+let desktopProfiles = null;
+try {
+  const { rows: profileRows } = await pool.query(
+    `SELECT count(*)::int AS n FROM meta.workspace_desktop_profiles p
+     JOIN meta.workspaces w ON w.id = p.workspace_id
+     WHERE lower(w.slug) = 'dakinis-platform'`,
+  );
+  desktopProfiles = profileRows[0]?.n ?? 0;
+} catch {
+  desktopProfiles = null;
+}
+
 console.log(
   JSON.stringify(
     {
       workspaceAddons: addonRows[0].n,
       enabledInstalls: installRows[0].n,
+      desktopProfiles,
       assistantModulesEnabledTotal: assistantRows[0].n,
       note:
         assistantRows[0].n === 0

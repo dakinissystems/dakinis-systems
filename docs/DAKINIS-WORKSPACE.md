@@ -145,8 +145,8 @@ Presets Gaming / Streaming / Developer / Office + perfiles Morning / Coding / Mu
 | DESKTOP-RUNTIME.md + contrato SDK | ✅ |
 | Event bus + capability versioning | ✅ catálogo |
 | Media Player Hello World | 🚧 AkoeNet live |
-| `@dakinis/desktop-runtime` código | 📅 |
-| SQL 036 | 🚧 |
+| `@dakinis/desktop-runtime` código | 🚧 API layout en AkoeNet Client |
+| SQL 034–036 (RLS, media, tiers) | ✅ prod jul 2026 |
 
 ---
 

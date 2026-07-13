@@ -15,7 +15,8 @@ Formato: [Keep a Changelog](https://keepachangelog.com/) simplificado por **rele
 - Supabase migr. `031` workspace + super admin
 - Supabase migr. `032`–`033` AkoeNet Assistant modules + events
 - Hub Workspace Admin UI `/admin` + Internal API `/workspaces/*`
-- migr. `034` RLS deny policies (SQL en repo, aplicación prod pendiente)
+- migr. `034` RLS deny policies + schema `media.*` — ✅ prod jul 2026
+- migr. `035`–`036` Workspace addons + capabilities — ✅ prod jul 2026
 - Docs: separación STATUS / ROADMAP / CHANGELOG / DASHBOARD
 - ADR-008–011 (Hub entry, Railway, BullMQ, Internal API)
 
