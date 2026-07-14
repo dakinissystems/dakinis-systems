@@ -699,7 +699,7 @@ export const routes = {
         email: body.email || email,
       });
       if (!result.stored) {
-        return { status: 404, body: { error: result.reason || "not_stored" } };
+        return { status: 200, body: { ...result, stub: true } };
       }
       return { status: 200, body: result };
     } catch (err) {
