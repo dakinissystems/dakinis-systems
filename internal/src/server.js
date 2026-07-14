@@ -20,7 +20,13 @@ function matchRoute(method, path) {
   if (routes[key]) return routes[key];
   if (method === "GET" && bare.startsWith("/users/")) return routes["GET /users/:id"];
   if (method === "GET" && bare.startsWith("/profile/")) return routes["GET /profile/:userId"];
+  if (method === "GET" && bare.startsWith("/hub/dashboard/aggregated/")) {
+    return routes["GET /hub/dashboard/aggregated/:userId"];
+  }
   if (method === "GET" && bare.startsWith("/hub/dashboard/")) return routes["GET /hub/dashboard/:userId"];
+  if (method === "GET" && bare.startsWith("/workspace/summary/")) {
+    return routes["GET /workspace/summary/:userId"];
+  }
   if (method === "GET" && bare.startsWith("/hub/tenant-access/")) {
     return routes["GET /hub/tenant-access/:slug"];
   }
@@ -29,6 +35,9 @@ function matchRoute(method, path) {
   }
   if (method === "GET" && bare.startsWith("/billing/subscriptions/")) {
     return routes["GET /billing/subscriptions/:tenantId"];
+  }
+  if (method === "POST" && /^\/billing\/checkout\/sessions\/[^/]+\/sync$/.test(bare)) {
+    return routes["POST /billing/checkout/sessions/:sessionId/sync"];
   }
   if (method === "GET" && bare.startsWith("/notifications/inbox/")) {
     return routes["GET /notifications/inbox/:userId"];

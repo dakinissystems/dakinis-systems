@@ -11,6 +11,9 @@ import { getCustomerByUserId, upsertCustomer } from "./repository.js";
  *   email?: string;
  *   successUrl?: string;
  *   cancelUrl?: string;
+ *   productKey?: string;
+ *   saLicenseType?: string;
+ *   saUserId?: string;
  * }} input
  */
 export async function createCheckoutSession(input) {
@@ -34,6 +37,7 @@ export async function createCheckoutSession(input) {
       metadata: {
         ...(input.userId ? { user_id: input.userId } : {}),
         ...(input.tenantId ? { tenant_id: input.tenantId, business_id: input.tenantId } : {}),
+        ...(input.saUserId ? { sa_user_id: input.saUserId } : {}),
       },
     });
     stripeCustomerId = customer.id;
@@ -54,16 +58,21 @@ export async function createCheckoutSession(input) {
     ...(input.tenantId ? { tenant_id: input.tenantId, business_id: input.tenantId } : {}),
     ...(input.userId ? { user_id: input.userId } : {}),
     plan_code: input.planId,
+    ...(input.productKey ? { product_key: input.productKey } : {}),
+    ...(input.saLicenseType ? { sa_license_type: input.saLicenseType } : {}),
+    ...(input.saUserId ? { sa_user_id: input.saUserId } : {}),
   };
 
+  const mode = plan.checkoutMode === "payment" ? "payment" : "subscription";
+
   const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
+    mode,
     customer: stripeCustomerId,
     line_items: [{ price: plan.stripePriceId, quantity: 1 }],
     success_url: successUrl,
     cancel_url: cancelUrl,
     metadata,
-    subscription_data: { metadata },
+    ...(mode === "subscription" ? { subscription_data: { metadata } } : {}),
   });
 
   return { url: session.url, sessionId: session.id };

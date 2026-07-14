@@ -4,6 +4,9 @@ function buildStripePriceMaps() {
     ["growth", process.env.STRIPE_PRICE_GROWTH_MONTHLY],
     ["pro", process.env.STRIPE_PRICE_PRO_MONTHLY],
     ["lifeflow-plus", process.env.STRIPE_PRICE_LIFEFLOW_PLUS_MONTHLY],
+    ["sa-creator-monthly", process.env.STRIPE_PRICE_SA_CREATOR_MONTHLY],
+    ["sa-pro-monthly", process.env.STRIPE_PRICE_SA_PRO_MONTHLY],
+    ["sa-lifetime", process.env.STRIPE_PRICE_SA_LIFETIME],
   ].filter(([, priceId]) => Boolean(priceId));
 
   return {
@@ -36,7 +39,8 @@ export const config = {
   stripePlanToPrice: stripeMaps.planToPrice,
   stripePaymentLinks: buildPaymentLinks(),
   frontendUrl: process.env.FRONTEND_URL || process.env.CORE_WEB_URL || "http://localhost:5173",
-  internalApiKey: process.env.INTERNAL_API_KEY || "",
+  internalApiKey:
+    process.env.INTERNAL_API_KEY || process.env.DAKINIS_INTERNAL_SERVICE_KEY || "",
   redisUrl: process.env.REDIS_URL || "",
   eventsQueue: process.env.DAKINIS_EVENTS_QUEUE || "dakinis:events",
 };

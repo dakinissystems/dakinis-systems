@@ -64,6 +64,14 @@ import {
   dispatchAssistantEvent,
 } from "./services/akoenet-assistant.js";
 import { getPlatformMetrics } from "./services/platform-metrics.js";
+import { evaluateFeatureFlags } from "./services/feature-flags.js";
+import { mapToHttp } from "@dakinis/shared-error";
+import { addonDataKeySchema, addonDataPutSchema, parseOrThrow } from "@dakinis/shared-validation";
+import { getHubDashboardAggregated } from "./services/hub-dashboard-aggregated.js";
+import { getWorkspaceSummary } from "./services/workspace-summary.js";
+import { getPlatformHealth } from "./services/platform-health.js";
+import { enforceServiceRateLimit } from "./lib/rate-limit.js";
+import { invalidateUserBffCache } from "./lib/cache.js";
 
 function platformEvent(type, payload, meta = {}) {
   return {
@@ -92,6 +100,35 @@ export const routes = {
         eventBus,
       },
     };
+  },
+
+  "GET /feature-flags/evaluate": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const keys = url.searchParams.get("keys") || "";
+    const workspaceId = url.searchParams.get("workspaceId") || undefined;
+    const tenantId = url.searchParams.get("tenantId") || undefined;
+    const userId = url.searchParams.get("userId") || undefined;
+    const plan = url.searchParams.get("plan") || undefined;
+    try {
+      const flags = await evaluateFeatureFlags(keys, { workspaceId, tenantId, userId, plan });
+      return { status: 200, body: { flags } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /platform/health": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const skipCache = url.searchParams.get("fresh") === "1";
+    try {
+      return await getPlatformHealth({ skipCache });
+    } catch (err) {
+      return dbError(err);
+    }
   },
 
   "GET /platform/metrics": async (req) => {
@@ -140,6 +177,46 @@ export const routes = {
       if (Array.isArray(inbox.body.items)) notificationsItems = inbox.body.items;
     }
     return getHubDashboard(userId, { notificationsUnread, notificationsItems });
+  },
+
+  "GET /hub/dashboard/aggregated/:userId": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const userId = url.pathname.replace("/hub/dashboard/aggregated/", "").split("/")[0];
+    const rl = await enforceServiceRateLimit(req, userId);
+    if (!rl.allowed) {
+      return {
+        status: 429,
+        body: { error: "rate_limited", retryAfterSec: rl.retryAfterSec },
+      };
+    }
+    const skipCache = url.searchParams.get("fresh") === "1";
+    try {
+      return await getHubDashboardAggregated(userId, { skipCache });
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspace/summary/:userId": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const userId = url.pathname.replace("/workspace/summary/", "").split("/")[0];
+    const rl = await enforceServiceRateLimit(req, userId);
+    if (!rl.allowed) {
+      return {
+        status: 429,
+        body: { error: "rate_limited", retryAfterSec: rl.retryAfterSec },
+      };
+    }
+    const skipCache = url.searchParams.get("fresh") === "1";
+    try {
+      return await getWorkspaceSummary(userId, { skipCache });
+    } catch (err) {
+      return dbError(err);
+    }
   },
 
   "GET /hub/tenant-access/:slug": async (req) => {
@@ -322,6 +399,43 @@ export const routes = {
         ? { Authorization: `Bearer ${config.serviceKey}`, "X-Internal-Api-Key": config.serviceKey }
         : {},
     });
+    return { status: proxied.status, body: proxied.body };
+  },
+
+  "POST /billing/subscriptions/sync": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const proxied = await proxyJson(config.billingUrl, "/v1/subscriptions/sync", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: config.serviceKey
+        ? { Authorization: `Bearer ${config.serviceKey}`, "X-Internal-Api-Key": config.serviceKey }
+        : {},
+    });
+    return { status: proxied.status, body: proxied.body };
+  },
+
+  "POST /billing/checkout/sessions/:sessionId/sync": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const path = (req.url || "").split("?")[0];
+    const parts = path.split("/").filter(Boolean);
+    const sessionId = parts.length >= 4 ? parts[3] : "";
+    if (!sessionId || sessionId === "sync") {
+      return { status: 400, body: { error: "invalid_session_id" } };
+    }
+    const proxied = await proxyJson(
+      config.billingUrl,
+      `/v1/checkout/sessions/${encodeURIComponent(sessionId)}/sync`,
+      {
+        method: "POST",
+        headers: config.serviceKey
+          ? { Authorization: `Bearer ${config.serviceKey}`, "X-Internal-Api-Key": config.serviceKey }
+          : {},
+      },
+    );
     return { status: proxied.status, body: proxied.body };
   },
 
@@ -594,6 +708,7 @@ export const routes = {
       if (!result.stored) {
         return { status: 404, body: { error: result.reason || "not_stored" } };
       }
+      await invalidateUserBffCache(userId);
       return { status: 200, body: result };
     } catch (err) {
       return dbError(err);
@@ -690,13 +805,13 @@ export const routes = {
     const email = url.searchParams.get("email") || undefined;
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
-    if (!body.data || typeof body.data !== "object") {
-      return { status: 400, body: { error: "data_required" } };
-    }
     try {
+      parseOrThrow(addonDataKeySchema, addonKey);
+      const parsed = parseOrThrow(addonDataPutSchema, body);
       const result = await saveAddonDataForUser(userId, addonKey, {
-        data: body.data,
-        email: body.email || email,
+        data: parsed.data,
+        email: parsed.email || email,
+        revision: parsed.revision,
       });
       if (!result.stored) {
         return { status: 200, body: { ...result, stub: true } };
@@ -910,7 +1025,9 @@ export const routes = {
 };
 
 function dbError(err) {
-  const message = err instanceof Error ? err.message : "db_error";
-  const status = message === "database_not_configured" ? 503 : 500;
-  return { status, body: { error: message } };
+  if (err instanceof Error && err.message === "database_not_configured") {
+    return { status: 503, body: { error: "database_not_configured", code: "database_not_configured" } };
+  }
+  const mapped = mapToHttp(err);
+  return { status: mapped.status, body: mapped.body };
 }

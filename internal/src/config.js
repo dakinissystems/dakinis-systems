@@ -9,6 +9,6 @@ export const config = {
   searchUrl: process.env.DAKINIS_SEARCH_URL || "http://dakinis-search.railway.internal:4082",
   billingUrl: process.env.DAKINIS_BILLING_URL || "http://dakinis-billing.railway.internal:4080",
   knowledgeUrl: process.env.DAKINIS_KNOWLEDGE_URL || "http://dakinis-knowledge.railway.internal:4084",
-  databaseUrl: process.env.DATABASE_URL || "",
+  akoenetUrl: process.env.AKOENET_API_URL || process.env.AKOENET_BACKEND_URL || "",
   databaseSsl: process.env.DATABASE_SSL === "true",
 };

@@ -134,6 +134,25 @@ Verificación: [`scripts/verify_rls_no_policy_gaps.sql`](../scripts/verify_rls_n
 
 Idempotente. El INSERT en `public."StreamDirectorSessions"` ya no se revierte si el trigger de sync falla.
 
+## Fase L — Workspace addon data + outbox (040–045)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 40 | [`040_dakinis_workspace_addon_data.sql`](./040_dakinis_workspace_addon_data.sql) | ✅ jul 2026 · addon data + revision + seeds flags workspace |
+| 41 | [`041_outbox_and_revision.sql`](./041_outbox_and_revision.sql) | ✅ jul 2026 · `meta.outbox_events` |
+| 42 | [`042_stream_creator_flags.sql`](./042_stream_creator_flags.sql) | ✅ jul 2026 · flags Director/Automation stream |
+| 43 | [`043_drop_sync_triggers.sql`](./043_drop_sync_triggers.sql) | ⬜ **Solo tras smoke dual-write** — elimina triggers public→stream |
+| 44 | [`044_bff_billing_flags.sql`](./044_bff_billing_flags.sql) | ✅ jul 2026 · `billing.unified`, `hub.bff_cache` |
+| 45 | [`045_billing_sa_product_plans.sql`](./045_billing_sa_product_plans.sql) | ✅ jul 2026 · Planes SA en `billing.plans` |
+| 46 | [`046_enable_billing_unified_global.sql`](./046_enable_billing_unified_global.sql) | ⬜ Greenfield · `billing.unified` global ON |
+
+> **Confirmado prod (jul 2026):** migraciones **040–045 aplicadas** en Supabase sin incidencias. **043 omitida** — aplicar solo tras smoke dual-write 48h estable. **046** recomendada al activar cutover (sin usuarios legacy).
+
+Deploy greenfield: [`scripts/deploy-billing-unified-greenfield.ps1`](../../scripts/deploy-billing-unified-greenfield.ps1)  
+Smoke: [`scripts/smoke-billing-unified-sa.ps1`](../../scripts/smoke-billing-unified-sa.ps1)
+
+> **Nota:** `039_dakinis_workspace_addon_data.sql` fue renombrado a **040** para evitar colisión con `039_director_sync_trigger_resilience.sql`.
+
 ## Seeds
 
 | Archivo | Contenido |

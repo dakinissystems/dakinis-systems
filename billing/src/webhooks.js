@@ -1,6 +1,8 @@
 import { getStripe } from "./stripe.js";
 import { subscriptionFieldsFromStripe } from "./checkout.js";
 import { publishBillingEvent } from "./events.js";
+import { maybeFanOutStreamAutomatorCheckout } from "./adapters/sa-fanout.js";
+import { syncExternalSubscription } from "./services/external-subscription-sync.js";
 import {
   getCustomerByStripeId,
   recordWebhookEvent,
@@ -49,13 +51,17 @@ export async function handleStripeWebhook(event) {
 /** @param {ReturnType<typeof subscriptionFieldsFromStripe>} fields */
 async function publishSubscriptionLifecycle(fields, type) {
   if (!fields.tenantId) return;
-  await publishBillingEvent(type, {
+  const payload = {
     businessId: fields.tenantId,
     tenantId: fields.tenantId,
+    userId: fields.userId || null,
     plan: fields.plan,
+    productKey: fields.plan?.startsWith("sa-") ? "streamautomator" : "core",
     status: fields.status,
     stripeSubscriptionId: fields.stripeSubscriptionId,
-  });
+  };
+  await publishBillingEvent(type, payload);
+  await publishBillingEvent("user.plan_changed", payload);
 }
 
 /** @param {import("stripe").Stripe.Checkout.Session} session */
@@ -78,13 +84,34 @@ export async function onCheckoutCompleted(session) {
     });
   }
 
-  if (!stripeSubId) return;
+  if (!stripeSubId) {
+    if (planCode?.startsWith("sa-") && session.mode === "payment" && tenantId && userId) {
+      await syncExternalSubscription({
+        productKey: "streamautomator",
+        tenantId,
+        userId,
+        planCode,
+        saLicenseType: session.metadata?.sa_license_type || null,
+        stripeCustomerId,
+        stripeSubscriptionId: null,
+        status: "active",
+      });
+      await maybeFanOutStreamAutomatorCheckout(session, { plan: planCode, status: "active" });
+    }
+    return;
+  }
 
   const stripe = getStripe();
   if (!stripe) return;
 
   const sub = await stripe.subscriptions.retrieve(stripeSubId);
   await onSubscriptionUpsert(sub, { tenantId, userId, planCode });
+  await maybeFanOutStreamAutomatorCheckout(session, {
+    plan: planCode,
+    stripeSubscriptionId: stripeSubId,
+    status: sub.status,
+    currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000) : null,
+  });
 }
 
 /**

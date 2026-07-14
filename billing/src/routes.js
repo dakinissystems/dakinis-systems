@@ -7,6 +7,7 @@ import { createCheckoutSession, createPortalSession, getCheckoutSession } from "
 import { syncPaidCheckoutSession } from "./checkout-sync.js";
 import { requireInternalAuth } from "./auth.js";
 import { getSubscriptionByTenantId, recordUsage } from "./repository.js";
+import { syncExternalSubscription } from "./services/external-subscription-sync.js";
 
 /** @typedef {{ status: number; body: unknown; headers?: Record<string, string> }} RouteResult */
 
@@ -185,6 +186,9 @@ export const routes = {
         email,
         successUrl,
         cancelUrl,
+        productKey: body.productKey,
+        saLicenseType: body.saLicenseType,
+        saUserId: body.saUserId,
       });
       return { status: 200, body: session };
     } catch (err) {
@@ -260,6 +264,50 @@ export const routes = {
     } catch (err) {
       const message = err instanceof Error ? err.message : "sync_failed";
       const status = message === "stripe_not_configured" ? 503 : 502;
+      return { status, body: { error: message } };
+    }
+  },
+
+  "POST /v1/subscriptions/sync": async (req) => {
+    const auth = requireInternalAuth(req, { required: true });
+    if (!auth.ok) {
+      return { status: auth.status, body: { error: auth.error } };
+    }
+
+    const body = await readJsonBody(req);
+    const { tenantId, userId, planCode, productKey, saLicenseType } = body;
+
+    if (!tenantId || !userId) {
+      return {
+        status: 400,
+        body: { error: "missing_fields", required: ["tenantId", "userId"] },
+      };
+    }
+    if (!planCode && !saLicenseType) {
+      return {
+        status: 400,
+        body: { error: "missing_fields", required: ["planCode or saLicenseType"] },
+      };
+    }
+
+    try {
+      const result = await syncExternalSubscription({
+        productKey,
+        tenantId: String(tenantId),
+        userId: String(userId),
+        planCode,
+        saLicenseType,
+        stripeCustomerId: body.stripeCustomerId || null,
+        stripeSubscriptionId: body.stripeSubscriptionId || null,
+        status: body.status || "active",
+        currentPeriodEnd: body.currentPeriodEnd || null,
+        cancelAtPeriodEnd: Boolean(body.cancelAtPeriodEnd),
+      });
+      return { status: 200, body: { ok: true, ...result } };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "sync_failed";
+      const status =
+        message === "invalid_plan" || message === "missing_tenant_or_user" ? 400 : 502;
       return { status, body: { error: message } };
     }
   },
