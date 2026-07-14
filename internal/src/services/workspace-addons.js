@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { query } from "../lib/db.js";
+import { getWorkspaceForUser } from "./workspace-admin.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -207,4 +208,40 @@ export async function listWorkspaceAddonsForUser(userId, opts = {}) {
       config: {},
     })),
   };
+}
+
+/**
+ * @param {object|null|undefined} workspace
+ */
+async function ensureWorkspaceId(workspace) {
+  if (!workspace) return null;
+  if (workspace.id) return String(workspace.id);
+  const slug = String(workspace.core_tenant_slug || workspace.slug || "").trim();
+  if (!slug) return null;
+  const { rows } = await query(
+    `SELECT id FROM meta.workspaces
+     WHERE lower(slug) = lower($1) OR lower(core_tenant_slug) = lower($1)
+     LIMIT 1`,
+    [slug],
+  );
+  return rows[0]?.id ? String(rows[0].id) : null;
+}
+
+/**
+ * @param {string} userId platform UUID
+ * @param {string} addonKey
+ * @param {{ enabled?: boolean; pinned?: boolean; config?: object; email?: string }} input
+ */
+export async function setAddonForPlatformUser(userId, addonKey, input = {}) {
+  const workspace = await getWorkspaceForUser(userId, { email: input.email });
+  const workspaceId = await ensureWorkspaceId(workspace);
+  if (!workspaceId) {
+    return { stored: false, reason: "no_workspace" };
+  }
+  const row = await upsertWorkspaceAddon(workspaceId, addonKey, {
+    enabled: input.enabled !== false,
+    pinned: Boolean(input.pinned),
+    config: input.config,
+  });
+  return { stored: true, workspaceId, addonKey, row };
 }

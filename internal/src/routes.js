@@ -35,6 +35,7 @@ import {
   upsertWorkspaceAddon,
   enableAllWorkspaceAddons,
   listWorkspaceAddonsForUser,
+  setAddonForPlatformUser,
 } from "./services/workspace-addons.js";
 import {
   listDesktopProfilesForUser,
@@ -552,6 +553,48 @@ export const routes = {
     try {
       const rows = await enableAllWorkspaceAddons(id, { pinKeys: body.pinKeys });
       return { status: 200, body: { enabled: rows.length, items: rows } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspaces/me/:userId/addons": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const bare = url.pathname;
+    const userId = bare.replace("/workspaces/me/", "").replace("/addons", "");
+    const email = url.searchParams.get("email") || undefined;
+    try {
+      const data = await listWorkspaceAddonsForUser(userId, { email });
+      return { status: 200, body: data };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PUT /workspaces/me/:userId/addons/:addonKey": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const bare = url.pathname;
+    const parts = bare.split("/").filter(Boolean);
+    const userId = parts[2];
+    const addonKey = parts[4];
+    const email = url.searchParams.get("email") || undefined;
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const result = await setAddonForPlatformUser(userId, addonKey, {
+        enabled: body.enabled,
+        pinned: body.pinned,
+        config: body.config,
+        email: body.email || email,
+      });
+      if (!result.stored) {
+        return { status: 404, body: { error: result.reason || "not_stored" } };
+      }
+      return { status: 200, body: result };
     } catch (err) {
       return dbError(err);
     }
