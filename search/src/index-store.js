@@ -98,8 +98,9 @@ export async function removeDocument(scope, id) {
 /**
  * @param {string} q
  * @param {string} scope
+ * @param {string|null} [tenantId]
  */
-export async function searchDocuments(q, scope = "all") {
+export async function searchDocuments(q, scope = "all", tenantId = null) {
   const redis = await getRedis();
   if (!redis) {
     return { hits: [], total: 0, mode: "no_redis" };
@@ -108,6 +109,7 @@ export async function searchDocuments(q, scope = "all") {
   const scopes =
     scope === "all" ? SEARCH_SCOPES.filter((s) => s !== "all") : [scope];
   const hits = [];
+  const tenant = tenantId ? String(tenantId) : null;
 
   for (const sc of scopes) {
     const ids = await redis.sMembers(scopeSetKey(sc));
@@ -120,9 +122,30 @@ export async function searchDocuments(q, scope = "all") {
       } catch {
         continue;
       }
+      if (tenant) {
+        const docTenant = doc.metadata?.businessId || doc.metadata?.tenantId;
+        if (docTenant) {
+          if (String(docTenant) !== tenant) continue;
+        } else if (doc.metadata?.product === "akoenet") {
+          /* mensajes cross-product visibles en Hub */
+        } else if (["knowledge", "documentation", "global"].includes(sc)) {
+          /* docs globales / knowledge */
+        } else {
+          continue;
+        }
+      }
       const hay = `${doc.title || ""} ${doc.body || ""}`.toLowerCase();
       if (!needle || hay.includes(needle)) {
-        hits.push({ scope: sc, id, title: doc.title, snippet: (doc.body || "").slice(0, 120), score: needle ? 1 : 0.5 });
+        hits.push({
+          scope: sc,
+          id,
+          title: doc.title,
+          snippet: (doc.body || "").slice(0, 120),
+          score: needle ? 1 : 0.5,
+          path: doc.metadata?.path,
+          product: doc.metadata?.product,
+          metadata: doc.metadata,
+        });
       }
     }
   }

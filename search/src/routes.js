@@ -17,6 +17,7 @@ function parseQuery(req) {
   return {
     q: url.searchParams.get("q") || "",
     scope: url.searchParams.get("scope") || "all",
+    tenantId: url.searchParams.get("tenantId") || url.searchParams.get("businessId") || null,
   };
 }
 
@@ -39,8 +40,8 @@ export const routes = {
   }),
 
   "GET /v1/query": async (req) => {
-    const { q, scope } = parseQuery(req);
-    const result = await searchDocuments(q, scope);
+    const { q, scope, tenantId } = parseQuery(req);
+    const result = await searchDocuments(q, scope, tenantId);
     return {
       status: 200,
       body: {

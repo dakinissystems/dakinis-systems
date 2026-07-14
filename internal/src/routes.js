@@ -1,6 +1,7 @@
 import { config } from "./config.js";
 import { requireServiceAuth, readJson } from "./lib/auth.js";
 import { publishEvent, listQueuedEvents } from "./lib/events.js";
+import { indexPlatformEventForSearch } from "./lib/search-event-indexer.js";
 import { proxyJson } from "./lib/proxy.js";
 import { checkDbHealth } from "./lib/db.js";
 import { getHubDashboard, validateUserId } from "./services/hub-dashboard.js";
@@ -41,6 +42,10 @@ import {
   saveAddonLayoutForUser,
 } from "./services/workspace-desktop-profiles.js";
 import {
+  getAddonDataForUser,
+  saveAddonDataForUser,
+} from "./services/workspace-addon-data.js";
+import {
   listWorkspaces,
   getWorkspaceDetail,
   setWorkspaceStatus,
@@ -57,6 +62,7 @@ import {
   routeAssistantCommand,
   dispatchAssistantEvent,
 } from "./services/akoenet-assistant.js";
+import { getPlatformMetrics } from "./services/platform-metrics.js";
 
 function platformEvent(type, payload, meta = {}) {
   return {
@@ -85,6 +91,17 @@ export const routes = {
         eventBus,
       },
     };
+  },
+
+  "GET /platform/metrics": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    try {
+      const body = await getPlatformMetrics();
+      return { status: 200, body };
+    } catch (err) {
+      return dbError(err);
+    }
   },
 
   "GET /users/:id": (req) => {
@@ -163,6 +180,9 @@ export const routes = {
     if (!body.event) return { status: 400, body: { error: "validation", message: "event required" } };
     const event = platformEvent(body.event, body.payload || {}, body);
     const pub = await publishEvent(event);
+    indexPlatformEventForSearch(event).catch((err) => {
+      console.warn("[internal] search event index:", err instanceof Error ? err.message : err);
+    });
     return { status: 202, body: { ok: true, event, ...pub } };
   },
 
@@ -588,6 +608,51 @@ export const routes = {
       const result = await saveAddonLayoutForUser(userId, addonId, {
         profileKey: body.profileKey,
         windows: body.windows,
+        email: body.email || email,
+      });
+      if (!result.stored) {
+        return { status: 404, body: { error: result.reason || "not_stored" } };
+      }
+      return { status: 200, body: result };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspaces/me/:userId/data/:addonKey": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const bare = url.pathname;
+    const parts = bare.split("/").filter(Boolean);
+    const userId = parts[2];
+    const addonKey = parts[5];
+    const email = url.searchParams.get("email") || undefined;
+    try {
+      const data = await getAddonDataForUser(userId, addonKey, { email });
+      return { status: 200, body: data };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PUT /workspaces/me/:userId/data/:addonKey": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const url = new URL(req.url || "/", "http://internal.local");
+    const bare = url.pathname;
+    const parts = bare.split("/").filter(Boolean);
+    const userId = parts[2];
+    const addonKey = parts[5];
+    const email = url.searchParams.get("email") || undefined;
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    if (!body.data || typeof body.data !== "object") {
+      return { status: 400, body: { error: "data_required" } };
+    }
+    try {
+      const result = await saveAddonDataForUser(userId, addonKey, {
+        data: body.data,
         email: body.email || email,
       });
       if (!result.stored) {
