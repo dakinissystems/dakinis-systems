@@ -14,6 +14,10 @@
   },
   "dependencies": {
     "@dakinis/shared-ai": "file:./packages/shared-ai",
+    "@dakinis/shared-platform": "file:./packages/shared-platform",
+    "@dakinis/shared-db": "file:./packages/shared-db",
+    "@dakinis/shared-error": "file:./packages/shared-error",
+    "@dakinis/shared-validation": "file:./packages/shared-validation",
     "bullmq": "^5.41.0",
     "pg": "^8.22.0",
     "redis": "^5.5.6"

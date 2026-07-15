@@ -1,4 +1,5 @@
 import { mapSaLicenseToPlanCode, productKeyFromPlanCode } from "../adapters/streamautomator-legacy.js";
+import { isStripeCustomerId } from "../stripe.js";
 import { publishBillingEvent } from "../events.js";
 import { upsertCustomer, upsertSubscription } from "../repository.js";
 
@@ -41,7 +42,7 @@ export async function syncExternalSubscription(input) {
 
   const productKey = input.productKey || productKeyFromPlanCode(planCode);
 
-  if (stripeCustomerId) {
+  if (isStripeCustomerId(stripeCustomerId)) {
     await upsertCustomer({
       userId,
       stripeCustomerId,

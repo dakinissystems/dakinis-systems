@@ -4,6 +4,11 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./manifest": "./src/manifest.contract.js",
+    "./plugin-loader": "./src/plugin-loader.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
   }
 }

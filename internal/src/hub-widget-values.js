@@ -90,7 +90,8 @@ export function buildWidgetValues(dashboard = {}) {
     },
     "stream-next-live": {
       value: streamNextLabel || (scheduled != null ? `${scheduled} streams` : "Sin directos"),
-      status: "Stream",
+      status: db.stream_next_title || "Stream",
+      actionLabel: streamNextLabel ? "Preparar directo" : undefined,
     },
     "stream-posts-week": {
       value: scheduledWeek != null ? String(scheduledWeek) : scheduled != null ? String(scheduled) : "0",
@@ -98,7 +99,16 @@ export function buildWidgetValues(dashboard = {}) {
     },
     "stream-upcoming": {
       value: streamUpcoming != null ? String(streamUpcoming) : scheduled != null ? String(scheduled) : "0",
-      status: "7 días",
+      status: streamNextLabel ? `Próximo: ${streamNextLabel}` : "7 días",
+      actionLabel: streamNextLabel ? "Abrir Director" : undefined,
+    },
+    "stream-automation-rules": {
+      value: db.stream_automation_enabled != null ? String(db.stream_automation_enabled) : "—",
+      status:
+        db.stream_automation_total != null && Number(db.stream_automation_total) > 0
+          ? `${db.stream_automation_total} reglas`
+          : "Sin reglas",
+      actionLabel: "Configurar",
     },
     "core-appointments-today": {
       value:

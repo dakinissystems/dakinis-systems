@@ -1,4 +1,4 @@
-import { getStripe, planCodeFromPriceId } from "./stripe.js";
+import { getStripe, isStripeCustomerId, planCodeFromPriceId } from "./stripe.js";
 import { getPlanById } from "./plans.js";
 import { config } from "./config.js";
 import { getCustomerByUserId, upsertCustomer } from "./repository.js";
@@ -26,8 +26,15 @@ export async function createCheckoutSession(input) {
   let stripeCustomerId = null;
   if (input.userId) {
     const existing = await getCustomerByUserId(input.userId);
-    if (existing?.stripe_customer_id) {
-      stripeCustomerId = existing.stripe_customer_id;
+    const storedId = existing?.stripe_customer_id;
+    if (isStripeCustomerId(storedId)) {
+      stripeCustomerId = storedId;
+    } else if (storedId) {
+      console.warn(
+        "[billing] ignoring invalid stored stripe_customer_id for checkout:",
+        input.userId,
+        storedId.slice(0, 32)
+      );
     }
   }
 
@@ -86,7 +93,9 @@ export async function createPortalSession(input) {
   if (!stripe) throw new Error("stripe_not_configured");
 
   const customer = await getCustomerByUserId(input.userId);
-  if (!customer?.stripe_customer_id) throw new Error("customer_not_found");
+  if (!isStripeCustomerId(customer?.stripe_customer_id)) {
+    throw new Error("customer_not_found");
+  }
 
   const session = await stripe.billingPortal.sessions.create({
     customer: customer.stripe_customer_id,

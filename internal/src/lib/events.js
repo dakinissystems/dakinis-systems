@@ -19,11 +19,26 @@ export async function getRedis() {
 /**
  * @param {object} event
  */
+async function pushEventToRedis(redis, event) {
+  try {
+    await redis.lPush(config.eventsQueue, JSON.stringify(event));
+    return { queued: true, queue: config.eventsQueue };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (!message.includes("WRONGTYPE")) throw err;
+    console.warn(
+      `[internal:redis] queue key ${config.eventsQueue} had wrong type; recreating as list`,
+    );
+    await redis.del(config.eventsQueue);
+    await redis.lPush(config.eventsQueue, JSON.stringify(event));
+    return { queued: true, queue: config.eventsQueue, recovered: true };
+  }
+}
+
 export async function publishEvent(event) {
   const redis = await getRedis();
   if (redis) {
-    await redis.lPush(config.eventsQueue, JSON.stringify(event));
-    return { queued: true, queue: config.eventsQueue };
+    return pushEventToRedis(redis, event);
   }
   memoryEvents.unshift(event);
   if (memoryEvents.length > 100) memoryEvents.pop();

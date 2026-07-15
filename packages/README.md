@@ -17,6 +17,11 @@ packages/
 ├── shared-ux/            ← componentes + patterns Hub
 ├── shared-charts/        ← catálogo charts
 ├── shared-ai/            ← agents, events
+├── shared-db/            ← pool, repositories, outbox
+├── shared-error/         ← AppError, mapToHttp, Express middleware
+├── shared-validation/    ← Zod schemas workspace
+├── shared-feature-flags/ ← server evaluate + React hook
+├── shared-platform/      ← CommandBus, QueryBus, CacheService, CapabilityRegistry
 ├── shared-loading/
 ├── shared-icons/
 ├── shared-illustrations/

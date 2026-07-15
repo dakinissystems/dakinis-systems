@@ -85,6 +85,8 @@ export function buildRecommendedActions(dashboard = {}) {
 
   if (products.has("streamautomator")) {
     const upcoming = Number(db.stream_upcoming ?? db.scheduled_contents ?? 0);
+    const automationEnabled = Number(db.stream_automation_enabled ?? 0);
+    const automationTotal = Number(db.stream_automation_total ?? 0);
     const nextAt = db.stream_next_at ? new Date(db.stream_next_at) : null;
     const now = Date.now();
     const soonMs = 60 * 60 * 1000;
@@ -115,8 +117,20 @@ export function buildRecommendedActions(dashboard = {}) {
         id: "stream-automation",
         severity: "info",
         title: `${upcoming} publicación${upcoming === 1 ? "" : "es"} programada${upcoming === 1 ? "" : "s"}`,
-        detail: "Revisa reglas IF/THEN para automatizar anuncios",
-        ctaLabel: "Automatización",
+        detail: automationEnabled > 0
+          ? `${automationEnabled} regla${automationEnabled === 1 ? "" : "s"} IF/THEN activa${automationEnabled === 1 ? "" : "s"}`
+          : "Configura reglas IF/THEN para automatizar anuncios",
+        ctaLabel: automationEnabled > 0 ? "Automatización" : "Crear reglas",
+        action: "open-stream-automation",
+        product: "streamautomator",
+      });
+    } else if (automationTotal === 0) {
+      actions.push({
+        id: "stream-setup-automation",
+        severity: "info",
+        title: "Automatiza tus directos",
+        detail: "Crea reglas IF/THEN para Discord, AkoeNet y notificaciones Hub",
+        ctaLabel: "Configurar",
         action: "open-stream-automation",
         product: "streamautomator",
       });

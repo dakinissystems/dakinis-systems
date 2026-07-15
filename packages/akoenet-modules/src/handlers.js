@@ -47,9 +47,9 @@ export async function handleAssistant(command) {
   switch (command.action) {
     case "ai.ask":
       return {
-        status: "queued",
-        queue: "akoenet:assistant",
-        message: "IA response via Dakinis AI Platform",
+        status: "processing",
+        handler: "internal-api",
+        message: "IA response via Dakinis AI Platform (sync)",
       };
     case "ai.summarize":
     case "ai.translate":
@@ -69,7 +69,15 @@ export async function handleGuardianAi(command) {
 export async function handleStreamer(command) {
   if (command.type === "event") {
     if (command.action === "stream.started") {
-      return { status: "announcement_published", platform: command.payload?.event?.data?.platform };
+      const data = command.payload?.event?.data || {};
+      return {
+        status: "announcement_queued",
+        platform: data.platform,
+        streamer: data.streamer || data.scheduler_slug,
+      };
+    }
+    if (command.action === "stream.ended") {
+      return { status: "stream_ended_ack", action: command.action };
     }
     if (command.action === "stream.clip") {
       return { status: "clip_published", url: command.payload?.event?.data?.clipUrl };

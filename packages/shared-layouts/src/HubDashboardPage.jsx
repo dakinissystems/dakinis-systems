@@ -12,6 +12,7 @@ import { dakinisHubProductEnabled } from "../../shared-brand/src/hub-product-acc
 import { dakinisWorkspaceAddonField } from "../../shared-brand/src/workspace-addons.js";
 import { HubProductIcon } from "../../shared-ux/src/HubProductIcon.jsx";
 import HubActionsPanel from "../../shared-ux/src/react/HubActionsPanel.jsx";
+import ActivityTimeline, { mapHubTimelineEvents } from "../../shared-ux/src/react/ActivityTimeline.jsx";
 import { dakinisHubT } from "../../shared-ux/src/hub-i18n.js";
 import { dashboardCardStyles } from "../../shared-ux/src/DashboardCard.jsx";
 
@@ -36,6 +37,7 @@ export default function HubDashboardPage({
   const workspaceAddons = dashboard?.workspaceAddons || [];
   const enabledProducts = dashboard?.enabledProducts || null;
   const recommendedActions = dashboard?.actions || [];
+  const timelineEvents = mapHubTimelineEvents(dashboard?.db?.timeline || []);
 
   function widgetsForSection(sectionId) {
     const widgets = getWidgetsForSection(sectionId);
@@ -74,6 +76,7 @@ export default function HubDashboardPage({
         .dakinis-hub-dashboard { display: flex; flex-direction: column; gap: 1.75rem; }
         .dakinis-hub-section__title { margin: 0 0 0.75rem; font-size: 1rem; font-weight: 600; }
         .dakinis-hub-section__grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); }
+        .dakinis-hub-section__timeline { margin-top: 1rem; }
         .dakinis-dashboard-card--app-launcher .dakinis-dashboard-card__head { align-items: center; }
         .dakinis-dashboard-card--app-launcher .dakinis-dashboard-card__value { font-size: 1.15rem; font-weight: 600; }
       `}</style>
@@ -120,6 +123,17 @@ export default function HubDashboardPage({
                   })
                 )}
               </div>
+              {section.id === "activity" ? (
+                <div className="dakinis-hub-section__timeline">
+                  <ActivityTimeline
+                    events={timelineEvents}
+                    t={(key) => dakinisHubT(key, locale)}
+                    onAction={(actionId) =>
+                      dakinisRunHubRecommendedAction(actionId, { apps, onAppOpen })
+                    }
+                  />
+                </div>
+              ) : null}
             </section>
           );
         })}

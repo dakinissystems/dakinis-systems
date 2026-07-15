@@ -44,3 +44,9 @@ export function getAddonFromRegistry(registry, id) {
 }
 
 export { assertWorkspaceAddon, isWorkspaceAddon, LIFECYCLE_HOOKS, PLATFORM_SERVICES, CAPABILITY_IDS } from './workspace-addon.contract.js'
+export { assertAddonManifest, isAddonManifest } from './manifest.contract.js'
+export {
+  discoverAddonManifests,
+  buildRouteMapFromManifests,
+  parseManifestGlob,
+} from './plugin-loader.js'

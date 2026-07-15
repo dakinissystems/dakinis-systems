@@ -29,6 +29,11 @@ export function dakinisResolveHubWidgetOpen(widget, apps = []) {
   const scrollId = HUB_WIDGET_SCROLL_TARGETS[widget.id];
   if (scrollId) return { type: "scroll", targetId: scrollId };
 
+  if (widget.id === "stream-automation-rules") {
+    const app = apps.find((a) => a.id === "streamautomator" || a.product === "streamautomator");
+    return app ? { type: "app", app, path: "/automation" } : null;
+  }
+
   const appId = HUB_WIDGET_PRODUCT_APP_ID[widget.product];
   const app = appId
     ? apps.find((a) => a.id === appId)
@@ -74,7 +79,7 @@ const RECOMMENDED_ACTION_TARGETS = {
   "open-stream-calendar": { product: "streamautomator" },
   "open-stream-director": { product: "streamautomator", path: "/director" },
   "open-stream-automation": { product: "streamautomator", path: "/automation" },
-  "open-stream-campaigns": { product: "streamautomator", path: "/creator/campaign-kits" },
+  "open-stream-campaigns": { product: "streamautomator", path: "/creator/campaigns" },
   "open-akoenet": { product: "akoenet" },
 };
 
@@ -100,5 +105,56 @@ export function dakinisResolveHubRecommendedAction(actionId, apps = []) {
  */
 export function dakinisRunHubRecommendedAction(actionId, ctx = {}) {
   const resolved = dakinisResolveHubRecommendedAction(actionId, ctx.apps || []);
+  dakinisRunHubWidgetAction(resolved, { onAppOpen: ctx.onAppOpen });
+}
+
+/** Acciones rápidas en widgets interactivos */
+const WIDGET_QUICK_ACTION_TARGETS = {
+  "open-director": { product: "streamautomator", path: "/director" },
+  "open-schedule": { product: "streamautomator", path: "/schedule" },
+  "open-automation": { product: "streamautomator", path: "/automation" },
+  "open-campaigns": { product: "streamautomator", path: "/creator/campaigns" },
+  "open-orders": { product: "core", path: "/app/ventas" },
+  "open-sales": { product: "core", path: "/app/ventas" },
+  "open-kitchen": { product: "core", path: "/app/dashboard" },
+  "create-invoice": { product: "core", path: "/app/ventas" },
+  "open-lifeflow": { product: "lifeflow" },
+  "ask-coach": { product: "lifeflow" },
+  "open-notifications": { type: "scroll", targetId: "notifications" },
+  "open-akoenet": { product: "akoenet" },
+  "open-hub": { type: "scroll", targetId: "apps" },
+};
+
+/**
+ * @param {string} actionId
+ * @param {Array<{ id: string; product?: string }>} apps
+ */
+export function dakinisResolveWidgetQuickAction(actionId, apps = []) {
+  const spec = WIDGET_QUICK_ACTION_TARGETS[actionId];
+  if (!spec) return null;
+  if (spec.type === "scroll") return spec;
+  if (spec.path) {
+    const app = apps.find((a) => a.id === spec.product || a.product === spec.product);
+    return app ? { type: "app", app, path: spec.path } : null;
+  }
+  const app = apps.find((a) => a.id === spec.product || a.product === spec.product);
+  return app ? { type: "app", app } : null;
+}
+
+/**
+ * @param {string} actionId
+ * @param {{ apps?: object[]; onAppOpen?: (app: object, path?: string) => void; onNavigate?: (path: string) => void }} ctx
+ */
+export function dakinisRunWidgetQuickAction(actionId, ctx = {}) {
+  const resolved = dakinisResolveWidgetQuickAction(actionId, ctx.apps || []);
+  if (!resolved) return;
+  if (resolved.type === "app" && resolved.path && ctx.onNavigate) {
+    dakinisRunHubWidgetAction(resolved, {
+      onAppOpen: (app, path) => {
+        if (ctx.onAppOpen) ctx.onAppOpen(app, path);
+      },
+    });
+    return;
+  }
   dakinisRunHubWidgetAction(resolved, { onAppOpen: ctx.onAppOpen });
 }

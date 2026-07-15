@@ -25,6 +25,7 @@ export const HUB_WIDGET_REGISTRY = [
   { id: "stream-next-live", product: "streamautomator", title: "Próximo directo", icon: "radio", defaultSize: "md", section: "agenda" },
   { id: "stream-posts-week", product: "streamautomator", title: "Publicaciones esta semana", icon: "calendar", defaultSize: "sm", section: "widgets" },
   { id: "stream-upcoming", product: "streamautomator", title: "Próximos streams", icon: "radio-tower", defaultSize: "md", section: "my-day" },
+  { id: "stream-automation-rules", product: "streamautomator", title: "Automatización IF/THEN", icon: "zap", defaultSize: "sm", section: "my-day" },
   // AkoeNet
   { id: "akoenet-online", product: "akoenet", title: "Usuarios conectados", icon: "users", defaultSize: "sm", refreshSec: 30, section: "widgets" },
   { id: "akoenet-new-members", product: "akoenet", title: "Nuevos miembros", icon: "user-plus", defaultSize: "sm", section: "activity" },

@@ -36,7 +36,7 @@
 | Workers activos | 4 | AI, Knowledge, Notifications (parcial), SA |
 | Clientes de pago | 0 | Objetivo ago 2026 |
 | Tenants prod | 1+ | demo + provision manual |
-| Usuarios IdP | 3+ | smoke / demo |
+| Usuarios IdP | 4+ | smoke / demo + `velezcampeon_88@hotmail.com` |
 | MRR | 0 € | — |
 | Tiempo deploy medio | ~6 min | Dockerfile services |
 | React Doctor (media apps) | ~92% | LF/TT 100 · SA 61 |
@@ -77,8 +77,9 @@ URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
 | Fase | Migraciones | Estado |
 |------|-------------|--------|
 | A–B | `000`–`015` | ✅ |
-| C | `016`–`019` | ⬜ Hub Mi día base |
-| C+ | `027`–`029` | ⬜ widgets + product access |
+| C | `016`–`019` | ✅ prod (smoke `stub=false`) |
+| C+ | `027`–`029` | ✅ prod (`hub.mi_dia` ON) |
+| C++ | `048` | ✅ automation metrics (jul 2026) |
 | D | `020`–`026`, `024` | ✅ |
 | D+ | `030` | ⬜ LifeFlow ↔ IdP |
 | E | `031` | ✅ workspace admin |
@@ -92,12 +93,19 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 
 ## Despliegue pendiente (código listo)
 
-| # | Sistema | Acción |
-|---|---------|--------|
-| 1 | akoenet-backend | `DAKINIS_INTERNAL_SERVICE_KEY` + `DAKINIS_INTERNAL_URL` → redeploy |
-| 2 | akoenet-client | Redeploy Assistant UI |
-| 3 | dakinis-internal-api | Redeploy release Jul 2026 |
-| 4 | Billing | E2E live |
+| # | Sistema | Commit | Estado |
+|---|---------|--------|--------|
+| 1 | dakinis-internal-api | `3c69bbb` | ✅ timeline + Redis WRONGTYPE (smoke 202) |
+| 2 | dakinis-streamautomator web | `7a559fb` | ✅ bundle prod: Nueva regla, Creator Suite |
+| 3 | dakinis-hub | `3f58a22` | ✅ bundle prod: ActivityTimeline, stream-automation-rules |
+| 4 | Supabase | `048` | ✅ aplicada |
+| 5 | internal-api | `3c69bbb` | ✅ Redis WRONGTYPE fix en POST /events |
+| 6 | streamautomator-api | `6b1865d` | ✅ delete automation stream-read |
+| 7 | Billing | — | 🔧 checkout unificado: customer `smoke_cus_test` en DB (fix SQL + redeploy billing) |
+
+**Billing (15 jul):** checkout SA unificado fallaba con 502 porque el smoke `LiveSync` guardó `stripe_customer_id = smoke_cus_test` en `billing.customers` para el usuario test. Fix: `docs/supabase/scripts/fix_billing_smoke_customer_pollution.sql` + redeploy `dakinis-billing` (validación `cus_*` en checkout).
+
+Smokes: `scripts/smoke-hub.ps1` · `scripts/deploy-hub-automation.ps1 -RunSmoke`
 
 ---
 

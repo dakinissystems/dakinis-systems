@@ -45,3 +45,8 @@ export function planCodeFromPriceId(priceId) {
   if (!priceId) return null;
   return config.stripePriceToPlan[priceId] || null;
 }
+
+/** @param {string | null | undefined} id */
+export function isStripeCustomerId(id) {
+  return typeof id === "string" && /^cus_[A-Za-z0-9]+$/.test(id);
+}

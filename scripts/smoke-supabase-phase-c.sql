@@ -39,5 +39,25 @@ SELECT '019 meta.cutover_core_checklist' AS check_name,
          WHERE n.nspname = 'meta' AND p.proname = 'cutover_core_checklist'
        ) AS ok;
 
+SELECT '027 hub.mi_dia flag' AS check_name,
+       EXISTS (
+         SELECT 1 FROM meta.feature_flags
+         WHERE flag_key = 'hub.mi_dia'
+       ) AS ok;
+
+SELECT '029 hub.v1_get_user_hub_products' AS check_name,
+       EXISTS (
+         SELECT 1 FROM pg_proc p
+         JOIN pg_namespace n ON n.oid = p.pronamespace
+         WHERE n.nspname = 'hub' AND p.proname = 'v1_get_user_hub_products'
+       ) AS ok;
+
+SELECT '048 stream_automation in dashboard' AS check_name,
+       (
+         SELECT (hub.v1_get_dashboard(
+           (SELECT id FROM dakinis_auth.users ORDER BY created_at LIMIT 1)
+         )->>'stream_automation_total') IS NOT NULL
+       ) AS ok;
+
 -- Dashboard sample (reemplaza UUID por un user real de dakinis_auth.users)
 -- SELECT hub.v1_get_dashboard('00000000-0000-0000-0000-000000000001'::uuid);

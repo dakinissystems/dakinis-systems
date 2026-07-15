@@ -1,0 +1,24 @@
+{
+  "name": "@dakinis/shared-feature-flags",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./server": "./src/server.js",
+    "./client": "./src/client.js",
+    "./keys": "./src/keys.js"
+  },
+  "dependencies": {
+    "@dakinis/shared-db": "file:../shared-db"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

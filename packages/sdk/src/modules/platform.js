@@ -1,28 +1,19 @@
+import { GatewayClient } from "@dakinis/shared-platform/gateway-client";
+
 /**
  * Cliente base para servicios platform (Internal API).
- * @param {{ baseUrl?: string; apiKey?: string; fetch?: typeof fetch }} [opts]
+ * @param {{ baseUrl?: string; apiKey?: string; fetch?: typeof fetch; timeoutMs?: number; retries?: number }} [opts]
  */
-export class PlatformClient {
+export class PlatformClient extends GatewayClient {
   constructor(opts = {}) {
-    this.baseUrl = (opts.baseUrl || process.env.DAKINIS_INTERNAL_URL || "http://localhost/internal").replace(
-      /\/$/,
-      ""
-    );
-    this.apiKey = opts.apiKey || process.env.DAKINIS_INTERNAL_SERVICE_KEY || "";
-    this.fetchFn = opts.fetch || fetch;
-  }
-
-  async request(path, init = {}) {
-    const headers = { "Content-Type": "application/json", ...(init.headers || {}) };
-    if (this.apiKey) headers.Authorization = `Bearer ${this.apiKey}`;
-    const res = await this.fetchFn(`${this.baseUrl}${path}`, { ...init, headers });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      const err = new Error(data.error || res.statusText || "platform_request_failed");
-      err.status = res.status;
-      throw err;
-    }
-    return data;
+    super({
+      baseUrl:
+        opts.baseUrl || process.env.DAKINIS_INTERNAL_URL || "http://localhost/internal",
+      apiKey: opts.apiKey || process.env.DAKINIS_INTERNAL_SERVICE_KEY || "",
+      fetch: opts.fetch,
+      timeoutMs: opts.timeoutMs,
+      retries: opts.retries,
+    });
   }
 }
 
@@ -60,6 +51,18 @@ export class HubClient extends PlatformClient {
   dashboard(userId) {
     return this.request(`/hub/dashboard/${encodeURIComponent(userId)}`);
   }
+
+  /** @param {string} userId @param {{ fresh?: boolean }} [opts] */
+  dashboardAggregated(userId, opts = {}) {
+    const qs = opts.fresh ? "?fresh=1" : "";
+    return this.request(`/hub/dashboard/aggregated/${encodeURIComponent(userId)}${qs}`);
+  }
+
+  /** @param {{ fresh?: boolean }} [opts] */
+  platformHealth(opts = {}) {
+    const qs = opts.fresh ? "?fresh=1" : "";
+    return this.request(`/platform/health${qs}`);
+  }
 }
 
 /** @extends PlatformClient */
@@ -87,6 +90,12 @@ export class WorkspaceClient extends PlatformClient {
       method: "POST",
       body: JSON.stringify({}),
     });
+  }
+
+  /** @param {string} userId @param {{ fresh?: boolean }} [opts] */
+  summary(userId, opts = {}) {
+    const qs = opts.fresh ? "?fresh=1" : "";
+    return this.request(`/workspace/summary/${encodeURIComponent(userId)}${qs}`);
   }
 }
 
@@ -127,5 +136,44 @@ export class KnowledgeClient extends PlatformClient {
   /** @param {{ query: string; sources?: string[] }} body */
   query(body) {
     return this.request("/knowledge/query", { method: "POST", body: JSON.stringify(body) });
+  }
+}
+
+/** @extends PlatformClient */
+export class FeatureFlagsClient extends PlatformClient {
+  /**
+   * @param {string | string[]} keys
+   * @param {{ userId?: string; workspaceId?: string; tenantId?: string; plan?: string }} [ctx]
+   */
+  async evaluate(keys, ctx = {}) {
+    const list = Array.isArray(keys) ? keys : String(keys).split(",").map((k) => k.trim()).filter(Boolean);
+    const params = new URLSearchParams({ keys: list.join(",") });
+    if (ctx.userId) params.set("userId", ctx.userId);
+    if (ctx.workspaceId) params.set("workspaceId", ctx.workspaceId);
+    if (ctx.tenantId) params.set("tenantId", ctx.tenantId);
+    if (ctx.plan) params.set("plan", ctx.plan);
+    const data = await this.request(`/feature-flags/evaluate?${params.toString()}`);
+    return data.flags || data;
+  }
+
+  evaluateBatch(keys, ctx) {
+    return this.evaluate(keys, ctx);
+  }
+}
+
+/** @extends PlatformClient */
+export class TelemetryClient extends PlatformClient {
+  /**
+   * @param {{ product: string; action: string; tenantId?: string; metadata?: object }} body
+   */
+  track(body) {
+    return this.request("/events", {
+      method: "POST",
+      body: JSON.stringify({
+        event: "telemetry.action",
+        payload: body,
+        source: body.product || "sdk",
+      }),
+    }).catch(() => ({}));
   }
 }

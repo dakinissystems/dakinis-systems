@@ -18,6 +18,8 @@ export function DashboardCard({
   className = "",
   onAction,
   onAiHintAction,
+  quickActions = [],
+  onQuickAction,
 }) {
   if (loading) {
     return (
@@ -80,6 +82,22 @@ export function DashboardCard({
         </div>
       ) : null}
       {children}
+      {quickActions.length > 0 ? (
+        <div className="dakinis-dashboard-card__quick-actions" role="group" aria-label="Acciones rápidas">
+          {quickActions.map((qa) => (
+            <button
+              key={qa.id}
+              type="button"
+              className={`dakinis-dashboard-card__quick-btn${
+                qa.variant === "primary" ? " dakinis-dashboard-card__quick-btn--primary" : ""
+              }`}
+              onClick={() => onQuickAction?.(qa.id, qa)}
+            >
+              {qa.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
       {actionLabel ? (
         <button type="button" className="dakinis-dashboard-card__action" onClick={onAction}>
           {actionLabel}
@@ -104,6 +122,19 @@ export const dashboardCardStyles = `
 .dakinis-dashboard-card__ai-hint { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--dakinis-muted, #b8c6d9); padding: 0.35rem 0; border-top: 1px solid var(--dakinis-line, #23415f); margin-top: 0.25rem; }
 .dakinis-dashboard-card__ai-action { font-size: 0.75rem; font-weight: 600; color: var(--dakinis-ai-soft, #a855f7); background: none; border: none; cursor: pointer; padding: 0; }
 .dakinis-dashboard-card__action { margin-top: auto; align-self: flex-start; font-size: 0.82rem; background: none; border: none; color: var(--dakinis-accent, #2dd4bf); cursor: pointer; padding: 0; }
+.dakinis-dashboard-card__quick-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.35rem; }
+.dakinis-dashboard-card__quick-btn {
+  font-size: 0.72rem; font-weight: 600; padding: 0.25rem 0.55rem; border-radius: 999px;
+  border: 1px solid var(--dakinis-line, rgba(255,255,255,0.15));
+  background: transparent; color: var(--dakinis-muted, #b8c6d9); cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.dakinis-dashboard-card__quick-btn:hover { border-color: var(--dakinis-accent, #2dd4bf); color: var(--dakinis-accent, #2dd4bf); }
+.dakinis-dashboard-card__quick-btn--primary {
+  border-color: var(--dakinis-accent, #2dd4bf);
+  background: rgba(45, 212, 191, 0.12);
+  color: var(--dakinis-accent, #2dd4bf);
+}
 .dakinis-dashboard-card__error-title { margin: 0; font-weight: 600; font-size: 0.9rem; }
 .dakinis-dashboard-card__error-hint { margin: 0; font-size: 0.82rem; color: var(--dakinis-muted, #b8c6d9); }
 @media (prefers-reduced-motion: reduce) { .dakinis-dashboard-card:hover { transform: none; } }

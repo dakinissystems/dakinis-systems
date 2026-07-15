@@ -10,7 +10,11 @@ export {
   EventsClient,
   KnowledgeClient,
   PlatformClient,
+  FeatureFlagsClient,
+  TelemetryClient,
 } from "./modules/platform.js";
+export { createDakinisPlatform } from "./create-platform.js";
+export { ContractClient, loadContractClient } from "./clients/contract-client.js";
 export {
   BillingServiceClient,
   NotificationsServiceClient,

@@ -67,11 +67,10 @@ import { getPlatformMetrics } from "./services/platform-metrics.js";
 import { evaluateFeatureFlags } from "./services/feature-flags.js";
 import { mapToHttp } from "@dakinis/shared-error";
 import { addonDataKeySchema, addonDataPutSchema, parseOrThrow } from "@dakinis/shared-validation";
-import { getHubDashboardAggregated } from "./services/hub-dashboard-aggregated.js";
-import { getWorkspaceSummary } from "./services/workspace-summary.js";
-import { getPlatformHealth } from "./services/platform-health.js";
+import { queryBus, createQuery } from "./platform/buses.js";
 import { enforceServiceRateLimit } from "./lib/rate-limit.js";
 import { invalidateUserBffCache } from "./lib/cache.js";
+import { recordHubTimelineFromPlatformEvent } from "./services/hub-timeline.js";
 
 function platformEvent(type, payload, meta = {}) {
   return {
@@ -125,7 +124,9 @@ export const routes = {
     const url = new URL(req.url || "/", "http://internal.local");
     const skipCache = url.searchParams.get("fresh") === "1";
     try {
-      return await getPlatformHealth({ skipCache });
+      return await queryBus.execute(
+        createQuery("platform.health", { fresh: skipCache ? "1" : undefined }),
+      );
     } catch (err) {
       return dbError(err);
     }
@@ -193,7 +194,9 @@ export const routes = {
     }
     const skipCache = url.searchParams.get("fresh") === "1";
     try {
-      return await getHubDashboardAggregated(userId, { skipCache });
+      return await queryBus.execute(
+        createQuery("hub.dashboard.aggregated", { userId, fresh: skipCache ? "1" : undefined }),
+      );
     } catch (err) {
       return dbError(err);
     }
@@ -213,7 +216,9 @@ export const routes = {
     }
     const skipCache = url.searchParams.get("fresh") === "1";
     try {
-      return await getWorkspaceSummary(userId, { skipCache });
+      return await queryBus.execute(
+        createQuery("workspace.summary", { userId, fresh: skipCache ? "1" : undefined }),
+      );
     } catch (err) {
       return dbError(err);
     }
@@ -258,6 +263,9 @@ export const routes = {
     if (!body.event) return { status: 400, body: { error: "validation", message: "event required" } };
     const event = platformEvent(body.event, body.payload || {}, body);
     const pub = await publishEvent(event);
+    recordHubTimelineFromPlatformEvent(event).catch((err) => {
+      console.warn("[internal] hub timeline:", err instanceof Error ? err.message : err);
+    });
     indexPlatformEventForSearch(event).catch((err) => {
       console.warn("[internal] search event index:", err instanceof Error ? err.message : err);
     });

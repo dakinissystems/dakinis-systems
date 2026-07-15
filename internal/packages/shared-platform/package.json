@@ -1,0 +1,22 @@
+{
+  "name": "@dakinis/shared-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./command-bus": "./src/command-bus.js",
+    "./query-bus": "./src/query-bus.js",
+    "./cache": "./src/cache-service.js",
+    "./capabilities": "./src/capability-registry.js",
+    "./permissions": "./src/permissions.js",
+    "./director-state": "./src/state-machines/director.js",
+    "./gateway-client": "./src/gateway-client.js"
+  },
+  "dependencies": {
+    "@dakinis/shared-validation": "file:../shared-validation"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

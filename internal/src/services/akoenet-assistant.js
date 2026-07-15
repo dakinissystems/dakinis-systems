@@ -1,29 +1,76 @@
-import { createDefaultOrchestrator, PermissionsEngine } from "../../packages/akoenet-orchestrator/src/index.js";
+import {
+  createDefaultOrchestrator,
+  PermissionsEngine,
+  ContextEngine,
+} from "../../packages/akoenet-orchestrator/src/index.js";
 import { invokeModule } from "../../packages/akoenet-modules/src/index.js";
 import { createAkoeNetEvent, resolveModulesForEvent } from "../../packages/akoenet-orchestrator/src/events.js";
 import { query } from "../lib/db.js";
+import {
+  publishStreamStartedAnnouncement,
+  publishStreamEndedAnnouncement,
+} from "./streamer-announce.js";
+import { processAssistantAiAsk } from "./assistant-ai.js";
 
 let orchestratorSingleton = null;
 
 function getOrchestrator() {
   if (!orchestratorSingleton) {
     orchestratorSingleton = createDefaultOrchestrator({
+      contextEngine: new ContextEngine({
+        fetchServer: async (serverId) => {
+          const { rows } = await query(
+            `SELECT id, name, description FROM akoenet.servers WHERE id = $1::bigint LIMIT 1`,
+            [serverId]
+          );
+          return rows[0] || null;
+        },
+        fetchMember: async (serverId, userId) => {
+          const { rows } = await query(
+            `SELECT sm.user_id, sm.joined_at
+             FROM akoenet.server_members sm
+             WHERE sm.server_id = $1::bigint AND sm.user_id::text = $2
+             LIMIT 1`,
+            [serverId, String(userId)]
+          );
+          return rows[0] ? { userId: rows[0].user_id, joinedAt: rows[0].joined_at } : { userId };
+        },
+        fetchRecentMessages: async (serverId, channelId, limit = 20) => {
+          if (!channelId) return [];
+          const { rows } = await query(
+            `SELECT content, created_at
+             FROM akoenet.messages
+             WHERE channel_id = $1::bigint
+             ORDER BY created_at DESC
+             LIMIT $2`,
+            [channelId, limit]
+          );
+          return rows.reverse();
+        },
+      }),
       permissionsEngine: new PermissionsEngine({
         isSuperAdmin: async (userId) => {
-          const { rows } = await query(
-            `SELECT is_super_admin FROM dakinis_auth.users WHERE id = $1::uuid LIMIT 1`,
-            [userId]
-          );
-          return Boolean(rows[0]?.is_super_admin);
+          try {
+            const { rows } = await query(
+              `SELECT is_super_admin FROM dakinis_auth.users WHERE id = $1::uuid LIMIT 1`,
+              [userId]
+            );
+            return Boolean(rows[0]?.is_super_admin);
+          } catch {
+            return false;
+          }
         },
         isServerOwner: async (userId, serverId) => {
           const { rows } = await query(
-            `SELECT 1 FROM akoenet.servers WHERE id = $1::bigint AND owner_id = $2::uuid LIMIT 1`,
-            [serverId, userId]
+            `SELECT 1 FROM akoenet.servers WHERE id = $1::bigint AND owner_id::text = $2 LIMIT 1`,
+            [serverId, String(userId)]
           );
           return Boolean(rows[0]);
         },
-        getUserPermissions: async () => [],
+        getUserPermissions: async (userId) => {
+          if (!userId) return [];
+          return [{ resource: "ai", action: "use", scope: "server" }];
+        },
       }),
     });
   }
@@ -97,6 +144,25 @@ export async function routeAssistantCommand(command) {
   orchestrator.setActiveModules(active);
 
   return orchestrator.route(command, async (moduleId, enriched) => {
+    if (moduleId === "assistant" && enriched.action === "ai.ask") {
+      const result = await processAssistantAiAsk(enriched);
+      await logAssistantUsage({
+        serverId: command.serverId,
+        moduleKey: "assistant",
+        userId: command.userId,
+        tokensInput: result.tokensInput ?? null,
+        tokensOutput: result.tokensOutput ?? null,
+        endpoint: "ai.ask",
+        metadata: {
+          status: result.status,
+          channelId: command.channelId,
+          messageId: result.messageId,
+          provider: result.provider,
+        },
+      }).catch(() => {});
+      return result;
+    }
+
     const result = await invokeModule(moduleId, enriched);
     if (enriched.action?.startsWith("moderation.")) {
       await logModeration({
@@ -153,7 +219,20 @@ export async function dispatchAssistantEvent(eventInput) {
     results.push({ moduleId, result });
   }
 
-  return { event, modules: moduleIds, results };
+  let announce = null;
+  if (eventInput.type === "stream.started" && moduleIds.includes("streamer")) {
+    announce = await publishStreamStartedAnnouncement(
+      eventInput.serverId,
+      eventInput.data || {}
+    );
+  } else if (eventInput.type === "stream.ended" && moduleIds.includes("streamer")) {
+    announce = await publishStreamEndedAnnouncement(
+      eventInput.serverId,
+      eventInput.data || {}
+    );
+  }
+
+  return { event, modules: moduleIds, results, announce };
 }
 
 export async function logModeration(input) {

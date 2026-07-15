@@ -67,7 +67,8 @@ Write-Host "  2. dakinis-billing"
 Write-Host "  3. streamautomator-api"
 Write-Host ""
 
-Write-Host "PASO 7 - NO aplicar migracion 043 hasta dual-write estable" -ForegroundColor Yellow
+Write-Host "PASO 7 - Aplicar migracion 047 (outbox idempotency_key)" -ForegroundColor Cyan
+Write-Host "  docs/supabase/migrations/047_outbox_idempotency_key.sql"
 Write-Host ""
 
 if ($RunSmoke) {

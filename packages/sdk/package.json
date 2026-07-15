@@ -6,6 +6,10 @@
   "exports": {
     ".": "./src/index.js",
     "./ai": "./src/modules/ai.js",
-    "./platform": "./src/modules/platform.js"
+    "./platform": "./src/modules/platform.js",
+    "./create-platform": "./src/create-platform.js"
+  },
+  "dependencies": {
+    "@dakinis/shared-platform": "file:../shared-platform"
   }
 }
