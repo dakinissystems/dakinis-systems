@@ -1,5 +1,6 @@
 /**
  * Light query bus — read-side handlers separate from commands.
+ * Prefer createMappedQuery / platformQueries.create for typed QueryMap params.
  */
 
 export class QueryBus {
@@ -29,6 +30,7 @@ export class QueryBus {
 }
 
 /**
+ * Untyped factory — prefer createMappedQuery when type is in PLATFORM_QUERY_MAP.
  * @param {string} type
  * @param {object} [params]
  * @param {object} [metadata]

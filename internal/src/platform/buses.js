@@ -1,5 +1,9 @@
 import { CommandBus, createCommand } from "@dakinis/shared-platform/command-bus";
-import { QueryBus, createQuery } from "@dakinis/shared-platform/query-bus";
+import { QueryBus } from "@dakinis/shared-platform/query-bus";
+import {
+  platformQueries,
+  createMappedQuery,
+} from "@dakinis/shared-platform/query-map";
 import { registerCachedQuery } from "@dakinis/shared-platform/cached-query";
 import { validationMiddleware } from "@dakinis/shared-platform/command-middleware";
 import { getCacheService } from "../lib/cache.js";
@@ -11,6 +15,9 @@ import { buildInternalContext } from "./context.js";
 
 export const commandBus = new CommandBus();
 export const queryBus = new QueryBus();
+
+/** @deprecated Prefer createMappedQuery — kept for callers still importing createQuery. */
+export const createQuery = createMappedQuery;
 
 const cache = getCacheService();
 
@@ -68,4 +75,6 @@ commandBus.register(
   }
 );
 
-export { createCommand, createQuery };
+platformQueries.assertRegistered(queryBus);
+
+export { createCommand, createMappedQuery, platformQueries };

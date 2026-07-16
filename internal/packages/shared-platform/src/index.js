@@ -6,6 +6,12 @@ export {
   auditMiddleware,
 } from "./command-middleware.js";
 export { QueryBus, createQuery } from "./query-bus.js";
+export {
+  PLATFORM_QUERY_MAP,
+  defineQueryMap,
+  platformQueries,
+  createMappedQuery,
+} from "./query-map.js";
 export { registerCachedQuery, executeCachedQuery } from "./cached-query.js";
 export { createPlatformContext, createContextFromRequest } from "./platform-context.js";
 export { CacheService } from "./cache-service.js";
