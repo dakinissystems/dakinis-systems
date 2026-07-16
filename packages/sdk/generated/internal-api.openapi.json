@@ -1,0 +1,410 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "dakinis-internal-api",
+    "version": "0.1.0",
+    "description": "API interna platform — productos nunca hablan entre sí directamente."
+  },
+  "servers": [
+    {
+      "url": "https://api.dakinissystems.com/internal"
+    }
+  ],
+  "paths": {
+    "/internal/health": {
+      "get": {
+        "summary": "Health del servicio internal",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/users/{id}": {
+      "get": {
+        "summary": "Perfil mínimo usuario (IdP)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/profile/{userId}": {
+      "get": {
+        "summary": "Preferencias cross-producto",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/hub/dashboard/{userId}": {
+      "get": {
+        "summary": "Dashboard Hub — secciones, apps, resumen",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/hub/dashboard/aggregated/{userId}": {
+      "get": {
+        "summary": "BFF Hub dashboard — cache Redis 30s + notifications fan-out",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/workspace/summary/{userId}": {
+      "get": {
+        "summary": "BFF workspace summary — addons, profiles, plan",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/platform/health": {
+      "get": {
+        "summary": "BFF platform health — DB, Redis, bus probes (cache 15s)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/feature-flags/evaluate": {
+      "get": {
+        "summary": "Evaluar flags batch (query keys, userId, workspaceId)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/platform/metrics": {
+      "get": {
+        "summary": "Métricas platform — health probes, Railway, event bus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/workspaces/me/{userId}/data/{addonKey}": {
+      "get": {
+        "summary": "Sync addon content (kanban, calendar, notes, code-editor)",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "addonKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "summary": "Save addon content blob",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "addonKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/events": {
+      "post": {
+        "summary": "Publicar evento al bus platform",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "summary": "Suscripción / replay (admin)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/storage/upload-url": {
+      "post": {
+        "summary": "Presigned upload URL → Storage (Supabase / R2)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/storage/{objectId}": {
+      "get": {
+        "summary": "Signed read URL",
+        "parameters": [
+          {
+            "name": "objectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/search": {
+      "post": {
+        "summary": "Global search (query + scopes)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/knowledge/query": {
+      "post": {
+        "summary": "Proxy → Knowledge /v1/query",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/notifications/send": {
+      "post": {
+        "summary": "Encolar notificación multi-canal",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/workspaces/{id}": {
+      "get": {
+        "summary": "Workspace Admin — detalle (migr. 031)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/workspaces/{id}/members": {
+      "get": {
+        "summary": "Workspace Admin — miembros",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/workspaces/{id}/members/invite": {
+      "post": {
+        "summary": "Workspace Admin — invitar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/workspaces/invites/{token}/accept": {
+      "post": {
+        "summary": "Aceptar invitación de workspace por token",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/admin/v1/overview": {
+      "get": {
+        "summary": "Super Admin — panorama platform",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/admin/v1/workspaces": {
+      "get": {
+        "summary": "Super Admin — listar workspaces",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/internal/admin/v1/audit": {
+      "get": {
+        "summary": "Super Admin — audit timeline",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@dakinis/sdk-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "dependencies": {
+    "@dakinis/sdk-auth": "file:../sdk-auth",
+    "@dakinis/shared-platform": "file:../shared-platform"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

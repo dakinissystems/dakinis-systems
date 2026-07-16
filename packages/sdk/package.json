@@ -1,15 +1,29 @@
 {
   "name": "@dakinis/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.js",
     "./ai": "./src/modules/ai.js",
     "./platform": "./src/modules/platform.js",
-    "./create-platform": "./src/create-platform.js"
+    "./create-platform": "./src/create-platform.js",
+    "./auth": "../sdk-auth/src/index.js",
+    "./workspace": "../sdk-workspace/src/index.js",
+    "./billing": "../sdk-billing/src/index.js",
+    "./events": "../sdk-events/src/index.js",
+    "./metrics": "../sdk-metrics/src/index.js"
   },
   "dependencies": {
+    "@dakinis/sdk-auth": "file:../sdk-auth",
+    "@dakinis/sdk-billing": "file:../sdk-billing",
+    "@dakinis/sdk-events": "file:../sdk-events",
+    "@dakinis/sdk-metrics": "file:../sdk-metrics",
+    "@dakinis/sdk-workspace": "file:../sdk-workspace",
     "@dakinis/shared-platform": "file:../shared-platform"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "generate-dto": "node ../../scripts/generate-dto.mjs --contract internal-api"
   }
 }

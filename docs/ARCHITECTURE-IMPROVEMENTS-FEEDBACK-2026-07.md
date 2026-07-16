@@ -14,11 +14,11 @@
 
 | Dimensión | Feedback | Realidad 16 jul | Delta / siguiente paso | Esfuerzo | Owner |
 |-----------|----------|-----------------|------------------------|----------|-------|
-| Foundation SDK / buses | Modular, no monolito | Fase 2 live | Paquetes `@dakinis/sdk-*` + reexport | 1–2 sem | Platform |
-| Hub Mi día / timeline | live | `stub=false`, score 72 | Cache tags + invalidación por evento | ~3h | Internal |
-| Invite accept | hardening | **live** (`b1c5910` / `027e8b6`) | SM + `FOR UPDATE` + Policy | ~3h | Internal |
+| Foundation SDK / buses | Modular, no monolito | Fase 2 live + Phase A | Paquetes `@dakinis/sdk-*` + reexport | 1–2 sem | Platform |
+| Hub Mi día / timeline | live | `stub=false`, score 72 | Cache tags Redis + invalidación | ~3h | Internal |
+| Invite accept | hardening | **live** + domain facade | SM + `FOR UPDATE` + Policy | ~3h | Internal |
 | Automation runs | observabilidad | **049 + UI live** | Logs estructurados; **nodos diferidos** | ~4h | SA |
-| Domain layer | faltante | No existe `@dakinis/domain` | **Fase A — crítico** | ~1 sem | Platform |
+| Domain layer | faltante | **`@dakinis/domain` live** (`c35a014`) | Ampliar aggregates | ~1 sem | Platform |
 | Billing E2E | alto negocio | 2ª prioridad explícita | Cuando haya cliente | ~4h | Billing |
 | OTel | deseable | Sentry cubre hoy | **Fase C** (clientes + workers) | ~1 sem | Platform |
 | Automation nodes | futuro | IF/THEN OK | Solo si aparecen loops/branches/multi-trigger | 2+ sem | SA |
@@ -414,14 +414,14 @@ flowchart LR
 | 2 | Cache tags + invalidación timeline | Alto | 3h | — | Internal | Manual |
 | 3 | Invite SM + `FOR UPDATE` + policies | Alto | 3h | domain scaffold | Internal | Accept live |
 | 4 | Rate limit granular (public/bff/admin/events) | Medio | 2h | — | Gateway | Global |
-| 5 | **Scaffold `@dakinis/domain`** | Crítico | 5d | — | Platform | No |
-| 6 | PlatformContext middleware | Alto | 4h | — | Platform | Parcial |
-| 7 | SDK modular + `events.subscribe` | Alto | 1w | domain events | Platform | Parcial |
-| 8 | CommandBus middleware pipeline | Alto | 3d | — | Internal | Parcial |
-| 9 | DTO Generator (primera pasada) | Medio | 3d | contratos | Platform | Contratos JSON |
+| 5 | **Scaffold `@dakinis/domain`** | Crítico | 5d | — | Platform | **Done** (`c35a014`) |
+| 6 | PlatformContext middleware | Alto | 4h | — | Platform | **Done** Phase A |
+| 7 | SDK modular + `events.subscribe` | Alto | 1w | domain events | Platform | **In progress** (`sdk-*`) |
+| 8 | CommandBus middleware pipeline | Alto | 3d | — | Internal | **Done** Phase A |
+| 9 | DTO Generator (primera pasada) | Medio | 3d | contratos | Platform | **v1** (`scripts/generate-dto.mjs`) |
 | 10 | Smokes modulares (Jest + helpers) | Medio | 4h | — | DX | PS1 |
 | 11 | Automation logs estructurados + UI stream | Medio | 4h | — | SA | Runs live |
-| 12 | SDK metrics | Medio | 2d | SDK modular | Platform | No |
+| 12 | SDK metrics | Medio | 2d | SDK modular | Platform | **Done** (`@dakinis/sdk-metrics`) |
 | 13 | Automation node engine | Alto | 2w | domain | SA | **Diferido** |
 | 14 | OTel end-to-end | Medio | 1w | escala | Platform | **Fase C** |
 | 15 | Billing E2E | Alto negocio | 4h | cliente | Billing | 2ª prioridad |
@@ -579,4 +579,4 @@ it('expires pending invite after TTL', () => { … });
 
 ---
 
-*Actualizar al cerrar filas de §5 o al completar hitos del Gantt. Próxima revisión: tras scaffold `@dakinis/domain` o primer piloto con invite real.*
+*Actualizar al cerrar filas de §5 o al completar hitos del Gantt. Próxima revisión: tras SDK modular en productos o primer piloto con invite real.*

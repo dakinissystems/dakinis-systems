@@ -99,3 +99,35 @@ test("registerCachedQuery caches query results", async () => {
   await bus.execute(q);
   assert.equal(loads, 1);
 });
+
+test("CacheService memo returns cached flag", async () => {
+  let loads = 0;
+  const cache = new CacheService();
+  const loader = async () => {
+    loads += 1;
+    return { ok: true };
+  };
+  const first = await cache.memo("k1", 60, loader);
+  const second = await cache.memo("k1", 60, loader);
+  assert.equal(first.cached, false);
+  assert.equal(second.cached, true);
+  assert.equal(loads, 1);
+});
+
+test("CacheService invalidateTag clears tagged keys", async () => {
+  const cache = new CacheService();
+  await cache.set("a", "1", 60, { tags: ["user:1"] });
+  await cache.set("b", "2", 60, { tags: ["user:2"] });
+  await cache.invalidateTag("user:1");
+  assert.equal(await cache.get("a"), null);
+  assert.equal(await cache.get("b"), "2");
+});
+
+test("CacheService invalidateTags clears multiple tags", async () => {
+  const cache = new CacheService();
+  await cache.set("a", "1", 60, { tags: ["t1"] });
+  await cache.set("b", "2", 60, { tags: ["t2"] });
+  await cache.invalidateTags(["t1", "t2"]);
+  assert.equal(await cache.get("a"), null);
+  assert.equal(await cache.get("b"), null);
+});

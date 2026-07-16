@@ -1,5 +1,6 @@
 import { DomainError, Email, UserId } from "@dakinis/domain";
 import { query } from "../lib/db.js";
+import { invalidateUserBffCache } from "../lib/cache.js";
 import { PostgresWorkspaceInviteRepository } from "./workspace-invite-repository.js";
 
 const repo = new PostgresWorkspaceInviteRepository();
@@ -76,6 +77,8 @@ export async function acceptInviteViaFacade(token, input) {
         ).catch(() => {});
       }
     }
+
+    await invalidateUserBffCache(userId).catch(() => {});
 
     return {
       member: memberRows[0] ?? null,

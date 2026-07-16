@@ -22,3 +22,9 @@ export {
   KnowledgeServiceClient,
   ServiceClient,
 } from "./modules/platform-services.js";
+
+export { createAuthModule } from "@dakinis/sdk-auth";
+export { createWorkspaceModule } from "@dakinis/sdk-workspace";
+export { createBillingModule } from "@dakinis/sdk-billing";
+export { createEventsModule } from "@dakinis/sdk-events";
+export { createMetricsModule } from "@dakinis/sdk-metrics";

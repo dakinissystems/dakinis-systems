@@ -113,6 +113,10 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 - Scripts: `pilot-workspace-invite.ps1`, seed score `docs/scripts/seed_lifeflow_score_velezcampeon.sql`
 - SSO E2E: 3/3 OK (`smoke-hub-sso-products.ps1`; ignora `FINANZAS_API_URL` legacy)
 
+**Arquitectura (16 jul):**
+- Fase A ✅ — `@dakinis/domain` (`WorkspaceInvite`), PlatformContext, CommandBus middleware, CachedQuery, invite facade (`c35a014`)
+- Fase B 🚧 — SDK modular (`@dakinis/sdk-auth|workspace|billing|events|metrics`), `platform.metrics()`, cache tags Redis, DTO generator v1
+
 Smokes: `scripts/smoke-hub.ps1` · `scripts/deploy-hub-automation.ps1 -RunSmoke`
 
 ---

@@ -97,6 +97,22 @@ export class WorkspaceClient extends PlatformClient {
     const qs = opts.fresh ? "?fresh=1" : "";
     return this.request(`/workspace/summary/${encodeURIComponent(userId)}${qs}`);
   }
+
+  /** @param {string} workspaceId @param {{ email: string; role?: string; invitedBy?: string }} body */
+  inviteMember(workspaceId, body) {
+    return this.request(`/workspaces/${encodeURIComponent(workspaceId)}/members/invite`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  }
+
+  /** @param {string} token @param {{ userId: string }} body */
+  acceptInvite(token, body) {
+    return this.request(`/workspaces/invites/${encodeURIComponent(token)}/accept`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  }
 }
 
 /** @extends PlatformClient */

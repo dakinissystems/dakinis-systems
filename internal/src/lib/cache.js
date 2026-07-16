@@ -22,12 +22,26 @@ async function redisDel(keys) {
   await redis.del(keys);
 }
 
+async function redisSAdd(tagKey, members) {
+  const redis = await getRedis();
+  if (!redis || !members?.length) return;
+  await redis.sAdd(tagKey, members);
+}
+
+async function redisSMembers(tagKey) {
+  const redis = await getRedis();
+  if (!redis) return [];
+  return redis.sMembers(tagKey);
+}
+
 function getCacheService() {
   if (!service) {
     service = new CacheService({
       get: redisGet,
       set: redisSet,
       del: redisDel,
+      sAdd: redisSAdd,
+      sMembers: redisSMembers,
       maxMemoryKeys: 500,
     });
   }
