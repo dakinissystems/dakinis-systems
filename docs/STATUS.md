@@ -79,7 +79,7 @@ URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
 | A–B | `000`–`015` | ✅ |
 | C | `016`–`019` | ✅ prod (smoke `stub=false`) |
 | C+ | `027`–`029` | ✅ prod (`hub.mi_dia` ON) |
-| C++ | `048` | ✅ automation metrics (jul 2026) |
+| C++ | `048`–`049` | ✅ automation metrics + `stream.automation_runs` (16 jul) |
 | D | `020`–`026`, `024` | ✅ |
 | D+ | `030` | ✅ LifeFlow ↔ IdP (`app_user_links` + hub-sso velez → `usr_da09193c-ae6`) |
 | E | `031` | ✅ workspace admin |
@@ -95,12 +95,11 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 
 | # | Sistema | Commit | Estado |
 |---|---------|--------|--------|
-| 1 | dakinis-internal-api | `3c69bbb` | ✅ timeline + Redis WRONGTYPE (smoke 202) |
-| 2 | dakinis-streamautomator web | `7a559fb` | ✅ bundle prod: Nueva regla, Creator Suite |
-| 3 | dakinis-hub | `3f58a22` | ✅ bundle prod: ActivityTimeline, stream-automation-rules |
-| 4 | Supabase | `048` | ✅ aplicada |
-| 5 | internal-api | `3c69bbb` | ✅ Redis WRONGTYPE fix en POST /events |
-| 6 | streamautomator-api | `6b1865d` | ✅ delete automation stream-read |
+| 1 | dakinis-internal-api | `b1c5910` | ✅ invite accept live (16 jul) |
+| 2 | dakinis-hub | `027e8b6` | ✅ `/invite/:token` live |
+| 3 | streamautomator-api | `e73b3d7` | ✅ `/api/automation/runs` + migración `AutomationRuns` |
+| 4 | streamautomator-frontend | `e73b3d7` | ✅ historial ejecuciones AutomationPage |
+| 5 | Supabase | `049` + seed score | ✅ `lifeflow_score=72` velez |
 | 7 | Billing | `9ad3ef1` + SA probe | ✅ LiveCheckout UNIFICADO (user 20 + platformAuthSub) |
 
 **Billing (16 jul):** `smoke-billing-unified-sa.ps1 -LiveSync -LiveCheckout` ✅ — login velezcampeon → `saUserId=20`, `Checkout UNIFICADO`. Causa LEGACY anterior: JWT era user 17 sin enlace. Siguiente: pago test / webhook → `billing.subscriptions` + fan-out license-sync.

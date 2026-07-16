@@ -147,9 +147,11 @@ Idempotente. El INSERT en `public."StreamDirectorSessions"` ya no se revierte si
 | 46 | [`046_enable_billing_unified_global.sql`](./046_enable_billing_unified_global.sql) | ✅ jul 2026 · `billing.unified` global ON |
 | 47 | [`047_outbox_idempotency_key.sql`](./047_outbox_idempotency_key.sql) | ✅ jul 2026 · Columna `idempotency_key` + unique index en `meta.outbox_events` |
 | 48 | [`048_hub_dashboard_automation.sql`](./048_hub_dashboard_automation.sql) | ⬜ Hub automation metrics + `core_low_stock_count` + timeline enriquecido |
-| 49 | [`049_stream_automation_runs.sql`](./049_stream_automation_runs.sql) | ⬜ Mirror opcional `stream.automation_runs` (primary: SA Sequelize `AutomationRuns`) |
+| 49 | [`049_stream_automation_runs.sql`](./049_stream_automation_runs.sql) | ✅ 16 jul 2026 · `stream.automation_runs` (mirror; primary SA Sequelize) |
 
-> **Confirmado prod (15 jul 2026):** migraciones **037–047 aplicadas**. Hub **016–029** operativas (`hub.v1_get_dashboard`, `stub=false` en smoke). Pendiente **048** (métricas automation) y **049** (runs mirror). Triggers public→stream retirados (043).
+> **Confirmado prod (15 jul 2026):** migraciones **037–047 aplicadas**. Hub **016–029** operativas (`hub.v1_get_dashboard`, `stub=false` en smoke).
+>
+> **16 jul 2026:** **048/049 aplicadas**; seed score velez=`72`; invite accept + automation runs desplegados (Hub/Internal/SA).
 
 Deploy greenfield: [`scripts/deploy-billing-unified-greenfield.ps1`](../../scripts/deploy-billing-unified-greenfield.ps1)  
 Deploy Foundation Fase 2: [`scripts/deploy-foundation-phase2.ps1`](../../scripts/deploy-foundation-phase2.ps1)  

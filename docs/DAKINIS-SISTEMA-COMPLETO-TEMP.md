@@ -734,11 +734,11 @@ Railway/Sequelize escribe en `public.*`; sync a `stream.*` vía **dual-write en 
 | 046 | `046_enable_billing_unified_global.sql` | `billing.unified` global ON (greenfield) | ✅ jul 2026 |
 | 047 | `047_outbox_idempotency_key.sql` | `idempotency_key` en `meta.outbox_events` | ✅ jul 2026 |
 | 048 | `048_hub_dashboard_automation.sql` | Métricas automation SA + `core_low_stock_count` + timeline enriquecido | ✅ jul 2026 |
-| 049 | `049_stream_automation_runs.sql` | Mirror opcional `stream.automation_runs` (primary: SA Sequelize `AutomationRuns`) | ⬜ código listo |
+| 049 | `049_stream_automation_runs.sql` | Mirror `stream.automation_runs` (primary: SA Sequelize `AutomationRuns`) | ✅ 16 jul 2026 |
 
 > **Confirmado prod (15 jul 2026):** migraciones **037–048 aplicadas**. Security Advisor: 0 tablas «RLS Enabled No Policy» tras 038. Triggers public→stream retirados (043). Hub Mi día: `stub=false`, timeline writer live (`smoke-hub-timeline.ps1` OK).
 >
-> **16 jul 2026:** LifeFlow `030` `app_user_links` ✅; Hub SSO 3/3 con `finance-api.dakinissystems.com`; invite accept + automation runs en código (deploy pendiente).
+> **16 jul 2026:** LifeFlow `030` ✅; Hub SSO SA+LifeFlow OK (AkoeNet puede 503 puntual); invite accept + automation runs **desplegados**; `049` + seed `lifeflow_score=72` velez.
 
 Deploy: `scripts/deploy-billing-unified-greenfield.ps1` · `scripts/deploy-hub-automation.ps1` · `scripts/apply-hub-048.ps1`  
 Smoke: `scripts/smoke-hub.ps1` · `scripts/smoke-hub-timeline.ps1` · `scripts/smoke-creator-suite-sa.ps1` · `scripts/smoke-billing-unified-sa.ps1`  
@@ -1011,10 +1011,10 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 
 | Repo | Commit | Cambio |
 |------|--------|--------|
-| dakinis-internal-api | `b1c5910` | `acceptWorkspaceInvite` + `POST /workspaces/invites/:token/accept` |
-| dakinis-hub | `027e8b6` | `/invite/:token`, enlace en Admin Members, proxy BFF |
-| streamautomator | `e73b3d7` | `AutomationRuns` + `GET /api/automation/runs` + UI historial |
-| monorepo docs/scripts | `a5e8a6e` | `049`, TEMP/STATUS, `pilot-workspace-invite.ps1`, seed score, smoke SSO `finance-api` |
+| dakinis-internal-api | `b1c5910` | ✅ live — `acceptWorkspaceInvite` |
+| dakinis-hub | `027e8b6` | ✅ live — `/invite/:token` |
+| streamautomator | `e73b3d7` | ✅ live — `AutomationRuns` + UI |
+| monorepo docs/scripts | `a5e8a6e`+ | ✅ `049` aplicada + seed score 72 |
 
 ### Lo que está live y usable hoy
 - **Supabase migraciones 037–048 aplicadas en prod** (+ LifeFlow **030** `app_user_links`)
