@@ -410,10 +410,10 @@ flowchart LR
 
 | # | Iniciativa | Impacto | Esfuerzo | Depende de | Owner | Estado base |
 |---|------------|---------|----------|------------|-------|-------------|
-| 1 | QueryMap tipado (inferencia) | Alto | 2h | — | Platform | Parcial |
+| 1 | QueryMap tipado (inferencia) | Alto | 2h | — | Platform | **Done** (`query-map.js` + `.d.ts`) |
 | 2 | Cache tags + invalidación timeline | Alto | 3h | — | Internal | **Done** (Redis tags + timeline invalidate) |
 | 3 | Invite SM + `FOR UPDATE` + policies | Alto | 3h | domain scaffold | Internal | **Done** (create+accept+outbox+timeline) |
-| 4 | Rate limit granular (public/bff/admin/events) | Medio | 2h | — | Gateway | Global |
+| 4 | Rate limit granular (public/bff/admin/events) | Medio | 2h | — | Gateway | **Done** (nginx zones + Internal tiers) |
 | 5 | **Scaffold `@dakinis/domain`** | Crítico | 5d | — | Platform | **Done** (`c35a014`) |
 | 6 | PlatformContext middleware | Alto | 4h | — | Platform | **Done** Phase A |
 | 7 | SDK modular + `events.subscribe` | Alto | 1w | domain events | Platform | **Done** (`72b094a` + Hub client) |

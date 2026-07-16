@@ -117,8 +117,9 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 - Fase A ✅ — `@dakinis/domain` (`WorkspaceInvite`), PlatformContext, CommandBus middleware, CachedQuery, invite facade (`c35a014`)
 - Fase B ✅ — SDK modular (`sdk-*`), `platform.metrics()`, cache tags Redis, DTO generator v1 (`72b094a`)
 - Pre-Fase C ✅ — invite `FOR UPDATE` + `canAcceptInvite`, Hub `createHubPlatform`, admin invite status list
-- Fase C 🚧 — outbox consumer invite→timeline; Director SM en SA; invite create vía dominio + `invite.created.v1`
-- Diferido — automation nodes, OTel, rate-limit granular gateway
+- Fase C ✅ — outbox consumer invite→timeline; Director SM en SA; invite create vía dominio + `invite.created.v1`
+- Quick wins ✅ — QueryMap tipado (`@dakinis/shared-platform/query-map`); rate-limit granular Gateway (`public`/`bff`/`admin`/`events`)
+- Diferido — automation nodes, OTel, billing E2E, smokes Jest modulares
 
 Smokes: `scripts/smoke-hub.ps1` · `scripts/deploy-hub-automation.ps1 -RunSmoke`
 

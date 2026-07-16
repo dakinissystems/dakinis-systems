@@ -131,3 +131,27 @@ test("CacheService invalidateTags clears multiple tags", async () => {
   assert.equal(await cache.get("a"), null);
   assert.equal(await cache.get("b"), null);
 });
+
+test("createMappedQuery validates required params", async () => {
+  const { createMappedQuery, platformQueries } = await import("../src/query-map.js");
+  assert.ok(platformQueries.has("hub.dashboard.aggregated"));
+  const q = createMappedQuery("hub.dashboard.aggregated", { userId: "u1" });
+  assert.equal(q.type, "hub.dashboard.aggregated");
+  assert.equal(q.params.userId, "u1");
+  assert.throws(
+    () => createMappedQuery("hub.dashboard.aggregated", {}),
+    /query_param_required/
+  );
+  assert.throws(() => createMappedQuery("unknown.query", {}), /query_unknown/);
+});
+
+test("platformQueries.assertRegistered detects missing handlers", async () => {
+  const { QueryBus } = await import("../src/query-bus.js");
+  const { platformQueries } = await import("../src/query-map.js");
+  const bus = new QueryBus();
+  assert.throws(() => platformQueries.assertRegistered(bus), /query_handlers_missing/);
+  for (const type of platformQueries.types) {
+    bus.register(type, async () => ({}));
+  }
+  platformQueries.assertRegistered(bus);
+});
