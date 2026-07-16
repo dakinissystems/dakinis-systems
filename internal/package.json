@@ -13,7 +13,7 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@dakinis/domain": "file:../packages/domain",
+    "@dakinis/domain": "file:./packages/domain",
     "@dakinis/shared-ai": "file:./packages/shared-ai",
     "@dakinis/shared-platform": "file:./packages/shared-platform",
     "@dakinis/shared-db": "file:./packages/shared-db",
