@@ -117,7 +117,7 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 - Fase A ✅ — `@dakinis/domain` (`WorkspaceInvite`), PlatformContext, CommandBus middleware, CachedQuery, invite facade (`c35a014`)
 - Fase B ✅ — SDK modular (`sdk-*`), `platform.metrics()`, cache tags Redis, DTO generator v1 (`72b094a`)
 - Pre-Fase C ✅ — invite `FOR UPDATE` + `canAcceptInvite`, Hub `createHubPlatform`, admin invite status list
-- Fase C 🚧 — domain events → outbox (`invite.*.v1`), `DirectorSession` + `AutomationRun`/`AutomationRule` aggregates; SA runs vía SM
+- Fase C 🚧 — domain events → outbox (`invite.*.v1`), `DirectorSession` + `AutomationRun`/`AutomationRule` aggregates; SA runs vía SM; Director SM en SA; Internal outbox consumer → timeline
 - Diferido — automation nodes, OTel
 
 Smokes: `scripts/smoke-hub.ps1` · `scripts/deploy-hub-automation.ps1 -RunSmoke`

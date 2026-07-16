@@ -179,4 +179,12 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(config.port, () => {
   console.log(`[${config.service}] listening on :${config.port}`);
+  import("./events/outbox-module.js")
+    .then((m) => m.startInternalOutboxConsumer())
+    .catch((err) => {
+      console.warn(
+        "[internal] outbox consumer failed to start:",
+        err instanceof Error ? err.message : err
+      );
+    });
 });

@@ -23,9 +23,22 @@ const TIMELINE_EVENT_META = {
   "lifeflow.score_updated": { title: "LifeFlow Score actualizado", product: "lifeflow" },
   "invoice.created": { title: "Factura creada", product: "core" },
   "community.member_joined": { title: "Nuevo miembro en comunidad", product: "akoenet" },
+  "workspace.member.accepted": { title: "Miembro unido al workspace", product: "hub" },
+  "invite.accepted": { title: "Invitación aceptada", product: "hub" },
 };
 
-const TIMELINE_PREFIXES = ["stream.", "order.", "sale.", "stock.", "appointment.", "lifeflow.", "invoice.", "community."];
+const TIMELINE_PREFIXES = [
+  "stream.",
+  "order.",
+  "sale.",
+  "stock.",
+  "appointment.",
+  "lifeflow.",
+  "invoice.",
+  "community.",
+  "workspace.",
+  "invite.",
+];
 
 function resolveTimelineTitle(eventType, payload = {}) {
   const meta = TIMELINE_EVENT_META[eventType];
