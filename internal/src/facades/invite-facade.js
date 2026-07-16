@@ -1,6 +1,7 @@
-import { DomainError, Email, UserId, canAcceptInvite } from "@dakinis/domain";
+import { DomainError, Email, UserId, WorkspaceInvite, canAcceptInvite } from "@dakinis/domain";
 import { OutboxPublisher } from "@dakinis/shared-db/outbox";
 import { publishDomainEvents } from "@dakinis/shared-db/outbox/domain-events";
+import { randomBytes } from "node:crypto";
 import { query, withTransaction } from "../lib/db.js";
 import { invalidateUserBffCache } from "../lib/cache.js";
 import { PostgresWorkspaceInviteRepository } from "./workspace-invite-repository.js";
@@ -17,6 +18,64 @@ function toServiceError(err) {
     return new Error(err.code);
   }
   return err instanceof Error ? err : new Error("db_error");
+}
+
+/**
+ * Create invite via domain aggregate + outbox invite.created.v1.
+ * @param {string} workspaceId
+ * @param {{ email: string; role?: string; invitedBy?: string; actorRole?: string; isPlatformAdmin?: boolean }} input
+ */
+export async function inviteMemberViaFacade(workspaceId, input) {
+  try {
+    const invite = WorkspaceInvite.create({
+      workspaceId,
+      email: input.email,
+      role: input.role || "member",
+      invitedBy: input.invitedBy || undefined,
+      generateToken: () => randomBytes(24).toString("hex"),
+    });
+    const snap = invite.toPersistence();
+
+    const { rows } = await query(
+      `INSERT INTO meta.workspace_invites (id, workspace_id, email, role, token, invited_by, expires_at)
+       VALUES ($1::uuid, $2::uuid, $3, $4, $5, $6::uuid, $7)
+       ON CONFLICT DO NOTHING
+       RETURNING id, email, role, token, expires_at, created_at`,
+      [
+        snap.id,
+        snap.workspaceId,
+        snap.email,
+        snap.role,
+        snap.token,
+        snap.invitedBy,
+        snap.expiresAt,
+      ]
+    );
+
+    if (!rows[0]) {
+      const existing = await query(
+        `SELECT id, email, role, token, expires_at, created_at
+         FROM meta.workspace_invites
+         WHERE workspace_id = $1::uuid AND lower(email) = $2 AND used_at IS NULL
+         LIMIT 1`,
+        [workspaceId, snap.email]
+      );
+      return { invite: existing.rows[0] ?? null, created: false };
+    }
+
+    const events = invite.pullDomainEvents();
+    await publishDomainEvents(outbox, events);
+
+    await query(
+      `SELECT meta.log_audit($1::uuid, 'workspace.member.invited', 'workspace_invite', $2,
+        jsonb_build_object('email', $3, 'role', $4), '{}'::jsonb, $5::uuid, 'internal-api')`,
+      [snap.invitedBy, rows[0].id, snap.email, snap.role, workspaceId]
+    ).catch(() => {});
+
+    return { invite: rows[0], created: true };
+  } catch (err) {
+    throw toServiceError(err);
+  }
 }
 
 /**

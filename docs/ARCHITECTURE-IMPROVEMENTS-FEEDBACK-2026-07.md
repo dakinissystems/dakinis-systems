@@ -412,7 +412,7 @@ flowchart LR
 |---|------------|---------|----------|------------|-------|-------------|
 | 1 | QueryMap tipado (inferencia) | Alto | 2h | — | Platform | Parcial |
 | 2 | Cache tags + invalidación timeline | Alto | 3h | — | Internal | **Done** (Redis tags + timeline invalidate) |
-| 3 | Invite SM + `FOR UPDATE` + policies | Alto | 3h | domain scaffold | Internal | **Done** (facade + admin status) |
+| 3 | Invite SM + `FOR UPDATE` + policies | Alto | 3h | domain scaffold | Internal | **Done** (create+accept+outbox+timeline) |
 | 4 | Rate limit granular (public/bff/admin/events) | Medio | 2h | — | Gateway | Global |
 | 5 | **Scaffold `@dakinis/domain`** | Crítico | 5d | — | Platform | **Done** (`c35a014`) |
 | 6 | PlatformContext middleware | Alto | 4h | — | Platform | **Done** Phase A |
@@ -420,11 +420,13 @@ flowchart LR
 | 8 | CommandBus middleware pipeline | Alto | 3d | — | Internal | **Done** Phase A |
 | 9 | DTO Generator (primera pasada) | Medio | 3d | contratos | Platform | **v1** (`scripts/generate-dto.mjs`) |
 | 10 | Smokes modulares (Jest + helpers) | Medio | 4h | — | DX | PS1 |
-| 11 | Automation logs estructurados + UI stream | Medio | 4h | — | SA | Runs live |
+| 11 | Automation logs estructurados + UI stream | Medio | 4h | — | SA | Runs live + Run SM |
 | 12 | SDK metrics | Medio | 2d | SDK modular | Platform | **Done** (`@dakinis/sdk-metrics`) |
 | 13 | Automation node engine | Alto | 2w | domain | SA | **Diferido** |
-| 14 | OTel end-to-end | Medio | 1w | escala | Platform | **Fase C** |
+| 14 | OTel end-to-end | Medio | 1w | escala | Platform | **Fase C diferido** |
 | 15 | Billing E2E | Alto negocio | 4h | cliente | Billing | 2ª prioridad |
+| 16 | DirectorSession SM en SA | Alto | 4h | domain | SA | **Done** (`8a7ea33`) |
+| 17 | Domain events → outbox + consumer | Alto | 1d | domain | Platform | **Done** (invite + director) |
 
 ---
 

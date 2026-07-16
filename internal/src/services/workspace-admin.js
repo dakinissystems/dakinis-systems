@@ -1,5 +1,6 @@
 import { query } from "../lib/db.js";
-import { randomBytes } from "node:crypto";
+import { acceptInviteViaFacade, inviteMemberViaFacade } from "../facades/invite-facade.js";
+import { buildInternalContext } from "../platform/context.js";
 
 const MEMBER_ROLES = new Set(["owner", "admin", "member", "viewer"]);
 
@@ -257,41 +258,13 @@ export async function listWorkspaceProducts(workspaceId) {
  * @param {{ email: string, role?: string, invitedBy?: string }} input
  */
 export async function inviteWorkspaceMember(workspaceId, input) {
-  const email = String(input.email || "").trim().toLowerCase();
-  if (!email) throw new Error("email_required");
   const role = MEMBER_ROLES.has(input.role) ? input.role : "member";
-  const token = randomBytes(24).toString("hex");
-
-  const { rows } = await query(
-    `INSERT INTO meta.workspace_invites (workspace_id, email, role, token, invited_by)
-     VALUES ($1::uuid, $2, $3, $4, $5::uuid)
-     ON CONFLICT DO NOTHING
-     RETURNING id, email, role, token, expires_at, created_at`,
-    [workspaceId, email, role, token, input.invitedBy || null]
-  );
-
-  if (!rows[0]) {
-    const existing = await query(
-      `SELECT id, email, role, token, expires_at, created_at
-       FROM meta.workspace_invites
-       WHERE workspace_id = $1::uuid AND lower(email) = $2 AND used_at IS NULL
-       LIMIT 1`,
-      [workspaceId, email]
-    );
-    return { invite: existing.rows[0] ?? null, created: false };
-  }
-
-  await query(
-    `SELECT meta.log_audit($1::uuid, 'workspace.member.invited', 'workspace_invite', $2,
-      jsonb_build_object('email', $3, 'role', $4), '{}'::jsonb, $5::uuid, 'internal-api')`,
-    [input.invitedBy || null, rows[0].id, email, role, workspaceId]
-  ).catch(() => {});
-
-  return { invite: rows[0], created: true };
+  return inviteMemberViaFacade(workspaceId, {
+    email: input.email,
+    role,
+    invitedBy: input.invitedBy || undefined,
+  });
 }
-
-import { acceptInviteViaFacade } from "../facades/invite-facade.js";
-import { buildInternalContext } from "../platform/context.js";
 
 /**
  * Accept a pending workspace invite by token for the authenticated IdP user.
