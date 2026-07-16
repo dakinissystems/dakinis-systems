@@ -73,6 +73,11 @@ export function createWorkspaceModule(opts = {}) {
     },
 
     /** @param {string} workspaceId */
+    listInvites(workspaceId) {
+      return client.request(`/workspaces/${encodeURIComponent(workspaceId)}/invites`);
+    },
+
+    /** @param {string} workspaceId */
     get(workspaceId) {
       return client.request(`/workspaces/${encodeURIComponent(workspaceId)}`);
     },

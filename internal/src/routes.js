@@ -30,6 +30,7 @@ import {
   getWorkspaceUsage,
   setWorkspaceProducts,
 } from "./services/workspace-admin.js";
+import { listWorkspaceInvites } from "./facades/invite-facade.js";
 import {
   listAddonCatalog,
   listWorkspaceAddons,
@@ -551,6 +552,19 @@ export const routes = {
     try {
       const members = await listWorkspaceMembers(id);
       return { status: 200, body: { items: members, count: members.length } };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "GET /workspaces/:id/invites": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const path = (req.url || "").split("?")[0];
+    const match = path.match(/^\/workspaces\/([^/]+)\/invites$/);
+    if (!match) return { status: 400, body: { error: "invalid_path" } };
+    try {
+      return { status: 200, body: await listWorkspaceInvites(match[1]) };
     } catch (err) {
       return dbError(err);
     }

@@ -1,5 +1,5 @@
-import { DomainError, Email, UserId } from "@dakinis/domain";
-import { query } from "../lib/db.js";
+import { DomainError, Email, UserId, canAcceptInvite } from "@dakinis/domain";
+import { query, withTransaction } from "../lib/db.js";
 import { invalidateUserBffCache } from "../lib/cache.js";
 import { PostgresWorkspaceInviteRepository } from "./workspace-invite-repository.js";
 
@@ -17,77 +17,111 @@ function toServiceError(err) {
 }
 
 /**
- * Thin facade — repo.find → aggregate.accept → repo.save → persist member.
+ * Thin facade — FOR UPDATE lock → policy → aggregate.accept → persist member.
  * @param {string} token
- * @param {{ userId: string; ctx?: import("@dakinis/shared-platform/platform-context").ReturnType<import("@dakinis/shared-platform/platform-context").createPlatformContext> }} input
+ * @param {{ userId: string; ctx?: object }} input
  */
 export async function acceptInviteViaFacade(token, input) {
   const userId = String(input.userId || "").trim();
   if (!userId) throw new Error("user_id_required");
 
   try {
-    const invite = await repo.findByToken(token);
-    if (!invite) throw new DomainError("invite_not_found");
+    const result = await withTransaction(async (client) => {
+      const invite = await repo.findByToken(token, { forUpdate: true, client });
+      if (!invite) throw new DomainError("invite_not_found");
 
-    const { rows: userRows } = await query(
-      `SELECT id, email FROM dakinis_auth.users WHERE id = $1::uuid LIMIT 1`,
-      [userId]
-    );
-    const user = userRows[0];
-    if (!user) throw new DomainError("user_not_found");
+      const { rows: userRows } = await client.query(
+        `SELECT id, email FROM dakinis_auth.users WHERE id = $1::uuid LIMIT 1`,
+        [userId]
+      );
+      const user = userRows[0];
+      if (!user) throw new DomainError("user_not_found");
 
-    const userEmail = Email.from(user.email);
-    invite.accept(UserId.from(userId), userEmail);
-
-    const { rows: memberRows } = await query(
-      `INSERT INTO meta.workspace_members (
-         workspace_id, user_id, role, invited_by, invited_at, accepted_at, status
-       )
-       VALUES (
-         $1::uuid, $2::uuid, $3,
-         (SELECT invited_by FROM meta.workspace_invites WHERE id = $4::uuid),
-         now(), now(), 'active'
-       )
-       ON CONFLICT (workspace_id, user_id) DO UPDATE SET
-         role = EXCLUDED.role,
-         status = 'active',
-         accepted_at = coalesce(meta.workspace_members.accepted_at, now()),
-         updated_at = now()
-       RETURNING id, user_id, role, status, accepted_at`,
-      [invite.workspaceId.value, userId, invite.role.value, invite.id]
-    );
-
-    await repo.save(invite);
-
-    const events = invite.pullDomainEvents();
-    const traceId = input.ctx?.traceId ?? null;
-    for (const event of events) {
-      if (event.type === "invite.accepted") {
-        await query(
-          `SELECT meta.log_audit($1::uuid, 'workspace.member.accepted', 'workspace_member', $2,
-            jsonb_build_object('role', $3, 'invite_id', $4, 'trace_id', $5), '{}'::jsonb, $6::uuid, 'internal-api')`,
-          [
-            userId,
-            memberRows[0]?.id,
-            invite.role.value,
-            invite.id,
-            traceId,
-            invite.workspaceId.value,
-          ]
-        ).catch(() => {});
+      if (
+        !canAcceptInvite({
+          inviteEmail: invite.email.value,
+          userEmail: user.email,
+        })
+      ) {
+        throw new DomainError("email_mismatch", "Invite email does not match user");
       }
-    }
+
+      const userEmail = Email.from(user.email);
+      invite.accept(UserId.from(userId), userEmail);
+
+      const { rows: memberRows } = await client.query(
+        `INSERT INTO meta.workspace_members (
+           workspace_id, user_id, role, invited_by, invited_at, accepted_at, status
+         )
+         VALUES (
+           $1::uuid, $2::uuid, $3,
+           (SELECT invited_by FROM meta.workspace_invites WHERE id = $4::uuid),
+           now(), now(), 'active'
+         )
+         ON CONFLICT (workspace_id, user_id) DO UPDATE SET
+           role = EXCLUDED.role,
+           status = 'active',
+           accepted_at = coalesce(meta.workspace_members.accepted_at, now()),
+           updated_at = now()
+         RETURNING id, user_id, role, status, accepted_at`,
+        [invite.workspaceId.value, userId, invite.role.value, invite.id]
+      );
+
+      await repo.save(invite, client);
+
+      const events = invite.pullDomainEvents();
+      const traceId = input.ctx?.traceId ?? null;
+      for (const event of events) {
+        if (event.type === "invite.accepted") {
+          await client
+            .query(
+              `SELECT meta.log_audit($1::uuid, 'workspace.member.accepted', 'workspace_member', $2,
+                jsonb_build_object('role', $3, 'invite_id', $4, 'trace_id', $5), '{}'::jsonb, $6::uuid, 'internal-api')`,
+              [
+                userId,
+                memberRows[0]?.id,
+                invite.role.value,
+                invite.id,
+                traceId,
+                invite.workspaceId.value,
+              ]
+            )
+            .catch(() => {});
+        }
+      }
+
+      return {
+        member: memberRows[0] ?? null,
+        workspaceId: invite.workspaceId.value,
+        role: invite.role.value,
+      };
+    });
 
     await invalidateUserBffCache(userId).catch(() => {});
-
-    return {
-      member: memberRows[0] ?? null,
-      workspaceId: invite.workspaceId.value,
-      role: invite.role.value,
-    };
+    return result;
   } catch (err) {
     throw toServiceError(err);
   }
+}
+
+/**
+ * List invites with domain status for workspace admin UI.
+ * @param {string} workspaceId
+ */
+export async function listWorkspaceInvites(workspaceId) {
+  const rows = await repo.findByWorkspace(workspaceId);
+  return {
+    items: rows.map((row) => ({
+      id: row.id,
+      email: row.email,
+      role: row.role,
+      status: row.status,
+      expiresAt: row.expiresAt,
+      usedAt: row.usedAt,
+      createdAt: row.createdAt,
+      token: row.token,
+    })),
+  };
 }
 
 export { PostgresWorkspaceInviteRepository };

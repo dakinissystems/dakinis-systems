@@ -411,12 +411,12 @@ flowchart LR
 | # | Iniciativa | Impacto | Esfuerzo | Depende de | Owner | Estado base |
 |---|------------|---------|----------|------------|-------|-------------|
 | 1 | QueryMap tipado (inferencia) | Alto | 2h | — | Platform | Parcial |
-| 2 | Cache tags + invalidación timeline | Alto | 3h | — | Internal | Manual |
-| 3 | Invite SM + `FOR UPDATE` + policies | Alto | 3h | domain scaffold | Internal | Accept live |
+| 2 | Cache tags + invalidación timeline | Alto | 3h | — | Internal | **Done** (Redis tags + timeline invalidate) |
+| 3 | Invite SM + `FOR UPDATE` + policies | Alto | 3h | domain scaffold | Internal | **Done** (facade + admin status) |
 | 4 | Rate limit granular (public/bff/admin/events) | Medio | 2h | — | Gateway | Global |
 | 5 | **Scaffold `@dakinis/domain`** | Crítico | 5d | — | Platform | **Done** (`c35a014`) |
 | 6 | PlatformContext middleware | Alto | 4h | — | Platform | **Done** Phase A |
-| 7 | SDK modular + `events.subscribe` | Alto | 1w | domain events | Platform | **In progress** (`sdk-*`) |
+| 7 | SDK modular + `events.subscribe` | Alto | 1w | domain events | Platform | **Done** (`72b094a` + Hub client) |
 | 8 | CommandBus middleware pipeline | Alto | 3d | — | Internal | **Done** Phase A |
 | 9 | DTO Generator (primera pasada) | Medio | 3d | contratos | Platform | **v1** (`scripts/generate-dto.mjs`) |
 | 10 | Smokes modulares (Jest + helpers) | Medio | 4h | — | DX | PS1 |

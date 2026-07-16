@@ -8,7 +8,9 @@
   "workspaceAdmin": {
     "GET /workspaces/:id": "Detalle workspace (nombre, plan, status, settings)",
     "GET /workspaces/:id/members": "Lista miembros con email y rol",
+    "GET /workspaces/:id/invites": "Lista invitaciones con estado (pending/opened/accepted/expired)",
     "POST /workspaces/:id/members/invite": "Body: { email, role?, invitedBy? } → token invitación",
+    "POST /workspaces/invites/:token/accept": "Body: { userId } — accept con SM + FOR UPDATE",
     "PATCH /workspaces/:id/members/:userId/role": "Body: { role, actorId? }",
     "GET /workspaces/:id/usage": "Métricas: miembros activos 7d, productos, consumo IA 30d",
     "GET /workspaces/:id/products": "Productos activos del workspace",

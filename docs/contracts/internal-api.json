@@ -26,6 +26,7 @@
     "GET /internal/workspaces/:id": "Workspace Admin — detalle (migr. 031)",
     "GET /internal/workspaces/:id/members": "Workspace Admin — miembros",
     "POST /internal/workspaces/:id/members/invite": "Workspace Admin — invitar",
+    "GET /internal/workspaces/:id/invites": "Workspace Admin — listar invitaciones con estado SM",
     "POST /internal/workspaces/invites/:token/accept": "Aceptar invitación de workspace por token",
     "GET /internal/admin/v1/overview": "Super Admin — panorama platform",
     "GET /internal/admin/v1/workspaces": "Super Admin — listar workspaces",

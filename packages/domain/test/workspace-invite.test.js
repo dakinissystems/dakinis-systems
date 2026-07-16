@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { WorkspaceInvite, Email, UserId } from "../src/index.js";
+import { WorkspaceInvite, Email, UserId, canAcceptInvite, canInviteMembers } from "../src/index.js";
 import { DomainError } from "../src/shared/domain-error.js";
 
 test("WorkspaceInvite.create raises invite.created", () => {
@@ -73,4 +73,15 @@ test("Email value object normalizes and validates", () => {
   const e = Email.from("  Guest@Test.COM ");
   assert.equal(e.value, "guest@test.com");
   assert.throws(() => Email.from("not-an-email"), DomainError);
+});
+
+test("canAcceptInvite policy lives in domain", () => {
+  assert.equal(canAcceptInvite({ inviteEmail: "a@b.com", userEmail: "A@B.com" }), true);
+  assert.equal(canAcceptInvite({ inviteEmail: "a@b.com", userEmail: "x@y.com" }), false);
+});
+
+test("canInviteMembers policy requires owner/admin", () => {
+  assert.equal(canInviteMembers({ actorRole: "member" }), false);
+  assert.equal(canInviteMembers({ actorRole: "admin" }), true);
+  assert.equal(canInviteMembers({ isPlatformAdmin: true }), true);
 });

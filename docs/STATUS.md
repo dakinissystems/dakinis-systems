@@ -115,7 +115,9 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 
 **Arquitectura (16 jul):**
 - Fase A ✅ — `@dakinis/domain` (`WorkspaceInvite`), PlatformContext, CommandBus middleware, CachedQuery, invite facade (`c35a014`)
-- Fase B 🚧 — SDK modular (`@dakinis/sdk-auth|workspace|billing|events|metrics`), `platform.metrics()`, cache tags Redis, DTO generator v1
+- Fase B ✅ — SDK modular (`sdk-*`), `platform.metrics()`, cache tags Redis, DTO generator v1 (`72b094a`)
+- Pre-Fase C ✅ — invite `FOR UPDATE` + `canAcceptInvite`, Hub `createHubPlatform`, admin invite status list
+- Fase C — pendiente (SM maduras / automation nodes / OTel)
 
 Smokes: `scripts/smoke-hub.ps1` · `scripts/deploy-hub-automation.ps1 -RunSmoke`
 

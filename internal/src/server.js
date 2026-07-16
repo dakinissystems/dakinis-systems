@@ -81,6 +81,9 @@ function matchRoute(method, path) {
   if (method === "GET" && /^\/workspaces\/[^/]+\/members$/.test(bare)) {
     return routes["GET /workspaces/:id/members"];
   }
+  if (method === "GET" && /^\/workspaces\/[^/]+\/invites$/.test(bare)) {
+    return routes["GET /workspaces/:id/invites"];
+  }
   if (method === "POST" && /^\/workspaces\/[^/]+\/members\/invite$/.test(bare)) {
     return routes["POST /workspaces/:id/members/invite"];
   }
