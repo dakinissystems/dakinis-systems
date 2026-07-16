@@ -15,7 +15,10 @@ $ErrorActionPreference = "Stop"
 if (-not $AuthUrl) { $AuthUrl = "https://auth.dakinissystems.com/auth" }
 if (-not $StreamAutomatorApi) { $StreamAutomatorApi = "https://api.streamautomator.com" }
 if (-not $AkoeNetApi) { $AkoeNetApi = "https://api.akoenet.dakinissystems.com" }
-if (-not $LifeFlowApi) { $LifeFlowApi = "https://finance-api.dakinissystems.com" }
+# Prefer finance-api; ignore legacy api-finanzas host if still in env.
+if (-not $LifeFlowApi -or $LifeFlowApi -match "api-finanzas") {
+    $LifeFlowApi = "https://finance-api.dakinissystems.com"
+}
 if (-not $Email -or -not $Password) {
     Write-Host "Hub SSO gateway probe (sin credenciales)" -ForegroundColor Yellow
     Write-Host "Tip: define DAKINIS_TEST_EMAIL y DAKINIS_TEST_PASSWORD para E2E IdP + hub-sso" -ForegroundColor DarkYellow

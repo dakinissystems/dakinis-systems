@@ -25,6 +25,7 @@ import {
   listWorkspaceMembers,
   listWorkspaceProducts,
   inviteWorkspaceMember,
+  acceptWorkspaceInvite,
   updateMemberRole,
   getWorkspaceUsage,
   setWorkspaceProducts,
@@ -566,6 +567,32 @@ export const routes = {
       return { status: result.created ? 201 : 200, body: result };
     } catch (err) {
       return dbError(err);
+    }
+  },
+
+  "POST /workspaces/invites/:token/accept": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const path = (req.url || "").split("?")[0];
+    const match = path.match(/^\/workspaces\/invites\/([^/]+)\/accept$/);
+    if (!match) return { status: 400, body: { error: "invalid_path" } };
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const result = await acceptWorkspaceInvite(decodeURIComponent(match[1]), body);
+      return { status: 200, body: result };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "db_error";
+      const statusMap = {
+        token_required: 400,
+        user_id_required: 400,
+        invite_not_found: 404,
+        invite_already_used: 409,
+        invite_expired: 410,
+        user_not_found: 404,
+        email_mismatch: 403,
+      };
+      return { status: statusMap[message] || 500, body: { error: message } };
     }
   },
 

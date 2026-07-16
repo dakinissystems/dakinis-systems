@@ -10,7 +10,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-if (-not $LifeFlowApi) { $LifeFlowApi = "https://api-finanzas.dakinissystems.com" }
+if (-not $LifeFlowApi) { $LifeFlowApi = "https://finance-api.dakinissystems.com" }
 if (-not $ServiceKey) {
     Write-Host "Define DAKINIS_SERVICE_KEY" -ForegroundColor Yellow
     exit 1

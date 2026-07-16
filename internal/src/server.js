@@ -75,6 +75,9 @@ function matchRoute(method, path) {
     return routes["DELETE /workspaces/:id/members/:userId"];
   }
   // Workspace admin (031)
+  if (method === "POST" && /^\/workspaces\/invites\/[^/]+\/accept$/.test(bare)) {
+    return routes["POST /workspaces/invites/:token/accept"];
+  }
   if (method === "GET" && /^\/workspaces\/[^/]+\/members$/.test(bare)) {
     return routes["GET /workspaces/:id/members"];
   }

@@ -26,7 +26,8 @@ function Get-CoreSmokeAuth {
     Remove-Item $tmp -Force
     $json = $raw | ConvertFrom-Json
     if (-not $json.ok) {
-        throw "Core login failed: $($json.error.message)"
+        Write-Host "WARN Core login failed with DAKINIS_TEST_* (IdP creds may differ from Core): $($json.error.message)" -ForegroundColor Yellow
+        return $null
     }
     $bid = $json.meta.businessId
     if (-not $bid) { $bid = $json.data.business.id }

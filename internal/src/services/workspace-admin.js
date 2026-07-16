@@ -272,7 +272,7 @@ export async function inviteWorkspaceMember(workspaceId, input) {
 
   if (!rows[0]) {
     const existing = await query(
-      `SELECT id, email, role, expires_at, created_at
+      `SELECT id, email, role, token, expires_at, created_at
        FROM meta.workspace_invites
        WHERE workspace_id = $1::uuid AND lower(email) = $2 AND used_at IS NULL
        LIMIT 1`,
@@ -288,6 +288,81 @@ export async function inviteWorkspaceMember(workspaceId, input) {
   ).catch(() => {});
 
   return { invite: rows[0], created: true };
+}
+
+/**
+ * Accept a pending workspace invite by token for the authenticated IdP user.
+ * @param {string} token
+ * @param {{ userId: string }} input
+ */
+export async function acceptWorkspaceInvite(token, input) {
+  const inviteToken = String(token || "").trim();
+  if (!inviteToken) throw new Error("token_required");
+
+  const userId = normalizeUuid(input.userId);
+  if (!userId) throw new Error("user_id_required");
+
+  const { rows: inviteRows } = await query(
+    `SELECT id, workspace_id, email, role, expires_at, used_at
+     FROM meta.workspace_invites
+     WHERE token = $1
+     LIMIT 1`,
+    [inviteToken]
+  );
+  const invite = inviteRows[0];
+  if (!invite) throw new Error("invite_not_found");
+  if (invite.used_at) throw new Error("invite_already_used");
+  if (invite.expires_at && new Date(invite.expires_at) < new Date()) {
+    throw new Error("invite_expired");
+  }
+
+  const { rows: userRows } = await query(
+    `SELECT id, email FROM dakinis_auth.users WHERE id = $1::uuid LIMIT 1`,
+    [userId]
+  );
+  const user = userRows[0];
+  if (!user) throw new Error("user_not_found");
+
+  const inviteEmail = String(invite.email || "").trim().toLowerCase();
+  const userEmail = String(user.email || "").trim().toLowerCase();
+  if (inviteEmail && userEmail && inviteEmail !== userEmail) {
+    throw new Error("email_mismatch");
+  }
+
+  const { rows: memberRows } = await query(
+    `INSERT INTO meta.workspace_members (
+       workspace_id, user_id, role, invited_by, invited_at, accepted_at, status
+     )
+     VALUES (
+       $1::uuid, $2::uuid, $3,
+       (SELECT invited_by FROM meta.workspace_invites WHERE id = $4::uuid),
+       now(), now(), 'active'
+     )
+     ON CONFLICT (workspace_id, user_id) DO UPDATE SET
+       role = EXCLUDED.role,
+       status = 'active',
+       accepted_at = coalesce(meta.workspace_members.accepted_at, now()),
+       updated_at = now()
+     RETURNING id, user_id, role, status, accepted_at`,
+    [invite.workspace_id, userId, invite.role, invite.id]
+  );
+
+  await query(
+    `UPDATE meta.workspace_invites SET used_at = now() WHERE id = $1::uuid AND used_at IS NULL`,
+    [invite.id]
+  );
+
+  await query(
+    `SELECT meta.log_audit($1::uuid, 'workspace.member.accepted', 'workspace_member', $2,
+      jsonb_build_object('role', $3, 'invite_id', $4), '{}'::jsonb, $5::uuid, 'internal-api')`,
+    [userId, memberRows[0]?.id, invite.role, invite.id, invite.workspace_id]
+  ).catch(() => {});
+
+  return {
+    member: memberRows[0] ?? null,
+    workspaceId: invite.workspace_id,
+    role: invite.role,
+  };
 }
 
 /**

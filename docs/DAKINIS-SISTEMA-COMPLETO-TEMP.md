@@ -559,7 +559,8 @@ Programación multi-plataforma de contenido para streamers y marcas: calendario,
 | Automation read stream | Fase 1C: list + executor desde `stream.*` (`AUTOMATION_READ_FROM_STREAM=true`) | Operativo prod |
 | Legacy sync bridge | Fase 1C: outbox reconcilia `stream→public` (`LEGACY_SYNC_MODE=true`) | Operativo prod |
 | Automation → stream sync | Dual-write reglas a `stream.automation_rules` + outbox | Operativo |
-| Automation | Reglas IF/THEN — API + validación Zod, builder UX (`7a559fb`) | Operativo (logs ejecución pendiente) |
+| Automation | Reglas IF/THEN — API + validación Zod, builder UX (`7a559fb`) | Operativo |
+| Automation runs | Persistencia `AutomationRuns` + `GET /api/automation/runs` + UI historial | Código listo — deploy + migración Sequelize pendiente |
 | Analytics | Heatmap sesiones | Parcial |
 | Campaign kits | Paquetes contenido | Parcial |
 | Copilot contenido | Sugerencias IA | Stub |
@@ -593,6 +594,10 @@ POST/PATCH /api/automation/rules
   → AutomationRuleRepository.upsertFromLegacyRule → stream.automation_rules
   → Outbox (stream.automation.created|updated|deleted)
   → Worker → Internal API /events
+
+GET /api/automation/runs[?ruleId=&limit=]
+GET /api/automation/rules/:id/runs
+  → AutomationRuns (Sequelize) — historial por trigger (deploy + migración pendiente)
 ```
 
 Validación Zod en rutas automation vía `@dakinis/shared-validation/stream`.
@@ -659,8 +664,9 @@ Punto de entrada único: elegir producto, ver Mi día, administrar workspace.
 | **ActivityTimeline** | Operativo — `hub.timeline` + writer Internal API |
 | Widget `stream-automation-rules` | Operativo — migración 048 |
 | Admin workspace | Miembros, addons enable/pin |
-| SSO a productos | Operativo (SA, AkoeNet, LifeFlow verificados) |
-| Widgets configurables | Catálogo + valores reales parciales (LifeFlow, Core, SA) |
+| **Accept invite** | Código listo — `/invite/:token` + `POST /api/hub/invites/:token/accept` (deploy pendiente) |
+| SSO a productos | Operativo — SA + AkoeNet + LifeFlow `finance-api` (`smoke-hub-sso-products.ps1` 3/3, 16 jul) |
+| Widgets configurables | Catálogo + valores reales parciales (LifeFlow, Core, SA); seed score test: `docs/scripts/seed_lifeflow_score_velezcampeon.sql` |
 
 ### UX Hub
 - Grid de productos con icono, nombre, resumen
@@ -669,6 +675,7 @@ Punto de entrada único: elegir producto, ver Mi día, administrar workspace.
 - **ActivityTimeline** — feed eventos platform (stream, core, lifeflow, akoenet)
 - **HubWidgetGrid** — valores dinámicos (`hub-widget-values.js`) + CTAs (`hub-actions.js`)
 - HubWorkspaceAdminPage: toggles addons por workspace
+- Invite accept: `/invite/:token` (login con `?next=` → accept)
 - i18n vía `hub-i18n.js` en shared-ux
 - Sync DES: `scripts/sync-hub-des.ps1` → `dakinis-hub` (`3f58a22`)
 
@@ -698,7 +705,7 @@ Punto de entrada único: elegir producto, ver Mi día, administrar workspace.
 |-------|-----------|
 | workspaces | Identidad workspace (slug, plan, owner) |
 | workspace_members | Membresía y rol (owner, admin, member, viewer) |
-| workspace_invites | Invitaciones pendientes |
+| workspace_invites | Invitaciones pendientes — accept vía Internal `POST /workspaces/invites/:token/accept` |
 | workspace_addons | Catálogo global 26 addons |
 | workspace_addon_installs | Enable/pin/config por workspace |
 | workspace_desktop_profiles | Perfiles layout (morning, office…) |
@@ -727,8 +734,11 @@ Railway/Sequelize escribe en `public.*`; sync a `stream.*` vía **dual-write en 
 | 046 | `046_enable_billing_unified_global.sql` | `billing.unified` global ON (greenfield) | ✅ jul 2026 |
 | 047 | `047_outbox_idempotency_key.sql` | `idempotency_key` en `meta.outbox_events` | ✅ jul 2026 |
 | 048 | `048_hub_dashboard_automation.sql` | Métricas automation SA + `core_low_stock_count` + timeline enriquecido | ✅ jul 2026 |
+| 049 | `049_stream_automation_runs.sql` | Mirror opcional `stream.automation_runs` (primary: SA Sequelize `AutomationRuns`) | ⬜ código listo |
 
 > **Confirmado prod (15 jul 2026):** migraciones **037–048 aplicadas**. Security Advisor: 0 tablas «RLS Enabled No Policy» tras 038. Triggers public→stream retirados (043). Hub Mi día: `stub=false`, timeline writer live (`smoke-hub-timeline.ps1` OK).
+>
+> **16 jul 2026:** LifeFlow `030` `app_user_links` ✅; Hub SSO 3/3 con `finance-api.dakinissystems.com`; invite accept + automation runs en código (deploy pendiente).
 
 Deploy: `scripts/deploy-billing-unified-greenfield.ps1` · `scripts/deploy-hub-automation.ps1` · `scripts/apply-hub-048.ps1`  
 Smoke: `scripts/smoke-hub.ps1` · `scripts/smoke-hub-timeline.ps1` · `scripts/smoke-creator-suite-sa.ps1` · `scripts/smoke-billing-unified-sa.ps1`  
@@ -891,8 +901,9 @@ import { queryBus, createQuery } from "./platform/buses.js";
 await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 ```
 
-**Deploy:** `scripts/deploy-foundation-phase2.ps1` · `scripts/deploy-hub-automation.ps1` · `scripts/provision-test-user-velezcampeon.ps1`  
-**Smoke:** `scripts/smoke-foundation-bff.ps1` · `scripts/smoke-hub.ps1` · `scripts/smoke-hub-timeline.ps1` · `scripts/smoke-hub-sso-products.ps1` · `scripts/smoke-creator-suite-sa.ps1` · `scripts/smoke-billing-unified-sa.ps1`
+**Deploy:** `scripts/deploy-foundation-phase2.ps1` · `scripts/deploy-hub-automation.ps1` · `scripts/provision-test-user-velezcampeon.ps1` · `scripts/pilot-workspace-invite.ps1`  
+**Smoke:** `scripts/smoke-foundation-bff.ps1` · `scripts/smoke-hub.ps1` · `scripts/smoke-hub-timeline.ps1` · `scripts/smoke-hub-sso-products.ps1` · `scripts/smoke-creator-suite-sa.ps1` · `scripts/smoke-billing-unified-sa.ps1`  
+**Test user:** `velezcampeon_88@hotmail.com` · platform `a1000088-0000-4000-8000-000000000088` · SA id 20 · LF `usr_da09193c-ae6`
 
 ### shared-brand
 - Paleta colores Dakinis (nexora theme)
@@ -993,13 +1004,25 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 | dakinis-streamautomator api | `6f4b15d` → `6b1865d` | Delete automation stream-read + hotfix |
 | dakinis-hub | `3f58a22` | ActivityTimeline + widget automation |
 | Supabase | `048` | Métricas automation + timeline enriquecido |
+| Billing | `9ad3ef1` | Validación `cus_*` + LiveCheckout UNIFICADO (user 20) |
+| LifeFlow / finanzas | `14171c2` | `app_user_links` rebind upsert (030) |
+
+### Código listo — deploy pendiente (16 jul, sin billing)
+
+| Repo | Cambio |
+|------|--------|
+| dakinis-internal-api | `acceptWorkspaceInvite` + `POST /workspaces/invites/:token/accept` |
+| dakinis-hub | `/invite/:token`, enlace en Admin Members, proxy BFF |
+| streamautomator | `AutomationRuns` + `GET /api/automation/runs` + UI historial |
+| docs / scripts | `049`, `pilot-workspace-invite.ps1`, seed score, smoke SSO `finance-api` |
 
 ### Lo que está live y usable hoy
-- **Supabase migraciones 037–048 aplicadas en prod**
+- **Supabase migraciones 037–048 aplicadas en prod** (+ LifeFlow **030** `app_user_links`)
 - **Hub Mi día** — `miDiaEnabled=true`, `stub=false`, 5 apps, widgets 048, timeline con eventos reales
 - **Hub timeline E2E** — `POST /internal/events` → `hub.timeline` → dashboard (`smoke-hub-timeline.ps1` ✅)
 - **Usuario test multi-plataforma** — `velezcampeon_88@hotmail.com` (workspace `velez-test`)
-- **Hub SSO** — exchange OK en StreamAutomator, AkoeNet, LifeFlow (`smoke-hub-sso-products.ps1`)
+- **Hub SSO** — exchange OK 3/3 StreamAutomator, AkoeNet, LifeFlow `finance-api` (`smoke-hub-sso-products.ps1` ✅ 16 jul)
+- **Billing SA unificado** — LiveCheckout UNIFICADO con user 20 + `platformAuthSub` (pago test / webhook pendiente)
 - **Security Advisor RLS** — deny policies en gaps (038)
 - **Core web** — topbar mobile compacto desplegado
 - Auth central + SSO Hub en AkoeNet, SA, Core, LifeFlow
@@ -1010,7 +1033,7 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 - Sync server addon data con revision optimista
 - Feature flags workspace (`workspace.addon.*`)
 - **Internal API BFF** — agregados con caché Redis + rate limit
-- **Billing unificado Fase 1.2** — flag global ON (046); checkout legacy SA OK
+- **Billing unificado Fase 1.2** — flag global ON (046); checkout unificado SA OK
 - **Paquetes Foundation** + **Foundation Fase 2** desplegada
 - **Creator Suite Fase 1C** — dual-write Director/Automation, outbox, smokes `-LiveWrite` ✅
 - **Automation builder SA** — params tipados, errores, toggle, `?create=1`
@@ -1018,21 +1041,24 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 - Core ERP módulos principales · LifeFlow scoring y coach
 
 ### Parcial / en progreso
-- **Billing Stripe E2E unificado** — falta `platformAuthSub` en usuarios legacy + webhook único Gateway (`smoke-billing-e2e.ps1` pendiente)
+- **Billing Stripe E2E unificado** — 2ª prioridad; falta pago test + webhook → `billing.subscriptions` + fan-out
 - **Hub landing** — screenshot real del dashboard para marketing
+- **Workspace invite accept** — API/UI listos; falta deploy + primer invite real piloto
+- **Automation runs** — persistencia + UI listos; falta migración Sequelize en prod + redeploy
 - AI costes por workspace
-- Assistant modules AkoeNet (scaffold)
+- Assistant modules AkoeNet (scaffold + BullMQ worker)
 - 17 addons Workspace en preview/placeholder
 - Search federada enriquecida
 - WhatsApp Core canal live
-- Automation: canvas n8n visual + logs de ejecución en UI
-- LifeFlow migración SQLite → PG completa (030 `app_user_links` parcial)
+- Automation: canvas n8n visual (logs de ejecución: código listo)
+- LifeFlow migración SQLite → PG (030 links ✅; goals/transactions pendientes)
 
 ### Planificado
 - DND 5e en Supabase
 - Open Banking LifeFlow
 - Monaco en code-editor
 - Clip studio, game launcher, live-dashboard addons
+- Ops: backups automáticos, staging, Sentry
 
 ---
 
@@ -1046,7 +1072,7 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 5. Ctrl+K → buscar mensaje, abrir CRM Core, ir a Director SA, «Nueva regla de automatización»
 6. Calendar addon: ventanas flotantes agenda/semana, sync servidor
 7. StreamAutomator: programa stream → webhook notifica canal AkoeNet → evento en hub.timeline
-8. Admin: /admin → toggles qué addons ve cada usuario
+8. Admin: /admin → invitar miembro (enlace /invite/:token) + toggles addons
 9. Test E2E: usuario velezcampeon_88@hotmail.com en tenant velez-test (5 productos)
 ```
 

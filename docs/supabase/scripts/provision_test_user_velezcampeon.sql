@@ -178,13 +178,9 @@ BEGIN
       updated_at = now();
   END IF;
 
-  -- LifeFlow bridge (Hub widgets / score_history)
-  INSERT INTO lifeflow.app_user_links (app_user_id, platform_user_id, email)
-  VALUES (v_username, v_user_id, lower(v_email))
-  ON CONFLICT (app_user_id) DO UPDATE SET
-    platform_user_id = EXCLUDED.platform_user_id,
-    email = EXCLUDED.email,
-    updated_at = now();
+  -- LifeFlow bridge: do NOT seed app_user_links here.
+  -- Real app_user_id is usr_<hex> from LifeFlow SQLite; Hub SSO upserts the link on first login.
+  -- Seeding with username would block UNIQUE(platform_user_id) until rebound.
 
   RAISE NOTICE 'Provisioned % → %', v_email, v_user_id;
 END $$;
@@ -198,7 +194,10 @@ SELECT
   u.email_verified_at IS NOT NULL AS email_verified,
   EXISTS (SELECT 1 FROM stream.user_profiles sp WHERE sp.user_id = u.id) AS has_stream,
   EXISTS (SELECT 1 FROM akoenet.user_profiles ap WHERE ap.user_id = u.id) AS has_akoenet,
-  EXISTS (SELECT 1 FROM lifeflow.app_user_links l WHERE l.platform_user_id = u.id) AS has_lifeflow,
+  EXISTS (
+    SELECT 1 FROM lifeflow.app_user_links l
+    WHERE l.platform_user_id = u.id AND l.app_user_id LIKE 'usr_%'
+  ) AS has_lifeflow_usr_link,
   hub.v1_get_user_hub_products(u.id) AS hub_products
 FROM dakinis_auth.users u
 WHERE lower(u.email) = lower('velezcampeon_88@hotmail.com');

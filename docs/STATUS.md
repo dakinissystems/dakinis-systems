@@ -81,7 +81,7 @@ URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
 | C+ | `027`–`029` | ✅ prod (`hub.mi_dia` ON) |
 | C++ | `048` | ✅ automation metrics (jul 2026) |
 | D | `020`–`026`, `024` | ✅ |
-| D+ | `030` | ⬜ LifeFlow ↔ IdP |
+| D+ | `030` | ✅ LifeFlow ↔ IdP (`app_user_links` + hub-sso velez → `usr_da09193c-ae6`) |
 | E | `031` | ✅ workspace admin |
 | F | `032`–`033` | ✅ AkoeNet Assistant |
 | G | `034` (RLS + `media`) | ✅ jul 2026 |
@@ -101,9 +101,18 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 | 4 | Supabase | `048` | ✅ aplicada |
 | 5 | internal-api | `3c69bbb` | ✅ Redis WRONGTYPE fix en POST /events |
 | 6 | streamautomator-api | `6b1865d` | ✅ delete automation stream-read |
-| 7 | Billing | — | 🔧 checkout unificado: customer `smoke_cus_test` en DB (fix SQL + redeploy billing) |
+| 7 | Billing | `9ad3ef1` + SA probe | ✅ LiveCheckout UNIFICADO (user 20 + platformAuthSub) |
 
-**Billing (15 jul):** checkout SA unificado fallaba con 502 porque el smoke `LiveSync` guardó `stripe_customer_id = smoke_cus_test` en `billing.customers` para el usuario test. Fix: `docs/supabase/scripts/fix_billing_smoke_customer_pollution.sql` + redeploy `dakinis-billing` (validación `cus_*` en checkout).
+**Billing (16 jul):** `smoke-billing-unified-sa.ps1 -LiveSync -LiveCheckout` ✅ — login velezcampeon → `saUserId=20`, `Checkout UNIFICADO`. Causa LEGACY anterior: JWT era user 17 sin enlace. Siguiente: pago test / webhook → `billing.subscriptions` + fan-out license-sync.
+
+**LifeFlow 030 (16 jul):** tabla `app_user_links` aplicada ✅; cleanup `velezcampeon88` bad link; hub-sso → `usr_da09193c-ae6` ↔ `a1000088-…`. Finance-api: commit local `14171c2` (rebind upsert) — push/redeploy pendiente. Smokes: URL canónica `finance-api.dakinissystems.com`.
+
+**Pendiente deploy (16 jul, sin billing):**
+- Internal API: `acceptWorkspaceInvite` + `POST /workspaces/invites/:token/accept`
+- Hub: `/invite/:token` + enlace en Admin Members
+- SA: `AutomationRuns` + `GET /api/automation/runs` + UI en AutomationPage
+- Scripts: `pilot-workspace-invite.ps1`, seed score `docs/scripts/seed_lifeflow_score_velezcampeon.sql`
+- SSO E2E: 3/3 OK (`smoke-hub-sso-products.ps1`; ignora `FINANZAS_API_URL` legacy)
 
 Smokes: `scripts/smoke-hub.ps1` · `scripts/deploy-hub-automation.ps1 -RunSmoke`
 
@@ -127,14 +136,14 @@ Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
 
 ### Hub SSO E2E
 
-- [ ] `smoke-prod-suite.ps1 -E2E` 3/3 productos
+- [x] `smoke-hub-sso-products.ps1` 3/3 productos (SA + AkoeNet + LifeFlow `finance-api`) — 16 jul 2026
 - [ ] JWT válido en Core, LifeFlow, AkoeNet
 - [ ] Logout / re-login OK
 
 ### Primer cliente piloto
 
 - [ ] Workspace provisionado (`031`)
-- [ ] ≥1 usuario invitado y aceptado
+- [ ] ≥1 usuario invitado y aceptado (`POST /workspaces/invites/:token/accept` + Hub `/invite/:token`)
 - [ ] Demo Hub → Core completada en reunión
 - [ ] Feedback documentado
 - [ ] Uso real ≥2 sesiones/semana durante 2 semanas
@@ -174,7 +183,7 @@ Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
 | Capacidad | Componentes | Estado |
 |-----------|-------------|--------|
 | **Cobrar** | Billing → Stripe → Hub `/admin` → Gateway → Auth | 🔴 E2E |
-| **Invitar equipo** | Hub → Notifications → Internal API → `031` | 🟡 UI lista |
+| **Invitar equipo** | Hub → Notifications → Internal API → `031` | 🟡 accept + enlace listos |
 | **Usar IA** | AI → Knowledge → BullMQ → Assistant | 🟡 workers |
 | **Operar negocio** | Core → Hub widgets | 🟡 |
 | **Comunidad** | AkoeNet → Assistant | 🟡 |
@@ -191,7 +200,7 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 | R2 | Backups no auto | Crítico | `BACKUP_DATABASE_URL` + workflow |
 | R3 | Billing sin cliente real | Alto | E2E + piloto jul–ago |
 | R4 | Bus factor (1 dev) | Alto | Onboarding · hire Q4 |
-| R5 | SQLite LF/Tabletop | Medio | migr. `030` |
+| R5 | SQLite LF/Tabletop | Medio | 030 links ✅; cutover goals/tx pendiente |
 | R6 | Monitorización parcial | Medio | Sentry ago |
 | R7 | migr. manual Supabase | Medio | `meta.migration_history` |
 | R8 | Workers BullMQ parciales | Medio | Redeploy Assistant |
