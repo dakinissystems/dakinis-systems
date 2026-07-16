@@ -1,9 +1,12 @@
 import { DomainError, Email, UserId, canAcceptInvite } from "@dakinis/domain";
+import { OutboxPublisher } from "@dakinis/shared-db/outbox";
+import { publishDomainEvents } from "@dakinis/shared-db/outbox/domain-events";
 import { query, withTransaction } from "../lib/db.js";
 import { invalidateUserBffCache } from "../lib/cache.js";
 import { PostgresWorkspaceInviteRepository } from "./workspace-invite-repository.js";
 
 const repo = new PostgresWorkspaceInviteRepository();
+const outbox = new OutboxPublisher(query);
 
 /**
  * Map domain errors to legacy Error codes used by routes.
@@ -17,7 +20,7 @@ function toServiceError(err) {
 }
 
 /**
- * Thin facade — FOR UPDATE lock → policy → aggregate.accept → persist member.
+ * Thin facade — FOR UPDATE lock → policy → aggregate.accept → outbox → persist member.
  * @param {string} token
  * @param {{ userId: string; ctx?: object }} input
  */
@@ -72,6 +75,7 @@ export async function acceptInviteViaFacade(token, input) {
       const events = invite.pullDomainEvents();
       const traceId = input.ctx?.traceId ?? null;
       for (const event of events) {
+        if (traceId) event.traceId = traceId;
         if (event.type === "invite.accepted") {
           await client
             .query(
@@ -89,6 +93,9 @@ export async function acceptInviteViaFacade(token, input) {
             .catch(() => {});
         }
       }
+
+      const txQuery = (text, params) => client.query(text, params);
+      await publishDomainEvents(outbox, events, txQuery);
 
       return {
         member: memberRows[0] ?? null,

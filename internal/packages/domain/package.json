@@ -7,6 +7,8 @@
   "exports": {
     ".": "./src/index.js",
     "./invite": "./src/invite/index.js",
+    "./director": "./src/director/index.js",
+    "./automation": "./src/automation/index.js",
     "./shared": "./src/shared/index.js"
   },
   "engines": {

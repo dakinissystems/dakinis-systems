@@ -14,6 +14,7 @@
     "./repositories/automation": "./src/repositories/stream/automation.js",
     "./repositories/legacy-mapper": "./src/repositories/stream/legacy-mapper.js",
     "./outbox": "./src/outbox/publisher.js",
+    "./outbox/domain-events": "./src/outbox/domain-events.js",
     "./outbox/processor": "./src/outbox/processor.js",
     "./legacy/public-sync": "./src/legacy/public-sync.js"
   },

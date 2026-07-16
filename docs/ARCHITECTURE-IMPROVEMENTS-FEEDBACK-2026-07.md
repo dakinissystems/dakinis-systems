@@ -18,7 +18,7 @@
 | Hub Mi día / timeline | live | `stub=false`, score 72 | Cache tags Redis + invalidación | ~3h | Internal |
 | Invite accept | hardening | **live** + domain facade | SM + `FOR UPDATE` + Policy | ~3h | Internal |
 | Automation runs | observabilidad | **049 + UI live** | Logs estructurados; **nodos diferidos** | ~4h | SA |
-| Domain layer | faltante | **`@dakinis/domain` live** (`c35a014`) | Ampliar aggregates | ~1 sem | Platform |
+| Domain layer | faltante | **`@dakinis/domain` live** + director/automation | Ampliar facades SA director | ~1 sem | Platform |
 | Billing E2E | alto negocio | 2ª prioridad explícita | Cuando haya cliente | ~4h | Billing |
 | OTel | deseable | Sentry cubre hoy | **Fase C** (clientes + workers) | ~1 sem | Platform |
 | Automation nodes | futuro | IF/THEN OK | Solo si aparecen loops/branches/multi-trigger | 2+ sem | SA |

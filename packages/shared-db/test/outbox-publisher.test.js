@@ -66,3 +66,22 @@ test("OutboxPublisher honors custom idempotencyKey", async () => {
   });
   assert.equal(rows[0].idempotency_key, "custom:key:1");
 });
+
+test("toOutboxInput versions domain events as type.v1", async () => {
+  const { toOutboxInput } = await import("../src/outbox/domain-events.js");
+  const input = toOutboxInput({
+    type: "invite.accepted",
+    eventVersion: "v1",
+    schemaVersion: 1,
+    aggregateId: "inv-1",
+    aggregateType: "WorkspaceInvite",
+    workspaceId: "ws-1",
+    actorId: "u-1",
+    payload: { role: "member" },
+    occurredAt: "2026-07-16T00:00:00.000Z",
+  });
+  assert.equal(input.eventType, "invite.accepted.v1");
+  assert.equal(input.aggregateType, "WorkspaceInvite");
+  assert.equal(input.payload._domain.eventVersion, "v1");
+  assert.equal(input.payload.role, "member");
+});
