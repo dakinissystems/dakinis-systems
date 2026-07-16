@@ -1,9 +1,9 @@
 # Análisis de código y mejoras — Dakinis Systems (julio 2026, feedback consolidado)
 
 > **Tipo:** ADR de evolución arquitectónica (no backlog ciego)  
-> **Fecha:** 16 jul 2026 · **Revisión:** v2 (segunda ronda de feedback)  
+> **Fecha:** 16 jul 2026 · **Revisión:** v2.1 (tracking post-implementación A/B + quick wins)  
 > **Entrada:** análisis arquitecto + código Fase 2 + revisión crítica del propio documento  
-> **Estado real:** Hub SSO 3/3 · invite accept + automation runs **live** · `049` + seed score · billing E2E **2ª prioridad**  
+> **Estado real:** Fase A ✅ · Fase B ✅ · Fase C parcial (SM invite/director/run + outbox consumer) · QueryMap + rate-limit granular ✅ · billing E2E **2ª prioridad** · nodos/OTel **diferidos**  
 > **Relacionado:** [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`STATUS.md`](./STATUS.md) · [`DAKINIS-SISTEMA-COMPLETO-TEMP.md`](./DAKINIS-SISTEMA-COMPLETO-TEMP.md)
 
 **Valoración del documento como propuesta de evolución:** ~9.8/10. El salto ya no es “añadir funcionalidades”, sino **reducir acoplamiento**. Riesgo principal: que SDK y buses se conviertan en God Objects — cada módulo pequeño, una responsabilidad, componible.
@@ -14,16 +14,17 @@
 
 | Dimensión | Feedback | Realidad 16 jul | Delta / siguiente paso | Esfuerzo | Owner |
 |-----------|----------|-----------------|------------------------|----------|-------|
-| Foundation SDK / buses | Modular, no monolito | Fase 2 live + Phase A | Paquetes `@dakinis/sdk-*` + reexport | 1–2 sem | Platform |
-| Hub Mi día / timeline | live | `stub=false`, score 72 | Cache tags Redis + invalidación | ~3h | Internal |
-| Invite accept | hardening | **live** + domain facade | SM + `FOR UPDATE` + Policy | ~3h | Internal |
-| Automation runs | observabilidad | **049 + UI live** | Logs estructurados; **nodos diferidos** | ~4h | SA |
-| Domain layer | faltante | **`@dakinis/domain` live** + director/automation | Ampliar facades SA director | ~1 sem | Platform |
+| Foundation SDK / buses | Modular, no monolito | **`@dakinis/sdk-*` + QueryMap + middleware** | Adopción gradual en productos (menos `fetch` directo) | 1–2 sem | Platform |
+| Hub Mi día / timeline | live | `stub=false` + **cache tags** + outbox→timeline | Piloto invite real en demo | — | Internal |
+| Invite accept | hardening | **SM + FOR UPDATE + policies + create outbox** | Demo comercial end-to-end | ~1h ops | Internal |
+| Automation runs | observabilidad | **049 + UI + AutomationRun SM** | Logs stream UI; **nodos diferidos** | ~4h | SA |
+| Domain layer | faltante | **`@dakinis/domain` live** (invite/director/run/rule) | Más facades SA/Core | continuo | Platform |
+| QueryMap / rate limit | quick wins | **Done** (`36214b9` / `dfc8870`) | Redeploy Gateway edge | ops | Gateway |
 | Billing E2E | alto negocio | 2ª prioridad explícita | Cuando haya cliente | ~4h | Billing |
-| OTel | deseable | Sentry cubre hoy | **Fase C** (clientes + workers) | ~1 sem | Platform |
-| Automation nodes | futuro | IF/THEN OK | Solo si aparecen loops/branches/multi-trigger | 2+ sem | SA |
+| OTel | deseable | Sentry cubre hoy | **Diferido** hasta escala | ~1 sem | Platform |
+| Automation nodes | futuro | IF/THEN + Run SM OK | Solo si loops/branches/multi-trigger | 2+ sem | SA |
 
-**Conclusión:** el mayor apalancamiento es `@dakinis/domain` (agregados + VOs + políticas + eventos versionados), no más microservicios ni reescritura Sequelize.
+**Conclusión:** Fases A/B y quick wins **cerrados en código**. El apalancamiento restante es adopción del SDK en productos, piloto invite, y (cuando toque) OTel / nodes / billing E2E — no más scaffolding de runtime.
 
 ---
 
@@ -58,16 +59,18 @@
 - **Automation node engine** mientras no haya loops, branches o múltiples triggers en producción.
 - Canvas n8n visual antes de logs estructurados + SM de runs.
 
-### 2.4 Añadir (huecos detectados en v2)
+### 2.4 Añadir (huecos detectados en v2) — estado
 
-| Pieza | Propósito |
-|-------|-----------|
-| **Policy Engine** | Más que permisos: `canDeleteWorkspace()`, `canPublishStream()`, reglas de negocio |
-| **Versionado de dominio** | Eventos y agregados con `v1` / `v2` explícitos |
-| **Value Objects** | `WorkspaceId`, `Email`, `Money`, `StreamId` — menos bugs de primitivos |
-| **DTO Generator** | Una fuente → tipos frontend, SDK, OpenAPI, Zod, mappers |
-| **Tests de dominio** | Mayor cobertura en `@dakinis/domain` (lógica pura) |
-| **`platform.metrics()`** | Llamadas SDK, errores, latencia, retries, cache hits |
+| Pieza | Propósito | Estado 16 jul |
+|-------|-----------|---------------|
+| **Policy Engine** | `canAcceptInvite`, reglas de negocio | ✅ invite; ampliar otros agregados |
+| **Versionado de dominio** | Eventos `v1` / `v2` | ✅ `invite.*.v1` + outbox map |
+| **Value Objects** | `WorkspaceId`, `Email`, … | ✅ en `@dakinis/domain` |
+| **DTO Generator** | Una fuente → tipos/SDK/OpenAPI | **v1** (`scripts/generate-dto.mjs`) |
+| **Tests de dominio** | Cobertura lógica pura | ✅ invite/director/automation tests |
+| **`platform.metrics()`** | Latencia, errores, cache | ✅ `@dakinis/sdk-metrics` |
+| **QueryMap tipado** | Inferencia params/response | ✅ `query-map.js` + `.d.ts` |
+| **Rate limit granular** | public/bff/admin/events | ✅ Gateway zones + Internal tiers |
 
 ---
 
@@ -329,14 +332,14 @@ Gateway sigue en repo `dakinis-systems/gateway`. Event consumer = carpeta/módul
 
 ### 4.8 Cache con tags
 
-Sin cambio de idea; alta prioridad táctica.
+**Done** — Redis `sAdd`/`sMembers` + invalidación en timeline / invite accept.
 
 ```mermaid
 sequenceDiagram
   participant T as TimelineWriter
   participant C as CacheService
   T->>C: invalidateTags(user:dashboard, user:timeline)
-  Note over T,C: Tras INSERT hub.timeline
+  Note over T,C: Tras INSERT hub.timeline / invite accept
 ```
 
 ---
@@ -418,12 +421,12 @@ flowchart LR
 | 6 | PlatformContext middleware | Alto | 4h | — | Platform | **Done** Phase A |
 | 7 | SDK modular + `events.subscribe` | Alto | 1w | domain events | Platform | **Done** (`72b094a` + Hub client) |
 | 8 | CommandBus middleware pipeline | Alto | 3d | — | Internal | **Done** Phase A |
-| 9 | DTO Generator (primera pasada) | Medio | 3d | contratos | Platform | **v1** (`scripts/generate-dto.mjs`) |
-| 10 | Smokes modulares (Jest + helpers) | Medio | 4h | — | DX | PS1 |
+| 9 | DTO Generator (primera pasada) | Medio | 3d | contratos | Platform | **Done v1** (`scripts/generate-dto.mjs`) |
+| 10 | Smokes modulares (Jest + helpers) | Medio | 4h | — | DX | PS1 (Jest diferido) |
 | 11 | Automation logs estructurados + UI stream | Medio | 4h | — | SA | Runs live + Run SM |
 | 12 | SDK metrics | Medio | 2d | SDK modular | Platform | **Done** (`@dakinis/sdk-metrics`) |
 | 13 | Automation node engine | Alto | 2w | domain | SA | **Diferido** |
-| 14 | OTel end-to-end | Medio | 1w | escala | Platform | **Fase C diferido** |
+| 14 | OTel end-to-end | Medio | 1w | escala | Platform | **Diferido** |
 | 15 | Billing E2E | Alto negocio | 4h | cliente | Billing | 2ª prioridad |
 | 16 | DirectorSession SM en SA | Alto | 4h | domain | SA | **Done** (`8a7ea33`) |
 | 17 | Domain events → outbox + consumer | Alto | 1d | domain | Platform | **Done** (invite + director) |
@@ -459,13 +462,14 @@ gantt
   OpenTelemetry                  :c4, 2026-09-15, 7d
 ```
 
-### Prioridad de negocio (sin cambios)
+### Prioridad de negocio (actualizado 16 jul)
 
-1. **Piloto** — invite real end-to-end + demo Hub→Core  
-2. **Fase A** — domain + context + facades (no bloquea piloto)  
-3. **Fase B** — SDK modular + buses limpios + cache tags  
-4. **Fase C** — SM completas, nodos automation, OTel  
-5. **Billing E2E** — cuando negocio reactive (2ª prioridad)
+1. **Piloto** — invite real end-to-end + demo Hub→Core *(código listo; falta sesión demo)*  
+2. **Fase A** — domain + context + facades → **✅ Done**  
+3. **Fase B** — SDK modular + buses + cache tags + QueryMap + rate-limit → **✅ Done**  
+4. **Fase C** — SM invite/director/run + outbox consumer → **✅ parcial**; nodos + OTel → **diferido**  
+5. **Billing E2E** — cuando negocio reactive (2ª prioridad)  
+6. **Adopción** — productos consumen `@dakinis/sdk` / QueryMap; menos HTTP ad-hoc
 
 ---
 
@@ -494,18 +498,19 @@ Eje: **agregado**, no `controllers / services / routes` como carpeta raíz.
 
 ## 8. Criterios de aceptación
 
-| Iniciativa | Done when |
-|------------|-----------|
-| `@dakinis/domain` | Invite + AutomationRule con tests >80% en domain; APIs solo adaptan |
-| Value Objects | No `string` suelto para `Email` / `WorkspaceId` en dominio nuevo |
-| Policy Engine | `canAcceptInvite(ctx)` vive en domain, no en controller |
-| SDK modular | Producto importa `@dakinis/sdk`; ningún `fetch` directo a Internal |
-| QueryBus | Solo `execute`; cache vía `CachedQuery` decorator |
-| CommandBus | Nuevo middleware añadible sin editar el bus |
-| Cache tags | Write timeline → dashboard no stale > TTL configurado |
-| Invite SM | Estados en admin; expired no aceptable |
-| Automation nodes | Solo cuando exista regla con branch en prod |
-| OTel | Trace compartido Hub→worker (Fase C) |
+| Iniciativa | Done when | Estado |
+|------------|-----------|--------|
+| `@dakinis/domain` | Invite + AutomationRule con tests; APIs solo adaptan | ✅ invite/director/run/rule |
+| Value Objects | No `string` suelto en dominio nuevo | ✅ |
+| Policy Engine | `canAcceptInvite(ctx)` en domain | ✅ invite |
+| SDK modular | Producto importa `@dakinis/sdk` | ✅ paquetes; adopción productos en curso |
+| QueryBus | Solo `execute`; cache vía `CachedQuery` | ✅ + QueryMap |
+| CommandBus | Middleware sin editar el bus | ✅ |
+| Cache tags | Write timeline → dashboard no stale | ✅ |
+| Invite SM | Estados en admin; expired no aceptable | ✅ |
+| Rate limit granular | Zones public/bff/admin/events | ✅ código; redeploy GW |
+| Automation nodes | Solo cuando exista branch en prod | Diferido |
+| OTel | Trace Hub→worker | Diferido |
 
 ---
 
@@ -525,17 +530,23 @@ Eje: **agregado**, no `controllers / services / routes` como carpeta raíz.
 
 ## 10. Resumen ejecutivo
 
-**Ya live (jul 2026):** invite accept · automation runs + UI · SSO 3/3 · Hub Mi día real · timeline writer · `049` + score 72.
+**Hecho en código (16 jul 2026):**
 
-**Segunda ronda de feedback refina v1:** menos ambición en buses/SDK monolítico; más énfasis en **domain**, **policies**, **VOs**, **composición** y **incrementalismo**.
+| Bloque | Entregables |
+|--------|-------------|
+| **Fase A** | `@dakinis/domain`, PlatformContext, CommandBus middleware, CachedQuery, invite facade |
+| **Fase B** | SDK modular (`sdk-*`), cache tags, DTO gen v1, QueryMap, rate-limit granular Gateway |
+| **Fase C (parcial)** | Outbox `invite.*.v1` + consumer→timeline; DirectorSession + AutomationRun SM en SA; invite create dominio |
+| **Producto** | Invite accept Hub live · automation runs UI · SSO 3/3 · Mi día + score 72 |
 
-**Orden de impacto:**
+**Siguiente impacto (no scaffolding):**
 
-1. **Fase A** — `@dakinis/domain` + PlatformContext + facades + policies  
-2. **Fase B** — SDK modular + Query/CommandBus limpios + cache tags + DTO gen  
-3. **Fase C** — state machines maduras, automation nodes si hace falta, OTel  
+1. Piloto invite real + demo Hub→Core  
+2. Adopción SDK/QueryMap en productos (menos `fetch` ad-hoc)  
+3. Billing E2E cuando negocio reactive  
+4. OTel / automation nodes solo con demanda real  
 
-El punto de inflexión entre “app grande” y “plataforma mantenible” es que la lógica viva en dominio compartido, no repartida en services que cada producto reinterpreta.
+El punto de inflexión entre “app grande” y “plataforma mantenible” ya tiene runtime: la lógica nueva debe vivir en dominio compartido, no repartirse en services que cada producto reinterpreta.
 
 ---
 
@@ -581,4 +592,4 @@ it('expires pending invite after TTL', () => { … });
 
 ---
 
-*Actualizar al cerrar filas de §5 o al completar hitos del Gantt. Próxima revisión: tras SDK modular en productos o primer piloto con invite real.*
+*Actualizado 16 jul 2026 tras cerrar filas §5 (1–8, 12, 16–17) y quick wins QueryMap/rate-limit. Próxima revisión: tras piloto invite real o adopción SDK en un segundo producto.*

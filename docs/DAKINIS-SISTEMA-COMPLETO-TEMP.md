@@ -160,22 +160,24 @@ Cubre: `dakinis_auth.users`, `public.Users` + `platformAuthSub`, `stream.user_pr
 - Workspaces: CRUD, miembros, addons, desktop profiles, addon data blobs (con `revision` optimista)
 - **Feature flags:** `GET /feature-flags/evaluate?keys=...&workspaceId=...`
 - **Hub timeline (`hub-timeline.js`):** `POST /events` persiste en `hub.timeline` + invalida caché BFF; recuperación Redis si cola `dakinis:events` tiene WRONGTYPE (`3c69bbb`)
-- **BFF agregado (Fase 1.3):**
-  - `GET /hub/dashboard/aggregated/:userId` — hub + notifications + workspace addons (caché Redis 30s)
-  - `GET /workspace/summary/:userId` — addons + perfiles desktop + workspace (caché 60s)
-  - `GET /platform/health` — health resumido servicios (caché 10s)
-  - `?fresh=1` bypass caché · rate limit 100 req/min por user/tenant
+- **BFF agregado (Fase 1.3 + QueryMap):**
+  - `GET /hub/dashboard/aggregated/:userId` — hub + notifications + workspace addons (caché Redis + tags)
+  - `GET /workspace/summary/:userId` — addons + perfiles desktop + workspace
+  - `GET /platform/health` — health resumido servicios
+  - `?fresh=1` bypass caché · rate limit **por tier** (`bff`/`admin`/`events`/`public`) vía Redis
+  - Queries tipadas: `createMappedQuery` / `PLATFORM_QUERY_MAP` (`@dakinis/shared-platform/query-map`)
 - Hub dashboard agregado, platform metrics, **hub-actions** (CTAs Mi día), **hub-widget-values**
 - Proxies: notifications, search, billing (+ **`POST /billing/subscriptions/sync`**), knowledge
 - Event bus BullMQ, DLQ replay
-- **Outbox:** escrituras workspace addon data publican en `meta.outbox_events`
+- **Outbox + consumer:** `meta.outbox_events` (addon data, `invite.*.v1`, director) → módulo in-process → Hub timeline
+- **Domain invites:** create/accept vía `@dakinis/domain` `WorkspaceInvite` + `FOR UPDATE` + policies + facade
 - AkoeNet assistant modules routing
 - Super-admin: `/admin/v1/` overview, workspaces, billing, audit, feature flags
 
 ### Gateway
 - Routing centralizado a todos los servicios
 - Headers de identidad (`TRUST_GATEWAY_IDENTITY_HEADERS`)
-- Rate limit y CORS
+- CORS + **rate limit granular** (`nginx.conf`): `public_limit` 5r/s · `api_limit` 10r/s · `bff_limit` 30r/s · `admin_limit` 10r/s · `events_limit` 20r/s
 
 ---
 
@@ -664,7 +666,7 @@ Punto de entrada único: elegir producto, ver Mi día, administrar workspace.
 | **ActivityTimeline** | Operativo — `hub.timeline` + writer Internal API |
 | Widget `stream-automation-rules` | Operativo — migración 048 |
 | Admin workspace | Miembros, addons enable/pin |
-| **Accept invite** | Código listo — `/invite/:token` + `POST /api/hub/invites/:token/accept` (deploy pendiente) |
+| **Accept invite** | ✅ live — `/invite/:token` + domain facade; admin lista estado invites; create → `invite.created.v1` outbox |
 | SSO a productos | Operativo — SA + AkoeNet + LifeFlow `finance-api` (`smoke-hub-sso-products.ps1` 3/3, 16 jul) |
 | Widgets configurables | Catálogo + valores reales parciales (LifeFlow, Core, SA); seed score test: `docs/scripts/seed_lifeflow_score_velezcampeon.sql` |
 
@@ -738,7 +740,7 @@ Railway/Sequelize escribe en `public.*`; sync a `stream.*` vía **dual-write en 
 
 > **Confirmado prod (15 jul 2026):** migraciones **037–048 aplicadas**. Security Advisor: 0 tablas «RLS Enabled No Policy» tras 038. Triggers public→stream retirados (043). Hub Mi día: `stub=false`, timeline writer live (`smoke-hub-timeline.ps1` OK).
 >
-> **16 jul 2026:** LifeFlow `030` ✅; Hub SSO SA+LifeFlow OK (AkoeNet puede 503 puntual); invite accept + automation runs **desplegados**; `049` + seed `lifeflow_score=72` velez.
+> **16 jul 2026:** LifeFlow `030` ✅; Hub SSO 3/3; invite create/accept **domain + live**; automation runs + Director SM; `049` + seed score 72; arquitectura A/B ✅ · C parcial (QueryMap + rate-limit GW ✅).
 
 Deploy: `scripts/deploy-billing-unified-greenfield.ps1` · `scripts/deploy-hub-automation.ps1` · `scripts/apply-hub-048.ps1`  
 Smoke: `scripts/smoke-hub.ps1` · `scripts/smoke-hub-timeline.ps1` · `scripts/smoke-creator-suite-sa.ps1` · `scripts/smoke-billing-unified-sa.ps1`  
@@ -825,36 +827,38 @@ Verificación RLS: `scripts/verify_rls_no_policy_gaps.sql`
 
 ## 14. Diseño compartido (packages)
 
-### Platform SDK (`@dakinis/sdk` + `@dakinis/shared-platform`)
+### Platform SDK + domain (Fases A–C, jul 2026)
 
-Punto de entrada único para productos — evita `axios`/`Redis`/Internal API dispersos:
+Punto de entrada único para productos — evita `axios`/`Redis`/Internal API dispersos.
+
+| Paquete | Rol | Estado |
+|---------|-----|--------|
+| **@dakinis/domain** | Aggregates (`WorkspaceInvite`, `DirectorSession`, `AutomationRun`/`Rule`), VOs, policies, DomainEvent v1 | ✅ Fase A/C |
+| **@dakinis/sdk** | Facade lazy + reexport de módulos | ✅ Fase B |
+| **@dakinis/sdk-auth \| workspace \| billing \| events \| metrics** | Módulos SDK | ✅ Fase B |
+| **@dakinis/shared-platform** | `CommandBus`+middleware, `QueryBus`, **QueryMap**, `CachedQuery`, `PlatformContext`, `CacheService`+tags | ✅ |
 
 ```javascript
 import { createDakinisPlatform } from "@dakinis/sdk";
+import { createMappedQuery } from "@dakinis/shared-platform/query-map";
 
 const platform = createDakinisPlatform({
   baseUrl: process.env.DAKINIS_INTERNAL_URL,
   apiKey: process.env.DAKINIS_INTERNAL_SERVICE_KEY,
 });
 
-// HTTP clients
 await platform.billing.plans();
 await platform.featureFlags.evaluateBatch(["billing.unified", "stream.director"], { userId });
+platform.metrics(); // sdk-metrics
 
-// CQRS ligero
-platform.commands.register("stream.director.start", async (cmd) => { /* ... */ });
-await platform.commands.execute({ type: "stream.director.start", payload: { userId } });
+// CQRS + QueryMap tipado
+await queryBus.execute(createMappedQuery("hub.dashboard.aggregated", { userId }));
+await platform.commands.execute({ type: "workspace.invite.accept", payload: { token, userId } });
 
-// Capabilities + cache + telemetría
-platform.capabilities.resolve("ai");
 await platform.cache.memo("bff:summary:uid", 60, () => platform.workspace.addons("ws"));
-platform.telemetry.track({ product: "streamautomator", action: "director.started" });
 ```
 
-| Paquete | Rol |
-|---------|-----|
-| **@dakinis/sdk** | `createDakinisPlatform()` — auth, billing, workspace, flags, telemetry, buses |
-| **@dakinis/shared-platform** | `CommandBus`, `QueryBus`, `CacheService`, `CapabilityRegistry`, `PERMISSIONS`, director state machine |
+**ADR evolución:** [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md)
 
 ### Paquetes Foundation (Fase 0+ — jul 2026)
 
@@ -866,7 +870,7 @@ platform.telemetry.track({ product: "streamautomator", action: "director.started
 | **shared-feature-flags** | `evaluate` / `evaluateBatch` + cache memoria/Redis, keys ampliados (`platform.*`, `stream.*`, `core.*`) |
 | **shared-ai** | `createDomainEvent` — `schemaVersion`, `correlationId`, `causationId`, `actorId` |
 
-**Adopción actual:** Internal API (flags batch alias, addon data, outbox), AkoeNet (error + flags), StreamAutomator (Director facade + outbox idempotency), SDK listo para cutover gradual en productos.
+**Adopción actual:** Internal API (QueryMap, flags, addon data, outbox consumer, invite domain), Hub (platform client invite), StreamAutomator (Director/Run SM + outbox), AkoeNet (error + flags), SDK modular listo para cutover gradual.
 
 ### addon-sdk (`projects/workspace/packages/addon-sdk`)
 
@@ -877,27 +881,20 @@ platform.telemetry.track({ product: "streamautomator", action: "director.started
 
 **Adopción Fase 1.4.1:** 9 manifests en `apps/akoenet/Client/src/modules/*/manifest.json` + validación prebuild.
 
-**Fase 2 (jul 2026 — completada en código):**
+**Foundation Fase 2 + arquitectura A/B/C (jul 2026 — código pusheado):**
 
 | Área | Cambio |
 |------|--------|
-| **Internal API** | `CacheService` (tags `bff:hub:{userId}`, `bff:workspace:{userId}`), `QueryBus`/`CommandBus` en `src/platform/buses.js`; rutas BFF vía `queryBus.execute` |
-| **SDK** | `PlatformClient` → `GatewayClient`; `ContractClient` + `loadContractClient`; `HubClient.dashboardAggregated`, `WorkspaceClient.summary`, `HubClient.platformHealth` |
-| **AkoeNet** | `addonLoader.js` + `AddonRoutes.jsx` — rutas lazy auto-discovery; `AddonErrorBoundary` por addon |
-| **addon-sdk** | `plugin-loader.js` — `discoverAddonManifests` para Node/prebuild |
-| **Outbox 047** | `meta.outbox_events.idempotency_key` + `ON CONFLICT DO NOTHING` en `OutboxPublisher` |
+| **Internal API** | `CacheService`+tags, `QueryBus`/`CommandBus`+middleware, QueryMap, invite facade domain, outbox consumer → timeline |
+| **SDK** | Modular `@dakinis/sdk-*`; Hub `createHubPlatform`; DTO generator v1 (`scripts/generate-dto.mjs`) |
+| **Domain** | Invite SM + create/accept outbox; SA Director/Run vía SM |
+| **Gateway** | Rate zones `public`/`bff`/`admin`/`events` |
+| **AkoeNet** | `addonLoader.js` + lazy routes + `AddonErrorBoundary` |
+| **Outbox 047** | `idempotency_key` + `ON CONFLICT DO NOTHING` |
 
 ```javascript
-// SDK BFF helpers
-const platform = createDakinisPlatform({ baseUrl, apiKey });
-await platform.hub.dashboardAggregated(userId);
-await platform.workspace.summary(userId, { fresh: true });
-
-// Contract client (rutas tipadas desde OpenAPI-like JSON)
-await platform.contract.get_hub_dashboard_aggregated_userId({ userId });
-
-// Internal BFF query bus (server-side)
 import { queryBus, createQuery } from "./platform/buses.js";
+// createQuery = createMappedQuery (valida params del QueryMap)
 await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 ```
 
@@ -994,71 +991,61 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 
 ## 16. Estado actual julio 2026 (resumen ejecutivo)
 
-### Commits desplegados recientes (Hub + Automation)
+### Arquitectura A/B/C (código pusheado 16 jul)
+
+| Fase | Qué | Commits clave |
+|------|-----|---------------|
+| **A** ✅ | `@dakinis/domain`, PlatformContext, CommandBus middleware, CachedQuery, invite facade | monorepo `c35a014` · Internal `30458e0` |
+| **B** ✅ | SDK modular (`sdk-*`), cache tags, DTO gen v1, QueryMap tipado, rate-limit granular GW | `72b094a` · `36214b9` · Internal `dfc8870` |
+| **C** 🚧 | Outbox consumer invite→timeline; Director/Run SM en SA; invite create dominio | `4b017fa`/`b1ba7a1` · SA `8a7ea33`/`bd2c2ed` |
+| **Diferido** | Automation nodes, OTel E2E, billing E2E, smokes Jest modulares | — |
+
+Detalle: [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md) · [`STATUS.md`](./STATUS.md)
+
+### Commits recientes (Hub + platform + SA)
 
 | Repo | Commit | Contenido |
 |------|--------|-----------|
-| dakinis-internal-api | `9d6df29` | Hub timeline writer (`hub-timeline.js`) |
-| dakinis-internal-api | `3c69bbb` | Fix Redis WRONGTYPE en `POST /events` |
-| dakinis-streamautomator web | `7a559fb` | Automation builder UX + CreatorSuiteCard |
-| dakinis-streamautomator api | `6f4b15d` → `6b1865d` | Delete automation stream-read + hotfix |
-| dakinis-hub | `3f58a22` | ActivityTimeline + widget automation |
-| Supabase | `048` | Métricas automation + timeline enriquecido |
-| Billing | `9ad3ef1` | Validación `cus_*` + LiveCheckout UNIFICADO (user 20) |
-| LifeFlow / finanzas | `14171c2` | `app_user_links` rebind upsert (030) |
-
-### Código listo — deploy pendiente (16 jul, sin billing)
-
-| Repo | Commit | Cambio |
-|------|--------|--------|
-| dakinis-internal-api | `b1c5910` | ✅ live — `acceptWorkspaceInvite` |
-| dakinis-hub | `027e8b6` | ✅ live — `/invite/:token` |
-| streamautomator | `e73b3d7` | ✅ live — `AutomationRuns` + UI |
-| monorepo docs/scripts | `a5e8a6e`+ | ✅ `049` aplicada + seed score 72 |
+| monorepo | `36214b9` / `fdd6614` | Rate-limit granular Gateway + QueryMap (+ vendor Internal) |
+| dakinis-internal-api | `dfc8870` | QueryMap + rate tiers BFF |
+| dakinis-internal-api | `7b89f14` / `a07dc72` | Invite create domain + outbox consumer → timeline |
+| dakinis-internal-api | `30458e0` / `b1c5910` | Domain invite facade + accept by token |
+| dakinis-streamautomator | `8a7ea33` / `bd2c2ed` / `e73b3d7` | Director SM · AutomationRun SM · runs UI |
+| dakinis-hub | `233d6e0` / `027e8b6` | Platform client invite + `/invite/:token` |
+| Billing | `9ad3ef1` | LiveCheckout UNIFICADO (user 20) |
+| Supabase | `048`/`049` + LifeFlow `030` | Widgets automation · score · `app_user_links` |
 
 ### Lo que está live y usable hoy
-- **Supabase migraciones 037–048 aplicadas en prod** (+ LifeFlow **030** `app_user_links`)
-- **Hub Mi día** — `miDiaEnabled=true`, `stub=false`, 5 apps, widgets 048, timeline con eventos reales
-- **Hub timeline E2E** — `POST /internal/events` → `hub.timeline` → dashboard (`smoke-hub-timeline.ps1` ✅)
-- **Usuario test multi-plataforma** — `velezcampeon_88@hotmail.com` (workspace `velez-test`)
-- **Hub SSO** — exchange OK 3/3 StreamAutomator, AkoeNet, LifeFlow `finance-api` (`smoke-hub-sso-products.ps1` ✅ 16 jul)
-- **Billing SA unificado** — LiveCheckout UNIFICADO con user 20 + `platformAuthSub` (pago test / webhook pendiente)
-- **Security Advisor RLS** — deny policies en gaps (038)
-- **Core web** — topbar mobile compacto desplegado
-- Auth central + SSO Hub en AkoeNet, SA, Core, LifeFlow
-- AkoeNet social completo (servidores, chat, voz, DMs, móvil)
-- 9 addons Workspace con UI real + manifests validados prebuild
-- Window minimize → dock (Fase 1.4.2)
-- Command palette + activity center integrados
-- Sync server addon data con revision optimista
-- Feature flags workspace (`workspace.addon.*`)
-- **Internal API BFF** — agregados con caché Redis + rate limit
-- **Billing unificado Fase 1.2** — flag global ON (046); checkout unificado SA OK
-- **Paquetes Foundation** + **Foundation Fase 2** desplegada
-- **Creator Suite Fase 1C** — dual-write Director/Automation, outbox, smokes `-LiveWrite` ✅
-- **Automation builder SA** — params tipados, errores, toggle, `?create=1`
-- Integración SA ↔ AkoeNet: webhooks, !schedule, widget upcoming
-- Core ERP módulos principales · LifeFlow scoring y coach
+- **Supabase migraciones 037–049** (+ LifeFlow **030** `app_user_links`)
+- **Hub Mi día** — `miDiaEnabled=true`, `stub=false`, widgets 048, timeline real
+- **Hub timeline E2E** — `POST /internal/events` → `hub.timeline` (+ consumer outbox `invite.*.v1`)
+- **Workspace invites** — create/accept vía dominio; UI Hub `/invite/:token` + status admin
+- **Automation runs** — persistencia + UI SA; ejecución vía `AutomationRun` SM
+- **Director** — start/end vía `DirectorSession` SM + outbox
+- **Hub SSO** — 3/3 SA, AkoeNet, LifeFlow (`smoke-hub-sso-products.ps1` ✅)
+- **Billing SA unificado** — LiveCheckout OK; pago test / webhook → fan-out pendiente (2ª prioridad)
+- **Internal BFF** — QueryMap + cache tags Redis + rate limit por tier
+- **Gateway** — zonas `public`/`bff`/`admin`/`events` (redeploy GW para activar en edge)
+- **Foundation + SDK modular** + Creator Suite Fase 1C dual-write
+- Auth/SSO, AkoeNet social, 9 addons Workspace, Core ERP, LifeFlow coach
 
 ### Parcial / en progreso
-- **Billing Stripe E2E unificado** — 2ª prioridad; falta pago test + webhook → `billing.subscriptions` + fan-out
-- **Hub landing** — screenshot real del dashboard para marketing
-- **Workspace invite accept** — API/UI listos; falta deploy + primer invite real piloto
-- **Automation runs** — persistencia + UI listos; falta migración Sequelize en prod + redeploy
-- AI costes por workspace
-- Assistant modules AkoeNet (scaffold + BullMQ worker)
-- 17 addons Workspace en preview/placeholder
-- Search federada enriquecida
-- WhatsApp Core canal live
-- Automation: canvas n8n visual (logs de ejecución: código listo)
-- LifeFlow migración SQLite → PG (030 links ✅; goals/transactions pendientes)
+- **Billing Stripe E2E unificado** — 2ª prioridad; pago test + webhook → `billing.subscriptions` + fan-out
+- **Gateway redeploy** — zonas rate-limit en edge tras `36214b9`
+- **Piloto invite real** — código live; falta demo comercial con usuario piloto
+- **Hub landing** — screenshot marketing
+- AI costes por workspace · Assistant modules AkoeNet
+- 17 addons Workspace preview · Search federada · WhatsApp Core live
+- Automation canvas n8n (diferido; IF/THEN + runs OK)
+- LifeFlow SQLite → PG (030 links ✅; goals/transactions pendientes)
+- **OTel** / automation nodes — diferidos (Fase C escala)
 
 ### Planificado
 - DND 5e en Supabase
 - Open Banking LifeFlow
 - Monaco en code-editor
 - Clip studio, game launcher, live-dashboard addons
-- Ops: backups automáticos, staging, Sentry
+- Ops: backups automáticos, staging, Sentry ampliado
 
 ---
 
