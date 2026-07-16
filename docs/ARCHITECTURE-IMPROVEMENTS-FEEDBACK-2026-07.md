@@ -1,12 +1,12 @@
 # Análisis de código y mejoras — Dakinis Systems (julio 2026, feedback consolidado)
 
 > **Tipo:** ADR de evolución arquitectónica (no backlog ciego)  
-> **Fecha:** 16 jul 2026 · **Revisión:** v2.1 (tracking post-implementación A/B + quick wins)  
-> **Entrada:** análisis arquitecto + código Fase 2 + revisión crítica del propio documento  
-> **Estado real:** Fase A ✅ · Fase B ✅ · Fase C parcial (SM invite/director/run + outbox consumer) · QueryMap + rate-limit granular ✅ · billing E2E **2ª prioridad** · nodos/OTel **diferidos**  
+> **Fecha:** 16 jul 2026 · **Revisión:** v2.2 (feedback post-implementación: plataforma → foco producto)  
+> **Entrada:** análisis arquitecto + código Fase 2 + revisión crítica + **segunda valoración externa** (scores + 20/80 producto)  
+> **Estado real:** Fase A ✅ · Fase B ✅ · Fase C parcial · QueryMap + rate-limit ✅ · **piloto comercial = P0** · billing E2E 2ª prioridad · nodos/OTel diferidos  
 > **Relacionado:** [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`STATUS.md`](./STATUS.md) · [`DAKINIS-SISTEMA-COMPLETO-TEMP.md`](./DAKINIS-SISTEMA-COMPLETO-TEMP.md)
 
-**Valoración del documento como propuesta de evolución:** ~9.8/10. El salto ya no es “añadir funcionalidades”, sino **reducir acoplamiento**. Riesgo principal: que SDK y buses se conviertan en God Objects — cada módulo pequeño, una responsabilidad, componible.
+**Valoración externa del sistema (16 jul):** Arquitectura 9.7 · Escalabilidad 9.5 · Separación 9.5 · Madurez producto 8.5 · Comercializar 8.5 · Docs 10 · **global ~8.9**. Lectura clave: *ya no es un conjunto de proyectos personales — es una plataforma*. Riesgo principal ahora: **exceso de infraestructura** y falta de validación con clientes, no deuda técnica crítica.
 
 ---
 
@@ -24,7 +24,65 @@
 | OTel | deseable | Sentry cubre hoy | **Diferido** hasta escala | ~1 sem | Platform |
 | Automation nodes | futuro | IF/THEN + Run SM OK | Solo si loops/branches/multi-trigger | 2+ sem | SA |
 
-**Conclusión:** Fases A/B y quick wins **cerrados en código**. El apalancamiento restante es adopción del SDK en productos, piloto invite, y (cuando toque) OTel / nodes / billing E2E — no más scaffolding de runtime.
+**Conclusión:** Fases A/B y quick wins **cerrados en código**. El apalancamiento restante es **producto + piloto + adopción SDK**, no más scaffolding de runtime. Cambio de foco acordado: **~20% arquitectura / ~80% producto**.
+
+---
+
+## 1.1 Feedback v2.2 — valoración post-plataforma (16 jul)
+
+### Scores
+
+| Dimensión | Score | Nota |
+|-----------|-------|------|
+| Arquitectura | 9.7 | Identidad Platform → SDK → Products |
+| Escalabilidad | 9.5 | Eventos + outbox + tiers rate-limit |
+| Separación de responsabilidades | 9.5 | Domain / Internal BFF / productos |
+| Madurez del producto | 8.5 | Falta validación con usuarios de pago |
+| Preparación comercial | 8.5 | Demo 5 min posible; billing E2E pendiente |
+| Documentación | 10 | TEMP + este ADR como fuente de verdad |
+| Global (otras lecturas) | 8.4–8.9 | Subida vs ~7.2 anteriores |
+
+### Sobresaliente (mantener)
+
+1. **Arquitectura con identidad** — Auth/Billing/AI/… → SDK → productos (no apps sueltas).  
+2. **`@dakinis/domain`** — aggregates, VOs, policies, eventos, SM.  
+3. **Internal API** — BFF + orchestrator + cache + QueryMap + commands + consumer.  
+4. **SDK modular** — `sdk-auth|workspace|billing|events|metrics`.  
+5. **Workspace OS** — diferenciador (addons / escritorio; no Discord/Slack clone).  
+6. **Cadena de eventos** — Outbox → BullMQ → DomainEvents → Timeline → Widgets.
+
+### Mejorar (sin volver a “infra forever”)
+
+| Tema | Acción |
+|------|--------|
+| Demasiados conceptos / `shared-*` | Congelar nuevos packages; fusionar UI/brand/ux a medio plazo |
+| Plumbing > negocio | Capar trabajo de buses/facades; priorizar demos |
+| Adopción SDK / CommandBus | Cutover gradual Hub/SA → Core/LifeFlow; nuevos endpoints solo SDK |
+| DTO Generator solo v1 | v2 como entrada de endpoints nuevos (~2d) |
+| Tests de dominio | Ya hay `packages/domain/test/*`; ampliar cobertura y visibilidad en CI |
+| BackgroundTask | Migrar BullMQ directo restante a `background.enqueue()` |
+| Billing | Dry-run semanal staging; E2E completo en 2ª prioridad |
+| Gateway | Redeploy edge **antes del piloto** |
+
+### Onboarding estimado (señal positiva)
+
+| Tiempo | Nivel |
+|--------|-------|
+| 1 semana | Estructura general |
+| 2–3 semanas | Productivo en un área |
+| 1–2 meses | Dominio de la plataforma |
+
+### Comparativa junio → julio 2026
+
+| Dimensión | Junio | Julio | Δ |
+|-----------|-------|-------|---|
+| Arquitectura | 4 capas + packages | Domain + SDK modular | ⬆️⬆️ |
+| Hub | Launcher | Mi día + timeline + invites | ⬆️⬆️ |
+| Invites | Pendiente | Domain + UI + outbox live | ⬆️⬆️ |
+| Automation | IF/THEN | Runs + UI + SM | ⬆️ |
+| Billing | Checkout | Unificado SA; E2E 2ª prio | ⬆️ |
+| DX | Repos sueltos | QueryMap + SDK + DTO | ⬆️⬆️ |
+| Estado | Prometedor | **Listo para piloto** | ⬆️⬆️ |
 
 ---
 
@@ -67,10 +125,10 @@
 | **Versionado de dominio** | Eventos `v1` / `v2` | ✅ `invite.*.v1` + outbox map |
 | **Value Objects** | `WorkspaceId`, `Email`, … | ✅ en `@dakinis/domain` |
 | **DTO Generator** | Una fuente → tipos/SDK/OpenAPI | **v1** (`scripts/generate-dto.mjs`) |
-| **Tests de dominio** | Cobertura lógica pura | ✅ invite/director/automation tests |
+| **Tests de dominio** | Cobertura lógica pura | ✅ `packages/domain/test/` (ampliar + CI) |
 | **`platform.metrics()`** | Latencia, errores, cache | ✅ `@dakinis/sdk-metrics` |
 | **QueryMap tipado** | Inferencia params/response | ✅ `query-map.js` + `.d.ts` |
-| **Rate limit granular** | public/bff/admin/events | ✅ Gateway zones + Internal tiers |
+| **Rate limit granular** | public/bff/admin/events | ✅ código; **redeploy GW pendiente** |
 
 ---
 
@@ -462,14 +520,18 @@ gantt
   OpenTelemetry                  :c4, 2026-09-15, 7d
 ```
 
-### Prioridad de negocio (actualizado 16 jul)
+### Prioridad de negocio (v2.2 — 20% arch / 80% producto)
 
-1. **Piloto** — invite real end-to-end + demo Hub→Core *(código listo; falta sesión demo)*  
-2. **Fase A** — domain + context + facades → **✅ Done**  
-3. **Fase B** — SDK modular + buses + cache tags + QueryMap + rate-limit → **✅ Done**  
-4. **Fase C** — SM invite/director/run + outbox consumer → **✅ parcial**; nodos + OTel → **diferido**  
-5. **Billing E2E** — cuando negocio reactive (2ª prioridad)  
-6. **Adopción** — productos consumen `@dakinis/sdk` / QueryMap; menos HTTP ad-hoc
+1. **Piloto** — invite real + demo Hub→Mi día→SSO→valor en 5 min  
+2. **Ops** — redeploy Gateway (rate-limit edge) + billing dry-run staging  
+3. **Producto** — Hub puerta de entrada · Workspace consolidado · IA donde aporte valor  
+4. **Adopción** — SDK/QueryMap en Hub o SA; luego Core/LifeFlow  
+5. **Billing E2E** — cuando negocio reactive (2ª prioridad; dry-run semanal mientras tanto)  
+6. **Arquitectura residual (~20%)** — DTO gen v2, más tests dominio, `background.enqueue`, SM solo si desbloquea producto  
+7. **Diferido** — OTel, automation nodes, fusionar `shared-*` UI
+
+**Anti-patrón v2.2:** seis meses más de plumbing. La pregunta clave: *¿puedes mostrar valor a un cliente potencial en 5 minutos?*
+
 
 ---
 
@@ -523,8 +585,10 @@ Eje: **agregado**, no `controllers / services / routes` como carpeta raíz.
 - No canvas n8n antes de logs + SM.
 - No OTel antes de escala real (Sentry suficiente hoy).
 - No automation nodes mientras IF/THEN crezca bien.
-- No billing E2E como P0 sin cliente.
+- No billing E2E como P0 sin cliente (sí dry-run staging).
 - No bloquear piloto por Module Federation u OTel.
+- **No** añadir más `shared-*` / facades / buses sin necesidad de producto.
+- **No** poner lógica de UI/formato en `@dakinis/domain`.
 
 ---
 
@@ -536,17 +600,20 @@ Eje: **agregado**, no `controllers / services / routes` como carpeta raíz.
 |--------|-------------|
 | **Fase A** | `@dakinis/domain`, PlatformContext, CommandBus middleware, CachedQuery, invite facade |
 | **Fase B** | SDK modular (`sdk-*`), cache tags, DTO gen v1, QueryMap, rate-limit granular Gateway |
-| **Fase C (parcial)** | Outbox `invite.*.v1` + consumer→timeline; DirectorSession + AutomationRun SM en SA; invite create dominio |
-| **Producto** | Invite accept Hub live · automation runs UI · SSO 3/3 · Mi día + score 72 |
+| **Fase C (parcial)** | Outbox `invite.*.v1` + consumer→timeline; DirectorSession + AutomationRun SM; invite create |
+| **Producto** | Invite Hub live · automation runs UI · SSO 3/3 · Mi día + score 72 |
 
-**Siguiente impacto (no scaffolding):**
+**Feedback v2.2:** la plataforma *ya está diseñada*. El mayor riesgo **ya no es técnico** — es comercial (clientes que paguen / usen).
 
-1. Piloto invite real + demo Hub→Core  
-2. Adopción SDK/QueryMap en productos (menos `fetch` ad-hoc)  
-3. Billing E2E cuando negocio reactive  
-4. OTel / automation nodes solo con demanda real  
+**Siguiente impacto (80% producto):**
 
-El punto de inflexión entre “app grande” y “plataforma mantenible” ya tiene runtime: la lógica nueva debe vivir en dominio compartido, no repartirse en services que cada producto reinterpreta.
+1. Redeploy Gateway + piloto invite + demo 5 min  
+2. Billing dry-run staging; E2E cuando haya cliente  
+3. Adopción SDK en un producto más; consolidar Hub/Workspace  
+4. DTO gen v2 / tests dominio / background wrapper solo si desbloquean DX  
+5. OTel / nodes — solo con demanda real  
+
+El punto de inflexión “app grande → plataforma” **ya ocurrió**. Ahora: validar negocio sin sobre-diseñar.
 
 ---
 
@@ -592,4 +659,4 @@ it('expires pending invite after TTL', () => { … });
 
 ---
 
-*Actualizado 16 jul 2026 tras cerrar filas §5 (1–8, 12, 16–17) y quick wins QueryMap/rate-limit. Próxima revisión: tras piloto invite real o adopción SDK en un segundo producto.*
+*Actualizado 16 jul 2026 — v2.2: scores externos, foco 20/80 producto, riesgos de sobre-infra. Próxima revisión: tras piloto invite real o primer cliente de pago.*

@@ -562,13 +562,13 @@ Programación multi-plataforma de contenido para streamers y marcas: calendario,
 | Legacy sync bridge | Fase 1C: outbox reconcilia `stream→public` (`LEGACY_SYNC_MODE=true`) | Operativo prod |
 | Automation → stream sync | Dual-write reglas a `stream.automation_rules` + outbox | Operativo |
 | Automation | Reglas IF/THEN — API + validación Zod, builder UX (`7a559fb`) | Operativo |
-| Automation runs | Persistencia `AutomationRuns` + `GET /api/automation/runs` + UI historial | Código listo — deploy + migración Sequelize pendiente |
+| Automation runs | Persistencia `AutomationRuns` + UI + `AutomationRun` SM (`e73b3d7` / `bd2c2ed`) · mirror `049` | ✅ Operativo |
 | Analytics | Heatmap sesiones | Parcial |
 | Campaign kits | Paquetes contenido | Parcial |
 | Copilot contenido | Sugerencias IA | Stub |
 | AkoeNet webhooks | stream-scheduled → canal | Operativo |
 | Discovery API | GET /api/integration/akoenet v2.3.1 | Operativo |
-| Billing Dakinis unificado | Fase 1.2: dual-write SA→billing vía Internal API; flag `billing.unified` global ON (046) | En progreso — smoke E2E checkout pendiente |
+| Billing Dakinis unificado | Checkout SA unificado OK (`billing.unified`); webhook + fan-out E2E | 2ª prioridad — dry-run staging |
 
 ### Procesos backend
 - **API:** REST Express, auth, scheduling, creator suite
@@ -599,7 +599,7 @@ POST/PATCH /api/automation/rules
 
 GET /api/automation/runs[?ruleId=&limit=]
 GET /api/automation/rules/:id/runs
-  → AutomationRuns (Sequelize) — historial por trigger (deploy + migración pendiente)
+  → AutomationRuns + AutomationRun SM — historial por trigger (live)
 ```
 
 Validación Zod en rutas automation vía `@dakinis/shared-validation/stream`.
@@ -991,6 +991,24 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 
 ## 16. Estado actual julio 2026 (resumen ejecutivo)
 
+### Valoración externa consolidada (16 jul — post A/B/C)
+
+> Lectura de este TEMP + [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md): *«dejó de parecer un conjunto de proyectos personales y empezó a parecer una plataforma de software»*.
+
+| Dimensión | Score |
+|-----------|-------|
+| Arquitectura | 9.7 |
+| Escalabilidad | 9.5 |
+| Separación de responsabilidades | 9.5 |
+| Madurez del producto | 8.5 |
+| Preparación para comercializar | 8.5 |
+| Documentación | 10 |
+| **Global plataforma** | **~8.9** (otra lectura: 8.4 → trayectoria ascendente) |
+
+**Modelo mental validado:** Foundation → Infrastructure → Platform → Products (Auth/Billing/AI/… → SDK → productos).
+
+**Foco acordado a partir de ahora:** ~**20% arquitectura / 80% producto** — la infraestructura principal ya existe; el mayor retorno es Hub, billing, Workspace, IA útil y **usuarios reales**.
+
 ### Arquitectura A/B/C (código pusheado 16 jul)
 
 | Fase | Qué | Commits clave |
@@ -998,9 +1016,28 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 | **A** ✅ | `@dakinis/domain`, PlatformContext, CommandBus middleware, CachedQuery, invite facade | monorepo `c35a014` · Internal `30458e0` |
 | **B** ✅ | SDK modular (`sdk-*`), cache tags, DTO gen v1, QueryMap tipado, rate-limit granular GW | `72b094a` · `36214b9` · Internal `dfc8870` |
 | **C** 🚧 | Outbox consumer invite→timeline; Director/Run SM en SA; invite create dominio | `4b017fa`/`b1ba7a1` · SA `8a7ea33`/`bd2c2ed` |
-| **Diferido** | Automation nodes, OTel E2E, billing E2E, smokes Jest modulares | — |
+| **Diferido** | Automation nodes, OTel E2E, smokes Jest modulares | — |
 
 Detalle: [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md) · [`STATUS.md`](./STATUS.md)
+
+### Fortalezas (feedback 16 jul)
+
+- **Domain layer** — aggregates + VOs + policies + SM + eventos `v1` (invite/director/run)
+- **Internal API** como BFF + orchestrator + cache + QueryMap + CommandBus + consumer outbox (no CRUD plano)
+- **SDK modular** (`sdk-auth|workspace|billing|events|metrics`) — evita God Object
+- **Workspace OS** — diferenciador (addons + escritorio web; no “otro Discord/Slack”)
+- **Eventos desacoplados** — Outbox → BullMQ → DomainEvents → Timeline → Widgets → productos
+- Ejecución rápida del roadmap A/B/C sin romper prod; migraciones **037–049**; SSO 3/3; invites live
+
+### Riesgos a vigilar
+
+| Riesgo | Mitigación |
+|--------|------------|
+| Demasiados conceptos / `shared-*` packages | No crear nuevos shared sin fusionar o deprecar; guía onboarding corta |
+| Exceso de plumbing (buses/facades) | Capar arquitectura al 20%; priorizar demos y clientes |
+| SDK adopción lenta (fetch directo en Core/LifeFlow) | Cutover gradual + `migration-guide`; nuevos endpoints solo vía SDK |
+| Billing E2E sin dry-run | Dry-run semanal staging aunque no haya cliente de pago |
+| Sobreingeniería de dominio | Dominio = reglas de negocio; UI/format fuera |
 
 ### Commits recientes (Hub + platform + SA)
 
@@ -1020,7 +1057,7 @@ Detalle: [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROV
 - **Hub Mi día** — `miDiaEnabled=true`, `stub=false`, widgets 048, timeline real
 - **Hub timeline E2E** — `POST /internal/events` → `hub.timeline` (+ consumer outbox `invite.*.v1`)
 - **Workspace invites** — create/accept vía dominio; UI Hub `/invite/:token` + status admin
-- **Automation runs** — persistencia + UI SA; ejecución vía `AutomationRun` SM
+- **Automation runs** — persistencia + UI SA + `AutomationRun` SM · `049` mirror stream
 - **Director** — start/end vía `DirectorSession` SM + outbox
 - **Hub SSO** — 3/3 SA, AkoeNet, LifeFlow (`smoke-hub-sso-products.ps1` ✅)
 - **Billing SA unificado** — LiveCheckout OK; pago test / webhook → fan-out pendiente (2ª prioridad)
@@ -1028,6 +1065,25 @@ Detalle: [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROV
 - **Gateway** — zonas `public`/`bff`/`admin`/`events` (redeploy GW para activar en edge)
 - **Foundation + SDK modular** + Creator Suite Fase 1C dual-write
 - Auth/SSO, AkoeNet social, 9 addons Workspace, Core ERP, LifeFlow coach
+
+### Prioridades (feedback — producto primero)
+
+**Esta semana (antes / durante piloto)**
+1. Redeploy Gateway (rate-limit edge)
+2. Piloto invite real + demo «valor en 5 min» (Hub → Mi día → SSO → datos)
+3. Billing dry-run staging (checkout test aunque no haya cliente)
+4. Ampliar tests de dominio visibles (invite/run ya existen en `packages/domain/test/`)
+
+**Próximo sprint**
+1. Migrar `fetch` → `@dakinis/sdk` en un producto (Hub o SA primero)
+2. DTO Generator v2 (validadores/tipos como entrada de endpoints nuevos)
+3. Consolidar Workspace + más addons Live; IA donde aporte valor
+4. `background.enqueue()` donde aún haya BullMQ directo en productos
+
+**Post-piloto / 2ª prioridad**
+- Billing E2E completo cuando negocio reactive
+- Adopción SDK/CommandBus en Core + LifeFlow
+- OTel / automation nodes solo con escala o demanda de branches
 
 ### Parcial / en progreso
 - **Billing Stripe E2E unificado** — 2ª prioridad; pago test + webhook → `billing.subscriptions` + fan-out
@@ -1038,7 +1094,7 @@ Detalle: [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROV
 - 17 addons Workspace preview · Search federada · WhatsApp Core live
 - Automation canvas n8n (diferido; IF/THEN + runs OK)
 - LifeFlow SQLite → PG (030 links ✅; goals/transactions pendientes)
-- **OTel** / automation nodes — diferidos (Fase C escala)
+- **OTel** / automation nodes — diferidos
 
 ### Planificado
 - DND 5e en Supabase
@@ -1046,7 +1102,7 @@ Detalle: [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROV
 - Monaco en code-editor
 - Clip studio, game launcher, live-dashboard addons
 - Ops: backups automáticos, staging, Sentry ampliado
-
+- Reducir superficie de conceptos (`shared-*` fusionables a medio plazo)
 ---
 
 ## 17. Flujo de usuario típico (ecosistema)
@@ -1065,4 +1121,4 @@ Detalle: [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROV
 
 ---
 
-*Único doc TEMP en `docs/`. Sustituye los antiguos ENTORNO-*, ROADMAP-*, ESTRUCTURA-* y STREAMAUTOMATOR-ESTADO-*. Archivar o renombrar cuando exista documentación definitiva sin prefijo TEMP.*
+*Único doc TEMP en `docs/`. Feedback externo 16 jul: plataforma lista para piloto — validar negocio, no añadir más infra. Archivar o renombrar cuando exista documentación definitiva sin prefijo TEMP.*
