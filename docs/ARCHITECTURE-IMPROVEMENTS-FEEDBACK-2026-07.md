@@ -19,8 +19,12 @@
 | Invite accept | hardening | **SM + FOR UPDATE + policies + create outbox** | Demo comercial end-to-end | ~1h ops | Internal |
 | Automation runs | observabilidad | **049 + UI + AutomationRun SM** | Logs stream UI; **nodos diferidos** | ~4h | SA |
 | Domain layer | faltante | **`@dakinis/domain` live** (invite/director/run/rule) | Más facades SA/Core | continuo | Platform |
-| QueryMap / rate limit | quick wins | **Done** (`36214b9` / `dfc8870`) | Redeploy Gateway edge | ops | Gateway |
-| Billing E2E | alto negocio | 2ª prioridad explícita | Cuando haya cliente | ~4h | Billing |
+| QueryMap / rate limit | quick wins | **Done** | Redeploy Gateway edge | ops | Gateway |
+| CommandBus invites | HTTP → bus | **Done** (`workspace.invite.create|accept`) | Ampliar otros commands | — | Internal |
+| BackgroundTask | enqueue API | **Done** (`shared-platform/background`) | Migrar jobs BullMQ sueltos | continuo | Platform |
+| Billing dry-run | staging weekly | **Done** (`smoke-billing-dry-run.ps1`) | Dry-run semanal | ops | Billing |
+| SDK migration guide | cutover | **Done** (`packages/sdk/migration-guide.md`) | Hub/SA cutover | 1–2 sem | Platform |
+| Billing E2E | alto negocio | 2ª prioridad | Dry-run OK; E2E cuando haya cliente | ~4h | Billing |
 | OTel | deseable | Sentry cubre hoy | **Diferido** hasta escala | ~1 sem | Platform |
 | Automation nodes | futuro | IF/THEN + Run SM OK | Solo si loops/branches/multi-trigger | 2+ sem | SA |
 
@@ -125,10 +129,14 @@
 | **Versionado de dominio** | Eventos `v1` / `v2` | ✅ `invite.*.v1` + outbox map |
 | **Value Objects** | `WorkspaceId`, `Email`, … | ✅ en `@dakinis/domain` |
 | **DTO Generator** | Una fuente → tipos/SDK/OpenAPI | **v1** (`scripts/generate-dto.mjs`) |
-| **Tests de dominio** | Cobertura lógica pura | ✅ `packages/domain/test/` (ampliar + CI) |
+| **Tests de dominio** | Cobertura lógica pura | ✅ ampliado + CI (`packages/domain/test`) |
 | **`platform.metrics()`** | Latencia, errores, cache | ✅ `@dakinis/sdk-metrics` |
 | **QueryMap tipado** | Inferencia params/response | ✅ `query-map.js` + `.d.ts` |
 | **Rate limit granular** | public/bff/admin/events | ✅ código; **redeploy GW pendiente** |
+| **`background.enqueue`** | Jobs sin BullMQ en productos | ✅ `@dakinis/shared-platform/background` |
+| **CommandBus invites** | HTTP vía bus | ✅ create + accept |
+| **SDK migration guide** | Cutover fetch→SDK | ✅ `packages/sdk/migration-guide.md` |
+| **Billing dry-run** | Staging sin checkout | ✅ `scripts/smoke-billing-dry-run.ps1` |
 
 ---
 

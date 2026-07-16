@@ -152,7 +152,7 @@ export class WorkspaceInvite extends AggregateRoot {
   /** Mark invite link as opened (optional tracking). */
   open() {
     if (this.isExpired) {
-      this._transition("expire");
+      if (this._sm.can("expire")) this._transition("expire");
       throw new DomainError("invite_expired", "Invite has expired");
     }
     if (!this._sm.can("open")) {
@@ -175,8 +175,8 @@ export class WorkspaceInvite extends AggregateRoot {
     if (this._sm.state === "accepted") {
       throw new DomainError("invite_already_used", "Invite already accepted");
     }
-    if (this.isExpired) {
-      this._transition("expire");
+    if (this.isExpired || this._sm.state === "expired") {
+      if (this._sm.can("expire")) this._transition("expire");
       throw new DomainError("invite_expired", "Invite has expired");
     }
     if (!userEmail.equals(this.email)) {

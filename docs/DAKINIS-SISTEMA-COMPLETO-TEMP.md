@@ -1071,14 +1071,14 @@ Detalle: [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROV
 **Esta semana (antes / durante piloto)**
 1. Redeploy Gateway (rate-limit edge)
 2. Piloto invite real + demo «valor en 5 min» (Hub → Mi día → SSO → datos)
-3. Billing dry-run staging (checkout test aunque no haya cliente)
-4. Ampliar tests de dominio visibles (invite/run ya existen en `packages/domain/test/`)
+3. Billing dry-run: `scripts/smoke-billing-dry-run.ps1` (weekly)
+4. Tests dominio en CI ✅ (`packages/domain` + `shared-platform`)
 
 **Próximo sprint**
-1. Migrar `fetch` → `@dakinis/sdk` en un producto (Hub o SA primero)
+1. Migrar `fetch` → `@dakinis/sdk` en Hub/SA (ver `packages/sdk/migration-guide.md`)
 2. DTO Generator v2 (validadores/tipos como entrada de endpoints nuevos)
 3. Consolidar Workspace + más addons Live; IA donde aporte valor
-4. `background.enqueue()` donde aún haya BullMQ directo en productos
+4. Migrar jobs BullMQ restantes a `background.enqueue()`
 
 **Post-piloto / 2ª prioridad**
 - Billing E2E completo cuando negocio reactive

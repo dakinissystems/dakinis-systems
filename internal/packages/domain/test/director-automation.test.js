@@ -71,3 +71,58 @@ test("AutomationRule enable/disable emits events", () => {
   assert.ok(types.includes("automation.rule.disabled"));
   assert.ok(types.includes("automation.rule.enabled"));
 });
+
+test("DirectorSession.cancel from preparing returns to draft", () => {
+  const session = DirectorSession.create({
+    id: "a1000088-0000-4000-8000-000000000013",
+    userId: "a1000088-0000-4000-8000-000000000088",
+  });
+  session.prepare();
+  assert.equal(session.status, "preparing");
+  session.cancel();
+  assert.equal(session.status, "draft");
+});
+
+test("DirectorSession.toPersistence reflects status", () => {
+  const session = DirectorSession.create({
+    id: "a1000088-0000-4000-8000-000000000014",
+    userId: "a1000088-0000-4000-8000-000000000088",
+  });
+  session.prepare();
+  session.ready();
+  const snap = session.toPersistence();
+  assert.equal(snap.status, "ready");
+  assert.equal(snap.id, "a1000088-0000-4000-8000-000000000014");
+});
+
+test("AutomationRun double succeed rejected", () => {
+  const run = AutomationRun.start({
+    id: "run-3",
+    ruleId: 7,
+    triggerType: "stream.started",
+  });
+  run.succeed({});
+  assert.throws(() => run.succeed({}), (err) => err instanceof DomainError);
+});
+
+test("AutomationRun fail emits automation.run.failed", () => {
+  const run = AutomationRun.start({
+    id: "run-4",
+    ruleId: 7,
+    triggerType: "stream.started",
+  });
+  run.fail("boom");
+  const types = run.pullDomainEvents().map((e) => e.type);
+  assert.ok(types.includes("automation.run.failed"));
+});
+
+test("AutomationRun.toPersistence maps running to started", () => {
+  const run = AutomationRun.start({
+    id: "run-5",
+    ruleId: 7,
+    triggerType: "stream.started",
+  });
+  assert.equal(run.toPersistence().status, "started");
+  run.succeed({ ok: true });
+  assert.equal(run.toPersistence().status, "ok");
+});

@@ -18,6 +18,12 @@ export { CacheService } from "./cache-service.js";
 export { CapabilityRegistry, platformCapabilities } from "./capability-registry.js";
 export { PERMISSIONS, hasPermission, hasAllPermissions } from "./permissions.js";
 export {
+  background,
+  enqueue as enqueueBackground,
+  schedule as scheduleBackground,
+  cancel as cancelBackground,
+} from "./background.js";
+export {
   DIRECTOR_STATES,
   directorTransitions,
   transitionDirectorState,

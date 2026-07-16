@@ -24,13 +24,12 @@ import {
   touchWorkspaceAccess,
   listWorkspaceMembers,
   listWorkspaceProducts,
-  inviteWorkspaceMember,
-  acceptWorkspaceInvite,
   updateMemberRole,
   getWorkspaceUsage,
   setWorkspaceProducts,
 } from "./services/workspace-admin.js";
 import { listWorkspaceInvites } from "./facades/invite-facade.js";
+
 import {
   listAddonCatalog,
   listWorkspaceAddons,
@@ -69,10 +68,14 @@ import { getPlatformMetrics } from "./services/platform-metrics.js";
 import { evaluateFeatureFlags } from "./services/feature-flags.js";
 import { mapToHttp } from "@dakinis/shared-error";
 import { addonDataKeySchema, addonDataPutSchema, parseOrThrow } from "@dakinis/shared-validation";
-import { queryBus, createQuery } from "./platform/buses.js";
+import { queryBus, createQuery, commandBus, createCommand } from "./platform/buses.js";
 import { enforceServiceRateLimit } from "./lib/rate-limit.js";
 import { invalidateUserBffCache } from "./lib/cache.js";
 import { recordHubTimelineFromPlatformEvent } from "./services/hub-timeline.js";
+import { buildInternalContext } from "./platform/context.js";
+
+const MEMBER_ROLES = new Set(["owner", "admin", "member", "viewer"]);
+
 
 function platformEvent(type, payload, meta = {}) {
   return {
@@ -577,7 +580,17 @@ export const routes = {
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     try {
-      const result = await inviteWorkspaceMember(id, body);
+      const role = MEMBER_ROLES.has(body.role) ? body.role : "member";
+      const result = await commandBus.execute(
+        createCommand("workspace.invite.create", {
+          workspaceId: id,
+          email: body.email,
+          role,
+          invitedBy: body.invitedBy,
+          actorRole: body.actorRole,
+          isPlatformAdmin: body.isPlatformAdmin,
+        })
+      );
       return { status: result.created ? 201 : 200, body: result };
     } catch (err) {
       return dbError(err);
@@ -593,7 +606,14 @@ export const routes = {
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     try {
-      const result = await acceptWorkspaceInvite(decodeURIComponent(match[1]), body);
+      const userId = body.userId;
+      const result = await commandBus.execute(
+        createCommand(
+          "workspace.invite.accept",
+          { token: decodeURIComponent(match[1]), userId },
+          { ctx: buildInternalContext({ userId, traceId: body.traceId }) }
+        )
+      );
       return { status: 200, body: result };
     } catch (err) {
       const message = err instanceof Error ? err.message : "db_error";

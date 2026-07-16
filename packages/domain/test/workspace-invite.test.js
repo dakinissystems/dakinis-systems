@@ -85,3 +85,88 @@ test("canInviteMembers policy requires owner/admin", () => {
   assert.equal(canInviteMembers({ actorRole: "admin" }), true);
   assert.equal(canInviteMembers({ isPlatformAdmin: true }), true);
 });
+
+test("WorkspaceInvite.open then accept", () => {
+  const invite = WorkspaceInvite.reconstitute({
+    id: "a1000088-0000-4000-8000-000000000099",
+    token: "tok",
+    workspaceId: "1518afe5-028b-4c41-aa66-393094f58225",
+    email: "guest@test.com",
+    role: "member",
+    expiresAt: new Date(Date.now() + 86400000),
+  });
+  invite.open();
+  assert.equal(invite.status.value, "opened");
+  invite.accept(UserId.from("a1000088-0000-4000-8000-000000000077"), Email.from("guest@test.com"));
+  assert.equal(invite.status.value, "accepted");
+});
+
+test("WorkspaceInvite.accept rejects already accepted", () => {
+  const invite = WorkspaceInvite.reconstitute({
+    id: "a1000088-0000-4000-8000-000000000099",
+    token: "tok",
+    workspaceId: "1518afe5-028b-4c41-aa66-393094f58225",
+    email: "guest@test.com",
+    role: "member",
+    expiresAt: new Date(Date.now() + 86400000),
+    usedAt: new Date(),
+  });
+  assert.throws(
+    () =>
+      invite.accept(
+        UserId.from("a1000088-0000-4000-8000-000000000077"),
+        Email.from("guest@test.com")
+      ),
+    (err) => err instanceof DomainError && err.code === "invite_already_used"
+  );
+});
+
+test("WorkspaceInvite.expire emits invite.expired", () => {
+  const invite = WorkspaceInvite.create({
+    id: "a1000088-0000-4000-8000-000000000099",
+    token: "tok",
+    workspaceId: "1518afe5-028b-4c41-aa66-393094f58225",
+    email: "guest@test.com",
+    role: "member",
+  });
+  invite.pullDomainEvents();
+  invite.expire();
+  assert.equal(invite.status.value, "expired");
+  const events = invite.pullDomainEvents();
+  assert.equal(events[0].type, "invite.expired");
+});
+
+test("WorkspaceInvite.accept on expired throws invite_expired", () => {
+  const invite = WorkspaceInvite.reconstitute({
+    id: "a1000088-0000-4000-8000-000000000099",
+    token: "tok",
+    workspaceId: "1518afe5-028b-4c41-aa66-393094f58225",
+    email: "guest@test.com",
+    role: "member",
+    expiresAt: new Date(Date.now() - 1000),
+  });
+  assert.throws(
+    () =>
+      invite.accept(
+        UserId.from("a1000088-0000-4000-8000-000000000077"),
+        Email.from("guest@test.com")
+      ),
+    (err) => err instanceof DomainError && err.code === "invite_expired"
+  );
+});
+
+test("WorkspaceInvite.toPersistence snapshot", () => {
+  const invite = WorkspaceInvite.create({
+    id: "a1000088-0000-4000-8000-000000000099",
+    token: "tok-xyz",
+    workspaceId: "1518afe5-028b-4c41-aa66-393094f58225",
+    email: "guest@test.com",
+    role: "admin",
+    invitedBy: "a1000088-0000-4000-8000-000000000088",
+  });
+  const snap = invite.toPersistence();
+  assert.equal(snap.token, "tok-xyz");
+  assert.equal(snap.email, "guest@test.com");
+  assert.equal(snap.role, "admin");
+  assert.equal(snap.status, "pending");
+});

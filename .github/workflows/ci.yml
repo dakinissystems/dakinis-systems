@@ -73,6 +73,11 @@ jobs:
       - name: Verify vendored package drift
         run: node scripts/verify-package-drift.mjs
 
+      - name: Unit tests — domain + shared-platform
+        run: |
+          (cd packages/domain && npm test)
+          (cd packages/shared-platform && npm test)
+
       - name: AkoeNet Client — deploy build (build:ci)
         if: hashFiles('apps/akoenet/Client/package.json') != ''
         working-directory: apps/akoenet/Client

@@ -8,6 +8,7 @@
     "./command-bus": "./src/command-bus.js",
     "./query-bus": "./src/query-bus.js",
     "./query-map": "./src/query-map.js",
+    "./background": "./src/background.js",
     "./cache": "./src/cache-service.js",
     "./platform-context": "./src/platform-context.js",
     "./cached-query": "./src/cached-query.js",

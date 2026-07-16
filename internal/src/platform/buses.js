@@ -10,7 +10,10 @@ import { getCacheService } from "../lib/cache.js";
 import { getHubDashboardAggregated } from "../services/hub-dashboard-aggregated.js";
 import { getWorkspaceSummary } from "../services/workspace-summary.js";
 import { getPlatformHealth } from "../services/platform-health.js";
-import { acceptInviteViaFacade } from "../facades/invite-facade.js";
+import {
+  acceptInviteViaFacade,
+  inviteMemberViaFacade,
+} from "../facades/invite-facade.js";
 import { buildInternalContext } from "./context.js";
 
 export const commandBus = new CommandBus();
@@ -56,6 +59,29 @@ commandBus.register("cache.invalidate.user", async (command) => {
   await invalidateUserBffCache(userId);
   return { ok: true, userId };
 });
+
+commandBus.register(
+  "workspace.invite.create",
+  async (command) => {
+    const workspaceId = command.payload?.workspaceId;
+    if (!workspaceId) throw new Error("workspace_id_required");
+    return inviteMemberViaFacade(workspaceId, {
+      email: command.payload?.email,
+      role: command.payload?.role,
+      invitedBy: command.payload?.invitedBy,
+      actorRole: command.payload?.actorRole,
+      isPlatformAdmin: command.payload?.isPlatformAdmin,
+    });
+  },
+  {
+    middleware: [
+      validationMiddleware((cmd) => {
+        if (!cmd.payload?.workspaceId) throw new Error("workspace_id_required");
+        if (!cmd.payload?.email) throw new Error("email_required");
+      }),
+    ],
+  }
+);
 
 commandBus.register(
   "workspace.invite.accept",
