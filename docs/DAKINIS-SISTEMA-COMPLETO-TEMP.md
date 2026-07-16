@@ -1009,12 +1009,12 @@ await queryBus.execute(createQuery("hub.dashboard.aggregated", { userId }));
 
 ### Código listo — deploy pendiente (16 jul, sin billing)
 
-| Repo | Cambio |
-|------|--------|
-| dakinis-internal-api | `acceptWorkspaceInvite` + `POST /workspaces/invites/:token/accept` |
-| dakinis-hub | `/invite/:token`, enlace en Admin Members, proxy BFF |
-| streamautomator | `AutomationRuns` + `GET /api/automation/runs` + UI historial |
-| docs / scripts | `049`, `pilot-workspace-invite.ps1`, seed score, smoke SSO `finance-api` |
+| Repo | Commit | Cambio |
+|------|--------|--------|
+| dakinis-internal-api | `b1c5910` | `acceptWorkspaceInvite` + `POST /workspaces/invites/:token/accept` |
+| dakinis-hub | `027e8b6` | `/invite/:token`, enlace en Admin Members, proxy BFF |
+| streamautomator | `e73b3d7` | `AutomationRuns` + `GET /api/automation/runs` + UI historial |
+| monorepo docs/scripts | `a5e8a6e` | `049`, TEMP/STATUS, `pilot-workspace-invite.ps1`, seed score, smoke SSO `finance-api` |
 
 ### Lo que está live y usable hoy
 - **Supabase migraciones 037–048 aplicadas en prod** (+ LifeFlow **030** `app_user_links`)
