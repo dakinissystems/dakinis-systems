@@ -16,6 +16,7 @@ const targets = [
   path.join(root, 'billing', 'packages'),
   path.join(root, 'search', 'packages'),
   path.join(root, 'notifications', 'packages'),
+  path.join(root, 'platform', 'core', 'packages'),
 ]
 
 if (!fs.existsSync(src)) {

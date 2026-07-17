@@ -218,9 +218,11 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 **Pendiente código / ops (17 jul) — priorizado:**
 1. Redeploy Gateway (rate limits) + piloto invite real
 2. Deploy worker Internal `worker:assistant` (cola `dakinis.ai`)
-3. Cutover SA `dakinisInternalFetch` → SDK (gradual)
+3. Cutover SA restante (outbox/billing → `getPlatform`)
 4. Billing E2E cuando haya cliente (dry-run semanal OK)
 5. DTO gen v2 / OTel / automation nodes — solo con demanda
+
+**Productos (17 jul higiene):** Core unifica `DAKINIS_INTERNAL_*` + sync `shared-ai`; LifeFlow normaliza `DAKINIS_AUTH_URL` → `/auth/me` (hub-sso + platform-exchange).
 
 Incidencia prod → [`OPERATIONS.md`](./OPERATIONS.md) § Runbook.
 
