@@ -145,6 +145,36 @@ export async function routeAssistantCommand(command) {
 
   return orchestrator.route(command, async (moduleId, enriched) => {
     if (moduleId === "assistant" && enriched.action === "ai.ask") {
+      const asyncOn =
+        String(process.env.DAKINIS_EVENT_BUS || "").toLowerCase() === "bullmq" &&
+        Boolean(String(process.env.REDIS_URL || "").trim()) &&
+        String(process.env.AKOENET_ASSISTANT_ASYNC || "1") !== "0";
+
+      if (asyncOn) {
+        const { background } = await import("@dakinis/shared-platform");
+        const job = await background.enqueue("akoenet.assistant.ask", enriched, {
+          queue: "dakinis.ai",
+          attempts: 2,
+        });
+        if (job.backend === "bullmq") {
+          await logAssistantUsage({
+            serverId: command.serverId,
+            moduleKey: "assistant",
+            userId: command.userId,
+            tokensInput: null,
+            tokensOutput: null,
+            endpoint: "ai.ask",
+            metadata: {
+              status: "queued",
+              jobId: job.id,
+              queue: "dakinis.ai",
+              channelId: command.channelId,
+            },
+          }).catch(() => {});
+          return { status: "queued", jobId: job.id, queue: "dakinis.ai", handler: "worker:assistant" };
+        }
+      }
+
       const result = await processAssistantAiAsk(enriched);
       await logAssistantUsage({
         serverId: command.serverId,

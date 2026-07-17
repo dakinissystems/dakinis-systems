@@ -19,7 +19,7 @@ Pega **cada archivo en orden** en el SQL Editor de Supabase (proyecto **Dakinis 
 | 14a | [`014a_auth_nullable_password.sql`](./014a_auth_nullable_password.sql) | Si 014 falla OAuth |
 | 14 | [`014_backfill_legacy_map.sql`](./014_backfill_legacy_map.sql) | ✅ 7 users |
 | 15 | [`015_backfill_stream_data.sql`](./015_backfill_stream_data.sql) | ✅ 120 contents |
-| 15b | [`015b_backfill_akoenet_data.sql`](./015b_backfill_akoenet_data.sql) | ⬜ Tras import AkoeNet → ver [`MIGRATE-AKOENET.md`](../MIGRATE-AKOENET.md) |
+| 15b | [`015b_backfill_akoenet_data.sql`](./015b_backfill_akoenet_data.sql) | ✅ Migración AkoeNet hecha (`STATUS.md` · migr. 034+); guía `MIGRATE-AKOENET.md` eliminada |
 
 ## Fase C — Mejoras arquitectura (016–019) ⬜ pendiente en prod
 

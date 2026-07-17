@@ -53,28 +53,21 @@ const platform = createHubPlatform({
 });
 
 await platform.workspace.acceptInvite(token, { userId });
+await platform.hub.dashboard(userId);
 ```
 
 Preferir ampliar `createHubPlatform` antes de nuevos `fetch` a Internal.
 
 ## StreamAutomator API
 
-Sustituir `dakinisInternalFetch` por un bootstrap:
+Sustituir `dakinisInternalFetch` por bootstrap local (o `@dakinis/sdk` cuando el Docker lo permita):
 
 ```js
 // apps/api/src/lib/dakinis-platform.js
-import { createDakinisPlatform } from "@dakinis/sdk";
+import { getPlatform } from "./dakinis-platform.js";
 
-let _platform;
-export function getPlatform() {
-  if (!_platform) {
-    _platform = createDakinisPlatform({
-      baseUrl: process.env.DAKINIS_INTERNAL_URL,
-      apiKey: process.env.DAKINIS_INTERNAL_SERVICE_KEY,
-    });
-  }
-  return _platform;
-}
+const platform = getPlatform();
+await platform.knowledge.query({ query, context });
 ```
 
 Luego outbox / billing sync / copilot usan `getPlatform()` en lugar de fetch ad-hoc.

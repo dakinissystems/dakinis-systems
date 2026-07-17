@@ -3,7 +3,7 @@
 > **Julio 2026** · Los bots no son apps externas: son módulos nativos de Dakinis AI Platform con contexto del servidor.  
 > SQL → [`032`](./supabase/migrations/032_akoenet_assistant_modules.sql) · [`033`](./supabase/migrations/033_akoenet_assistant_expansion.sql)  
 > Contrato → [`contracts/akoenet-assistant.json`](./contracts/akoenet-assistant.json)  
-> Setup → [`PLATFORM-SETUP-STEPS.md`](./PLATFORM-SETUP-STEPS.md)
+> Setup → [`PLATFORM-SETUP-STEPS.md`](./archive/PLATFORM-SETUP-STEPS.md)
 
 **Mensaje:** *"Discord tiene bots. AkoeNet tiene un asistente."*
 
@@ -225,7 +225,7 @@ POST /internal/akoenet/servers/42/assistant/command
 }
 ```
 
-Respuesta encola worker `akoenet:assistant` → `POST /ai/v1/chat` con metadata `serverId`, `module: assistant`.
+Respuesta: sync vía `processAssistantAiAsk`, o async (`background.enqueue` → cola `dakinis.ai` → `worker:assistant`) cuando `DAKINIS_EVENT_BUS=bullmq`.
 
 ---
 
@@ -319,10 +319,12 @@ const result = await orchestrator.route(
 | ✅ | i18n módulos EN/ES en cliente (`assistantModuleI18n.js`) |
 | ✅ | Event bridge — `message.created` / `member.joined` → Internal API |
 | ✅ | Trigger `@AI` en chat → `POST .../assistant/command` (`ai.ask`) |
+| ✅ | Path sync `@AI` → canal (`processAssistantAiAsk` en Internal) |
 | ✅ | Migr. `032`–`033` en Supabase prod (jul 2026) |
-| ⬜ | Worker Railway cola `akoenet:assistant` (respuesta real vía AI Platform) |
+| ✅ | Código worker BullMQ cola `dakinis.ai` (`internal` `npm run worker:assistant` + `railway.worker.toml`) |
+| ⬜ | **Deploy** servicio Railway Internal worker + `DAKINIS_EVENT_BUS=bullmq` + `REDIS_URL` |
 | ⬜ | Worker `akoenet:moderation-ai` (Guardian AI) |
-| ⬜ | `AI_PLATFORM_URL` + service key en akoenet-backend / workers |
+| ⬜ | Verificar `@AI` &lt;30s en prod (async o sync) |
 | ⬜ | Webhook StreamAutomator → eventos `stream.*` |
 | ⬜ | Slash commands → `assistant/command` |
 | ⬜ | AutoMod con acción real (no solo scaffold `allowed: true`) |

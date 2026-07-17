@@ -47,13 +47,14 @@ export async function handleAssistant(command) {
   switch (command.action) {
     case "ai.ask":
       return {
-        status: "processing",
+        status: "queued_or_sync",
         handler: "internal-api",
-        message: "IA response via Dakinis AI Platform (sync)",
+        queue: "dakinis.ai",
+        message: "IA via Dakinis AI — async BullMQ when DAKINIS_EVENT_BUS=bullmq, else sync",
       };
     case "ai.summarize":
     case "ai.translate":
-      return { status: "queued", queue: "akoenet:assistant", action: command.action };
+      return { status: "queued", queue: "dakinis.ai", action: command.action };
     default:
       return { status: "not_implemented", action: command.action };
   }

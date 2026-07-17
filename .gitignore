@@ -29,7 +29,7 @@
 /docs/company/assets/instagram-carousel/__pycache__/
 
 # --- Docs personales / temporales (uso local, no versionar) ---
-/docs/PLAYBOOK-NETWORKING.md
+# sales/ permanece local (proceso comercial). PLAYBOOK-NETWORKING es canónico y se versiona.
 /docs/company/sales/
 
 # --- OS / editor ---

@@ -1,7 +1,7 @@
 # Dakinis — Estado actual
 
 > **Fuente canónica de estado** · actualizar al cerrar hitos · julio 2026  
-> Arquitectura → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · Plan → [`ROADMAP.md`](./ROADMAP.md) · Cambios → [`CHANGELOG.md`](./CHANGELOG.md)
+> Arquitectura → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · Plan → [`ROADMAP.md`](./ROADMAP.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md)
 
 **Leyenda madurez:** 🟢 Production · 🟡 Beta · 🟠 MVP · ⚪ Experimental
 
@@ -31,7 +31,7 @@
 | Métrica | Valor | Notas |
 |---------|-------|-------|
 | Productos | 5 | Core, LifeFlow, AkoeNet, StreamAutomator, Tabletop |
-| Repos GitHub | ~18 | Ver [`GITHUB-ORG.md`](./GITHUB-ORG.md) |
+| Repos GitHub | ~18 | Ver [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md) |
 | Servicios Railway | 11+ | Gateway, platform, productos |
 | Workers activos | 4 | AI, Knowledge, Notifications (parcial), SA |
 | Clientes de pago | 0 | Objetivo ago 2026 |
@@ -43,7 +43,7 @@
 | Último release platform | Jul 2026 | Internal API v0.3.1+ |
 | Último backup auto | ⬜ | `BACKUP_DATABASE_URL` pendiente |
 
-Métricas negocio → [`company/KPIS.md`](./company/KPIS.md)
+Métricas negocio → actualizar en esta sección (archivo `KPIS.md` eliminado 17 jul 2026)
 
 ---
 
@@ -64,7 +64,7 @@ URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
 | Internal API | 🟡 Beta | Platform | v0.3.1+ | hub-dashboard sin stub |
 | Core (Dakinis One) | 🟡 Beta | ERP | — | UX piloto |
 | LifeFlow | 🟢 Production | Finance | — | SQLite → PG |
-| AkoeNet | 🟡 Beta | Social | client v1.5.19 | workers `@AI` |
+| AkoeNet | 🟡 Beta | Social | client v1.5.33 | worker `@AI` (código; deploy Railway) |
 | StreamAutomator | 🟡 Beta | Social | — | React Doctor |
 | Tabletop | 🟠 MVP | Games | — | SQLite → Supabase |
 | Landing | 🟢 Production | GTM | — | screenshot Hub real |
@@ -104,22 +104,18 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 
 **Billing (16 jul):** `smoke-billing-unified-sa.ps1 -LiveSync -LiveCheckout` ✅ — login velezcampeon → `saUserId=20`, `Checkout UNIFICADO`. Causa LEGACY anterior: JWT era user 17 sin enlace. Siguiente: pago test / webhook → `billing.subscriptions` + fan-out license-sync.
 
-**LifeFlow 030 (16 jul):** tabla `app_user_links` aplicada ✅; cleanup `velezcampeon88` bad link; hub-sso → `usr_da09193c-ae6` ↔ `a1000088-…`. Finance-api: commit local `14171c2` (rebind upsert) — push/redeploy pendiente. Smokes: URL canónica `finance-api.dakinissystems.com`.
+**LifeFlow 030 (16 jul):** tabla `app_user_links` aplicada ✅; hub-sso → `usr_da09193c-ae6` ↔ `a1000088-…`. Finance-api `14171c2` en `origin/main` (rebind upsert) — verificar imagen Railway si SSO falla. Smokes: `finance-api.dakinissystems.com`.
 
-**Pendiente deploy (16 jul, sin billing):**
-- Internal API: `acceptWorkspaceInvite` + `POST /workspaces/invites/:token/accept`
-- Hub: `/invite/:token` + enlace en Admin Members
-- SA: `AutomationRuns` + `GET /api/automation/runs` + UI en AutomationPage
-- Scripts: `pilot-workspace-invite.ps1`, seed score `docs/scripts/seed_lifeflow_score_velezcampeon.sql`
-- SSO E2E: 3/3 OK (`smoke-hub-sso-products.ps1`; ignora `FINANZAS_API_URL` legacy)
+**Código listo en prod (invite / SA / SSO) — 16 jul:** ver tabla § Despliegue. Scripts: `pilot-workspace-invite.ps1`, `docs/scripts/seed_lifeflow_score_velezcampeon.sql`.
 
-**Arquitectura (16 jul):**
-- Fase A ✅ — `@dakinis/domain` (`WorkspaceInvite`), PlatformContext, CommandBus middleware, CachedQuery, invite facade (`c35a014`)
-- Fase B ✅ — SDK modular (`sdk-*`), `platform.metrics()`, cache tags Redis, DTO generator v1 (`72b094a`)
-- Pre-Fase C ✅ — invite `FOR UPDATE` + `canAcceptInvite`, Hub `createHubPlatform`, admin invite status list
-- Fase C ✅ — outbox consumer invite→timeline; Director SM en SA; invite create vía dominio + `invite.created.v1`
-- Quick wins ✅ — QueryMap tipado (`@dakinis/shared-platform/query-map`); rate-limit granular Gateway (`public`/`bff`/`admin`/`events`)
-- Diferido — automation nodes, OTel, billing E2E, smokes Jest modulares
+**Arquitectura (17 jul):**
+- Fase A ✅ — `@dakinis/domain`, PlatformContext, CommandBus middleware, CachedQuery, invite facade
+- Fase B ✅ — SDK modular (`sdk-*`), cache tags, DTO gen v1, QueryMap, rate-limit Gateway (código; **redeploy edge pendiente**)
+- Fase C parcial ✅ — outbox invite→timeline; Director/AutomationRun SM; invite create/accept vía bus
+- Quick wins ✅ — `background.enqueue`; domain tests en CI; SDK migration guide
+- **En curso (código):** cutover SA restante (outbox/billing) · DTO gen v2
+- **Listo (17 jul, deploy pendiente):** Hub `platform.hub.dashboard` · worker Internal `worker:assistant` (`dakinis.ai` + `background.enqueue`) · SA `getPlatform()` en copilot
+- Diferido — automation nodes, OTel, billing E2E profundo
 
 Smokes: `scripts/smoke-hub.ps1` · `scripts/deploy-hub-automation.ps1 -RunSmoke`
 
@@ -157,17 +153,18 @@ Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
 
 ### Hub Mi día (DB)
 
-- [ ] migr. `016`–`019` + `027`–`029` en prod
-- [ ] `hub.v1_get_dashboard` sin stub
-- [ ] Widgets con datos reales ≥2 productos
+- [x] migr. `016`–`019` + `027`–`029` en prod
+- [x] `hub.v1_get_dashboard` sin stub (smoke `stub=false`)
+- [ ] Widgets con datos reales ≥2 productos (piloto)
 
 ### AkoeNet Assistant Fase 1
 
-- [ ] migr. `032`–`033` ✅
-- [ ] Vars Railway backend ✅
-- [ ] Worker BullMQ consume eventos
-- [ ] `@AI` respuesta en canal &lt;30s
-- [ ] Toggle módulos persiste
+- [x] migr. `032`–`033`
+- [x] Vars Railway backend (AI + webhook)
+- [x] Path sync `@AI` → canal (`processAssistantAiAsk`)
+- [ ] Worker BullMQ `dakinis.ai` desplegado en Railway (`npm run worker:assistant`)
+- [ ] `@AI` respuesta en canal &lt;30s verificado en prod
+- [ ] Toggle módulos persiste (E2E)
 
 ---
 
@@ -214,7 +211,16 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 | R9 | Stripe webhook mal config | Alto | [`OPERATIONS.md`](./OPERATIONS.md) § Runbook |
 | R11 | RLS sin política | Medio | migr. `034` ✅ — revisar Security Advisor periódicamente |
 
-**Producto:** Hub no debe percibirse como launcher — priorizar Mi día, acciones recomendadas y Copilot (ver [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md)).
+**Producto:** Hub no debe percibirse como launcher — priorizar Mi día, acciones recomendadas y Copilot (ver [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md)).
+
+**Docs (17 jul 2026):** limpieza — TEMP/duplicados borrados; históricos en [`archive/`](./archive/); networking canónico → [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md). AkoeNet desktop **1.5.33** (updater CI + tag).
+
+**Pendiente código / ops (17 jul) — priorizado:**
+1. Redeploy Gateway (rate limits) + piloto invite real
+2. Deploy worker Internal `worker:assistant` (cola `dakinis.ai`)
+3. Cutover SA `dakinisInternalFetch` → SDK (gradual)
+4. Billing E2E cuando haya cliente (dry-run semanal OK)
+5. DTO gen v2 / OTel / automation nodes — solo con demanda
 
 Incidencia prod → [`OPERATIONS.md`](./OPERATIONS.md) § Runbook.
 

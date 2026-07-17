@@ -220,7 +220,7 @@ Auth SSO 📅 · Notifications 📅 · Events
 
 **Dakinis Desktop:** [`DAKINIS-WORKSPACE.md`](./DAKINIS-WORKSPACE.md) — Platform Services → Capabilities → **Desktop Runtime** → Addons. Kernel: [`DESKTOP-RUNTIME.md`](../projects/workspace/docs/DESKTOP-RUNTIME.md).
 
-**Media Player:** mini-app con ventanas flotantes — valida el futuro **Dakinis Desktop** (`@dakinis/window-manager`). → [`AKOENET-ESTADO.md`](./AKOENET-ESTADO.md)
+**Media Player:** mini-app con ventanas flotantes — valida el futuro **Dakinis Desktop** (`@dakinis/window-manager`).
 
 ### Arquitectura
 

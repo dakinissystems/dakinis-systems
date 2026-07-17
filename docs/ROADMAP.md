@@ -105,12 +105,10 @@ Events → Internal API → product webhooks
 
 ## Backlog Supabase (orden)
 
-1. `034` — RLS gaps (jul)
-2. `016`–`019` — Hub base (ago)
-3. `027`–`029` — Mi día (ago)
-4. `030` — LifeFlow (sep)
-5. `015b` — AkoeNet backfill (cuando cutover)
-6. `dakinis_core_prod` → `core` (sep, con ventana)
+1. ~~`034` RLS~~ ✅ · ~~`016`–`019` Hub~~ ✅ · ~~`027`–`029` Mi día~~ ✅ · ~~`030` LifeFlow links~~ ✅
+2. `015b` — AkoeNet backfill (cuando cutover)
+3. `dakinis_core_prod` → `core` (sep, con ventana)
+4. Cutover LifeFlow goals/tx SQLite → PG (post-piloto)
 
 ---
 

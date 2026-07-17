@@ -1,36 +1,38 @@
 # Documentación Dakinis Systems
 
-Repositorio de **orquestación** (gateway, Docker, SQL, legal, scripts). Código de producto en repos GitHub → [`GITHUB-ORG.md`](./GITHUB-ORG.md).
+Repositorio de **orquestación** (gateway, Docker, SQL, legal, scripts).  
+Mapa de repos → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md) (histórico).
 
 ---
 
-## Índice (empieza aquí)
+## Source of truth (empieza aquí)
 
 | Necesitas… | Lee |
 |------------|-----|
-| **Estado hoy** (madurez, KPIs, Done, riesgos) | [`STATUS.md`](./STATUS.md) |
-| **Qué viene** (jul–Q4 2026, negocio + técnico) | [`ROADMAP.md`](./ROADMAP.md) |
-| **Arquitectura** (capas, diagramas, reglas) | [`ARCHITECTURE.md`](./ARCHITECTURE.md) — [14 diagramas Mermaid](./ARCHITECTURE.md#arquitectura-visual) |
-| **Deploy, env, incidencias** | [`OPERATIONS.md`](./OPERATIONS.md) |
-| **Dev día 1** | [`ONBOARDING.md`](./ONBOARDING.md) |
-| **Hub / workspace** | [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) |
-| **Productos** | [`PRODUCTS.md`](./PRODUCTS.md) |
-| **Releases** | [`CHANGELOG.md`](./CHANGELOG.md) |
-| **Negocio / ventas** | [`company/`](./company/) · [`WHY.md`](./WHY.md) |
+| **Estado hoy** | [`STATUS.md`](./STATUS.md) |
+| **Qué viene** | [`ROADMAP.md`](./ROADMAP.md) |
+| **Arquitectura** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) |
+| **Evolución arquitectura** | [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md) |
+| **Deploy / ops** | [`OPERATIONS.md`](./OPERATIONS.md) |
+| **Networking / ventas** | [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md) · [`company/sales/`](./company/sales/) |
+| **Estrategia / mensaje** | [`company/STRATEGY.md`](./company/STRATEGY.md) · [`company/MESSAGING.md`](./company/MESSAGING.md) |
 | **ADRs** | [`adr/`](./adr/) |
-| **APIs HTTP** | [`contracts/`](./contracts/) |
-| **SQL** | [`supabase/migrations/`](./supabase/migrations/) |
+| **Legal** | [`legal/`](./legal/) |
+| **SQL** | [`supabase/migrations/`](./supabase/migrations/) · orden [`RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md) |
+| **Contratos HTTP** | [`contracts/`](./contracts/) |
+| **Histórico / drafts** | [`archive/`](./archive/) |
 
 ---
 
-## Reglas de documentación
+## Reglas
 
-1. **Estado y pendientes** → solo [`STATUS.md`](./STATUS.md) (no duplicar en otros sitios).
+1. **Estado y pendientes** → solo [`STATUS.md`](./STATUS.md).
 2. **Roadmap** → [`ROADMAP.md`](./ROADMAP.md).
-3. **Arquitectura estable** → [`ARCHITECTURE.md`](./ARCHITECTURE.md) (sin versiones ni commits).
-4. **Ops + runbook** → [`OPERATIONS.md`](./OPERATIONS.md).
+3. **Arquitectura estable** → [`ARCHITECTURE.md`](./ARCHITECTURE.md).
+4. **Ops** → [`OPERATIONS.md`](./OPERATIONS.md).
+5. **Networking** → solo [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md) (kit + sales networking fusionados 17 jul 2026).
 
-Snapshot automático (versiones, health):
+Snapshot automático:
 
 ```bash
 node scripts/generate-docs-status.mjs
@@ -38,4 +40,4 @@ node scripts/generate-docs-status.mjs
 
 ---
 
-*Julio 2026*
+*Limpieza docs 17 jul 2026 — TEMP/duplicados eliminados; drafts en `archive/`.*

@@ -1,0 +1,8 @@
+# Railway — Internal API Assistant Worker (second service, same repo/Dockerfile)
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "npm run worker:assistant"
+restartPolicyType = "ON_FAILURE"

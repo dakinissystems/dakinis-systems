@@ -1,9 +1,9 @@
 # Dakinis Systems — Arquitectura
 
 > **Estado vigente** · julio 2026 · decisiones de arquitectura y capas.  
-> Estado operativo → [`STATUS.md`](./STATUS.md) · Productos → [`PRODUCTS.md`](./PRODUCTS.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md)
+> Estado operativo → [`STATUS.md`](./STATUS.md) · Productos → [`archive/PRODUCTS.md`](./archive/PRODUCTS.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md)
 
-**¿Por qué estas decisiones?** → [`WHY.md`](./WHY.md)  
+**¿Por qué estas decisiones?** → [`archive/WHY.md`](./archive/WHY.md) · ADRs → [`adr/`](./adr/)  
 **Estrategia / competencia** → [`company/STRATEGY.md`](./company/STRATEGY.md)
 
 ---
@@ -174,7 +174,7 @@ flowchart TB
   MID --> INTAPI[Internal API]
 ```
 
-Identidad de **workspace** en `meta` — no en Core ni Billing. Detalle → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md).
+Identidad de **workspace** en `meta` — no en Core ni Billing. Detalle → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md).
 
 ---
 
@@ -413,7 +413,7 @@ flowchart TB
   COREW -.->|API| GW
 ```
 
-Mapa dominios y variables → [`OPERATIONS.md`](./OPERATIONS.md) · repos → [`GITHUB-ORG.md`](./GITHUB-ORG.md).
+Mapa dominios y variables → [`OPERATIONS.md`](./OPERATIONS.md) · repos → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md).
 
 ---
 
@@ -617,7 +617,7 @@ Los productos **consumen** capacidades vía Gateway o Internal API — no las re
 | Events / Automation | 🔄 BullMQ | Billing→Core, `@AI` |
 | Storage, Integrations, Marketplace, Banking | ⬜ Q4+ | Solo bajo demanda cliente |
 
-Detalle Hub → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) · Servicios Railway → [`OPERATIONS.md`](./OPERATIONS.md).
+Detalle Hub → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md) · Servicios Railway → [`OPERATIONS.md`](./OPERATIONS.md).
 
 ---
 
@@ -655,7 +655,7 @@ Orden SQL: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.
 
 ### Railway — ✅
 
-Contenedores · mapa servicios: [`GITHUB-ORG.md`](./GITHUB-ORG.md) · deploy: [`OPERATIONS.md`](./OPERATIONS.md)
+Contenedores · mapa servicios: [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md) · deploy: [`OPERATIONS.md`](./OPERATIONS.md)
 
 ### Storage — ⬜
 
@@ -703,7 +703,7 @@ mindmap
 Experiencia **inspirada en** Microsoft 365 / Zoho One (un escritorio, muchas apps); detalle comercial → [`company/STRATEGY.md`](./company/STRATEGY.md).
 
 Mensaje comercial → [`company/MESSAGING.md`](./company/MESSAGING.md)  
-Diseño admin → [`HUB-WORKSPACE.md`](./HUB-WORKSPACE.md) · SQL migr. `031` · contrato [`admin-api.json`](./contracts/admin-api.json)
+Diseño admin → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md) · SQL migr. `031` · contrato [`admin-api.json`](./contracts/admin-api.json)
 
 Registries: `HUB_DASHBOARD_SECTIONS` · `HUB_WIDGET_REGISTRY` en `@dakinis/shared-ux`.
 
@@ -767,7 +767,7 @@ Monorepo [`dakinis-shared`](https://github.com/dakinissystems/dakinis-shared) ·
 
 Foundations → Tokens → Components → Patterns → Layouts → Animations · A11y · Icons · Charts · Copywriting.
 
-No se despliega en Railway. Ver [`GITHUB-ORG.md`](./GITHUB-ORG.md).
+No se despliega en Railway. Ver [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md).
 
 ### SDK — 🔄
 
@@ -779,7 +779,7 @@ Implementado: `ai`, `core`, `lifeflow`, `platform-services` · mirror [`packages
 
 ## Products
 
-Detalle funcional por producto: [`PRODUCTS.md`](./PRODUCTS.md).
+Detalle funcional por producto: [`archive/PRODUCTS.md`](./archive/PRODUCTS.md).
 
 | Producto | Repo | BD | Consume platform |
 |----------|------|-----|------------------|
@@ -846,7 +846,7 @@ Apps · Plugins · Templates · Automations · AI Agents · Themes — UI Hub �
 
 ## Contratos HTTP
 
-Índice: [`contracts/README.md`](./contracts/README.md)
+Contratos HTTP: [`contracts/`](./contracts/)
 
 | Contrato | Prefijo | Capa |
 |----------|---------|------|
@@ -880,7 +880,7 @@ Carpeta `DND/` = desarrollo local **Tabletop** (repo `dakinis-tabletop`). En doc
 
 Ver [§12 Despliegue Railway](#12-despliegue-railway) en Arquitectura visual.
 
-Mapa deploy: [`OPERATIONS.md`](./OPERATIONS.md) · repos: [`GITHUB-ORG.md`](./GITHUB-ORG.md)
+Mapa deploy: [`OPERATIONS.md`](./OPERATIONS.md) · repos: [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md)
 
 ---
 

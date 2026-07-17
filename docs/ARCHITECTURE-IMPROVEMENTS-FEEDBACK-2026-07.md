@@ -3,8 +3,8 @@
 > **Tipo:** ADR de evolución arquitectónica (no backlog ciego)  
 > **Fecha:** 16 jul 2026 · **Revisión:** v2.2 (feedback post-implementación: plataforma → foco producto)  
 > **Entrada:** análisis arquitecto + código Fase 2 + revisión crítica + **segunda valoración externa** (scores + 20/80 producto)  
-> **Estado real:** Fase A ✅ · Fase B ✅ · Fase C parcial · QueryMap + rate-limit ✅ · **piloto comercial = P0** · billing E2E 2ª prioridad · nodos/OTel diferidos  
-> **Relacionado:** [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`STATUS.md`](./STATUS.md) · [`DAKINIS-SISTEMA-COMPLETO-TEMP.md`](./DAKINIS-SISTEMA-COMPLETO-TEMP.md)
+> **Estado real:** Fase A ✅ · Fase B ✅ · Fase C parcial · QueryMap + rate-limit ✅ · **piloto comercial = P0** · billing E2E 2ª prioridad · nodos/OTel diferidos · **17 jul:** Hub `hub.dashboard` vía platform client · worker Internal `dakinis.ai` + `background.enqueue` en `ai.ask` · SA `getPlatform()` (copilot)  
+> **Relacionado:** [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`STATUS.md`](./STATUS.md) · [`OPERATIONS.md`](./OPERATIONS.md)
 
 **Valoración externa del sistema (16 jul):** Arquitectura 9.7 · Escalabilidad 9.5 · Separación 9.5 · Madurez producto 8.5 · Comercializar 8.5 · Docs 10 · **global ~8.9**. Lectura clave: *ya no es un conjunto de proyectos personales — es una plataforma*. Riesgo principal ahora: **exceso de infraestructura** y falta de validación con clientes, no deuda técnica crítica.
 

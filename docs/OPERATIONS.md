@@ -79,7 +79,7 @@ Pendientes operativos por servicio → [`STATUS.md`](./STATUS.md) (Billing E2E, 
 | Storage / Media | `/media/` · R2 · post-piloto |
 | Observability | Sentry · uptime · costes por workspace |
 
-Contratos: [`docs/contracts/`](./contracts/README.md).
+Contratos: [`docs/contracts/`](./contracts/).
 
 ⚠️ **No usar** `api.finance.dakinissystems.com` — SSL Cloudflare free no cubre subdominio de 2º nivel.
 

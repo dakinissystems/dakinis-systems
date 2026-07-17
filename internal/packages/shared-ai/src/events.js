@@ -42,6 +42,9 @@ export const DAKINIS_EVENTS = {
   MEMBER_JOINED: "community.member_joined",
   MESSAGE_CREATED: "community.message_created",
 
+  // AkoeNet Assistant
+  AKOENET_ASSISTANT_ASK: "akoenet.assistant.ask",
+
   // Platform
   NOTIFICATION_REQUESTED: "notifications.requested",
   SEARCH_INDEX: "search.index",

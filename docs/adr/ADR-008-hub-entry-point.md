@@ -15,4 +15,4 @@ El usuario piensa en **workspace** (empresa), no en apps sueltas. Hub expone Mi 
 - Marketing y demo empiezan en Hub, no en Core.
 - Internal API centraliza dashboard y workspace admin para Hub.
 - Nuevos productos se registran en launcher + `hub.tenant_product_access`, no en landing separada.
-- Visión UX Hub → [`HUB-WORKSPACE.md`](../HUB-WORKSPACE.md).
+- Visión UX Hub → [`HUB-WORKSPACE.md`](../archive/HUB-WORKSPACE.md).
