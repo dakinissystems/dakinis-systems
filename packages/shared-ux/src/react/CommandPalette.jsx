@@ -79,22 +79,24 @@ export default function CommandPalette({
       className="dakinis-cmdk-dialog"
       aria-label={t("cmdk.title")}
     >
-      <button
-        type="button"
-        className="dakinis-cmdk-dialog__backdrop"
-        aria-label="Close"
-        onClick={onClose}
-      />
       {open ? (
-        <CommandPaletteBody
-          onClose={onClose}
-          onRun={onRun}
-          extraCommands={extraCommands}
-          t={t}
-          fetchSearchHits={fetchSearchHits}
-          onSelectSearchHit={onSelectSearchHit}
-          minSearchLength={minSearchLength}
-        />
+        <>
+          <button
+            type="button"
+            className="dakinis-cmdk-dialog__backdrop"
+            aria-label="Close"
+            onClick={onClose}
+          />
+          <CommandPaletteBody
+            onClose={onClose}
+            onRun={onRun}
+            extraCommands={extraCommands}
+            t={t}
+            fetchSearchHits={fetchSearchHits}
+            onSelectSearchHit={onSelectSearchHit}
+            minSearchLength={minSearchLength}
+          />
+        </>
       ) : null}
     </dialog>
   );
