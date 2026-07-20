@@ -83,6 +83,16 @@ Requiere schema `akoenet` (006). Packages: `packages/akoenet-orchestrator`, `pac
 Cliente: panel Assistant + i18n · Backend: event bridge + proxy. Internal API: `/akoenet/assistant/*`.  
 Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · Contrato: [`contracts/akoenet-assistant.json`](../../contracts/akoenet-assistant.json)
 
+## Fase F+ — AkoeNet Gamification (050)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 50 | [`050_akoenet_gamification.sql`](./050_akoenet_gamification.sql) | ⬜ · Mirror platform `member_xp` / ledger / reputation / quests · módulo `levels` → mvp |
+
+Awards primarios: **akoenet-backend** (`migrations/1735000000000_gamification.js` + `levels.service.js`). Activar módulo **Niveles** en Assistant.
+
+Requiere schema `akoenet` (006) + Assistant (032–033).
+
 ## Fase G — Security Advisor RLS + Media Player (034)
 
 | # | Archivo | Prod |

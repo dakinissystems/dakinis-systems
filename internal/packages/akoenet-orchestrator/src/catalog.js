@@ -82,11 +82,18 @@ export const AKOENET_MODULE_CATALOG = [
   {
     id: "levels",
     name: "Niveles",
-    description: "XP, rank, leaderboard y prestigio",
+    description: "XP por contribución, niveles con desbloqueos, reputación, misiones y AK Coins",
     category: "community",
-    phase: "growth",
+    phase: "mvp",
     requiresPlan: ["starter"],
-    capabilities: ["community.xp", "community.level", "community.leaderboard"],
+    capabilities: ["community.xp", "community.level", "community.leaderboard", "community.reputation", "community.quests"],
+    defaultConfig: {
+      messageXp: 15,
+      messageCooldownSec: 60,
+      messageMinLength: 10,
+      reactionXpToAuthor: 8,
+      reputationXp: 25,
+    },
   },
   {
     id: "economy",

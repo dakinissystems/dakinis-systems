@@ -121,6 +121,35 @@ export async function handleCommunity(command) {
   return { status: "not_implemented", action: command.action };
 }
 
+/**
+ * Levels module — awards are applied in AkoeNet Server (local ledger).
+ * Internal receives events for audit/orchestration when module is enabled.
+ */
+export async function handleLevels(command) {
+  if (command.type === "event") {
+    const event = command.payload?.event || {};
+    const data = event.data || command.payload || {};
+    return {
+      status: "levels_event_ack",
+      action: command.action,
+      note: "XP awards run on akoenet-backend levels.service",
+      hint: {
+        serverId: command.serverId || event.metadata?.serverId,
+        userId: data.userId || event.metadata?.userId,
+        messageId: data.messageId || event.metadata?.messageId,
+      },
+    };
+  }
+  switch (command.action) {
+    case "community.xp":
+    case "community.level":
+    case "community.leaderboard":
+      return { status: "use_akoenet_api", path: "/servers/:id/levels/*" };
+    default:
+      return { status: "not_implemented", action: command.action };
+  }
+}
+
 export async function handleDeveloper(command) {
   return { status: "webhook_received", source: command.payload?.source };
 }
@@ -143,7 +172,7 @@ export const MODULE_HANDLERS = {
   knowledge: handleKnowledge,
   automation: handleAutomation,
   reaction_roles: handleCommunity,
-  levels: handleCommunity,
+  levels: handleLevels,
   economy: handleCommunity,
   polls: handleCommunity,
   games: handleEntertainment,

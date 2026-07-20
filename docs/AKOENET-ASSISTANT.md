@@ -138,7 +138,7 @@ Equivalente Carl-bot / Dyno / MEE6. **Imprescindible para lanzar.**
 |--------|------------|------|
 | Welcome | `community.welcome`, `community.captcha` | MVP |
 | Reaction Roles | `community.reaction_roles` | Growth |
-| Niveles | `community.xp`, `community.leaderboard` | Growth |
+| Niveles | `community.xp`, `community.level`, `community.leaderboard`, `community.reputation`, `community.quests` | **MVP** (gamificación) |
 | Economy | `games.economy` | Future |
 | Polls | `community.poll`, `community.giveaway` | Growth |
 
@@ -281,11 +281,13 @@ Respuesta: sync vía `processAssistantAiAsk`, o async (`background.enqueue` → 
 
 ### Fase 2 — Growth
 
-Automation visual · Developer webhooks · Niveles/XP · Events/RSVP · Reaction roles UI · Traductor
+Automation visual · Developer webhooks · Events/RSVP · Reaction roles UI · Traductor
 
 ### Fase 3 — Escala
 
-Business (CRM/tickets) · Meeting AI · Games/economía
+Business (CRM/tickets) · Meeting AI · Games/economía · Marketplace AK Coins
+
+**Gamificación (Niveles):** MVP en akoenet-backend — ver Ajustes servidor → Niveles.
 
 ---
 

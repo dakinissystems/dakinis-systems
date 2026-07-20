@@ -13,6 +13,8 @@ export const AKOENET_EVENT_TYPES = [
   "channel.created",
   "voice.joined",
   "voice.left",
+  "reaction.added",
+  "reaction.removed",
   "moderation.action",
   "stream.started",
   "stream.ended",
@@ -56,12 +58,13 @@ export function resolveModulesForEvent(eventType, activeModuleIds, moduleEventSu
   for (const moduleId of activeModuleIds) {
     const subs = moduleEventSubscriptions[moduleId];
     if (!subs?.length) {
-      if (eventType.startsWith("message.") && ["guardian", "guardian_ai", "assistant"].includes(moduleId)) {
+      if (eventType.startsWith("message.") && ["guardian", "guardian_ai", "assistant", "levels"].includes(moduleId)) {
         matched.push(moduleId);
       }
       if (eventType.startsWith("member.") && ["welcome", "guardian", "levels"].includes(moduleId)) {
         matched.push(moduleId);
       }
+      if (eventType.startsWith("reaction.") && moduleId === "levels") matched.push(moduleId);
       if (eventType.startsWith("stream.") && moduleId === "streamer") matched.push(moduleId);
       continue;
     }

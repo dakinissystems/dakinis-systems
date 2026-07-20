@@ -7,4 +7,5 @@ export {
   handleStreamer,
   handleKnowledge,
   handleAutomation,
+  handleLevels,
 } from "./handlers.js";
