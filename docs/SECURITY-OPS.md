@@ -32,7 +32,7 @@ Este documento es un **roadmap de gestión del riesgo**, no una checklist OWASP 
 | DR documentado | P0 | Tiempo de recuperación | ya en este doc | ✅ |
 | Auditoría permisos admin (trimestral) | P0 | Privilege sprawl | ~30 min/trimestre | ⬜ consola |
 | Cloudflare WAF | P1 | OWASP Top 10 / bots / escaneos | ~30 min | ⬜ consola |
-| Cabeceras HTTP Gateway | P1 | Clickjacking, MIME sniff, HTTPS | ya en repo | ✅ código · redeploy edge |
+| Cabeceras HTTP Gateway | P1 | Clickjacking, MIME sniff, HTTPS | ya en repo | ✅ prod verificado 20 jul |
 | Rate limiting Gateway | P1 | Brute force / DoS ligero | ya en repo | ✅ código · redeploy edge |
 | Monitorización uptime + errores | P1 | Blind ops | ~1 h | ⬜ consola |
 | Rotación periódica secretos | P1 | Secret leak prolongado | ~1–2 h/ciclo | 🟡 dual-key en código · calendario consola |
@@ -375,14 +375,16 @@ Checklist corta antes de merge de APIs o features que toquen datos **Confidencia
 4. **Con escala (~100):** P3 (Guardian solo con prereqs).
 5. **No abrir tickets P4** «por si acaso».
 
-### Deploy pendiente tras este lote de código
+### Deploy prod (20 jul 2026)
 
-| Servicio | Qué entra |
-|----------|-----------|
-| Gateway | Cabeceras seguridad (si aún no redeploy) |
-| Internal API | Fail-closed, dual-key, audit flags, tenant RL |
-| Billing | Fail-closed + dual-key; subscriptions siempre auth |
-| Auth (`dakinis-auth`) | Refresh conserva `permissions[]` |
-| Knowledge | Dual-key verify |
+| Servicio | Estado |
+|----------|--------|
+| Gateway | ✅ cabeceras HSTS / XFO / nosniff verificadas en edge |
+| Internal API | ✅ fail-closed (401 sin token en `/admin`) |
+| Billing | ✅ health OK |
+| Auth | ✅ health OK · refresh permissions |
+| Knowledge | ✅ health OK |
 
-Actualizar la columna **Estado** de la matriz y los KPI de backup/restore en [`STATUS.md`](./STATUS.md) al cerrar cada ítem.
+**Siguiente (consola, no código):** MFA · secret `BACKUP_DATABASE_URL` · WAF Cloudflare · uptime alerts · Secret scanning org.
+
+Actualizar KPI backup/restore en [`STATUS.md`](./STATUS.md) al cerrar cada ítem.

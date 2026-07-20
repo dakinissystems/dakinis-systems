@@ -19,8 +19,8 @@
 | Hub | 95% | Mi día DB + screenshot landing |
 | Core | 90% | UX piloto restaurante |
 | AI | 100% | — |
-| Support / ops | 72% | `BACKUP_DATABASE_URL` + restore test |
-| Security | 94% | P0 consola · código P1/P2 parcial — [`SECURITY-OPS.md`](./SECURITY-OPS.md) |
+| Support / ops | 75% | `BACKUP_DATABASE_URL` + restore test |
+| Security | 95% | Redeploy hardening ✅ · P0 MFA/backup/WAF consola — [`SECURITY-OPS.md`](./SECURITY-OPS.md) |
 
 **Piloto comercial:** 🔴 0 clientes de pago
 
@@ -40,10 +40,11 @@
 | MRR | 0 € | — |
 | Tiempo deploy medio | ~6 min | Dockerfile services |
 | React Doctor (media apps) | ~92% | LF/TT 100 · SA 61 |
-| Último release platform | Jul 2026 | Internal API v0.3.1+ |
+| Último release platform | 20 jul 2026 | Gateway headers + S2S harden redeployed |
 | Último backup auto | ⬜ | Secret `BACKUP_DATABASE_URL` pendiente |
 | Último restore test | ⬜ | Workflow mensual o `restore-postgres-test.ps1` |
 | Dependabot / audit CI | ✅ | `.github/dependabot.yml` + `npm audit` en CI |
+| Security headers (edge) | ✅ | HSTS · X-Frame-Options · nosniff (verificado prod) |
 
 Métricas negocio → actualizar en esta sección (archivo `KPIS.md` eliminado 17 jul 2026)
 

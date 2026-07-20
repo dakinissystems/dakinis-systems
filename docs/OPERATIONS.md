@@ -474,7 +474,7 @@ Smoke: `.\scripts\smoke-notifications.ps1` → worker log: `[worker] dispatch ch
 | 15 | Observabilidad | Uptime monitoring | [ ] |
 | 16 | Backups | Secret `BACKUP_DATABASE_URL` + restore test mensual | [ ] |
 | 16b | Seguridad | MFA consolas + WAF Cloudflare (checklist) | [ ] |
-| 16c | Seguridad | Dependabot + redeploy Gateway headers | [x] repo |
+| 16c | Seguridad | Dependabot + redeploy Gateway headers | [x] prod 20 jul |
 | 17 | Brand sync | SA/AkoeNet pendiente | 🔄 |
 | 18 | Legal | Revisión abogado tenant access | [ ] |
 | 19 | LifeFlow ops | Volume + JWT secret Railway | [ ] |
