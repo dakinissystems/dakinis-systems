@@ -1,6 +1,6 @@
 # Dakinis Systems — Operaciones
 
-> Deploy, variables, health checks, backups y pendientes operativos. Arquitectura → [`ARCHITECTURE.md`](./ARCHITECTURE.md).
+> Deploy, variables, health checks, backups y pendientes operativos. Arquitectura → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · Seguridad → [`SECURITY-OPS.md`](./SECURITY-OPS.md).
 
 ---
 
@@ -231,13 +231,17 @@ Orden migraciones: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RU
 
 **Regla API:** usar funciones `schema.v1_*` — no queries directas cross-schema.
 
-Backup: workflow `.github/workflows/backup-postgres.yml` — secret `BACKUP_DATABASE_URL` pendiente.
+Backup: workflow `.github/workflows/backup-postgres.yml` — secret `BACKUP_DATABASE_URL` pendiente.  
+Restore test: `.github/workflows/restore-postgres-test.yml` (mensual) o `.\scripts\restore-postgres-test.ps1`.
+
+Roadmap seguridad (P0–P4, impacto, esfuerzo) → [`SECURITY-OPS.md`](./SECURITY-OPS.md).
 
 ---
 
 ## Gateway
 
 - Config: [`gateway/routes/default.conf`](../gateway/routes/default.conf)
+- Cabeceras seguridad: [`gateway/routes/security-headers.conf`](../gateway/routes/security-headers.conf) (HSTS, X-Frame-Options, etc.)
 - LifeFlow: `/finance/health`, `/finance/api/*`, SPA `/finance/`
 - Reglas cambio: [`docs/rules.md`](./rules.md)
 - Smoke billing: `.\scripts\smoke-billing.ps1` (prod) o `-BaseUrl http://localhost`
@@ -468,7 +472,9 @@ Smoke: `.\scripts\smoke-notifications.ps1` → worker log: `[worker] dispatch ch
 | 13 | WhatsApp | Callback Meta + smoke | [ ] |
 | 14 | Observabilidad | Sentry backend + frontend | [ ] |
 | 15 | Observabilidad | Uptime monitoring | [ ] |
-| 16 | Backups | Secret + probar workflow | [ ] |
+| 16 | Backups | Secret `BACKUP_DATABASE_URL` + restore test mensual | [ ] |
+| 16b | Seguridad | MFA consolas + WAF Cloudflare (checklist) | [ ] |
+| 16c | Seguridad | Dependabot + redeploy Gateway headers | [x] repo |
 | 17 | Brand sync | SA/AkoeNet pendiente | 🔄 |
 | 18 | Legal | Revisión abogado tenant access | [ ] |
 | 19 | LifeFlow ops | Volume + JWT secret Railway | [ ] |

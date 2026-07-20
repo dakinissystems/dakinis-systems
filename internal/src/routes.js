@@ -100,7 +100,11 @@ export const routes = {
         version: "0.3.1",
         redis: config.redisUrl ? "configured" : "not_configured",
         database: db.ok ? "configured" : config.databaseUrl ? "error" : "not_configured",
-        auth: config.serviceKey ? "required" : "dev_open",
+        auth: config.serviceKey
+          ? "required"
+          : process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === "production"
+            ? "misconfigured"
+            : "dev_open",
         eventBus,
       },
     };
@@ -937,6 +941,14 @@ export const routes = {
   "POST /admin/v1/workspaces/:id/suspend": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const rl = await enforceServiceRateLimit(req, "admin", "admin");
+    if (!rl.allowed) {
+      return {
+        status: 429,
+        body: { error: "rate_limited", retryAfterSec: rl.retryAfterSec },
+        headers: { "Retry-After": String(rl.retryAfterSec) },
+      };
+    }
     const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "").replace("/suspend", "");
     const body = await readJson(req);
     try {
@@ -950,6 +962,14 @@ export const routes = {
   "POST /admin/v1/workspaces/:id/activate": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const rl = await enforceServiceRateLimit(req, "admin", "admin");
+    if (!rl.allowed) {
+      return {
+        status: 429,
+        body: { error: "rate_limited", retryAfterSec: rl.retryAfterSec },
+        headers: { "Retry-After": String(rl.retryAfterSec) },
+      };
+    }
     const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "").replace("/activate", "");
     const body = await readJson(req);
     try {
@@ -997,6 +1017,14 @@ export const routes = {
   "PATCH /admin/v1/features/:key": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const rl = await enforceServiceRateLimit(req, "admin", "admin");
+    if (!rl.allowed) {
+      return {
+        status: 429,
+        body: { error: "rate_limited", retryAfterSec: rl.retryAfterSec },
+        headers: { "Retry-After": String(rl.retryAfterSec) },
+      };
+    }
     const key = decodeURIComponent((req.url || "").split("?")[0].replace("/admin/v1/features/", ""));
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };

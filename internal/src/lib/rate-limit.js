@@ -13,6 +13,10 @@ export const RATE_LIMIT_TIERS = {
   default: Number(process.env.INTERNAL_RATE_LIMIT_PER_MIN) || 100,
 };
 
+/** Cap adicional por tenant (noisy neighbor). */
+export const TENANT_RATE_LIMIT_PER_MIN =
+  Number(process.env.INTERNAL_RATE_LIMIT_TENANT_PER_MIN) || 600;
+
 /** @type {Map<string, { count: number; resetAt: number }>} */
 const memoryBuckets = new Map();
 
@@ -27,6 +31,25 @@ export function resolveRateLimitTier(pathname) {
   if (path.startsWith("/hub") || path.startsWith("/workspace")) return "bff";
   if (path.includes("/public")) return "public";
   return "default";
+}
+
+/**
+ * @param {import('http').IncomingMessage} req
+ * @param {URL} url
+ */
+export function resolveTenantId(req, url) {
+  const fromQuery =
+    url.searchParams.get("tenantId") ||
+    url.searchParams.get("tenant_id") ||
+    url.searchParams.get("workspaceId") ||
+    "";
+  const h = req.headers || {};
+  const fromHeader =
+    (typeof h["x-tenant-id"] === "string" && h["x-tenant-id"]) ||
+    (typeof h["x-business-id"] === "string" && h["x-business-id"]) ||
+    (typeof h["x-dakinis-tenant"] === "string" && h["x-dakinis-tenant"]) ||
+    "";
+  return String(fromQuery || fromHeader || "").trim();
 }
 
 /**
@@ -77,9 +100,18 @@ export async function enforceServiceRateLimit(req, scopeKey, tier) {
   const url = new URL(req.url || "/", "http://internal.local");
   const resolved = tier || resolveRateLimitTier(url.pathname);
   const limit = RATE_LIMIT_TIERS[resolved] ?? RATE_LIMIT_TIERS.default;
-  const tenantId = url.searchParams.get("tenantId") || "";
+  const tenantId = resolveTenantId(req, url);
   const key = tenantId
     ? `${resolved}:tenant:${tenantId}`
     : `${resolved}:user:${scopeKey}`;
-  return checkRateLimit(key, limit);
+
+  const primary = await checkRateLimit(key, limit);
+  if (!primary.allowed) return primary;
+
+  if (tenantId) {
+    const tenant = await checkRateLimit(`tenant-global:${tenantId}`, TENANT_RATE_LIMIT_PER_MIN);
+    if (!tenant.allowed) return tenant;
+  }
+
+  return primary;
 }

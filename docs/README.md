@@ -14,6 +14,7 @@ Mapa de repos → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md) (histórico
 | **Arquitectura** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) |
 | **Evolución arquitectura** | [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md) |
 | **Deploy / ops** | [`OPERATIONS.md`](./OPERATIONS.md) |
+| **Seguridad (roadmap P0–P4)** | [`SECURITY-OPS.md`](./SECURITY-OPS.md) |
 | **Networking / ventas** | [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md) · [`company/sales/`](./company/sales/) |
 | **Estrategia / mensaje** | [`company/STRATEGY.md`](./company/STRATEGY.md) · [`company/MESSAGING.md`](./company/MESSAGING.md) |
 | **ADRs** | [`adr/`](./adr/) |

@@ -1,0 +1,83 @@
+# Escaneo automático de dependencias (Dependabot).
+# PRs semanales; límite bajo para no saturar el monorepo.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - security
+
+  - package-ecosystem: npm
+    directory: /billing
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - security
+
+  - package-ecosystem: npm
+    directory: /internal
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - security
+
+  - package-ecosystem: npm
+    directory: /knowledge
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - security
+
+  - package-ecosystem: npm
+    directory: /notifications
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - security
+
+  - package-ecosystem: npm
+    directory: /search
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - security
+
+  - package-ecosystem: npm
+    directory: /hub
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - security
+
+  - package-ecosystem: npm
+    directory: /packages
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+      - security

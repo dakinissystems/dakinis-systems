@@ -8,6 +8,7 @@
     ".": "./src/index.js",
     "./google-oauth": "./src/google-oauth.js",
     "./tokens": "./src/tokens.js",
-    "./product-urls": "./src/product-urls.js"
+    "./product-urls": "./src/product-urls.js",
+    "./service-auth": "./src/service-auth.js"
   }
 }

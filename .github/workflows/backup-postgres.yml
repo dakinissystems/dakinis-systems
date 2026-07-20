@@ -35,4 +35,4 @@ jobs:
 
       - name: Restore test reminder
         run: |
-          echo "Monthly: run scripts/restore-postgres-test.ps1 against a downloaded backup."
+          echo "Monthly: workflow restore-postgres-test.yml or scripts/restore-postgres-test.ps1"

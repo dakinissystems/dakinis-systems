@@ -1,0 +1,46 @@
+name: Postgres restore test
+
+# Prueba mensual de que un backup reciente se puede restaurar.
+# Requiere BACKUP_DATABASE_URL (misma URL que backup-postgres.yml).
+
+on:
+  schedule:
+    - cron: "0 4 1 * *"
+  workflow_dispatch:
+
+jobs:
+  restore-test:
+    runs-on: ubuntu-latest
+    if: github.repository == 'dakinissystems/dakinis-systems'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Dump and restore to ephemeral database
+        env:
+          DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::warning::BACKUP_DATABASE_URL not set — skip restore test."
+            exit 0
+          fi
+          pg_dump "$DATABASE_URL" --no-owner --no-acl | gzip > backup.sql.gz
+          ls -lh backup.sql.gz
+          docker run -d --name pg-restore-test \
+            -e POSTGRES_PASSWORD=test \
+            -e POSTGRES_USER=test \
+            -e POSTGRES_DB=restore_test \
+            postgres:15
+          for i in $(seq 1 30); do
+            if docker exec pg-restore-test pg_isready -U test -d restore_test >/dev/null 2>&1; then
+              break
+            fi
+            sleep 2
+          done
+          gunzip -c backup.sql.gz | docker exec -i pg-restore-test psql -U test -d restore_test -v ON_ERROR_STOP=1
+          docker exec pg-restore-test psql -U test -d restore_test -c '\dn'
+          docker rm -f pg-restore-test
+          echo "Restore test PASSED."

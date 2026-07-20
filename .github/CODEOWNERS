@@ -1,0 +1,13 @@
+# CODEOWNERS — activar revisores cuando existan teams/users en la org.
+# Sintaxis: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Ejemplo (descomentar y sustituir handles reales):
+# *                          @tu-usuario
+# /.github/                  @tu-usuario
+# /gateway/                  @tu-usuario
+# /docs/SECURITY-OPS.md      @tu-usuario
+# /docs/supabase/            @tu-usuario
+# /internal/                 @tu-usuario
+# /billing/                  @tu-usuario
+
+# Hasta entonces, el PR template + branch protection bastan para el checklist de seguridad.

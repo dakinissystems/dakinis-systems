@@ -8,6 +8,7 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "worker:assistant": "node src/worker-assistant.js",
+    "test": "node --test test/**/*.test.js",
     "health": "node -e \"fetch('http://127.0.0.1:'+(process.env.PORT||4083)+'/health').then(r=>r.json()).then(console.log)\""
   },
   "engines": {

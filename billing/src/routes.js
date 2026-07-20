@@ -107,7 +107,7 @@ export const routes = {
   },
 
   "GET /v1/subscriptions/:tenantId": async (req) => {
-    const auth = requireInternalAuth(req, { required: false });
+    const auth = requireInternalAuth(req, { required: true });
     if (!auth.ok) {
       return { status: auth.status, body: { error: auth.error } };
     }

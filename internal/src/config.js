@@ -4,6 +4,11 @@ export const config = {
   redisUrl: process.env.REDIS_URL || "",
   eventsQueue: process.env.DAKINIS_EVENTS_QUEUE || "dakinis:events",
   serviceKey: process.env.DAKINIS_INTERNAL_SERVICE_KEY || process.env.DAKINIS_INTERNAL_API_KEY || "",
+  /** Clave anterior durante rotación (ventana dual). También acepta CSV en serviceKey. */
+  serviceKeyPrevious:
+    process.env.DAKINIS_INTERNAL_SERVICE_KEY_PREVIOUS ||
+    process.env.DAKINIS_INTERNAL_API_KEY_PREVIOUS ||
+    "",
   notificationsUrl:
     process.env.DAKINIS_NOTIFICATIONS_URL || "http://dakinis-notifications.railway.internal:4081",
   searchUrl: process.env.DAKINIS_SEARCH_URL || "http://dakinis-search.railway.internal:4082",

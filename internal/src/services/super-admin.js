@@ -149,6 +149,12 @@ export async function listFeatureFlags() {
  * @param {string} [actorId]
  */
 export async function setFeatureFlag(flagKey, enabled, actorId) {
+  const { rows: beforeRows } = await query(
+    `SELECT enabled FROM meta.feature_flags WHERE flag_key = $1 LIMIT 1`,
+    [flagKey]
+  );
+  if (!beforeRows[0]) throw new Error("flag_not_found");
+
   const { rows } = await query(
     `UPDATE meta.feature_flags
      SET enabled = $2, updated_at = now(), updated_by = $3::uuid
@@ -157,6 +163,13 @@ export async function setFeatureFlag(flagKey, enabled, actorId) {
     [flagKey, enabled, actorId || null]
   );
   if (!rows[0]) throw new Error("flag_not_found");
+
+  await query(
+    `SELECT meta.log_audit($1::uuid, 'feature_flag.updated', 'feature_flag', $2,
+      jsonb_build_object('before', $3::boolean, 'after', $4::boolean), '{}'::jsonb, NULL, 'internal-api')`,
+    [actorId || null, flagKey, beforeRows[0].enabled, enabled]
+  ).catch(() => {});
+
   return rows[0];
 }
 
