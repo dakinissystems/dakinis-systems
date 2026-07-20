@@ -88,7 +88,7 @@ URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
 | E | `031` | ✅ workspace admin |
 | F | `032`–`033` | ✅ AkoeNet Assistant |
 | F+ | `050` | ⬜ Gamificación mirror · awards en akoenet-backend |
-| F+ | `050` | ⬜ Gamificación mirror (`member_xp`) · awards en akoenet-backend |
+| F+ | `050` | ✅ Gamificación mirror · awards en akoenet-backend (20 jul) |
 | G | `034` (RLS + `media`) | ✅ jul 2026 |
 | H | `035`–`036` | ✅ Workspace addons + capabilities |
 
@@ -176,9 +176,11 @@ Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
 - [x] Motor XP + ledger idempotente + cooldowns (`levels.service.js`)
 - [x] Reacciones → XP al autor · reputación · misiones diarias · AK Coins al level-up
 - [x] API `/servers/:id/levels/*` + panel Ajustes → Niveles
-- [ ] Migración Server `1735000000000` aplicada en prod
-- [ ] Módulo `levels` activado en servidor piloto
-- [ ] Migr. Supabase `050` (mirror platform)
+- [x] Migración Server `1735000000000` aplicada en prod (20 jul)
+- [x] Redeploy akoenet-backend + client + internal (20 jul)
+- [x] Migr. Supabase `050` aplicada (mirror `akoenet.member_xp`)
+- [ ] Módulo `levels` activado en servidor piloto (Assistant UI)
+- [ ] Botón ✔️ reputación en mensajes (client redeploy)
 
 ---
 
