@@ -113,8 +113,15 @@ export async function searchDocuments(q, scope = "all", tenantId = null) {
 
   for (const sc of scopes) {
     const ids = await redis.sMembers(scopeSetKey(sc));
-    for (const id of ids) {
-      const raw = await redis.get(docKey(sc, id));
+    if (!ids.length) continue;
+
+    // Batch GETs — O(scopes) round-trips instead of O(docs).
+    const keys = ids.map((id) => docKey(sc, id));
+    const rawDocs = typeof redis.mGet === "function" ? await redis.mGet(keys) : await Promise.all(keys.map((k) => redis.get(k)));
+
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const raw = rawDocs[i];
       if (!raw) continue;
       let doc;
       try {
