@@ -83,13 +83,15 @@ Requiere schema `akoenet` (006). Packages: `packages/akoenet-orchestrator`, `pac
 Cliente: panel Assistant + i18n · Backend: event bridge + proxy. Internal API: `/akoenet/assistant/*`.  
 Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · Contrato: [`contracts/akoenet-assistant.json`](../../contracts/akoenet-assistant.json)
 
-## Fase F+ — AkoeNet Gamification (050)
+## Fase F+ — AkoeNet Gamification (050–051)
 
 | # | Archivo | Prod |
 |---|---------|------|
 | 50 | [`050_akoenet_gamification.sql`](./050_akoenet_gamification.sql) | ⬜ · Mirror platform `member_xp` / ledger / reputation / quests · módulo `levels` → mvp |
+| 51 | [`051_hub_akoenet_xp.sql`](./051_hub_akoenet_xp.sql) | ⬜ · Hub `akoenet_level` / `akoenet_xp_total` / `akoenet_coins` desde mirror |
 
-Awards primarios: **akoenet-backend** (`migrations/1735000000000_gamification.js` + `levels.service.js`). Activar módulo **Niveles** en Assistant.
+Awards primarios: **akoenet-backend** (`migrations/1735000000000_gamification.js` + `levels.service.js`). Activar módulo **Niveles** en Assistant.  
+Mirror write-through: `POST /akoenet/servers/:serverId/levels/mirror` (Internal).
 
 Requiere schema `akoenet` (006) + Assistant (032–033).
 
