@@ -231,8 +231,9 @@ Orden migraciones: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RU
 
 **Regla API:** usar funciones `schema.v1_*` — no queries directas cross-schema.
 
-Backup: workflow `.github/workflows/backup-postgres.yml` — secret `BACKUP_DATABASE_URL` pendiente.  
-Restore test: `.github/workflows/restore-postgres-test.yml` (mensual) o `.\scripts\restore-postgres-test.ps1`.
+Backup: `.\scripts\backup-postgres.ps1` — local Docker **o** `BACKUP_DATABASE_URL` (pg_dump remoto).  
+Restore test: `.\scripts\restore-postgres-test.ps1 -BackupFile backups\postgres\….sql.gz` (o workflow mensual).  
+GitHub secret `BACKUP_DATABASE_URL` sigue pendiente para el workflow automático.
 
 Roadmap seguridad (P0–P4, impacto, esfuerzo) → [`SECURITY-OPS.md`](./SECURITY-OPS.md).
 
@@ -319,6 +320,25 @@ SELECT plan, status, tenant_id, stripe_subscription_id, updated_at
 FROM billing.subscriptions
 ORDER BY updated_at DESC LIMIT 5;
 ```
+
+---
+
+## Railway — Internal Assistant worker (`dakinis.ai`)
+
+Segundo servicio del repo **dakinis-internal-api** (BullMQ cola `dakinis.ai` · `@AI` async).
+
+| Campo | Valor |
+|-------|-------|
+| Servicio | `dakinis-internal-assistant-worker` |
+| Arranque | `WORKER_ROLE=assistant` (entrypoint) o Start: `npm run worker:assistant` |
+| Dominio | Ninguno |
+| Config alt. | `railway.worker.toml` |
+
+**Variables:** `REDIS_URL`, `DAKINIS_EVENT_BUS=bullmq`, `DATABASE_URL`, `DATABASE_SSL=true`, `DAKINIS_AI_URL`, `DAKINIS_AI_SERVICE_KEY`, `AKOENET_API_URL`, `SCHEDULER_WEBHOOK_SECRET` (igual que akoenet-backend), `DAKINIS_INTERNAL_SERVICE_KEY`.
+
+En **dakinis-internal-api** las mismas claves AI/webhook (sync fallback) + `DAKINIS_EVENT_BUS=bullmq`.
+
+Smoke: chat AkoeNet `@AI hola` → respuesta &lt;30s · log worker `[internal:worker:assistant] done`.
 
 ---
 
