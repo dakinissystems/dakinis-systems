@@ -42,6 +42,7 @@ export function resolveEventQueueKey(eventType) {
   if (t === "notifications.requested" || t.startsWith("notifications.")) return "notifications";
   if (t.startsWith("billing.")) return "default";
   if (t.startsWith("akoenet.assistant.") || t.startsWith("ai.")) return "ai";
+  if (t.startsWith("akoenet.moderation.") || t === "ai.moderate") return "moderationAi";
   if (t.startsWith("knowledge.")) return "knowledge";
   if (t.startsWith("storage.")) return "storage";
   return "default";

@@ -96,8 +96,19 @@ export async function handleAssistant(command) {
 }
 
 export async function handleGuardianAi(command) {
+  if (command.type === "event" && command.action === "message.created") {
+    return {
+      status: "queued_side_effect",
+      note: "enqueueModerationAiEvaluate runs in dispatchAssistantEvent",
+      queue: "akoenet.moderation-ai",
+    };
+  }
   if (command.action === "ai.moderate") {
-    return { status: "queued", queue: "akoenet:moderation-ai", severity: 0 };
+    return {
+      status: "queued_side_effect",
+      note: "enqueue via Internal when guardian_ai enabled",
+      queue: "akoenet.moderation-ai",
+    };
   }
   return { status: "not_implemented", action: command.action };
 }
