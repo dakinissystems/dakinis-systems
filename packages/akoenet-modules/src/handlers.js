@@ -62,10 +62,18 @@ export async function handleGuardian(command) {
 
 export async function handleWelcome(command) {
   if (command.type === "event" && command.action === "member.joined") {
-    return { status: "welcome_queued", userId: command.payload?.event?.data?.userId };
+    return {
+      status: "welcome_side_effect",
+      note: "publishMemberJoinedWelcome runs in dispatchAssistantEvent",
+      userId: command.payload?.event?.data?.userId ?? command.payload?.userId,
+    };
   }
   if (command.action === "community.welcome") {
-    return { status: "welcome_sent", channelId: command.payload?.channelId };
+    return {
+      status: "welcome_command",
+      note: "use member.joined event path or Internal welcome announce",
+      channelId: command.payload?.channelId,
+    };
   }
   return { status: "not_implemented", action: command.action };
 }
@@ -99,13 +107,18 @@ export async function handleStreamer(command) {
     if (command.action === "stream.started") {
       const data = command.payload?.event?.data || {};
       return {
-        status: "announcement_queued",
+        status: "announcement_side_effect",
+        note: "publishStreamStartedAnnouncement runs in dispatchAssistantEvent",
         platform: data.platform,
         streamer: data.streamer || data.scheduler_slug,
       };
     }
     if (command.action === "stream.ended") {
-      return { status: "stream_ended_ack", action: command.action };
+      return {
+        status: "announcement_side_effect",
+        note: "publishStreamEndedAnnouncement runs in dispatchAssistantEvent",
+        action: command.action,
+      };
     }
     if (command.action === "stream.clip") {
       return { status: "clip_published", url: command.payload?.event?.data?.clipUrl };
