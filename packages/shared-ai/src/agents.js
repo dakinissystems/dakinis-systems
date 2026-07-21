@@ -56,7 +56,7 @@ export const AGENT_REGISTRY = [
     name: "Moderation Agent",
     description: "Moderación de chat y voz — tono y políticas de comunidad",
     promptVersion: "moderation/v1",
-    status: "planned",
+    status: "active",
   },
   {
     id: "hub-assistant",

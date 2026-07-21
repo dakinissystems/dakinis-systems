@@ -258,7 +258,7 @@ Respuesta: sync vía `processAssistantAiAsk`, o async (`background.enqueue` → 
 1. AkoeNet publica `message.created` → `/assistant/events`
 2. `resolveModulesForEvent` → `guardian`, `guardian_ai`
 3. Guardian: reglas (spam, flood, links)
-4. Guardian AI: cola `akoenet:moderation-ai` si enabled
+4. Guardian AI: cola `akoenet.moderation-ai` si enabled
 
 ### Member join
 
@@ -324,12 +324,12 @@ const result = await orchestrator.route(
 | ✅ | Path sync `@AI` → canal (`processAssistantAiAsk` en Internal) |
 | ✅ | Migr. `032`–`033` en Supabase prod (jul 2026) |
 | ✅ | Código worker BullMQ cola `dakinis.ai` (`internal` `npm run worker:assistant` + `railway.worker.toml`) |
-| ⬜ | **Deploy** servicio Railway Internal worker + `DAKINIS_EVENT_BUS=bullmq` + `REDIS_URL` |
-| ⬜ | Worker `akoenet:moderation-ai` (Guardian AI) |
+| ✅ | **Deploy** `dakinis-internal-assistant-worker` (WORKER_ROLE=assistant · cola `dakinis.ai` · 20 jul) |
+| ✅ | Worker `akoenet.moderation-ai` (Guardian AI) — misma worker process; enqueue en `message.created` |
 | ⬜ | Verificar `@AI` &lt;30s en prod (async o sync) |
 | ⬜ | Webhook StreamAutomator → eventos `stream.*` |
-| ⬜ | Slash commands → `assistant/command` |
-| ⬜ | AutoMod con acción real (no solo scaffold `allowed: true`) |
+| ✅ | Slash commands → efectos reales en Server (`/ban` `/kick` `/warn` `/timeout`) |
+| ✅ | AutoMod con acción real (pre-insert block en Server) |
 
 ---
 

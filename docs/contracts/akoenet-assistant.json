@@ -84,7 +84,7 @@
   ],
   "queues": {
     "akoenet:assistant": "Respuestas IA (@AI, resúmenes)",
-    "akoenet:moderation-ai": "Evaluación toxicidad contextual",
+    "akoenet.moderation-ai": "Evaluación toxicidad contextual",
     "akoenet:knowledge": "Búsqueda semántica Knowledge"
   },
   "platform_dependencies": [
