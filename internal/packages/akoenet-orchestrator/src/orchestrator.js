@@ -80,12 +80,22 @@ export class ModuleOrchestrator {
    */
   async enrichCommand(command) {
     const enriched = { ...command, context: { ...(command.context || {}) } };
+    // ai.ask builds its own lean context in processAssistantAiAsk — skip heavy
+    // ContextEngine work on the hot path (esp. before BullMQ enqueue).
+    if (command.action === "ai.ask" || command.skipContextEnrich) {
+      return enriched;
+    }
     if (command.serverId && command.userId) {
       const query =
         typeof command.payload?.message === "string" ? command.payload.message : "";
       enriched.context = {
         ...enriched.context,
-        ...(await this.contextEngine.getRelevantContext(command.serverId, command.userId, query)),
+        ...(await this.contextEngine.getRelevantContext(
+          command.serverId,
+          command.userId,
+          query,
+          command.channelId
+        )),
       };
     } else if (command.serverId) {
       enriched.context = {

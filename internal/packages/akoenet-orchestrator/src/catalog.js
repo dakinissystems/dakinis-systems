@@ -53,7 +53,22 @@ export const AKOENET_MODULE_CATALOG = [
     ],
     permissions: ["server:moderate", "channel:manage"],
     defaultConfig: {
-      autoMod: { enabled: true, spamThreshold: 5, floodThreshold: 8, inviteLinks: true },
+      autoMod: {
+        enabled: true,
+        spamThreshold: 5,
+        floodThreshold: 8,
+        windowSec: 10,
+        inviteLinks: true,
+        blockLinks: false,
+        bannedWords: [],
+        actions: {
+          banned_word: "block",
+          invite_link: "block",
+          link: "block",
+          spam: "block",
+          flood: "block",
+        },
+      },
       antiRaid: { enabled: true, joinThreshold: 10, action: "captcha" },
       logs: { channels: {} },
     },
