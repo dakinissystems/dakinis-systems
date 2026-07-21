@@ -54,12 +54,15 @@ export class ContextEngine {
    * @param {string|number} serverId
    * @param {string} userId
    * @param {string} [query]
+   * @param {string|number} [channelId]
    */
-  async getRelevantContext(serverId, userId, query = "") {
+  async getRelevantContext(serverId, userId, query = "", channelId) {
     const [serverCtx, member, recentMessages, knowledge] = await Promise.all([
       this.getServerContext(serverId),
       this.fetchMember(String(serverId), userId),
-      this.fetchRecentMessages(String(serverId), "", 50),
+      channelId
+        ? this.fetchRecentMessages(String(serverId), String(channelId), 12)
+        : Promise.resolve([]),
       query ? this.searchKnowledge(String(serverId), query) : Promise.resolve([]),
     ]);
 
