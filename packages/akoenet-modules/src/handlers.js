@@ -3,7 +3,34 @@
  * AkoeNet Server invoca vía orchestrator; workers async para IA.
  */
 
+import { evaluateAutoMod, mergeAutoModConfig } from "./automod.js";
+
 /** @typedef {import('@dakinis/akoenet-orchestrator').AssistantCommand} AssistantCommand */
+
+function autoModFromCommand(command) {
+  const cfg =
+    command.moduleConfig ||
+    command.payload?.config ||
+    command.payload?.event?.metadata?.autoMod ||
+    {};
+  const content =
+    command.payload?.content ??
+    command.payload?.event?.data?.content ??
+    command.payload?.message ??
+    "";
+  const ctx = {
+    recentMessageCount: Number(command.payload?.recentMessageCount) || 0,
+    sameContentCount: Number(command.payload?.sameContentCount) || 0,
+  };
+  const verdict = evaluateAutoMod(content, mergeAutoModConfig(cfg), ctx);
+  return {
+    status: "automod_evaluated",
+    allowed: verdict.allowed,
+    reason: verdict.reason || null,
+    action: verdict.action || null,
+    matched: verdict.matched || null,
+  };
+}
 
 /**
  * @param {AssistantCommand} command
@@ -13,14 +40,14 @@ export async function handleGuardian(command) {
   const { action, payload = {}, type } = command;
 
   if (type === "event") {
-    if (action === "message.created") return { status: "automod_evaluated", allowed: true };
+    if (action === "message.created") return autoModFromCommand(command);
     if (action === "member.joined") return { status: "anti_raid_checked" };
     return { status: "event_ack", action };
   }
 
   switch (action) {
     case "moderation.automod":
-      return { status: "automod_evaluated", allowed: true };
+      return autoModFromCommand(command);
     case "moderation.ban":
     case "moderation.kick":
     case "moderation.mute":

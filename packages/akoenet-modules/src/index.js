@@ -9,3 +9,8 @@ export {
   handleAutomation,
   handleLevels,
 } from "./handlers.js";
+export {
+  evaluateAutoMod,
+  mergeAutoModConfig,
+  DEFAULT_AUTOMOD_CONFIG,
+} from "./automod.js";
