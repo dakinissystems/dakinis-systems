@@ -26,18 +26,18 @@ Este documento es un **roadmap de gestión del riesgo**, no una checklist OWASP 
 
 | Medida | P | Riesgo mitigado | Esfuerzo | Estado |
 |--------|---|-----------------|----------|--------|
-| MFA en consolas | P0 | Credential theft | ~15 min/cuenta | ⬜ consola |
-| Backups diarios | P0 | Data loss | ~20 min (secret + 1 run) | 🟡 secret pendiente |
-| Restore test | P0 | Backup corruption / DR ciego | ~30 min primera vez | ✅ script + workflow mensual |
-| DR documentado | P0 | Tiempo de recuperación | ya en este doc | ✅ |
-| Auditoría permisos admin (trimestral) | P0 | Privilege sprawl | ~30 min/trimestre | ⬜ consola |
-| Cloudflare WAF | P1 | OWASP Top 10 / bots / escaneos | ~30 min | ⬜ consola |
-| Cabeceras HTTP Gateway | P1 | Clickjacking, MIME sniff, HTTPS | ya en repo | ✅ prod verificado 20 jul |
-| Rate limiting Gateway | P1 | Brute force / DoS ligero | ya en repo | ✅ código · redeploy edge |
-| Monitorización uptime + errores | P1 | Blind ops | ~1 h | ⬜ consola |
+| MFA en consolas | P0 | Credential theft | ~15 min/cuenta | ✅ 23 jul (GH · Railway · Supabase · Stripe) |
+| Backups diarios | P0 | Data loss | ~20 min (secret + 1 run) | ✅ secret + run #61 (22 jul) |
+| Restore test | P0 | Backup corruption / DR ciego | ~30 min primera vez | ✅ 22 jul 2026 (79 tablas public) |
+| DR documentado | P0 | Tiempo de recuperación | ya en este doc | ✅ revisado 23 jul |
+| Auditoría permisos admin (trimestral) | P0 | Privilege sprawl | ~30 min/trimestre | ⬜ pendiente (GH · Railway · Supabase · Stripe) |
+| Cloudflare WAF | P1 | OWASP Top 10 / bots / escaneos | ~30 min | ✅ 23 jul managed + DDoS + Auth RL |
+| Cabeceras HTTP Gateway | P1 | Clickjacking, MIME sniff, HTTPS | ya en repo | ✅ prod verificado |
+| Rate limiting Gateway | P1 | Brute force / DoS ligero | ya en repo | ✅ prod + CF `/auth/` RL |
+| Monitorización uptime + errores | P1 | Blind ops | ~1 h | 🟡 GH probes · falta alerta externa |
 | Rotación periódica secretos | P1 | Secret leak prolongado | ~1–2 h/ciclo | 🟡 dual-key en código · calendario consola |
-| Dependabot + `npm audit` CI | P1 | Supply chain (CVEs conocidas) | ya en repo | ✅ |
-| Secret scanning GitHub | P1 | Secrets en git | ~10 min org | ⬜ consola |
+| Dependabot + `npm audit` CI | P1 | Supply chain (CVEs conocidas) | ya en repo | ✅ org + Core verificado |
+| Secret scanning GitHub (privados) | P1 | Secrets en git | — | ⏸ **sin GHAS** · mitigación ✅ **Gitleaks** CI + pre-commit |
 | PR Security Review template | P1 | Olvidos en features nuevas | — | ✅ `.github/pull_request_template.md` |
 | JWT internos (servicio) | P2 | Lateral movement / clave eterna | ~1–2 semanas | ⬜ guía · fail-closed + dual-key listos |
 | Audit log central | P2 | Incident response ciego | ~1–2 semanas | 🟡 `meta.log_audit` en invites/workspace/flags |
@@ -95,13 +95,13 @@ Si una feature toca **Crítico** o **Confidencial**, aplicar la [Security Review
 
 | Control | P | Estado | Dónde |
 |---------|---|--------|--------|
-| Backups diarios (workflow) | P0 | 🟡 pendiente secret | `.github/workflows/backup-postgres.yml` |
-| Prueba de restauración | P0 | ✅ script + workflow mensual | `scripts/restore-postgres-test.ps1` · `.github/workflows/restore-postgres-test.yml` |
+| Backups diarios (workflow) | P0 | ✅ secret + run #61 (22 jul) | `.github/workflows/backup-postgres.yml` |
+| Prueba de restauración | P0 | ✅ 22 jul (79 tablas public) | `scripts/restore-postgres-test.mjs` · `.github/workflows/restore-postgres-test.yml` |
 | Dependabot | P1 | ✅ | `.github/dependabot.yml` |
 | `npm audit` en CI | P1 | ✅ | `.github/workflows/ci.yml` |
-| Rate limiting Gateway | P1 | ✅ código · redeploy edge | `gateway/nginx.conf` |
+| Rate limiting Gateway | P1 | ✅ prod 23 jul | `gateway/nginx.conf` |
 | Cabeceras HTTP Gateway | P1 | ✅ código · redeploy edge | `gateway/routes/security-headers.conf` |
-| RLS Supabase (deny anon) | P1 | ✅ | migraciones `034`+ |
+| RLS Supabase (deny anon) | P1 | ✅ | migraciones `034`+ · gaps `052`–`054` (22 jul) |
 | Service auth fail-closed (prod) | P1 | ✅ | Internal / Billing / Knowledge |
 | Dual-key rotation S2S | P1 | ✅ | `DAKINIS_INTERNAL_SERVICE_KEY_PREVIOUS` |
 | PR Security Review checklist | P1 | ✅ | `.github/pull_request_template.md` |
@@ -119,11 +119,17 @@ Leyenda estado: ✅ hecho · 🟡 parcial / bloqueado por consola · ⬜ no empe
 
 Activar MFA (TOTP o hardware) en **todas** las cuentas admin:
 
-- [ ] GitHub (org + owners)
-- [ ] Railway
-- [ ] Supabase
-- [ ] Stripe
-- [ ] Cloudflare
+- [x] GitHub (org + owners) — ✅ 23 jul · 2FA + org security review + Advanced Security
+- [x] Railway — ✅ 23 jul
+- [x] Supabase — ✅ 23 jul
+- [x] Stripe — ✅ 23 jul · MFA + revisión seguridad cuenta
+- [ ] Cloudflare — MFA cuenta (WAF/DNS ya endurecidos 23 jul; confirmar 2FA perfil)
+
+Asistente interactivo (abre dashboards):
+
+```powershell
+.\scripts\security-console-checklist.ps1
+```
 
 **Riesgo mitigado:** credential theft.  
 Revisar trimestralmente quién tiene rol Owner/Admin en cada consola (ver auditoría abajo).
@@ -141,11 +147,15 @@ Revisar trimestralmente quién tiene rol Owner/Admin en cada consola (ver audito
 Mensual (workflow automático el día 1) o manual:
 
 ```powershell
+# Con DATABASE_URL de Railway (recomendado):
+npx @railway/cli run --service dakinis-internal-api -- node scripts/restore-postgres-test.mjs
+
+# O desde un .sql.gz ya generado:
 .\scripts\restore-postgres-test.ps1 -BackupFile path\to\backup.sql.gz
 ```
 
 **Riesgo mitigado:** backup corruption / falsa sensación de seguridad.  
-Anotar «Último restore test» en STATUS.
+**Último PASS:** 22 jul 2026 — dump session-mode Supabase → restore efímero `pgvector/pgvector:pg17` → 79 tablas `public`, 21 schemas (anotado en STATUS).
 
 ### Auditoría de permisos admin (~30 min/trimestre)
 
@@ -177,18 +187,30 @@ Probar 1×/año o tras cambio mayor de infra:
 
 ### Cloudflare WAF (~30 min)
 
-Zona `dakinissystems.com` (y subdominios API):
+Zona `dakinissystems.com` (y subdominios API) — **harden pass 23 jul 2026:**
 
-- [ ] Security → WAF → **Managed rules** (Cloudflare Managed + OWASP) en *Block* o *Managed Challenge*
-- [ ] Bot Fight Mode / Super Bot Fight (según plan)
-- [ ] Rate limiting rules en `/auth/*` y rutas públicas sensibles (complementa nginx)
-- [ ] Response Headers en edge: HSTS, `X-Content-Type-Options`, `X-Frame-Options` (refuerzo; el Gateway también las envía)
+- [x] DNS revisado (Landing · Core · API · AI · Finance · Hub · Tabletop · Knowledge) · casi todos detrás de proxy CF
+- [x] SSL/TLS → **Full (Strict)**
+- [x] WAF Managed Rules · Browser Integrity Check · HTTP/Network/SSL DDoS · Automatic Security Level · Challenge Passage
+- [x] Revisión Bot Protection / Hotlink / Email Obfuscation / Replace insecure JS / Asset Discovery
+- [x] Rate limiting custom **Auth**: `URI Path starts with /auth/` · 20 req / IP / 10s · Block 10 min
+- [ ] Segunda regla RL en `/api/` (si el plan Cloudflare lo permite)
+- [x] Response Headers en edge (refuerzo; Gateway también las envía)
 
-**Riesgo mitigado:** OWASP Top 10 / bots / escaneos automáticos.
+Baseline vía API (security_level + browser_check) si tienes token:
+
+```powershell
+$env:CLOUDFLARE_API_TOKEN = "<Zone WAF Write>"
+node scripts/configure-cloudflare-waf.mjs
+```
+
+Dashboard: https://dash.cloudflare.com/?to=/:account/:zone/security/waf
+
+**Riesgo mitigado:** OWASP Top 10 / bots / escaneos / brute force auth.
 
 ### Redeploy Gateway (headers + rate limits)
 
-Código ya en repo. Sin redeploy Railway del servicio Gateway, producción no se beneficia.
+Código en repo · **redeploy Gateway SUCCESS 23 jul 2026** (rate zones `api_limit` / `public_limit` / `bff_limit` / …).
 
 **Riesgo mitigado:** clickjacking, MIME sniff, abuso de API.
 
@@ -196,10 +218,13 @@ Código ya en repo. Sin redeploy Railway del servicio Gateway, producción no se
 
 Mínimo viable **sin SIEM** (SIEM = P4):
 
+- [x] Probes GitHub Actions cada 15 min — `.github/workflows/uptime-probes.yml` (23 jul; requiere push a monorepo)
 - [ ] Cloudflare Analytics / Security Events (picos 5xx, challenges)
 - [ ] Railway Metrics + logs Gateway (`rt=`, `status`)
-- [ ] Uptime: Better Stack / UptimeRobot / Cloudflare Health Checks → health de API, auth, core
+- [ ] Uptime externo: Cloudflare Health Checks / Better Stack / UptimeRobot → email/Slack
 - [ ] Alertas Slack/email si uptime &lt; 99% o error rate sube
+
+Endpoints cubiertos por el workflow: Gateway `/health`, Auth, Core, Billing, Internal, SA, AkoeNet.
 
 **Riesgo mitigado:** blind ops.
 
@@ -225,9 +250,79 @@ Procedimiento (S2S con dual-key — **soportado en código** Internal / Billing 
 
 **Riesgo mitigado:** secret leak prolongado.
 
-### GitHub Secret scanning (~10 min)
+### GitHub security por repo (sin GHAS) — 23 jul 2026
 
-En la org: Secret scanning + **push protection**. Complementa Dependabot.
+**Conclusión org:** GitHub muestra *“This organization does not have GitHub Advanced Security”* → *“Private repositories will only have free features enabled.”*
+
+**No disponible en repos privados (requiere GHAS / Secret Protection de pago):**
+- ❌ Secret Scanning (alertas de secretos propios)
+- ❌ Push Protection basada en Secret Scanning
+- ❌ Security configurations centralizadas de AdvSec de pago
+- ❌ AI Secret Scanning / validación avanzada de secretos
+
+**Sí disponible (gratis) y en uso:**
+- ✅ Dependency Graph · Dependabot alerts / security updates / version updates · Malware alerts
+- ✅ CodeQL **Default Setup** (donde se activó; no implica licencia GHAS completa)
+- ✅ Private Vulnerability Reporting (según repo)
+- ✅ Política local: no `.env` en git · `.gitignore` · secrets en GitHub Actions / Railway · rotación si hay sospecha · review en PRs
+
+**Org — Global settings revisados:** Dependabot rules (1) · runner standard · CodeQL extended / Autofix / AI findings (preview) · Secret scanning + Push protection aparecen en la UI org pero **no aplican a privados sin GHAS**.
+
+#### Checklist Dependabot / CodeQL (capa gratis)
+
+| # | Repositorio | Dependabot / Dep graph | CodeQL default | Notas |
+|---|-------------|------------------------|----------------|-------|
+| 1 | [`dakinis-core`](https://github.com/dakinissystems/dakinis-core) | ✅ | ✅ | revisado 23 jul |
+| 2 | [`dakinis-systems`](https://github.com/dakinissystems/dakinis-systems) | ✅ | ✅ | incl. gateway + `packages/` shared |
+| 3 | [`dakinis-auth`](https://github.com/dakinissystems/dakinis-auth) | ✅ | 🟡 | AdvSec gratis; sin Secret Scanning (plan) |
+| 4 | [`dakinis-hub`](https://github.com/dakinissystems/dakinis-hub) | ⬜ | ⬜ | pendiente |
+| 5 | [`dakinis-ai`](https://github.com/dakinissystems/dakinis-ai) | ✅ | 🟡 | |
+| 6 | [`dakinis-billing`](https://github.com/dakinissystems/dakinis-billing) | ✅ | 🟡 | |
+| 7 | [`dakinis-internal-api`](https://github.com/dakinissystems/dakinis-internal-api) | ✅ | 🟡 | |
+| 8 | [`dakinis-notifications`](https://github.com/dakinissystems/dakinis-notifications) | ✅ | 🟡 | |
+| 9 | [`dakinis-search`](https://github.com/dakinissystems/dakinis-search) | ⬜ | ⬜ | pendiente |
+| 10 | [`dakinis-knowledge`](https://github.com/dakinissystems/dakinis-knowledge) | ✅ | 🟡 | |
+| 11 | [`dakinis-landing`](https://github.com/dakinissystems/dakinis-landing) | ✅ | 🟡 | |
+| 12 | [`lifeflow`](https://github.com/dakinissystems/lifeflow) | ✅ | 🟡 | |
+| 13 | [`dakinis-streamautomator`](https://github.com/dakinissystems/dakinis-streamautomator) | ✅ | 🟡 | sin Secret Scanning (plan) |
+| 14 | [`akoenet-backend`](https://github.com/dakinissystems/akoenet-backend) | ✅ | ✅ | |
+| 15 | [`akoenet-client`](https://github.com/dakinissystems/akoenet-client) | ✅ | ✅ | |
+| 16 | [`dakinis-tabletop`](https://github.com/dakinissystems/dakinis-tabletop) | ✅ | 🟡 | |
+
+**Sin repo propio:** Gateway + shared packages → cubiertos por `dakinis-systems`.
+
+**Secret Scanning GitHub (privados):** ⏸ N/A en todo el plan actual — no es un olvido de configuración.
+
+**Siguiente (alternativa sin GHAS — recomendado):**
+1. ✅ **Gitleaks en Actions** — workflow canónico en `dakinis-systems` (CLI, sin licencia org de gitleaks-action). Sync: `node scripts/sync-gitleaks-workflow.mjs`. Targets: systems · core · auth · streamautomator · akoenet-backend · akoenet-client (gateway/shared vía systems).
+2. ✅ **Reusable** — `.github/workflows/gitleaks-reusable.yml` · callers: `uses: dakinissystems/dakinis-systems/.github/workflows/gitleaks-reusable.yml@main` (tras habilitar Actions access entre repos privados de la org).
+3. ✅ **Local** — `winget install Gitleaks.Gitleaks` · `gitleaks detect` / `gitleaks git` · pre-commit: `.pre-commit-config.yaml` → `pip install pre-commit && pre-commit install`.
+4. Completar Dependabot/CodeQL en **hub** · **search**.
+5. Plantilla para repos restantes: [`docs/templates/gitleaks.yml`](./templates/gitleaks.yml).
+6. No comprar GHAS hasta escala / compliance lo justifique.
+
+**Riesgo mitigado (capa actual):** CVEs en deps · secrets vía Gitleaks CI + disciplina · no Secret Scanning nativo GH.
+
+### Gitleaks local (Windows)
+
+```powershell
+winget install Gitleaks.Gitleaks
+# desde la raíz de un repo:
+gitleaks detect --config .gitleaks.toml
+gitleaks git --config .gitleaks.toml          # incluye historial
+pip install pre-commit
+pre-commit install                            # usa .pre-commit-config.yaml
+```
+
+Org Actions (reusable entre repos privados): Settings → Actions → General → **Workflow permissions / Access** → permitir workflows de `dakinis-systems`. Luego un caller puede usar:
+
+```yaml
+jobs:
+  scan:
+    uses: dakinissystems/dakinis-systems/.github/workflows/gitleaks-reusable.yml@main
+```
+
+Hoy cada repo lleva copia autocontenida (más fiable sin GITLEAKS_LICENSE de gitleaks-action).
 
 ---
 
@@ -369,22 +464,38 @@ Checklist corta antes de merge de APIs o features que toquen datos **Confidencia
 
 ## Cómo usar este roadmap
 
-1. **Esta semana:** cerrar filas P0 de la matriz (MFA, secret backup, 1 restore test).
-2. **Antes de cobrar el primer euro:** P1 (WAF, redeploy Gateway **+ Internal/Billing/Auth**, uptime, rotación calendarizada con dual-key).
-3. **Con tracción (~20 clientes):** P2 restante (JWT internos, audit completo, RBAC fino).
-4. **Con escala (~100):** P3 (Guardian solo con prereqs).
-5. **No abrir tickets P4** «por si acaso».
+1. **Hecho (consola 23 jul):** MFA · Cloudflare Full Strict + WAF + Auth RL · Dependabot/CodeQL (capa gratis; **sin GHAS**) · DR/backups · Gateway headers + RL.  
+2. **Siguiente (alta):** Gitleaks desplegado en repos clave · ampliar a billing/internal/… vía `docs/templates/gitleaks.yml` · RL Cloudflare `/api/` · uptime externo.  
+3. **Media:** auditoría permisos admin (trimestral) · calendario rotación secretos · Dependabot en hub/search.  
+4. **Cliente fijo:** Heladería Copérnico (pro free) — ✅ Hub + Core · pendiente invite staff + demo reunión.  
+5. **Antes de cobrar el primer euro:** Billing E2E + uptime externo.  
+6. **Con tracción (~20 clientes):** P2 restante (JWT internos, audit completo, RBAC fino) · reevaluar GHAS si compliance lo exige.  
+7. **Con escala (~100):** P3 (Guardian solo con prereqs).  
+8. **No abrir tickets P4** «por si acaso».
 
-### Deploy prod (20 jul 2026)
+### Consola hardening pass (23 jul 2026)
+
+| Área | Estado |
+|------|--------|
+| MFA | ✅ GH · Railway · Supabase · Stripe |
+| Cloudflare | ✅ DNS · Full Strict · WAF · Auth RL (~95%; falta RL `/api/`) |
+| GitHub (plan gratis) | ✅ Dependabot · Dep graph · CodeQL default · **sin GHAS** → Secret Scanning ⏸ |
+| Railway / Supabase / Stripe | ✅ |
+| Backups / DR | ✅ |
+| Gateway | ✅ headers · rate limit · JWT + refresh |
+
+### Deploy prod (20–23 jul 2026)
 
 | Servicio | Estado |
 |----------|--------|
-| Gateway | ✅ cabeceras HSTS / XFO / nosniff verificadas en edge |
+| Gateway | ✅ cabeceras HSTS / XFO / nosniff · rate limits |
+| Cloudflare edge | ✅ Full Strict · WAF · Auth RL `/auth/` |
 | Internal API | ✅ fail-closed (401 sin token en `/admin`) |
 | Billing | ✅ health OK |
 | Auth | ✅ health OK · refresh permissions |
 | Knowledge | ✅ health OK |
 
-**Siguiente (consola, no código):** MFA · secret `BACKUP_DATABASE_URL` · WAF Cloudflare · uptime alerts · Secret scanning org.
+**Siguiente (consola/código):** Ampliar Gitleaks a billing/hub/… · RL `/api/` · uptime externo · auditoría permisos.  
+Backups + restore test: ✅ (secret · run #61 · PASS 22 jul).
 
 Actualizar KPI backup/restore en [`STATUS.md`](./STATUS.md) al cerrar cada ítem.

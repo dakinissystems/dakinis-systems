@@ -1,0 +1,52 @@
+# Reusable secret scan (Gitleaks CLI — free for orgs; no GITLEAKS_LICENSE).
+# Call from other repos after enabling:
+#   Org → Settings → Actions → General → Access → "Accessible from repositories in the organization"
+#
+#   jobs:
+#     scan:
+#       uses: dakinissystems/dakinis-systems/.github/workflows/gitleaks-reusable.yml@main
+
+name: Gitleaks (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      gitleaks_version:
+        description: Gitleaks release version
+        type: string
+        default: "8.24.2"
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: secret-scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Gitleaks
+        env:
+          GITLEAKS_VERSION: ${{ inputs.gitleaks_version }}
+        run: |
+          set -euo pipefail
+          curl -sSL \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C /usr/local/bin gitleaks
+          chmod +x /usr/local/bin/gitleaks
+          gitleaks version
+
+      - name: Run Gitleaks
+        run: |
+          set -euo pipefail
+          args=(detect --source . --verbose --redact --exit-code 1)
+          if [ -f .gitleaks.toml ]; then
+            args+=(--config .gitleaks.toml)
+            echo "Using .gitleaks.toml"
+          fi
+          gitleaks "${args[@]}"
