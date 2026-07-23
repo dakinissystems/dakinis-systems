@@ -148,7 +148,7 @@ export async function createPlatformWorker(queueKey, processor, opts = {}) {
     cfg.name,
     async (job) => {
       const data = job.data || {};
-      await processor(data, job);
+      return processor(data, job);
     },
     {
       connection,
