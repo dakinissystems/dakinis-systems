@@ -57,6 +57,8 @@ export const EVENT_BUS_QUEUES = {
   default: { name: "dakinis.events", concurrency: 5, retries: 3 },
   notifications: { name: "dakinis.notifications", concurrency: 10, retries: 5 },
   ai: { name: "dakinis.ai", concurrency: 3, retries: 2 },
+  /** Guardian AI — contextual toxicity for AkoeNet messages (BullMQ forbids `:` in names) */
+  moderationAi: { name: "akoenet.moderation-ai", concurrency: 2, retries: 2 },
   search: { name: "dakinis.search", concurrency: 2, retries: 3 },
   knowledge: { name: "dakinis.knowledge", concurrency: 2, retries: 3 },
   media: { name: "dakinis.media", concurrency: 2, retries: 2 },
