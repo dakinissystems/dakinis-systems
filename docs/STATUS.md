@@ -34,7 +34,7 @@
 | MFA GitHub / Railway / Supabase / Stripe | P0 | ✅ 23 jul | — |
 | Cloudflare WAF + Full Strict + Auth RL | P1 | ✅ 23 jul | Dashboard · falta RL `/api/` si plan |
 | GitHub Advanced Security / Dependabot / CodeQL / Push Protection | P1 | ✅ 23 jul | Org + Core verificado |
-| Secret Scanning GitHub (privados) | P1 | ⏸ sin GHAS · ✅ Gitleaks | CLI workflow en systems/core/auth/SA/akoenet · sync `scripts/sync-gitleaks-workflow.mjs` |
+| Secret Scanning GitHub (privados) | P1 | ⏸ sin GHAS · ✅ Gitleaks | CI en systems/core/auth/SA/akoenet/billing/internal/hub · sync `scripts/sync-gitleaks-workflow.mjs` |
 | Dependabot / CodeQL (gratis) | P1 | 🟡 ~13/16 | Faltan hub · search |
 | Health checks externos + alerta email/Slack | P1 | ⬜ | Better Stack / UptimeRobot / CF Health Checks |
 | Auditoría permisos admin | P0 | ⬜ | Trimestral GH · Railway · Supabase · Stripe |
