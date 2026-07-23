@@ -10,7 +10,7 @@
 ## Go-Live Score
 
 ```
-████████░░  82%
+█████████░  90%
 ```
 
 | Área | Score | Bloqueador |
@@ -19,10 +19,36 @@
 | Hub | 95% | Mi día DB + screenshot landing |
 | Core | 90% | UX piloto restaurante |
 | AI | 100% | — |
-| Support / ops | 75% | `BACKUP_DATABASE_URL` + restore test |
-| Security | 95% | Redeploy hardening ✅ · P0 MFA/backup/WAF consola — [`SECURITY-OPS.md`](./SECURITY-OPS.md) |
+| Support / ops | 98% | Uptime externo + alerta |
+| Security | 99% | Sin GHAS · Gitleaks en repos clave · RL `/api/` · [`SECURITY-OPS.md`](./SECURITY-OPS.md) |
 
-**Piloto comercial:** 🔴 0 clientes de pago
+**Piloto comercial:** 🟡 1 cliente fijo gratis (Heladería Copérnico) · 0 de pago
+
+---
+
+## Qué falta (23 jul 2026)
+
+### Consola (tú) — no automatizable
+| Ítem | P | Estado | Cómo |
+|------|---|--------|------|
+| MFA GitHub / Railway / Supabase / Stripe | P0 | ✅ 23 jul | — |
+| Cloudflare WAF + Full Strict + Auth RL | P1 | ✅ 23 jul | Dashboard · falta RL `/api/` si plan |
+| GitHub Advanced Security / Dependabot / CodeQL / Push Protection | P1 | ✅ 23 jul | Org + Core verificado |
+| Secret Scanning GitHub (privados) | P1 | ⏸ sin GHAS · ✅ Gitleaks | CLI workflow en systems/core/auth/SA/akoenet · sync `scripts/sync-gitleaks-workflow.mjs` |
+| Dependabot / CodeQL (gratis) | P1 | 🟡 ~13/16 | Faltan hub · search |
+| Health checks externos + alerta email/Slack | P1 | ⬜ | Better Stack / UptimeRobot / CF Health Checks |
+| Auditoría permisos admin | P0 | ⬜ | Trimestral GH · Railway · Supabase · Stripe |
+
+### Código / deploy
+| Ítem | Estado |
+|------|--------|
+| Uptime probes GH Actions | 🟡 workflow listo · falta **push** monorepo |
+| Redeploy SA API (Discord fix + `getPlatform`) | ⬜ push/redeploy |
+| Billing E2E live (Stripe) | ⬜ cuando haya pago real |
+| Invite piloto + demo reunión | ⬜ ops |
+
+### Cerrado recientemente
+**Consola seguridad 23 jul** (MFA · CF Full Strict/WAF/Auth RL · GH Advanced Security) · Backups #61 · restore test · RLS `052`–`054` · Gateway rate limits · **Heladería Copérnico** (carta editable + floor/kitchen/inventory) · AppGuard bearer `/api/me`
 
 ---
 
@@ -35,14 +61,14 @@
 | Servicios Railway | 11+ | Gateway, platform, productos |
 | Workers activos | 4 | AI, Knowledge, Notifications (parcial), SA |
 | Clientes de pago | 0 | Objetivo ago 2026 |
-| Tenants prod | 1+ | demo + provision manual |
+| Tenants prod | 2+ | demo + **heladeria-copernico** (pro free) |
 | Usuarios IdP | 4+ | smoke / demo + `velezcampeon_88@hotmail.com` |
 | MRR | 0 € | — |
 | Tiempo deploy medio | ~6 min | Dockerfile services |
 | React Doctor (media apps) | ~92% | LF/TT 100 · SA 61 |
-| Último release platform | 20 jul 2026 | Gateway headers + S2S harden redeployed |
-| Último backup auto | ⬜ | Secret `BACKUP_DATABASE_URL` pendiente |
-| Último restore test | ⬜ | Workflow mensual o `restore-postgres-test.ps1` |
+| Último release platform | 23 jul 2026 | Gateway rate limits live · Core menú PATCH + inventory stubs · SA getPlatform cutover (pendiente push) |
+| Último backup auto | ✅ | Workflow `Postgres backup` #61 · 22 jul 2026 · secret OK |
+| Último restore test | ✅ | 22 jul 2026 · `scripts/restore-postgres-test.mjs` · 79 tablas `public` · 21 schemas |
 | Dependabot / audit CI | ✅ | `.github/dependabot.yml` + `npm audit` en CI |
 | Security headers (edge) | ✅ | HSTS · X-Frame-Options · nosniff (verificado prod) |
 
@@ -67,7 +93,7 @@ URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
 | Internal API | 🟡 Beta | Platform | v0.3.1+ | hub-dashboard sin stub |
 | Core (Dakinis One) | 🟡 Beta | ERP | — | UX piloto |
 | LifeFlow | 🟢 Production | Finance | — | SQLite → PG |
-| AkoeNet | 🟡 Beta | Social | client v1.5.33 | worker `@AI` (código; deploy Railway) |
+| AkoeNet | 🟡 Beta | Social | client v1.5.33 | worker `@AI` online (`dakinis.ai`) |
 | StreamAutomator | 🟡 Beta | Social | — | React Doctor |
 | Tabletop | 🟠 MVP | Games | — | SQLite → Supabase |
 | Landing | 🟢 Production | GTM | — | screenshot Hub real |
@@ -87,8 +113,7 @@ URLs y deploy → [`OPERATIONS.md`](./OPERATIONS.md) § Railway.
 | D+ | `030` | ✅ LifeFlow ↔ IdP (`app_user_links` + hub-sso velez → `usr_da09193c-ae6`) |
 | E | `031` | ✅ workspace admin |
 | F | `032`–`033` | ✅ AkoeNet Assistant |
-| F+ | `050` | ⬜ Gamificación mirror · awards en akoenet-backend |
-| F+ | `050` | ✅ Gamificación mirror · awards en akoenet-backend (20 jul) |
+| F+ | `050`–`054` | ✅ Gamificación + Hub XP · RLS public gaps · lockdown `rls_auto_enable` (22 jul) |
 | G | `034` (RLS + `media`) | ✅ jul 2026 |
 | H | `035`–`036` | ✅ Workspace addons + capabilities |
 
@@ -115,7 +140,7 @@ Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.m
 
 **Arquitectura (17 jul):**
 - Fase A ✅ — `@dakinis/domain`, PlatformContext, CommandBus middleware, CachedQuery, invite facade
-- Fase B ✅ — SDK modular (`sdk-*`), cache tags, DTO gen v1, QueryMap, rate-limit Gateway (código; **redeploy edge pendiente**)
+- Fase B ✅ — SDK modular (`sdk-*`), cache tags, DTO gen v1, QueryMap, rate-limit Gateway (**redeploy edge ✅ 23 jul**)
 - Fase C parcial ✅ — outbox invite→timeline; Director/AutomationRun SM; invite create/accept vía bus
 - Quick wins ✅ — `background.enqueue`; domain tests en CI; SDK migration guide
 - **En curso (código):** cutover SA restante (outbox/billing) · DTO gen v2
@@ -150,8 +175,11 @@ Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
 
 ### Primer cliente piloto
 
-- [ ] Workspace provisionado (`031`)
-- [ ] ≥1 usuario invitado y aceptado (`POST /workspaces/invites/:token/accept` + Hub `/invite/:token`)
+- [x] Workspace provisionado (`heladeria-copernico` · plan pro · 23 jul)
+- [x] Owner Hub: `christiandvillar@gmail.com` (member activo)
+- [x] Core business + menú seed 24 ítems (cartas Montaditos/Pizzas/Empanadas/Heladería)
+- [x] Admin carta: `PATCH /api/tenant/restaurant/menu` (precios + alta manual) · floor GET/PATCH · inventory stubs
+- [ ] ≥1 usuario invitado del cliente (staff Copérnico) vía invite
 - [ ] Demo Hub → Core completada en reunión
 - [ ] Feedback documentado
 - [ ] Uso real ≥2 sesiones/semana durante 2 semanas
@@ -167,9 +195,9 @@ Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
 - [x] migr. `032`–`033`
 - [x] Vars Railway backend (AI + webhook)
 - [x] Path sync `@AI` → canal (`processAssistantAiAsk`)
-- [ ] Worker BullMQ `dakinis.ai` desplegado en Railway (`npm run worker:assistant`)
-- [ ] `@AI` respuesta en canal &lt;30s verificado en prod
-- [ ] Toggle módulos persiste (E2E)
+- [x] Worker BullMQ `dakinis.ai` desplegado (`dakinis-internal-assistant-worker` · 20 jul)
+- [x] `@AI` respuesta en canal &lt;30s verificado en prod (23 jul · `latencyMs=2487` · smoke enqueue server=1)
+- [x] Toggle módulos persiste (E2E · `scripts/smoke-assistant-modules.mjs` · 23 jul)
 
 ### AkoeNet Gamificación MVP
 
@@ -179,8 +207,8 @@ Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
 - [x] Migración Server `1735000000000` aplicada en prod (20 jul)
 - [x] Redeploy akoenet-backend + client + internal (20 jul)
 - [x] Migr. Supabase `050` aplicada (mirror `akoenet.member_xp`)
-- [ ] Módulo `levels` activado en servidor piloto (Assistant UI)
-- [ ] Botón ✔️ reputación en mensajes (client redeploy)
+- [x] Módulo `levels` activado en servidor piloto (`server_id=1`, 20 jul)
+- [x] Botón ✔️ reputación en mensajes (client redeploy SUCCESS · `8652143`)
 
 ---
 
@@ -191,6 +219,9 @@ Criterios objetivos — marcar en [`ROADMAP.md`](./ROADMAP.md) al cumplir.
 | `smoke-prod-suite.ps1` | probes · `-E2E` + creds |
 | `smoke-billing-e2e.ps1` | creds o `INTERNAL_API_KEY` |
 | `smoke-billing-degraded.ps1` | `INTERNAL_API_KEY` + `DAKINIS_BUSINESS_ID` |
+| `smoke-akoenet-ai-ask.mjs` | Railway env Internal (`DATABASE_URL` + service key) |
+| `smoke-stream-started.mjs` | Railway env Internal |
+| `smoke-assistant-modules.mjs` | Railway env Internal |
 | `smoke-ai.ps1` | `DAKINIS_AI_SERVICE_KEY` |
 | `smoke-hub-search-query.ps1` | creds Core |
 | `smoke-notifications.ps1` | creds IdP |
@@ -217,7 +248,7 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 | ID | Riesgo | Impacto | Mitigación |
 |----|--------|---------|------------|
 | R1 | Sin staging | Alto | Espejo Railway Q3 · smokes con cuidado |
-| R2 | Backups no auto | Crítico | `BACKUP_DATABASE_URL` + workflow |
+| R2 | Backups auto | Mitigado | Workflow diario OK (#61) · restore test ✅ 22 jul |
 | R3 | Billing sin cliente real | Alto | E2E + piloto jul–ago |
 | R4 | Bus factor (1 dev) | Alto | Onboarding · hire Q4 |
 | R5 | SQLite LF/Tabletop | Medio | 030 links ✅; cutover goals/tx pendiente |
@@ -231,12 +262,13 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 
 **Docs (17 jul 2026):** limpieza — TEMP/duplicados borrados; históricos en [`archive/`](./archive/); networking canónico → [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md). AkoeNet desktop **1.5.33** (updater CI + tag).
 
-**Pendiente código / ops (17 jul) — priorizado:**
-1. Redeploy Gateway (rate limits) + piloto invite real
-2. Deploy worker Internal `worker:assistant` (cola `dakinis.ai`)
-3. Cutover SA restante (outbox/billing → `getPlatform`)
-4. Billing E2E cuando haya cliente (dry-run semanal OK)
-5. DTO gen v2 / OTel / automation nodes — solo con demanda
+**Pendiente código / ops (23 jul) — priorizado:**
+1. **Secrets en git** — sin GHAS · **Gitleaks** en CI (systems/core/auth/SA/akoenet) · ampliar con `docs/templates/gitleaks.yml` · Dependabot ~13/16
+2. Cloudflare RL `/api/` (si plan) + **uptime externo** con alerta
+3. Auditoría permisos admin (trimestral)
+4. Push monorepo (`uptime-probes.yml`) + redeploy SA API
+5. Billing E2E cuando haya primer euro
+6. Invite/demo reunión con Copérnico (cliente ya provisionado)
 
 **Productos (17 jul higiene):** Core unifica `DAKINIS_INTERNAL_*` + sync `shared-ai`; LifeFlow normaliza `DAKINIS_AUTH_URL` → `/auth/me` (hub-sso + platform-exchange).
 
