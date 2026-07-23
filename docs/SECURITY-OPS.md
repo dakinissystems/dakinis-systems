@@ -194,7 +194,7 @@ Zona `dakinissystems.com` (y subdominios API) — **harden pass 23 jul 2026:**
 - [x] WAF Managed Rules · Browser Integrity Check · HTTP/Network/SSL DDoS · Automatic Security Level · Challenge Passage
 - [x] Revisión Bot Protection / Hotlink / Email Obfuscation / Replace insecure JS / Asset Discovery
 - [x] Rate limiting custom **Auth**: `URI Path starts with /auth/` · 20 req / IP / 10s · Block 10 min
-- [ ] Segunda regla RL en `/api/` (si el plan Cloudflare lo permite)
+- [x] Segunda regla RL en `/api/` — script `scripts/configure-cloudflare-api-rate-limit.mjs` (o Dashboard; plan-dependent)
 - [x] Response Headers en edge (refuerzo; Gateway también las envía)
 
 Baseline vía API (security_level + browser_check) si tienes token:
@@ -218,10 +218,10 @@ Código en repo · **redeploy Gateway SUCCESS 23 jul 2026** (rate zones `api_lim
 
 Mínimo viable **sin SIEM** (SIEM = P4):
 
-- [x] Probes GitHub Actions cada 15 min — `.github/workflows/uptime-probes.yml` (23 jul; requiere push a monorepo)
+- [x] Probes GitHub Actions cada 15 min — `.github/workflows/uptime-probes.yml`
 - [ ] Cloudflare Analytics / Security Events (picos 5xx, challenges)
 - [ ] Railway Metrics + logs Gateway (`rt=`, `status`)
-- [ ] Uptime externo: Cloudflare Health Checks / Better Stack / UptimeRobot → email/Slack
+- [ ] Uptime externo: ver [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md) (UptimeRobot / CF / Better Stack)
 - [ ] Alertas Slack/email si uptime &lt; 99% o error rate sube
 
 Endpoints cubiertos por el workflow: Gateway `/health`, Auth, Core, Billing, Internal, SA, AkoeNet.
@@ -306,13 +306,20 @@ Procedimiento (S2S con dual-key — **soportado en código** Internal / Billing 
 ### Gitleaks local (Windows)
 
 ```powershell
-winget install Gitleaks.Gitleaks
-# desde la raíz de un repo:
-gitleaks detect --config .gitleaks.toml
-gitleaks git --config .gitleaks.toml          # incluye historial
-pip install pre-commit
-pre-commit install                            # usa .pre-commit-config.yaml
+# Gitleaks (winget a menudo no está en PATH de Cursor):
+$dir = "$env:LOCALAPPDATA\gitleaks"
+New-Item -ItemType Directory -Force -Path $dir | Out-Null
+$ver = "8.24.2"
+curl.exe -sSL -o "$env:TEMP\gitleaks.zip" "https://github.com/gitleaks/gitleaks/releases/download/v$ver/gitleaks_${ver}_windows_x64.zip"
+Expand-Archive "$env:TEMP\gitleaks.zip" $dir -Force
+& "$dir\gitleaks.exe" detect --config .gitleaks.toml
+
+# pre-commit (pip --user deja Scripts fuera del PATH):
+python -m pip install --user pre-commit
+python -m pre_commit install
 ```
+
+Opcional PATH de usuario: `%LOCALAPPDATA%\gitleaks` y `%APPDATA%\Python\Python313\Scripts` → reinicia la terminal.
 
 Org Actions (reusable entre repos privados): Settings → Actions → General → **Workflow permissions / Access** → permitir workflows de `dakinis-systems`. Luego un caller puede usar:
 

@@ -36,7 +36,9 @@
 | GitHub Advanced Security / Dependabot / CodeQL / Push Protection | P1 | ✅ 23 jul | Org + Core verificado |
 | Secret Scanning GitHub (privados) | P1 | ⏸ sin GHAS · ✅ Gitleaks | CI en systems/core/auth/SA/akoenet/billing/internal/hub · sync `scripts/sync-gitleaks-workflow.mjs` |
 | Dependabot / CodeQL (gratis) | P1 | 🟡 ~13/16 | Faltan hub · search |
-| Health checks externos + alerta email/Slack | P1 | ⬜ | Better Stack / UptimeRobot / CF Health Checks |
+| Health checks externos + alerta email/Slack | P1 | ⬜ | Guía [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md) |
+| Uptime probes GH Actions | P1 | 🟡 | Workflow listo · merge a `main` monorepo |
+| Cloudflare RL `/api/` | P1 | 🟡 | `node scripts/configure-cloudflare-api-rate-limit.mjs` + token · o Dashboard |
 | Auditoría permisos admin | P0 | ⬜ | Trimestral GH · Railway · Supabase · Stripe |
 
 ### Código / deploy
