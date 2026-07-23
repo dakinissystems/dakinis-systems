@@ -34,17 +34,17 @@
 | MFA GitHub / Railway / Supabase / Stripe | P0 | ✅ 23 jul | — |
 | Cloudflare WAF + Full Strict + Auth RL | P1 | ✅ 23 jul | Dashboard · falta RL `/api/` si plan |
 | GitHub Advanced Security / Dependabot / CodeQL / Push Protection | P1 | ✅ 23 jul | Org + Core verificado |
-| Secret Scanning GitHub (privados) | P1 | ⏸ sin GHAS · ✅ Gitleaks | CI en systems/core/auth/SA/akoenet/billing/internal/hub · sync `scripts/sync-gitleaks-workflow.mjs` |
-| Dependabot / CodeQL (gratis) | P1 | 🟡 ~13/16 | Faltan hub · search |
+| Secret Scanning GitHub (privados) | P1 | ⏸ sin GHAS · ✅ Gitleaks | 15 repos vía sync · plantilla `docs/templates/gitleaks.yml` |
+| Dependabot / CodeQL (gratis) | P1 | 🟡 | Revisar tabletop si aplica · search ya con Gitleaks |
 | Health checks externos + alerta email/Slack | P1 | ⬜ | Guía [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md) |
-| Uptime probes GH Actions | P1 | 🟡 | Workflow listo · merge a `main` monorepo |
+| Uptime probes GH Actions | P1 | 🟡 | Workflow en rama · merge a `main` |
 | Cloudflare RL `/api/` | P1 | 🟡 | `node scripts/configure-cloudflare-api-rate-limit.mjs` + token · o Dashboard |
 | Auditoría permisos admin | P0 | ⬜ | Trimestral GH · Railway · Supabase · Stripe |
 
 ### Código / deploy
 | Ítem | Estado |
 |------|--------|
-| Uptime probes GH Actions | 🟡 workflow listo · falta **push** monorepo |
+| Uptime probes GH Actions | 🟡 en PR/rama monorepo · merge `main` para cron |
 | Redeploy SA API (Discord fix + `getPlatform`) | ⬜ push/redeploy |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
 | Invite piloto + demo reunión | ⬜ ops |
