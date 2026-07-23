@@ -1,0 +1,57 @@
+# Uptime probes — fail the job if any critical health endpoint is down.
+# Complements Cloudflare Health Checks / Better Stack — see docs/UPTIME-EXTERNAL.md
+
+name: Uptime probes
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: uptime-probes
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    if: github.repository == 'dakinissystems/dakinis-systems'
+    timeout-minutes: 5
+    steps:
+      - name: Probe critical endpoints
+        run: |
+          set -euo pipefail
+          fail=0
+          probe() {
+            local url="$1"
+            local code
+            code=$(curl -sS -o /tmp/uptime_body -w "%{http_code}" --max-time 20 "$url" || echo "000")
+            if [ "$code" = "200" ] || [ "$code" = "204" ]; then
+              echo "OK  $code  $url"
+            else
+              echo "FAIL $code  $url"
+              head -c 400 /tmp/uptime_body || true
+              echo
+              fail=1
+            fi
+          }
+
+          probe "https://api.dakinissystems.com/health"
+          probe "https://auth.dakinissystems.com/health"
+          probe "https://api.dakinissystems.com/core/api/health"
+          probe "https://api.dakinissystems.com/billing/health"
+          probe "https://api.dakinissystems.com/internal/health"
+          probe "https://api.dakinissystems.com/streamautomator/api/health"
+          probe "https://api.akoenet.dakinissystems.com/health"
+          probe "https://api.streamautomator.com/api/health"
+          probe "https://finance-api.dakinissystems.com/health"
+          probe "https://core.dakinissystems.com/"
+
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::One or more uptime probes failed — see docs/UPTIME-EXTERNAL.md for external alerts"
+            exit 1
+          fi
+          echo "UPTIME_PROBES_PASSED"

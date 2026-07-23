@@ -23,6 +23,12 @@ const targets = [
   { dir: "billing", label: "dakinis-billing" },
   { dir: "internal", label: "dakinis-internal-api" },
   { dir: "hub", label: "dakinis-hub" },
+  { dir: "knowledge", label: "dakinis-knowledge" },
+  { dir: "search", label: "dakinis-search" },
+  { dir: "notifications", label: "dakinis-notifications" },
+  { dir: "ai", label: "dakinis-ai" },
+  { dir: "apps/landing", label: "dakinis-landing" },
+  { dir: "finanzas", label: "lifeflow" },
 ];
 
 function copyFile(src, dest) {
