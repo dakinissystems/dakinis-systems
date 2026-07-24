@@ -221,6 +221,7 @@ Código en repo · **redeploy Gateway SUCCESS 23 jul 2026** (rate zones `api_lim
 Mínimo viable **sin SIEM** (SIEM = P4):
 
 - [x] Probes GitHub Actions cada 15 min — `.github/workflows/uptime-probes.yml`
+- [ ] Cloudflare skip Bot Fight en `/health` — `scripts/configure-cloudflare-health-skip.mjs` (sin esto, runners GH → 403)
 - [ ] Cloudflare Analytics / Security Events (picos 5xx, challenges)
 - [ ] Railway Metrics + logs Gateway (`rt=`, `status`)
 - [ ] Uptime externo: ver [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md) (UptimeRobot / CF / Better Stack)
@@ -296,7 +297,7 @@ Procedimiento (S2S con dual-key — **soportado en código** Internal / Billing 
 **Secret Scanning GitHub (privados):** ⏸ N/A en todo el plan actual — no es un olvido de configuración.
 
 **Siguiente (alternativa sin GHAS — recomendado):**
-1. ✅ **Gitleaks en Actions** — workflow canónico en `dakinis-systems` (CLI, sin licencia org de gitleaks-action). Sync: `node scripts/sync-gitleaks-workflow.mjs`. **Desplegado:** systems · core · auth · streamautomator · akoenet×2 · billing · internal · hub (gateway/shared vía systems).
+1. ✅ **Gitleaks en Actions** — workflow canónico en `dakinis-systems` (CLI, sin licencia org de gitleaks-action). Sync: `node scripts/sync-gitleaks-workflow.mjs`. **Desplegado:** systems · core · auth · streamautomator · akoenet×2 · billing · internal · hub · tabletop (gateway/shared vía systems).
 2. ✅ **Reusable** — `.github/workflows/gitleaks-reusable.yml` · callers: `uses: dakinissystems/dakinis-systems/.github/workflows/gitleaks-reusable.yml@main` (tras habilitar Actions access entre repos privados de la org).
 3. ✅ **Local** — `winget install Gitleaks.Gitleaks` · `gitleaks detect` / `gitleaks git` · pre-commit: `.pre-commit-config.yaml` → `pip install pre-commit && pre-commit install`.
 4. Completar Dependabot/CodeQL en **hub** · **search**.

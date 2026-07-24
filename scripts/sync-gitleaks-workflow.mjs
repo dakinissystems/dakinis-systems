@@ -29,6 +29,7 @@ const targets = [
   { dir: "ai", label: "dakinis-ai" },
   { dir: "apps/landing", label: "dakinis-landing" },
   { dir: "finanzas", label: "lifeflow" },
+  { dir: "DND", label: "dakinis-tabletop" },
 ];
 
 function copyFile(src, dest) {
