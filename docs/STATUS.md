@@ -37,14 +37,15 @@
 | Secret Scanning GitHub (privados) | P1 | ⏸ sin GHAS · ✅ Gitleaks | 15 repos vía sync · plantilla `docs/templates/gitleaks.yml` |
 | Dependabot / CodeQL (gratis) | P1 | 🟡 | Revisar tabletop si aplica · search ya con Gitleaks |
 | Health checks externos + alerta email/Slack | P1 | ⬜ | Guía [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md) |
-| Uptime probes GH Actions | P1 | 🟡 | Workflow en rama · merge a `main` |
+| Uptime probes GH Actions | P1 | 🟡 | En `main` · 1er run 403 CF Bot Fight · falta health-skip |
+| Cloudflare health skip (`/health`) | P1 | ⬜ | `node scripts/configure-cloudflare-health-skip.mjs` + token |
 | Cloudflare RL `/api/` | P1 | 🟡 | `node scripts/configure-cloudflare-api-rate-limit.mjs` + token · o Dashboard |
 | Auditoría permisos admin | P0 | ⬜ | Checklist [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md) |
 
 ### Código / deploy
 | Ítem | Estado |
 |------|--------|
-| Uptime probes GH Actions | 🟡 en PR/rama monorepo · merge `main` para cron |
+| Uptime probes GH Actions | ✅ cron en `main` · 🟡 CF Bot Fight bloquea runners hasta health-skip |
 | Redeploy SA API (Discord fix + `getPlatform`) | ⬜ push/redeploy |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
 | Invite piloto + demo reunión | ⬜ ops |
@@ -268,7 +269,7 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 1. **Secrets en git** — sin GHAS · **Gitleaks** en CI (systems/core/auth/SA/akoenet) · ampliar con `docs/templates/gitleaks.yml` · Dependabot ~13/16
 2. Cloudflare RL `/api/` (si plan) + **uptime externo** con alerta
 3. Auditoría permisos admin — [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md)
-4. Merge monorepo PR (`uptime-probes.yml` + Gitleaks) + redeploy SA API
+4. Cloudflare health-skip `/health` + RL `/api/` + redeploy SA API
 5. Billing E2E cuando haya primer euro
 6. Invite/demo reunión con Copérnico (cliente ya provisionado)
 

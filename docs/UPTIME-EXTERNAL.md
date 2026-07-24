@@ -34,3 +34,19 @@ https://betterstack.com → Uptime → Add monitor · webhook Slack opcional.
 
 `.github/workflows/uptime-probes.yml` corre cada 15 min en GitHub (fail job = señal en Actions).
 La alerta externa es la que te despierta sin mirar Actions.
+
+## Cloudflare Bot Fight vs runners de GitHub
+
+Los IPs de GitHub Actions suelen recibir **403 «Just a moment…»** en zonas con Bot Fight.
+Desde tu red los mismos `/health` responden 200.
+
+Antes de confiar en el cron de Actions:
+
+```powershell
+$env:CLOUDFLARE_API_TOKEN = "<Zone WAF Write>"
+node scripts/configure-cloudflare-health-skip.mjs
+```
+
+O en Dashboard: **Security → WAF → Custom rules** → Skip Bot Fight / BIC cuando `ends_with(http.request.uri.path, "/health")`.
+
+Sin esa regla, el job de Actions fallará aunque el origen esté sano — usa UptimeRobot/CF Health Checks como fuente de alerta real.
