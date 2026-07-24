@@ -39,7 +39,7 @@
 | Health checks externos + alerta email/Slack | P1 | ⬜ | Guía [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md) |
 | Uptime probes GH Actions | P1 | 🟡 | Workflow en rama · merge a `main` |
 | Cloudflare RL `/api/` | P1 | 🟡 | `node scripts/configure-cloudflare-api-rate-limit.mjs` + token · o Dashboard |
-| Auditoría permisos admin | P0 | ⬜ | Trimestral GH · Railway · Supabase · Stripe |
+| Auditoría permisos admin | P0 | ⬜ | Checklist [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md) |
 
 ### Código / deploy
 | Ítem | Estado |
@@ -267,8 +267,8 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 **Pendiente código / ops (23 jul) — priorizado:**
 1. **Secrets en git** — sin GHAS · **Gitleaks** en CI (systems/core/auth/SA/akoenet) · ampliar con `docs/templates/gitleaks.yml` · Dependabot ~13/16
 2. Cloudflare RL `/api/` (si plan) + **uptime externo** con alerta
-3. Auditoría permisos admin (trimestral)
-4. Push monorepo (`uptime-probes.yml`) + redeploy SA API
+3. Auditoría permisos admin — [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md)
+4. Merge monorepo PR (`uptime-probes.yml` + Gitleaks) + redeploy SA API
 5. Billing E2E cuando haya primer euro
 6. Invite/demo reunión con Copérnico (cliente ya provisionado)
 

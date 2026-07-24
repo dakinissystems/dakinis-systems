@@ -30,7 +30,7 @@ Este documento es un **roadmap de gestión del riesgo**, no una checklist OWASP 
 | Backups diarios | P0 | Data loss | ~20 min (secret + 1 run) | ✅ secret + run #61 (22 jul) |
 | Restore test | P0 | Backup corruption / DR ciego | ~30 min primera vez | ✅ 22 jul 2026 (79 tablas public) |
 | DR documentado | P0 | Tiempo de recuperación | ya en este doc | ✅ revisado 23 jul |
-| Auditoría permisos admin (trimestral) | P0 | Privilege sprawl | ~30 min/trimestre | ⬜ pendiente (GH · Railway · Supabase · Stripe) |
+| Auditoría permisos admin (trimestral) | P0 | Privilege sprawl | ~30 min/trimestre | ⬜ guía [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md) |
 | Cloudflare WAF | P1 | OWASP Top 10 / bots / escaneos | ~30 min | ✅ 23 jul managed + DDoS + Auth RL |
 | Cabeceras HTTP Gateway | P1 | Clickjacking, MIME sniff, HTTPS | ya en repo | ✅ prod verificado |
 | Rate limiting Gateway | P1 | Brute force / DoS ligero | ya en repo | ✅ prod + CF `/auth/` RL |
@@ -158,6 +158,8 @@ npx @railway/cli run --service dakinis-internal-api -- node scripts/restore-post
 **Último PASS:** 22 jul 2026 — dump session-mode Supabase → restore efímero `pgvector/pgvector:pg17` → 79 tablas `public`, 21 schemas (anotado en STATUS).
 
 ### Auditoría de permisos admin (~30 min/trimestre)
+
+Checklist operativa (marcar y fechar): [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md).
 
 - [ ] GitHub org: owners, teams, deploy keys, apps instaladas
 - [ ] Railway: quién puede ver variables
