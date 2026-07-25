@@ -26,6 +26,13 @@ if (!token) {
   console.error("Set CLOUDFLARE_API_TOKEN (Zone WAF Write).");
   process.exit(1);
 }
+if (/^<|^YOUR_|placeholder|Zone WAF Write/i.test(token)) {
+  console.error("CLOUDFLARE_API_TOKEN looks like a placeholder.");
+  console.error("Create a real token: https://dash.cloudflare.com/profile/api-tokens");
+  console.error("Permissions: Zone WAF Edit + Zone Read (zone dakinissystems.com).");
+  console.error('PowerShell: $env:CLOUDFLARE_API_TOKEN = "paste-real-token-here"');
+  process.exit(1);
+}
 
 async function cf(path, { method = "GET", body } = {}) {
   const res = await fetch(`https://api.cloudflare.com/client/v4${path}`, {
