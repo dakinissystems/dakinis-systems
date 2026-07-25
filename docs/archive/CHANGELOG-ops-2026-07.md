@@ -1,6 +1,6 @@
 # Changelog ops — julio 2026 (archivo)
 
-> Notas operativas densas extraídas de `STATUS.md` / `SECURITY-OPS.md` en el cleanup docs v1 (25 jul 2026).  
+> Notas operativas densas extraídas de STATUS / SECURITY-OPS en el cleanup docs v1 (25 jul 2026).  
 > Estado vivo → [`../STATUS.md`](../STATUS.md) · Seguridad → [`../SECURITY.md`](../SECURITY.md)
 
 ---

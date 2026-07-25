@@ -4,7 +4,7 @@
 
 ## Security Review
 
-Aplicar si el PR toca APIs, datos de tenant, secretos o auth (ver `docs/SECURITY-OPS.md`).
+Aplicar si el PR toca APIs, datos de tenant, secretos o auth (ver `docs/SECURITY.md`).
 
 **Nueva API / endpoint**
 
@@ -27,7 +27,7 @@ Aplicar si el PR toca APIs, datos de tenant, secretos o auth (ver `docs/SECURITY
 
 - [ ] Solo en Railway / GitHub Secrets
 - [ ] Nombre en `docs/railway.env.example` **sin valor**
-- [ ] Plan de rotación (tabla P1 en SECURITY-OPS)
+- [ ] Plan de rotación (checklist P1 en `docs/SECURITY.md`)
 
 ## Test plan
 

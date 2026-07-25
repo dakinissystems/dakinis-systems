@@ -10,11 +10,13 @@ Mapa de repos → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md) (histórico
 | Necesitas… | Lee |
 |------------|-----|
 | **Estado hoy** | [`STATUS.md`](./STATUS.md) |
+| **Mapa de sistemas** | [`SYSTEMS.md`](./SYSTEMS.md) |
 | **Qué viene** | [`ROADMAP.md`](./ROADMAP.md) |
 | **Arquitectura** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) |
-| **Evolución arquitectura** | [`ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md`](./ARCHITECTURE-IMPROVEMENTS-FEEDBACK-2026-07.md) |
 | **Deploy / ops** | [`OPERATIONS.md`](./OPERATIONS.md) |
-| **Seguridad (roadmap P0–P4)** | [`SECURITY-OPS.md`](./SECURITY-OPS.md) |
+| **Runbooks** | [`RUNBOOKS/`](./RUNBOOKS/) |
+| **Seguridad** | [`SECURITY.md`](./SECURITY.md) |
+| **Leak de secretos** | [`SECRET-LEAK-REMEDIATION.md`](./SECRET-LEAK-REMEDIATION.md) |
 | **Networking / ventas** | [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md) · [`company/sales/`](./company/sales/) |
 | **Estrategia / mensaje** | [`company/STRATEGY.md`](./company/STRATEGY.md) · [`company/MESSAGING.md`](./company/MESSAGING.md) |
 | **ADRs** | [`adr/`](./adr/) |
@@ -23,6 +25,8 @@ Mapa de repos → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md) (histórico
 | **Contratos HTTP** | [`contracts/`](./contracts/) |
 | **Histórico / drafts** | [`archive/`](./archive/) |
 
+Stubs de compatibilidad (enlaces antiguos): [`SECURITY-OPS.md`](./SECURITY-OPS.md) · [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md) · [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md).
+
 ---
 
 ## Reglas
@@ -30,8 +34,9 @@ Mapa de repos → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md) (histórico
 1. **Estado y pendientes** → solo [`STATUS.md`](./STATUS.md).
 2. **Roadmap** → [`ROADMAP.md`](./ROADMAP.md).
 3. **Arquitectura estable** → [`ARCHITECTURE.md`](./ARCHITECTURE.md).
-4. **Ops** → [`OPERATIONS.md`](./OPERATIONS.md).
-5. **Networking** → solo [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md) (kit + sales networking fusionados 17 jul 2026).
+4. **Ops** → [`OPERATIONS.md`](./OPERATIONS.md) + [`RUNBOOKS/`](./RUNBOOKS/).
+5. **Seguridad** → [`SECURITY.md`](./SECURITY.md).
+6. **Networking** → [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md).
 
 Snapshot automático:
 
@@ -41,4 +46,4 @@ node scripts/generate-docs-status.mjs
 
 ---
 
-*Limpieza docs 17 jul 2026 — TEMP/duplicados eliminados; drafts en `archive/`.*
+*Cleanup docs v1 — 25 jul 2026.*
