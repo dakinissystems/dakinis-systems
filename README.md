@@ -29,12 +29,16 @@ Prefijos HTTP en dev (`localhost:80`): `/auth/`, `/core/`, `/streamautomator/`, 
 
 | Recurso | Contenido |
 |---------|-----------|
-| [`docs/README.md`](./docs/README.md) | Índice de documentación |
-| [`docs/legal/`](./docs/legal/) | Textos legales (privacidad, términos, cookies) |
-| [`docs/contracts/`](./docs/contracts/) | Contratos HTTP del ecosistema |
+| [`docs/README.md`](./docs/README.md) | Índice (source of truth) |
+| [`docs/STATUS.md`](./docs/STATUS.md) | Estado / go-live / bloqueadores |
+| [`docs/SYSTEMS.md`](./docs/SYSTEMS.md) | Mapa productos y plataforma |
+| [`docs/OPERATIONS.md`](./docs/OPERATIONS.md) | Deploy, health, monitorización |
+| [`docs/SECURITY.md`](./docs/SECURITY.md) | Checklist seguridad P0–P1 |
+| [`docs/RUNBOOKS/`](./docs/RUNBOOKS/) | Procedimientos operativos |
 | [`docs/rules.md`](./docs/rules.md) | Reglas al modificar rutas del gateway |
-| [`docs/STATUS.md`](./docs/STATUS.md) | Estado unificado — roadmap, Railway, billing |
-| [`docs/GITHUB-ORG.md`](./docs/GITHUB-ORG.md) | Alineación GitHub: monorepo DES, descripciones repos |
+| [`docs/legal/`](./docs/legal/) | Textos legales |
+| [`docs/contracts/`](./docs/contracts/) | Contratos HTTP |
+| [`docs/archive/GITHUB-ORG.md`](./docs/archive/GITHUB-ORG.md) | Histórico alineación GitHub |
 | [`packages/README.md`](./packages/README.md) | Índice paquetes DES (target: `dakinis-shared`) |
 | [`billing/README.md`](./billing/README.md) | [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) |
 | [`notifications/README.md`](./notifications/README.md) | [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |

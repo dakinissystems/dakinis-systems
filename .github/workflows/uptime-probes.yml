@@ -1,5 +1,5 @@
 # Uptime probes — fail only when an origin looks truly down.
-# Complements Cloudflare Health Checks / Better Stack — see docs/UPTIME-EXTERNAL.md
+# Complements external uptime (UptimeRobot) — see docs/OPERATIONS.md#monitorizacion
 #
 # Free Cloudflare Bot Fight still challenges many GitHub runner IPs even after
 # custom /health skip (BIC/SBFM). Those 403 "Just a moment…" are treated as
@@ -42,7 +42,7 @@ jobs:
             fi
             if grep -qi "Just a moment" /tmp/uptime_body 2>/dev/null; then
               echo "CF_CHALLENGE $code  $url"
-              echo "::warning::Cloudflare Bot Fight challenged GitHub runner for $url — use external uptime (docs/UPTIME-EXTERNAL.md)"
+              echo "::warning::Cloudflare Bot Fight challenged GitHub runner for $url — use external uptime (docs/OPERATIONS.md#monitorizacion)"
               cf_warn=1
               return
             fi
@@ -66,7 +66,7 @@ jobs:
           probe "https://finance-api.dakinissystems.com/health"
 
           if [ "$fail" -ne 0 ]; then
-            echo "::error::One or more uptime probes failed (non-Cloudflare) — see docs/UPTIME-EXTERNAL.md"
+            echo "::error::One or more uptime probes failed (non-Cloudflare) — see docs/OPERATIONS.md#monitorizacion"
             exit 1
           fi
           if [ "$cf_warn" -ne 0 ]; then
