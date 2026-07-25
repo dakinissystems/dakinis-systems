@@ -195,8 +195,8 @@ Zona `dakinissystems.com` (y subdominios API) — **harden pass 23 jul 2026:**
 - [x] SSL/TLS → **Full (Strict)**
 - [x] WAF Managed Rules · Browser Integrity Check · HTTP/Network/SSL DDoS · Automatic Security Level · Challenge Passage
 - [x] Revisión Bot Protection / Hotlink / Email Obfuscation / Replace insecure JS / Asset Discovery
-- [x] Rate limiting custom **Auth**: `URI Path starts with /auth/` · 20 req / IP / 10s · Block 10 min
-- [x] Segunda regla RL en `/api/` — script `scripts/configure-cloudflare-api-rate-limit.mjs` (o Dashboard; plan-dependent)
+- [x] Rate limiting custom **Auth + API** (plan = 1 regla): `/auth/` + `/api/` · 20 req / IP / 10s · via `configure-cloudflare-api-rate-limit.mjs` (25 jul)
+- [x] Health skip custom `/health` — `configure-cloudflare-health-skip.mjs` (25 jul; free Bot Fight no se salta del todo)
 - [x] Response Headers en edge (refuerzo; Gateway también las envía)
 
 Baseline vía API (security_level + browser_check) si tienes token:
@@ -221,7 +221,7 @@ Código en repo · **redeploy Gateway SUCCESS 23 jul 2026** (rate zones `api_lim
 Mínimo viable **sin SIEM** (SIEM = P4):
 
 - [x] Probes GitHub Actions cada 15 min — `.github/workflows/uptime-probes.yml`
-- [ ] Cloudflare skip Bot Fight en `/health` — `scripts/configure-cloudflare-health-skip.mjs` (sin esto, runners GH → 403)
+- [x] Cloudflare skip custom `/health` — `scripts/configure-cloudflare-health-skip.mjs` ✅ 25 jul (free Bot Fight puede seguir desafiando runners)
 - [ ] Cloudflare Analytics / Security Events (picos 5xx, challenges)
 - [ ] Railway Metrics + logs Gateway (`rt=`, `status`)
 - [ ] Uptime externo: ver [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md) (UptimeRobot / CF / Better Stack)
@@ -475,7 +475,7 @@ Checklist corta antes de merge de APIs o features que toquen datos **Confidencia
 ## Cómo usar este roadmap
 
 1. **Hecho (consola 23 jul):** MFA · Cloudflare Full Strict + WAF + Auth RL · Dependabot/CodeQL (capa gratis; **sin GHAS**) · DR/backups · Gateway headers + RL.  
-2. **Siguiente (alta):** Gitleaks desplegado en repos clave · ampliar a billing/internal/… vía `docs/templates/gitleaks.yml` · RL Cloudflare `/api/` · uptime externo.  
+2. **Siguiente (alta):** Uptime externo con alerta · auditoría permisos admin · rotar secretos akoenet (historial purgado).  
 3. **Media:** auditoría permisos admin (trimestral) · calendario rotación secretos · Dependabot en hub/search.  
 4. **Cliente fijo:** Heladería Copérnico (pro free) — ✅ Hub + Core · pendiente invite staff + demo reunión.  
 5. **Antes de cobrar el primer euro:** Billing E2E + uptime externo.  
@@ -488,7 +488,7 @@ Checklist corta antes de merge de APIs o features que toquen datos **Confidencia
 | Área | Estado |
 |------|--------|
 | MFA | ✅ GH · Railway · Supabase · Stripe |
-| Cloudflare | ✅ DNS · Full Strict · WAF · Auth RL (~95%; falta RL `/api/`) |
+| Cloudflare | ✅ DNS · Full Strict · WAF · RL `/auth/`+`/api/` · health-skip |
 | GitHub (plan gratis) | ✅ Dependabot · Dep graph · CodeQL default · **sin GHAS** → Secret Scanning ⏸ |
 | Railway / Supabase / Stripe | ✅ |
 | Backups / DR | ✅ |
@@ -499,13 +499,13 @@ Checklist corta antes de merge de APIs o features que toquen datos **Confidencia
 | Servicio | Estado |
 |----------|--------|
 | Gateway | ✅ cabeceras HSTS / XFO / nosniff · rate limits |
-| Cloudflare edge | ✅ Full Strict · WAF · Auth RL `/auth/` |
+| Cloudflare edge | ✅ Full Strict · WAF · RL `/auth/`+`/api/` · health-skip |
 | Internal API | ✅ fail-closed (401 sin token en `/admin`) |
 | Billing | ✅ health OK |
 | Auth | ✅ health OK · refresh permissions |
 | Knowledge | ✅ health OK |
 
-**Siguiente (consola/código):** Ampliar Gitleaks a billing/hub/… · RL `/api/` · uptime externo · auditoría permisos.  
+**Siguiente (consola/código):** Uptime externo con alerta · auditoría permisos · rotar secretos akoenet post-purge.  
 Backups + restore test: ✅ (secret · run #61 · PASS 22 jul).
 
 Actualizar KPI backup/restore en [`STATUS.md`](./STATUS.md) al cerrar cada ítem.

@@ -32,21 +32,21 @@
 | Ítem | P | Estado | Cómo |
 |------|---|--------|------|
 | MFA GitHub / Railway / Supabase / Stripe | P0 | ✅ 23 jul | — |
-| Cloudflare WAF + Full Strict + Auth RL | P1 | ✅ 23 jul | Dashboard · falta RL `/api/` si plan |
+| Cloudflare WAF + Full Strict + Auth RL | P1 | ✅ 23–25 jul | WAF · Auth+API RL (1 regla plan) · health-skip custom |
 | GitHub Advanced Security / Dependabot / CodeQL / Push Protection | P1 | ✅ 23 jul | Org + Core verificado |
 | Secret Scanning GitHub (privados) | P1 | ⏸ sin GHAS · ✅ Gitleaks | 15 repos vía sync · plantilla `docs/templates/gitleaks.yml` |
 | Dependabot / CodeQL (gratis) | P1 | 🟡 | Revisar tabletop si aplica · search ya con Gitleaks |
 | Health checks externos + alerta email/Slack | P1 | ⬜ | Guía [`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md) |
-| Uptime probes GH Actions | P1 | 🟡 | En `main` · 1er run 403 CF Bot Fight · falta health-skip |
-| Cloudflare health skip (`/health`) | P1 | ⬜ | `node scripts/configure-cloudflare-health-skip.mjs` + token |
-| Cloudflare RL `/api/` | P1 | 🟡 | `node scripts/configure-cloudflare-api-rate-limit.mjs` + token · o Dashboard |
+| Uptime probes GH Actions | P1 | 🟡 | Cron OK · CF challenge = warning · alerta real = externo |
+| Cloudflare health skip (`/health`) | P1 | ✅ 25 jul | Custom rule creada · token CF rotado tras uso |
+| Cloudflare RL `/api/` | P1 | ✅ 25 jul | Misma regla que Auth (`/auth/`+`/api/`) · 20/10s |
 | Auditoría permisos admin | P0 | ⬜ | Checklist [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md) |
 
 ### Código / deploy
 | Ítem | Estado |
 |------|--------|
-| Uptime probes GH Actions | ✅ cron en `main` · 🟡 CF Bot Fight bloquea runners hasta health-skip |
-| Redeploy SA API (Discord fix + `getPlatform`) | ⬜ push/redeploy |
+| Uptime probes GH Actions | ✅ cron · CF Bot Fight → warning (no fail) · usar uptime externo |
+| Redeploy SA API (Discord fix + `getPlatform`) | ✅ `getPlatform` en `main` · confirmar redeploy Railway si no auto |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
 | Invite piloto + demo reunión | ⬜ ops |
 
@@ -267,9 +267,9 @@ Detalle temporal → [`ROADMAP.md`](./ROADMAP.md)
 
 **Pendiente código / ops (23 jul) — priorizado:**
 1. **Secrets en git** — sin GHAS · **Gitleaks** en CI (systems/core/auth/SA/akoenet) · ampliar con `docs/templates/gitleaks.yml` · Dependabot ~13/16
-2. Cloudflare RL `/api/` (si plan) + **uptime externo** con alerta
+2. **Uptime externo** con alerta ([`UPTIME-EXTERNAL.md`](./UPTIME-EXTERNAL.md)) — GH probes no sustituyen alerta
 3. Auditoría permisos admin — [`ADMIN-ACCESS-AUDIT.md`](./ADMIN-ACCESS-AUDIT.md)
-4. Cloudflare health-skip `/health` + RL `/api/` + redeploy SA API
+4. Redeploy SA API + rotar secretos akoenet históricos (post-purge)
 5. Billing E2E cuando haya primer euro
 6. Invite/demo reunión con Copérnico (cliente ya provisionado)
 

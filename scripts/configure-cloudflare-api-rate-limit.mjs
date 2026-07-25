@@ -1,25 +1,36 @@
-/**
- * Create Cloudflare rate-limit rule for /api/ (complements Auth RL /auth/).
+﻿/**
+ * Ensure Cloudflare rate-limit covers /api/ (and /auth/ on free plans).
  *
- * Requires CLOUDFLARE_API_TOKEN with Zone WAF Write (or Account rulesets).
- * Optional: CLOUDFLARE_ZONE_ID / CLOUDFLARE_ZONE_NAME (default dakinissystems.com)
+ * Free/Pro often allow only **1** rate-limit rule. If Auth RL already exists,
+ * this script **updates that rule** to also match /api/ instead of adding a second.
+ *
+ * Requires CLOUDFLARE_API_TOKEN with Zone WAF Write.
  *
  * Usage:
- *   $env:CLOUDFLARE_API_TOKEN="…"
+ *   $env:CLOUDFLARE_API_TOKEN="…"   # real token — never commit or paste in chat
  *   node scripts/configure-cloudflare-api-rate-limit.mjs
  *
- * If your plan rejects the ruleset, create the same rule in Dashboard:
- *   Security → WAF → Rate limiting rules
- *   URI Path contains /api/ · 100 req / IP / 10s · Block 1 min
+ * Optional env:
+ *   CF_API_RL_REQUESTS (default: keep existing, else 100)
+ *   CF_API_RL_PERIOD (default: keep existing, else 10)
+ *   CF_API_RL_BLOCK_SECONDS (default: keep existing, else 60)
  */
 const token = String(process.env.CLOUDFLARE_API_TOKEN || process.env.CF_API_TOKEN || "").trim();
 const zoneName = String(process.env.CLOUDFLARE_ZONE_NAME || "dakinissystems.com").trim();
 let zoneId = String(process.env.CLOUDFLARE_ZONE_ID || "").trim();
 
-const RULE_DESCRIPTION = "Dakinis API rate limit /api/";
-const REQUESTS_PER_PERIOD = Number(process.env.CF_API_RL_REQUESTS || 100);
-const PERIOD_SECONDS = Number(process.env.CF_API_RL_PERIOD || 10);
-const MITIGATION_TIMEOUT = Number(process.env.CF_API_RL_BLOCK_SECONDS || 60);
+const COMBINED_DESCRIPTION = "Dakinis rate limit /auth/ + /api/";
+const COMBINED_EXPRESSION =
+  '(http.request.uri.path contains "/auth/" or http.request.uri.path contains "/api/")';
+const PHASE = "http_ratelimit";
+
+const REQUESTS_PER_PERIOD = process.env.CF_API_RL_REQUESTS
+  ? Number(process.env.CF_API_RL_REQUESTS)
+  : null;
+const PERIOD_SECONDS = process.env.CF_API_RL_PERIOD ? Number(process.env.CF_API_RL_PERIOD) : null;
+const MITIGATION_TIMEOUT = process.env.CF_API_RL_BLOCK_SECONDS
+  ? Number(process.env.CF_API_RL_BLOCK_SECONDS)
+  : null;
 
 if (!token) {
   console.error("Set CLOUDFLARE_API_TOKEN (Zone WAF Write).");
@@ -33,7 +44,7 @@ if (/^<|^YOUR_|placeholder|Zone WAF Write/i.test(token)) {
   process.exit(1);
 }
 
-async function cf(path, { method = "GET", body } = {}) {
+async function cf(path, { method = "GET", body, allowStatuses = [] } = {}) {
   const res = await fetch(`https://api.cloudflare.com/client/v4${path}`, {
     method,
     headers: {
@@ -43,6 +54,7 @@ async function cf(path, { method = "GET", body } = {}) {
     body: body ? JSON.stringify(body) : undefined
   });
   const json = await res.json().catch(() => ({}));
+  if (allowStatuses.includes(res.status)) return { ...json, _httpStatus: res.status };
   if (!res.ok || json.success === false) {
     const err = json?.errors?.[0]?.message || JSON.stringify(json);
     throw new Error(`${method} ${path}: HTTP ${res.status} ${err}`);
@@ -58,61 +70,130 @@ async function resolveZoneId() {
   return z.id;
 }
 
+function coversApi(expression) {
+  return String(expression || "").includes("/api/");
+}
+
+function coversAuth(expression) {
+  return String(expression || "").includes("/auth/");
+}
+
+function buildRule(base = {}) {
+  const prev = base.ratelimit || {};
+  return {
+    action: base.action || "block",
+    description: COMBINED_DESCRIPTION,
+    enabled: base.enabled !== false,
+    expression: COMBINED_EXPRESSION,
+    ratelimit: {
+      characteristics: ["cf.colo.id", "ip.src"],
+      period: PERIOD_SECONDS ?? prev.period ?? 10,
+      requests_per_period: REQUESTS_PER_PERIOD ?? prev.requests_per_period ?? 100,
+      mitigation_timeout: MITIGATION_TIMEOUT ?? prev.mitigation_timeout ?? 60
+    }
+  };
+}
+
 async function main() {
   zoneId = await resolveZoneId();
   console.log(`Zone ${zoneName} (${zoneId})`);
 
-  const phase = "http_ratelimit";
-  let entry;
-  try {
-    entry = await cf(`/zones/${zoneId}/rulesets/phases/${phase}/entrypoint`);
-  } catch (e) {
-    console.error(String(e.message || e));
-    console.error("");
-    console.error("API rate-limit ruleset not available (plan?) — create in Dashboard:");
-    console.error(`  ${RULE_DESCRIPTION}`);
-    console.error(`  Expression: http.request.uri.path contains "/api/"`);
-    console.error(`  ${REQUESTS_PER_PERIOD} req / IP / ${PERIOD_SECONDS}s → Block ${MITIGATION_TIMEOUT}s`);
-    process.exit(2);
+  const entry = await cf(`/zones/${zoneId}/rulesets/phases/${PHASE}/entrypoint`, {
+    allowStatuses: [404]
+  });
+
+  if (entry._httpStatus === 404) {
+    await cf(`/zones/${zoneId}/rulesets`, {
+      method: "POST",
+      body: {
+        name: "default",
+        description: "Zone rate limiting rules (entrypoint)",
+        kind: "zone",
+        phase: PHASE,
+        rules: [buildRule()]
+      }
+    });
+    console.log("Created rate-limit ruleset:", COMBINED_DESCRIPTION);
+    console.log("CLOUDFLARE_API_RATE_LIMIT_APPLIED");
+    return;
   }
 
+  const rulesetId = entry.result?.id;
   const rules = Array.isArray(entry.result?.rules) ? entry.result.rules : [];
-  const existing = rules.find((r) => String(r.description || "").includes("API rate limit /api/"));
-  if (existing) {
-    console.log("Already present:", existing.id, existing.description);
+  console.log(`Existing rate-limit rules: ${rules.length}`);
+
+  const alreadyCombined = rules.find(
+    (r) => coversApi(r.expression) && coversAuth(r.expression)
+  );
+  if (alreadyCombined) {
+    console.log("Already covers /auth/ + /api/:", alreadyCombined.id, alreadyCombined.description);
     console.log("CLOUDFLARE_API_RATE_LIMIT_OK");
     return;
   }
 
-  const newRule = {
-    action: "block",
-    description: RULE_DESCRIPTION,
-    expression: '(http.request.uri.path contains "/api/")',
-    ratelimit: {
-      characteristics: ["ip.src"],
-      period: PERIOD_SECONDS,
-      requests_per_period: REQUESTS_PER_PERIOD,
-      mitigation_timeout: MITIGATION_TIMEOUT
-    }
-  };
+  const apiOnly = rules.find((r) => coversApi(r.expression));
+  if (apiOnly && !coversAuth(apiOnly.expression)) {
+    // Expand api-only → combined
+    const updated = rules.map((r) =>
+      r.id === apiOnly.id ? { id: r.id, ...buildRule(r) } : { id: r.id }
+    );
+    await cf(`/zones/${zoneId}/rulesets/${rulesetId}`, {
+      method: "PUT",
+      body: { rules: updated }
+    });
+    console.log("Updated existing /api/ rule → /auth/ + /api/");
+    console.log("CLOUDFLARE_API_RATE_LIMIT_APPLIED");
+    return;
+  }
 
-  await cf(`/zones/${zoneId}/rulesets/phases/${phase}/entrypoint`, {
-    method: "PUT",
-    body: {
-      rules: [...rules, newRule]
-    }
-  });
+  const authOnly = rules.find((r) => coversAuth(r.expression) && !coversApi(r.expression));
+  if (authOnly) {
+    // Free plan: 1 slot — expand Auth rule instead of adding a second.
+    const updated = rules.map((r) =>
+      r.id === authOnly.id ? { id: r.id, ...buildRule(r) } : { id: r.id }
+    );
+    await cf(`/zones/${zoneId}/rulesets/${rulesetId}`, {
+      method: "PUT",
+      body: { rules: updated }
+    });
+    const rl = buildRule(authOnly).ratelimit;
+    console.log("Plan limit ≈ 1 RL rule — expanded Auth rule to also match /api/");
+    console.log(
+      `  ${rl.requests_per_period} req / IP+colo / ${rl.period}s → block ${rl.mitigation_timeout}s`
+    );
+    console.log("  (thresholds kept from Auth rule unless CF_API_RL_* env set)");
+    console.log("CLOUDFLARE_API_RATE_LIMIT_APPLIED");
+    return;
+  }
 
-  console.log("Added:", RULE_DESCRIPTION);
-  console.log(
-    `  ${REQUESTS_PER_PERIOD} req / IP / ${PERIOD_SECONDS}s → block ${MITIGATION_TIMEOUT}s`
-  );
-  console.log("CLOUDFLARE_API_RATE_LIMIT_APPLIED");
+  // No auth/api rule yet — try to add; on plan-limit error, replace the only rule.
+  try {
+    await cf(`/zones/${zoneId}/rulesets/phases/${PHASE}/entrypoint`, {
+      method: "PUT",
+      body: { rules: [...rules.map((r) => ({ id: r.id })), buildRule()] }
+    });
+    console.log("Added:", COMBINED_DESCRIPTION);
+    console.log("CLOUDFLARE_API_RATE_LIMIT_APPLIED");
+  } catch (e) {
+    const msg = String(e.message || e);
+    if (!/maximum number of rules/i.test(msg) || rules.length === 0) throw e;
+    console.warn(msg);
+    console.warn("Replacing the single existing RL rule with combined /auth/+/api/…");
+    const base = rules[0];
+    await cf(`/zones/${zoneId}/rulesets/${rulesetId}`, {
+      method: "PUT",
+      body: { rules: [{ id: base.id, ...buildRule(base) }] }
+    });
+    console.log("Replaced →", COMBINED_DESCRIPTION);
+    console.log("CLOUDFLARE_API_RATE_LIMIT_APPLIED");
+  }
 }
 
 main().catch((err) => {
   console.error(err.message || err);
   console.error("");
-  console.error("Fallback Dashboard → Security → WAF → Rate limiting rules → Create rule");
+  console.error("Dashboard → Security → WAF → Rate limiting rules");
+  console.error(`  Edit the existing Auth rule expression to:`);
+  console.error(`  ${COMBINED_EXPRESSION}`);
   process.exit(1);
 });

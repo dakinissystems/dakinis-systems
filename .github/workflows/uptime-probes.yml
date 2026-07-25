@@ -1,9 +1,9 @@
-# Uptime probes — fail the job if any critical health endpoint is down.
+# Uptime probes — fail only when an origin looks truly down.
 # Complements Cloudflare Health Checks / Better Stack — see docs/UPTIME-EXTERNAL.md
 #
-# Note: Cloudflare Bot Fight challenges datacenter IPs (GitHub runners → 403
-# "Just a moment..."). Apply skip for /health via:
-#   node scripts/configure-cloudflare-health-skip.mjs
+# Free Cloudflare Bot Fight still challenges many GitHub runner IPs even after
+# custom /health skip (BIC/SBFM). Those 403 "Just a moment…" are treated as
+# warnings — use UptimeRobot/Better Stack for real alerts.
 
 name: Uptime probes
 
@@ -29,6 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           fail=0
+          cf_warn=0
           UA="DakinisUptimeProbe/1.0 (+https://github.com/dakinissystems/dakinis-systems)"
           probe() {
             local url="$1"
@@ -37,30 +38,39 @@ jobs:
               -A "$UA" -H "Accept: application/json,text/plain,*/*" "$url" || echo "000")
             if [ "$code" = "200" ] || [ "$code" = "204" ]; then
               echo "OK  $code  $url"
-            else
-              echo "FAIL $code  $url"
-              head -c 400 /tmp/uptime_body || true
-              echo
-              # Cloudflare challenge HTML → remind about health skip rule
-              if grep -qi "Just a moment" /tmp/uptime_body 2>/dev/null; then
-                echo "::warning::Cloudflare bot challenge — run scripts/configure-cloudflare-health-skip.mjs"
-              fi
-              fail=1
+              return
             fi
+            if grep -qi "Just a moment" /tmp/uptime_body 2>/dev/null; then
+              echo "CF_CHALLENGE $code  $url"
+              echo "::warning::Cloudflare Bot Fight challenged GitHub runner for $url — use external uptime (docs/UPTIME-EXTERNAL.md)"
+              cf_warn=1
+              return
+            fi
+            echo "FAIL $code  $url"
+            head -c 400 /tmp/uptime_body || true
+            echo
+            fail=1
           }
 
-          probe "https://api.dakinissystems.com/health"
+          # Reachable from GH runners today (not blocked by free Bot Fight)
           probe "https://auth.dakinissystems.com/health"
+          probe "https://api.akoenet.dakinissystems.com/health"
+          probe "https://api.streamautomator.com/api/health"
+
+          # Often challenged from datacenter IPs — warn only if CF interstitial
+          probe "https://api.dakinissystems.com/health"
           probe "https://api.dakinissystems.com/core/api/health"
           probe "https://api.dakinissystems.com/billing/health"
           probe "https://api.dakinissystems.com/internal/health"
           probe "https://api.dakinissystems.com/streamautomator/api/health"
-          probe "https://api.akoenet.dakinissystems.com/health"
-          probe "https://api.streamautomator.com/api/health"
           probe "https://finance-api.dakinissystems.com/health"
 
           if [ "$fail" -ne 0 ]; then
-            echo "::error::One or more uptime probes failed — see docs/UPTIME-EXTERNAL.md for external alerts"
+            echo "::error::One or more uptime probes failed (non-Cloudflare) — see docs/UPTIME-EXTERNAL.md"
             exit 1
           fi
-          echo "UPTIME_PROBES_PASSED"
+          if [ "$cf_warn" -ne 0 ]; then
+            echo "UPTIME_PROBES_PASSED_WITH_CF_WARNINGS"
+          else
+            echo "UPTIME_PROBES_PASSED"
+          fi
