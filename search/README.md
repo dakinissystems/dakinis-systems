@@ -1,39 +1,40 @@
 # Dakinis Search
 
-**Global search platform** for Hub and products — unified index, scopes and embeddings worker.
+**Búsqueda global** Hub + productos.
 
-> **Status:** repo ✅ · scaffold en GitHub · **Railway:** not deployed yet.
+> **Prod:** Gateway [/search/](https://api.dakinissystems.com/search/health)
 
 | | |
 |---|---|
-| **GitHub** | [github.com/dakinissystems/dakinis-search](https://github.com/dakinissystems/dakinis-search) |
-| **Railway** | API + Worker (indexer) |
-| **Domain (target)** | `search.dakinissystems.com` |
-| **Gateway prefix** | `/search/` |
-| **Database** | Supabase `hub.search_index` + vector store (roadmap) |
-
-## Scopes (Hub Ctrl+K)
-
-Clients · Invoices · Messages · Events · Documentation · Chats · AI
-
-Canonical UI scopes: `@dakinis/shared-ux/command-palette`.
+| **GitHub** | [dakinis-search](https://github.com/dakinissystems/dakinis-search) |
+| **Gateway** | `/search/` |
+| **Health** | `GET /search/health` |
 
 ## Local
 
 ```powershell
-cd search
 npm install
 npm run dev
-curl "http://localhost:4082/health"
-curl "http://localhost:4082/v1/query?q=test&scope=clients"
+curl http://localhost:4082/health
 ```
 
-## Deploy (Railway)
+## Deploy
 
-1. Connect to [dakinis-search](https://github.com/dakinissystems/dakinis-search).
-2. API: `npm start` · Worker: `npm run worker`
-3. `REDIS_URL`, `DATABASE_URL`, `OPENAI_API_KEY` (embeddings, later)
+API + worker. Runbook → [railway-workers](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/RUNBOOKS/railway-workers.md)
 
 ## Contracts
 
-[`docs/contracts/search.json`](../docs/contracts/search.json)
+[search.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/search.json)
+
+## Documentación del ecosistema
+
+Canónica en [dakinis-systems/docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs):
+
+| Doc | Contenido |
+|-----|-----------|
+| [Índice](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/README.md) | Source of truth |
+| [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) | Mapa productos / plataforma |
+| [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) | Estado / go-live |
+| [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) | Deploy, health, monitorización |
+| [SECURITY](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SECURITY.md) | Checklist seguridad P0–P1 |
+| [ARCHITECTURE](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/ARCHITECTURE.md) | Arquitectura |

@@ -1,46 +1,51 @@
 # Dakinis Notifications
 
-**Cross-product notifications platform** — email, push, in-app inbox, webhooks and channel adapters.
+**Notificaciones cross-product** — email, push, in-app, webhooks.
 
-> **Status:** repo ✅ · scaffold en GitHub · **Railway:** not deployed yet.
+> **Prod:** Gateway [/notifications/](https://api.dakinissystems.com/notifications/health)
 
 | | |
 |---|---|
-| **GitHub** | [github.com/dakinissystems/dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |
-| **Railway** | API service + Worker (same repo, different start command) |
-| **Domain (target)** | `notifications.dakinissystems.com` |
-| **Gateway prefix** | `/notifications/` |
-| **Database** | Supabase `hub.notifications` + Redis queues |
+| **GitHub** | [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |
+| **Gateway** | `/notifications/` |
+| **Health** | `GET /notifications/health` |
 
 ## Flow
 
 ```
-Product → Event bus → Notifications Worker → channel adapters (email, push, in-app…)
+Product → Event bus → Notifications Worker → adapters (email, push, in-app…)
 ```
 
-## Services in this repo
-
-| Process | Start command | Role |
-|---------|---------------|------|
-| API | `npm start` | REST: send, preferences, inbox |
-| Worker | `npm run worker` | BullMQ consumer (scaffold) |
+| Process | Start | Role |
+|---------|-------|------|
+| API | `npm start` | REST |
+| Worker | `npm run worker` | BullMQ consumer |
 
 ## Local
 
 ```powershell
-cd notifications
 npm install
-npm run dev          # API :4081
-npm run worker       # worker (needs REDIS_URL)
+npm run dev
+npm run worker
 ```
 
-## Deploy (Railway)
+## Deploy
 
-1. Connect to [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications).
-2. Service **API**: start `npm start`
-3. Service **Worker** (later): start `npm run worker`, no public domain
-4. `REDIS_URL`, `DATABASE_URL`, `RESEND_API_KEY`, `JWT_SECRET`
+Railway: API + worker. Runbook → [railway-workers](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/RUNBOOKS/railway-workers.md)
 
 ## Contracts
 
-[`docs/contracts/notifications.json`](../docs/contracts/notifications.json)
+[notifications.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/notifications.json)
+
+## Documentación del ecosistema
+
+Canónica en [dakinis-systems/docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs):
+
+| Doc | Contenido |
+|-----|-----------|
+| [Índice](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/README.md) | Source of truth |
+| [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) | Mapa productos / plataforma |
+| [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) | Estado / go-live |
+| [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) | Deploy, health, monitorización |
+| [SECURITY](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SECURITY.md) | Checklist seguridad P0–P1 |
+| [ARCHITECTURE](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/ARCHITECTURE.md) | Arquitectura |
