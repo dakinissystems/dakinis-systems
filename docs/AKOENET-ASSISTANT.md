@@ -1,9 +1,9 @@
 # AkoeNet Assistant — Arquitectura modular
 
-> **Julio 2026** · Los bots no son apps externas: son módulos nativos de Dakinis AI Platform con contexto del servidor.  
-> SQL → [`032`](./supabase/migrations/032_akoenet_assistant_modules.sql) · [`033`](./supabase/migrations/033_akoenet_assistant_expansion.sql)  
+> **Nota de producto** (Eng) · no es STATUS ni OPERATIONS.  
+> Mapa sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · SQL → [`032`](./supabase/migrations/032_akoenet_assistant_modules.sql) · [`033`](./supabase/migrations/033_akoenet_assistant_expansion.sql)  
 > Contrato → [`contracts/akoenet-assistant.json`](./contracts/akoenet-assistant.json)  
-> Setup → [`PLATFORM-SETUP-STEPS.md`](./archive/PLATFORM-SETUP-STEPS.md)
+> Setup histórico → [`archive/PLATFORM-SETUP-STEPS.md`](./archive/PLATFORM-SETUP-STEPS.md)
 
 **Mensaje:** *"Discord tiene bots. AkoeNet tiene un asistente."*
 

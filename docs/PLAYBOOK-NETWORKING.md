@@ -2,7 +2,7 @@
 
 > **Canónico** · julio 2026 · mapa comercial + kit de evento  
 > **Regla:** no vendas arquitectura; vende **ahorro de tiempo**, **menos herramientas** y **procesos simples**.  
-> Mensaje de marca → [`company/MESSAGING.md`](./company/MESSAGING.md) · Demo → [`company/sales/DEMO.md`](./company/sales/DEMO.md)
+> Mensaje de marca → [`company/MESSAGING.md`](./company/MESSAGING.md) · Estrategia CEO → [`company/STRATEGY.md`](./company/STRATEGY.md) · Demo local → [`company/sales/DEMO.md`](./company/sales/DEMO.md)
 
 > **La mejor conversación es aquella en la que la otra persona habla más que tú.**
 
@@ -12,19 +12,17 @@
 
 ## Mapa comercial
 
-| Documento | Para qué |
-|-----------|----------|
-| **Este archivo** | Filosofía + networking en evento (léelo entero antes de salir) |
-| [`sales/DEMO.md`](./company/sales/DEMO.md) | Demo + ciclo post-demo |
-| [`sales/POST_EVENT.md`](./company/sales/POST_EVENT.md) | Notas · 🟢🟡🔴 · Champion |
-| [`sales/SHEET-CRM.md`](./company/sales/SHEET-CRM.md) | Google Sheet + sync |
-| [`sales/ICP.md`](./company/sales/ICP.md) | Tiers + descalificación |
-| [`sales/COMPETITORS.md`](./company/sales/COMPETITORS.md) | Cuándo ganar / no competir |
-| [`sales/OBJECTIONS.md`](./company/sales/OBJECTIONS.md) | Objeciones |
-| [`sales/DISCOVERY.md`](./company/sales/DISCOVERY.md) | Preguntas + validación |
-| [`sales/CASE_STORIES.md`](./company/sales/CASE_STORIES.md) | Narrativas por sector |
-| [`sales/STRATEGY.md`](./company/sales/STRATEGY.md) | Hipótesis · pricing |
-| [`sales/PRODUCT_PHILOSOPHY.md`](./company/sales/PRODUCT_PHILOSOPHY.md) | Producto ↔ ventas |
+| Documento | Para qué | Dónde |
+|-----------|----------|-------|
+| **Este archivo** | Filosofía + networking en evento | Repo |
+| [`company/STRATEGY.md`](./company/STRATEGY.md) | Competencia · FODA · posicionamiento | Repo |
+| [`company/MESSAGING.md`](./company/MESSAGING.md) | Jerarquía Hub · productos | Repo |
+| [`company/sales/README.md`](./company/sales/README.md) | Índice del kit GTM | Repo (stub) |
+| `sales/DEMO.md` … `OBJECTIONS.md` | Demo, ICP, CRM, objeciones | **Local** (gitignore) |
+| `sales/STRATEGY.md` | Hipótesis de validación GTM | **Local** — no sustituye `company/STRATEGY.md` |
+
+Detalle del kit local → [`company/sales/README.md`](./company/sales/README.md).
+
 
 ---
 
@@ -171,7 +169,7 @@ Registrar fila en Sheet. Sync: `node scripts/sync-sales-crm.mjs --fetch`
 | ¿Comprarán? | **Por validar** |
 | Posicionamiento | Varias tools → control sin ERP pesado |
 
-Detalle → [`sales/STRATEGY.md`](./company/sales/STRATEGY.md)
+Detalle → [`company/STRATEGY.md`](./company/STRATEGY.md) · hipótesis de campo → `company/sales/STRATEGY.md` (local)
 
 ---
 

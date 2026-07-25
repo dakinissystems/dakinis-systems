@@ -1,7 +1,8 @@
 # Estrategia y posicionamiento competitivo
 
-> **Julio 2026** · Documentación **estratégica** (CEO, ventas, inversores).  
-> Técnico → [`ARCHITECTURE.md`](../ARCHITECTURE.md) · Ops → [`STATUS.md`](../STATUS.md) · Mensaje → [`MESSAGING.md`](./MESSAGING.md)
+> **Canónico (CEO)** · julio 2026  
+> Técnico → [`ARCHITECTURE.md`](../ARCHITECTURE.md) · Ops → [`STATUS.md`](../STATUS.md) · Mensaje → [`MESSAGING.md`](./MESSAGING.md)  
+> Hipótesis GTM de campo → `sales/STRATEGY.md` (**local**, no sustituye este doc)
 
 **Tesis:** La arquitectura ya está varios pasos por delante del producto comercial. El mayor retorno ahora es **cerrar el ciclo completo de un cliente**, no añadir componentes.
 
