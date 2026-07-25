@@ -97,7 +97,7 @@ async function main() {
     const startedAt = Date.now();
     const sinceIso = new Date(startedAt - 2000).toISOString();
 
-    console.log(`Enqueue ai.ask server=${serverId} channel=${channelId} user=${userId}`);
+    console.log(`Enqueue ai.ask server=${serverId}`);
     const res = await fetch(`${internalBase}/akoenet/servers/${serverId}/assistant/command`, {
       method: "POST",
       headers: {
@@ -112,10 +112,10 @@ async function main() {
       }),
     });
     const body = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(`command HTTP ${res.status}: ${JSON.stringify(body)}`);
+    if (!res.ok) throw new Error(`command HTTP ${res.status}`);
 
     const cmd = body.result || body;
-    console.log("command:", JSON.stringify(cmd));
+    console.log(`command status=${cmd.status || "unknown"} jobIdSet=${Boolean(cmd.jobId)}`);
 
     if (cmd.status === "replied" || cmd.status === "replied_fallback") {
       const wallMs = Date.now() - startedAt;
@@ -165,7 +165,7 @@ async function main() {
       `done status=${status} messageId=${found.meta.messageId || "n/a"} endpoint=${found.row.endpoint} wallMs=${wallMs}`
     );
     if (!["replied", "replied_fallback"].includes(String(status))) {
-      console.error("FAIL: bad status", status, JSON.stringify(found.meta));
+      console.error(`FAIL: bad status=${status}`);
       process.exit(1);
     }
     if (wallMs >= SLA_MS) {
