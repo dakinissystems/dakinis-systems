@@ -44,3 +44,24 @@ Desktop.ini
 
 .tmp-readmes/
 
+# --- Ruido local (no versionar) ---
+/backups/
+*.code-workspace
+/DND/.github/
+/DND/.gitleaks.toml
+/DND/.pre-commit-config.yaml
+
+
+# WIP local scaffolds (no commitear probes)
+**/scripts/tmp-probe-*.cjs
+
+
+# Local WIP inside nested internal clone (lives in dakinis-internal-api)
+/internal/Dockerfile.worker
+/internal/docker-entrypoint.sh
+/internal/scripts/enable-*-pilot.cjs
+/internal/scripts/tmp-probe-*.cjs
+/internal/src/services/levels-mirror.js
+/internal/src/services/moderation-ai.js
+/internal/src/services/welcome-announce.js
+/internal/test/moderation-ai.test.js
