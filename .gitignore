@@ -44,3 +44,14 @@ Desktop.ini
 
 .tmp-readmes/
 
+# --- Ruido local (no versionar) ---
+/backups/
+*.code-workspace
+/DND/.github/
+/DND/.gitleaks.toml
+/DND/.pre-commit-config.yaml
+
+
+# WIP local scaffolds (no commitear probes)
+**/scripts/tmp-probe-*.cjs
+
