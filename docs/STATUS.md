@@ -57,7 +57,7 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 | AI | 🟢 | Costes/workspace |
 | Internal API | 🟡 | — |
 | Core | 🟡 | UX piloto |
-| LifeFlow | 🟢 | SQLite → PG (parcial) |
+| LifeFlow | 🟢 | Suscripciones F1–F4 ✅ · siguiente: Open Banking (F5) · SQLite → PG (parcial) |
 | AkoeNet | 🟡 | — |
 | StreamAutomator | 🟡 | Redeploy + React Doctor |
 | Tabletop | 🟠 | SQLite → Supabase |
