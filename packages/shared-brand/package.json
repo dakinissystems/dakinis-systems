@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Marca, URLs, productos y Hub — consumido por Landing y Core",
+  "description": "Company/products catalog + BC facade — tokens live in shared-foundation + shared-theme (DES v1)",
   "scripts": {
     "sync-brand": "node ../../scripts/sync-shared-brand.mjs"
   },
@@ -22,6 +22,11 @@
     "./accessibility": "./src/accessibility.js",
     "./responsive": "./src/responsive.js",
     "./tokens.css": "./src/tokens.css",
+    "./foundation/tokens-base.css": "./src/foundation/tokens-base.css",
+    "./theme-engine": "./src/theme-engine.js",
+    "./layout": "./src/layout.js",
+    "./tailwind-preset": "./src/tailwind-preset.js",
+    "./tailwind-preset.cjs": "./src/tailwind-preset.cjs",
     "./spacing": "./src/spacing.js",
     "./radius": "./src/radius.js",
     "./shadow": "./src/shadow.js",

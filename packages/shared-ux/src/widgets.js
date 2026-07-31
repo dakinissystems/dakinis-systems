@@ -30,6 +30,7 @@ export const HUB_WIDGET_REGISTRY = [
   { id: "akoenet-online", product: "akoenet", title: "Usuarios conectados", icon: "users", defaultSize: "sm", refreshSec: 30, section: "widgets" },
   { id: "akoenet-new-members", product: "akoenet", title: "Nuevos miembros", icon: "user-plus", defaultSize: "sm", section: "activity" },
   { id: "akoenet-unread-messages", product: "akoenet", title: "Mensajes sin leer", icon: "message-circle", defaultSize: "sm", section: "notifications" },
+  { id: "akoenet-level", product: "akoenet", title: "Nivel / XP", icon: "trophy", defaultSize: "sm", section: "health" },
   // AI
   { id: "ai-recommendations", product: "ai", title: "Recomendaciones IA", icon: "bot", defaultSize: "md", section: "ai-summary" },
   { id: "ai-daily-summary", product: "ai", title: "Resumen IA", icon: "sparkles", defaultSize: "md", section: "ai-summary" },

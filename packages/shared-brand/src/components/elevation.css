@@ -1,0 +1,28 @@
+/* DES elevation utilities — map to --dakinis-elevation-* */
+
+.dakinis-elev-0 {
+  box-shadow: var(--dakinis-elevation-0, none);
+}
+.dakinis-elev-1 {
+  box-shadow: var(--dakinis-elevation-1, 0 4px 16px rgba(0, 0, 0, 0.18));
+}
+.dakinis-elev-2 {
+  box-shadow: var(--dakinis-elevation-2, 0 8px 32px rgba(0, 0, 0, 0.28));
+}
+.dakinis-elev-3 {
+  box-shadow: var(--dakinis-elevation-3, 0 16px 48px rgba(0, 0, 0, 0.35));
+}
+
+.dakinis-elev-card {
+  box-shadow: var(--dakinis-shadow-card, var(--dakinis-elevation-2));
+}
+.dakinis-elev-ai {
+  box-shadow: var(--dakinis-shadow-ai, 0 0 24px rgba(124, 58, 237, 0.25));
+}
+
+/* Surface stack helpers (background only — pair with elev-*) */
+.dakinis-surface-0 { background: var(--dakinis-surface-0); }
+.dakinis-surface-1 { background: var(--dakinis-surface-1); }
+.dakinis-surface-2 { background: var(--dakinis-surface-2); }
+.dakinis-surface-3 { background: var(--dakinis-surface-3); }
+.dakinis-surface-4 { background: var(--dakinis-surface-4); }

@@ -1,0 +1,155 @@
+/* DES patterns — Dashboard / Chat / Forms */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dakinis-pattern-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-base, 16px);
+  max-width: 28rem;
+}
+.dakinis-pattern-form__title {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.dakinis-pattern-form__desc {
+  margin: 0.35rem 0 0;
+  color: var(--dakinis-muted);
+  font-size: 0.875rem;
+}
+.dakinis-pattern-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-base, 16px);
+}
+.dakinis-pattern-form__error {
+  margin: 0;
+  color: var(--dakinis-danger);
+  font-size: 0.875rem;
+}
+.dakinis-pattern-form__success {
+  margin: 0;
+  color: var(--dakinis-success);
+  font-size: 0.875rem;
+}
+.dakinis-pattern-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dakinis-space-sm, 8px);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.dakinis-pattern-chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-base, 16px);
+  min-height: 16rem;
+  max-height: 28rem;
+  border: 1px solid var(--dakinis-line);
+  border-radius: var(--dakinis-radius-card, 12px);
+  background: var(--dakinis-surface-1);
+  overflow: hidden;
+}
+.dakinis-pattern-chat__thread {
+  flex: 1;
+  overflow: auto;
+  padding: var(--dakinis-space-base, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-base, 16px);
+}
+.dakinis-pattern-chat__empty {
+  margin: auto;
+}
+.dakinis-pattern-chat__composer {
+  display: flex;
+  gap: var(--dakinis-space-sm, 8px);
+  padding: var(--dakinis-space-sm, 8px) var(--dakinis-space-base, 16px)
+    var(--dakinis-space-base, 16px);
+  border-top: 1px solid var(--dakinis-line);
+  background: var(--dakinis-surface-0);
+}
+.dakinis-pattern-chat__input {
+  flex: 1;
+}
+.dakinis-pattern-chat__footer {
+  padding: 0 var(--dakinis-space-base, 16px) var(--dakinis-space-sm, 8px);
+}
+
+.dakinis-pattern-dashboard__topbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dakinis-space-base, 16px);
+}
+
+.dakinis-des-demo__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-lg, 24px);
+}
+.dakinis-des-demo__list {
+  margin: 0 0 0.75rem;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+}
+.dakinis-des-demo__list code {
+  font-size: 0.75rem;
+  color: var(--dakinis-accent);
+}
+
+.dakinis-ai-message--user {
+  border-color: var(--dakinis-line);
+  background: var(--dakinis-surface-2);
+}
+.dakinis-ai-message__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dakinis-space-sm, 8px);
+  margin-bottom: var(--dakinis-space-sm, 8px);
+}
+.dakinis-ai-message__time {
+  font-size: 0.75rem;
+  color: var(--dakinis-muted);
+}
+
+/* Color mode control (B5) */
+.dakinis-color-mode {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dakinis-space-base, 16px);
+}
+.dakinis-color-mode__label {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dakinis-muted);
+}
+.dakinis-color-mode__modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dakinis-space-sm, 8px);
+}
+.dakinis-color-mode__hc {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dakinis-space-sm, 8px);
+  font-size: 0.875rem;
+  color: var(--dakinis-text);
+  cursor: pointer;
+}

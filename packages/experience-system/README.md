@@ -1,101 +1,76 @@
-# Dakinis Experience System (DES)
+# Dakinis Experience System (DES) v1.1
 
-**Plataforma de experiencia** del ecosistema Dakinis — no una colección de paquetes sueltos.
+**Plataforma de experiencia** — capas, no un God Package.
 
-> Paquetes npm históricos (`shared-brand`, `shared-ux`, `shared-ai`) se mantienen; **`@dakinis/shared-des`** es el punto de entrada unificado.  
-> Arquitectura platform → [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md)
+> **RFC canónico:** [`docs/DESIGN-SYSTEM.md`](../../docs/DESIGN-SYSTEM.md)  
+> Inventario TEMP: [`docs/DAKINIS-ESTILOS-POR-PRODUCTO-TEMP.md`](../../docs/DAKINIS-ESTILOS-POR-PRODUCTO-TEMP.md)
 
-## Visión
+## Capas
 
 ```
-DES
-├── Foundations     ✅ colors, typography, spacing, elevation, motion, icons, a11y
-├── Components      🔄 Button, Card, Dialog, Input, Table, Sidebar, Navigation…
-├── Patterns        ✅ empty, loading, errors, CRUD, dashboards, AI conversation
-├── Layouts         ✅ AppShell, DashboardTemplate (@dakinis/shared-layouts)
-├── Charts          🔄 catálogo + KPI (@dakinis/shared-charts)
-├── Templates       ✅ dashboard canónico
-└── Product Themes  ✅ acento por producto (solo branding)
+Foundation     @dakinis/shared-foundation   ✅ v1.0
+Theme Engine   @dakinis/shared-theme        ✅ v1.1
+Experience     @dakinis/shared-des + ux + layouts  ✅ v1.1
+Brand catalog  @dakinis/shared-brand        ✅ facade BC (no nuevos tokens)
 ```
 
-## Foundations
+## Lema
 
-| Área | Módulo | Detalle |
-|------|--------|---------|
-| Colors | `@dakinis/shared-brand/semantic-colors` | primary, success, warning, danger, info, neutral |
-| Surfaces | `@dakinis/shared-brand/surfaces` | Surface 0–4 (background → floating) |
-| Typography | `@dakinis/shared-brand/typography` | Display, H1–H3, Title, Body, Caption, Code |
-| Spacing | `@dakinis/shared-brand/spacing` | **4, 8, 12, 16, 24, 32, 48, 64** px únicamente |
-| Motion | `@dakinis/shared-brand/motion` | hover 150ms, dropdown 200ms, modal 250ms, nav 300ms, sidebar 250ms |
-| Icons | `@dakinis/shared-icons` | Lucide · tamaños 16/20/24/32/48 · outline/filled/duotone |
-| Accessibility | `@dakinis/shared-brand/accessibility` | keyboard, focus, contrast, reduced motion, ARIA |
-| Responsive | `@dakinis/shared-brand/responsive` | desktop / tablet / mobile · drawer, bottom nav |
+> Mismas superficies, tipografía, radius y shell; **solo cambia el acento.**
 
-CSS: `@dakinis/shared-brand/tokens.css` — temas `dark`, `light`, `high-contrast`.
-
-## Product Themes (solo acento)
+## Product accents
 
 | Producto | Acento |
 |----------|--------|
-| Core / Hub | cyan `#2dd4bf` |
-| LifeFlow | verde `#22c55e` |
-| Tabletop | oro `#c9a227` |
-| AkoeNet | violeta `#7c3aed` |
-| StreamAutomator | azul `#3b82f6` |
-
-Todo lo demás (sidebar, header, cards, acciones, motion) es **idéntico**.
-
-## Shell oficial
-
-`AppShell` en `@dakinis/shared-layouts`:
-
-```
-Sidebar → Header → Content → Footer
-         + Notifications, Command Palette, Search
-```
-
-Dashboard canónico: **Sidebar → Topbar → Widgets → Cards → Timeline → Quick Actions**
-
-## Componentes IA (exclusivos DES)
-
-| Componente | Paquete |
-|------------|---------|
-| AiMessage, AiSuggestion, AiThinking | `@dakinis/shared-ux/react/*` |
-| AiConfidence, AiSources, AiWarning | idem |
-| AiAction, AiTimeline, AiContextualHint | idem |
-
-## Mapa de paquetes
-
-```
-packages/
-├── shared-des/           ← entrada unificada DES
-├── shared-brand/         foundations + tokens.css
-├── shared-layouts/       AppShell, DashboardTemplate
-├── shared-ux/            componentes React + patterns Hub
-├── shared-charts/        catálogo charts + paleta
-├── shared-ai/            agents, events, knowledge
-├── shared-loading/       skeletons
-├── shared-icons/         Lucide
-├── shared-illustrations/ empty/error/success
-├── sdk/                  clients platform + AI
-└── design-audit/         CI: colores, tipografía, contraste, spacing
-```
+| Core / Hub | `#2dd4bf` |
+| LifeFlow | mint `#3dd6c6` |
+| Tabletop | `#c9a227` |
+| AkoeNet | `#7c3aed` |
+| StreamAutomator | `#3b82f6` |
 
 ## Consumo
 
 ```javascript
-import { DES_PATTERNS, DES_AI_COMPONENTS } from "@dakinis/shared-des";
-import { applyDesTheme, DAKINIS_SPACING_ALLOWED } from "@dakinis/shared-des/foundations";
-import { AppShell, DashboardTemplate } from "@dakinis/shared-layouts";
-import "@dakinis/shared-brand/tokens.css";
+import { DES_VERSION, DES_LAYERS } from "@dakinis/shared-des";
+import { applyDesTheme, applyDesColorMode } from "@dakinis/shared-theme";
+import { AppShell } from "@dakinis/shared-layouts";
+import "@dakinis/shared-foundation/tokens.css";
+import "@dakinis/shared-theme/tokens.css";
+// BC: import "@dakinis/shared-brand/tokens.css";
 ```
 
 ```jsx
-<AppShell product="lifeflow" theme="dark" sidebar={<Nav />} notifications={<Bell />}>
-  <DashboardTemplate widgets={...} cards={...} timeline={...} />
+import { Button, Badge, Card } from "@dakinis/shared-ux";
+
+<AppShell product="lifeflow" theme="dark" sidebar={<Nav />}>
+  <Button variant="primary">OK</Button>
 </AppShell>
 ```
 
-Sync tokens a apps: `node scripts/sync-shared-brand.mjs`
+Adopción objetiva: `node scripts/des-adoption-score.mjs`  
+Sync vendors: `node scripts/sync-shared-brand.mjs` (incluye `shared-ux`)
+
+### Motion / Elevation (B3)
+
+```jsx
+import { MotionElevationDemo, DAKINIS_MOTION_CLASSES } from "@dakinis/shared-ux";
+// Core DEV: /__des/motion
+```
+
+### Patrones (B4)
+
+```jsx
+import { DashboardPattern, ChatPattern, FormPattern, PatternsDemo } from "@dakinis/shared-ux";
+// Core DEV: /__des · /__des/patterns
+```
+
+### Theme / HC (B5)
+
+```jsx
+import { bootstrapDesAppearance } from "@dakinis/shared-theme";
+import { ColorModeControl, ThemeDemo } from "@dakinis/shared-ux";
+bootstrapDesAppearance({ product: "hub", defaultMode: "system" });
+// Core DEV: /__des/theme
+```
 
 Principios: [`docs/experience-principles.md`](../../docs/experience-principles.md)
