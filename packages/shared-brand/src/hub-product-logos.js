@@ -6,8 +6,8 @@ import tabletopLogo from "../assets/hub-logos/tabletop.png";
 
 /** @type {Record<string, { src: string; alt: string; objectPosition?: string; scale?: number }>} */
 export const HUB_PRODUCT_LOGOS = {
-  core: { src: coreLogo, alt: "Dakinis One", objectPosition: "50% 22%", scale: 1.15 },
-  "dakinis-one": { src: coreLogo, alt: "Dakinis One", objectPosition: "50% 22%", scale: 1.15 },
+  core: { src: coreLogo, alt: "Dakinis One" },
+  "dakinis-one": { src: coreLogo, alt: "Dakinis One" },
   lifeflow: { src: lifeflowLogo, alt: "LifeFlow" },
   finanzas: { src: lifeflowLogo, alt: "LifeFlow" },
   streamautomator: { src: streamautomatorLogo, alt: "StreamAutomator" },

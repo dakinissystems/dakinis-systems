@@ -45,10 +45,6 @@ export function HubProductIcon({ appId = "", product = "", size = 20, className 
           loading="lazy"
           decoding="async"
           className="dakinis-hub-product-icon__img"
-          style={{
-            objectPosition: logo.objectPosition || "center",
-            transform: logo.scale ? `scale(${logo.scale})` : undefined,
-          }}
         />
       ) : (
         <LucideIcon name={HUB_APP_ICONS[appId] || HUB_APP_ICONS[product] || "layout-grid"} size={size} />
