@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "dakinis": {
+      "command": "node",
+      "args": ["D:/dakinis-systems/tools/dakinis-mcp/src/index.js"],
+      "env": {
+        "DAKINIS_INTERNAL_URL": "http://127.0.0.1:3100",
+        "DAKINIS_SERVICE_TOKEN": "",
+        "DAKINIS_DOCS_ROOT": "D:/dakinis-systems/docs",
+        "DAKINIS_HUB_URL": "",
+        "DAKINIS_CORE_URL": "",
+        "DAKINIS_BILLING_URL": ""
+      }
+    }
+  }
+}
