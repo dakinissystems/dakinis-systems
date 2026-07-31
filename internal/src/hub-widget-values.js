@@ -103,7 +103,12 @@ export function buildWidgetValues(dashboard = {}) {
       actionLabel: streamNextLabel ? "Abrir Director" : undefined,
     },
     "stream-automation-rules": {
-      value: db.stream_automation_enabled != null ? String(db.stream_automation_enabled) : "—",
+      value:
+        db.stream_automation_total != null && Number(db.stream_automation_total) > 0
+          ? `${db.stream_automation_enabled ?? 0}/${db.stream_automation_total}`
+          : db.stream_automation_enabled != null
+            ? String(db.stream_automation_enabled)
+            : "—",
       status:
         db.stream_automation_total != null && Number(db.stream_automation_total) > 0
           ? `${db.stream_automation_total} reglas`
@@ -147,7 +152,23 @@ export function buildWidgetValues(dashboard = {}) {
     },
     "akoenet-online": {
       value: db.akoenet_online != null ? String(db.akoenet_online) : "0",
-      status: "Comunidad",
+      status:
+        db.akoenet_level != null && Number(db.akoenet_level) > 0
+          ? `Nivel ${db.akoenet_level}`
+          : "Comunidad",
+    },
+    "akoenet-level": {
+      value:
+        db.akoenet_level != null && Number(db.akoenet_level) > 0
+          ? `Nv. ${db.akoenet_level}`
+          : "—",
+      status:
+        db.akoenet_xp_total != null && Number(db.akoenet_xp_total) > 0
+          ? `${Number(db.akoenet_xp_total).toLocaleString("es-ES")} XP` +
+            (db.akoenet_coins != null && Number(db.akoenet_coins) > 0
+              ? ` · ${db.akoenet_coins} monedas`
+              : "")
+          : "AkoeNet",
     },
     "hub-app-launcher": { value: "5 apps", status: "Suite" },
     "ai-recommendations": {
