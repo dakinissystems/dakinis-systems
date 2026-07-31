@@ -8,6 +8,7 @@ const THEME_BY_APP = {
   core: "core",
   "dakinis-one": "core",
   lifeflow: "lifeflow",
+  finanzas: "lifeflow",
   streamautomator: "streamautomator",
   akoenet: "akoenet",
   tabletop: "tabletop",

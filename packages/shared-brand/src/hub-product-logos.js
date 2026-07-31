@@ -9,6 +9,7 @@ export const HUB_PRODUCT_LOGOS = {
   core: { src: coreLogo, alt: "Dakinis One", objectPosition: "50% 22%", scale: 1.15 },
   "dakinis-one": { src: coreLogo, alt: "Dakinis One", objectPosition: "50% 22%", scale: 1.15 },
   lifeflow: { src: lifeflowLogo, alt: "LifeFlow" },
+  finanzas: { src: lifeflowLogo, alt: "LifeFlow" },
   streamautomator: { src: streamautomatorLogo, alt: "StreamAutomator" },
   akoenet: { src: akoenetLogo, alt: "AkoeNet" },
   tabletop: { src: tabletopLogo, alt: "Tabletop" },
