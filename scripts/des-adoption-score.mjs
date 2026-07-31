@@ -106,14 +106,35 @@ const WEIGHTS = {
  * @typedef {{ text: string; has: (re: RegExp) => boolean }} Ctx
  */
 
+/** @param {string} abs @returns {string | null} */
+function readTextFile(abs) {
+  try {
+    return fs.readFileSync(abs, "utf8");
+  } catch (err) {
+    if (err && (err.code === "ENOENT" || err.code === "EISDIR")) return null;
+    throw err;
+  }
+}
+
+/** @param {string} abs @returns {fs.Stats | null} */
+function safeStat(abs) {
+  try {
+    return fs.statSync(abs);
+  } catch (err) {
+    if (err && err.code === "ENOENT") return null;
+    throw err;
+  }
+}
+
 function collectText(relPaths) {
   const chunks = [];
   for (const rel of relPaths) {
     const abs = path.join(root, rel);
-    if (!fs.existsSync(abs)) continue;
-    const st = fs.statSync(abs);
+    const st = safeStat(abs);
+    if (!st) continue;
     if (st.isFile()) {
-      chunks.push(fs.readFileSync(abs, "utf8"));
+      const text = readTextFile(abs);
+      if (text != null) chunks.push(text);
       continue;
     }
     walk(abs, chunks);
@@ -123,17 +144,21 @@ function collectText(relPaths) {
 
 function walk(dir, chunks, depth = 0) {
   if (depth > 6) return;
-  for (const name of fs.readdirSync(dir)) {
+  let names;
+  try {
+    names = fs.readdirSync(dir);
+  } catch {
+    return;
+  }
+  for (const name of names) {
     if (name === "node_modules" || name === "dist" || name === "build") continue;
     const p = path.join(dir, name);
-    const st = fs.statSync(p);
+    const st = safeStat(p);
+    if (!st) continue;
     if (st.isDirectory()) walk(p, chunks, depth + 1);
     else if (/\.(jsx?|tsx?|css|mjs|cjs)$/i.test(name)) {
-      try {
-        chunks.push(fs.readFileSync(p, "utf8"));
-      } catch {
-        /* ignore */
-      }
+      const text = readTextFile(p);
+      if (text != null) chunks.push(text);
     }
   }
 }

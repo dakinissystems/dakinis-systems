@@ -23,6 +23,7 @@ const appRoots = [
   path.join(root, "platform", "core"),
   path.join(root, "finanzas"),
   path.join(root, "hub"),
+  path.join(root, "apps", "akoenet", "Client"),
 ];
 
 function copyRecursive(from, to) {
