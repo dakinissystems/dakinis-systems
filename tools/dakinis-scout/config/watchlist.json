@@ -1,0 +1,41 @@
+[
+  {
+    "id": "iphone-13-128",
+    "product": "iPhone 13 128GB",
+    "brand": "Apple",
+    "category": "tecnologia",
+    "wallapopQuery": "iphone 13 128",
+    "buyPrice": 190,
+    "targetSellPrice": 250,
+    "amazonUrl": "https://www.amazon.es/s?k=iphone+13+128",
+    "minProfit": 15,
+    "minSamples": 5,
+    "enabled": true
+  },
+  {
+    "id": "lego-42128",
+    "product": "LEGO Technic 42128 Heavy-Duty Tow Truck",
+    "brand": "LEGO",
+    "category": "lego",
+    "wallapopQuery": "Lego Technic 42128",
+    "buyPrice": 150,
+    "targetSellPrice": 220,
+    "amazonUrl": "https://www.amazon.es/s?k=LEGO+42128",
+    "minProfit": 15,
+    "minSamples": 4,
+    "enabled": true
+  },
+  {
+    "id": "dyson-v15",
+    "product": "Dyson V15 Detect",
+    "brand": "Dyson",
+    "category": "dyson",
+    "wallapopQuery": "Dyson V15 Detect Absolute",
+    "buyPrice": 420,
+    "targetSellPrice": 480,
+    "amazonUrl": "https://www.amazon.es/s?k=Dyson+V15",
+    "minProfit": 20,
+    "minSamples": 5,
+    "enabled": true
+  }
+]
