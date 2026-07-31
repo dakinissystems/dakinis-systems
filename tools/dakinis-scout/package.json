@@ -1,14 +1,17 @@
 {
   "name": "@dakinis/scout",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Dakinis Scout — opportunity alerts (Discord embeds first)",
+  "description": "Dakinis Scout — opportunity engine + Discord alerts",
   "exports": {
     ".": "./src/index.js",
-    "./discord": "./src/discord-notifier.js"
+    "./discord": "./src/discord-notifier.js",
+    "./engine": "./src/engine.js"
   },
   "scripts": {
+    "once": "node scripts/run-once.js",
+    "loop": "node scripts/run-loop.js",
     "test:discord": "node scripts/send-test.js",
     "send:opportunity": "node scripts/send-test.js"
   },

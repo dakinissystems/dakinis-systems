@@ -1,58 +1,73 @@
 # Dakinis Scout
 
-Alertas de oportunidades (Amazon ↔ Wallapop / marketplaces) → Discord embeds primero; pensado para enganchar luego a `opportunity.created` (Telegram, email, WhatsApp, dashboard).
+Opportunity engine: watchlist → Wallapop search → compare → `opportunity.created` → Discord (Telegram/WhatsApp stubs).
 
-## Discord notifier
-
-```js
-import { discordNotifier } from "@dakinis/scout";
-
-await discordNotifier.sendOpportunity({
-  product: "LEGO Star Wars 75379",
-  buyPrice: 54.99,
-  sellPrice: 79.95,
-  profit: 17.3,
-  roi: 31,
-  amazonUrl: "https://…",
-  wallapopUrl: "https://…",
-  urgency: "green", // green | yellow | red | blue | purple
-});
-```
-
-## Setup
-
-1. En Discord: canal → Integraciones → Webhooks → crear (**nombre:** `Dakinis Scout`).
-2. Copiar la URL solo a `.env` (nunca a git ni chats):
+## Quick start
 
 ```bash
 cd tools/dakinis-scout
-cp .env.example .env
-# edita DISCORD_WEBHOOK_URL=…
-npm run test:discord
+cp .env.example .env   # set DISCORD_WEBHOOK_URL
+npm run once           # one scan + Discord alerts
+npm run loop           # every SCOUT_LOOP_SECONDS (default 300)
 ```
 
-Webhook = secreto. Si lo pegaste en un chat, **regenera el token** en Discord.
+Dry-run (no Discord):
 
-## Multi-canal
-
-Opcional por categoría:
-
-```env
-DISCORD_WEBHOOK_URL=…                 # default
-DISCORD_WEBHOOK_URL_LEGO=…
-DISCORD_WEBHOOK_URL_TECNOLOGIA=…
+```bash
+# PowerShell
+$env:SCOUT_DRY_RUN=1; npm run once
 ```
 
-`sendOpportunity({ category: "lego", … })` usa el webhook específico si existe.
-
-## Arquitectura (siguiente)
+## How it works
 
 ```
-Opportunity Engine → opportunity.created
-        ├── Discord  (este paquete)
-        ├── Telegram
-        ├── Email
-        └── Dashboard / historial
+config/watchlist.json
+        │
+        ▼
+ Opportunity Engine
+        │  Wallapop /api/v3/search
+        ▼
+ opportunity.created
+        │
+        ├── Discord   (profit ≥ SCOUT_MIN_PROFIT_DISCORD, default 15€)
+        ├── Telegram  (stub)
+        └── WhatsApp  (stub)
 ```
 
-Umbrales tipicos: profit > 15 → Telegram; > 25 → Discord; > 50 → WhatsApp; > 100 → todos.
+### Strategies per watch item
+
+1. **amazon_to_wallapop** — `buyPrice` vs Wallapop median sell  
+2. **wallapop_undervalued** — listings ≥10% under `targetSellPrice` (or median) with profit ≥ threshold
+
+Dedup in `data/seen.json` so the same deal is not re-alerted.
+
+## Watchlist
+
+Edit `config/watchlist.json`:
+
+```json
+{
+  "id": "iphone-13-128",
+  "product": "iPhone 13 128GB",
+  "category": "tecnologia",
+  "wallapopQuery": "iphone 13 128",
+  "buyPrice": 190,
+  "targetSellPrice": 260,
+  "amazonUrl": "https://www.amazon.es/s?k=iphone+13+128",
+  "minProfit": 15,
+  "enabled": true
+}
+```
+
+## Discord-only helper
+
+```js
+import { discordNotifier } from "@dakinis/scout";
+await discordNotifier.sendOpportunity({ product: "…", buyPrice: 10, sellPrice: 40, profit: 25, roi: 250 });
+```
+
+## Notes
+
+- Amazon buy prices are **manual / watchlist** in v0.2 (live Amazon scrape comes later).
+- Wallapop access can rate-limit; keep `SCOUT_LOOP_SECONDS` ≥ 180.
+- Webhook URL is a secret — never commit `.env`.
