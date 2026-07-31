@@ -4,6 +4,7 @@ import { publishDomainEvents } from "@dakinis/shared-db/outbox/domain-events";
 import { randomBytes } from "node:crypto";
 import { query, withTransaction } from "../lib/db.js";
 import { invalidateUserBffCache } from "../lib/cache.js";
+import { ensureCoreTenantMembership } from "./core-tenant-bridge.js";
 import { PostgresWorkspaceInviteRepository } from "./workspace-invite-repository.js";
 
 const repo = new PostgresWorkspaceInviteRepository();
@@ -131,6 +132,19 @@ export async function acceptInviteViaFacade(token, input) {
 
       await repo.save(invite, client);
 
+      const txQuery = (text, params) => client.query(text, params);
+      const coreLink = await ensureCoreTenantMembership(
+        { query: txQuery },
+        {
+          workspaceId: invite.workspaceId.value,
+          userId,
+          role: invite.role.value,
+        }
+      ).catch((err) => {
+        console.error("[internal] invite→core tenant bridge:", err);
+        return { linked: false, reason: "bridge_error" };
+      });
+
       const events = invite.pullDomainEvents();
       const traceId = input.ctx?.traceId ?? null;
       for (const event of events) {
@@ -139,7 +153,10 @@ export async function acceptInviteViaFacade(token, input) {
           await client
             .query(
               `SELECT meta.log_audit($1::uuid, 'workspace.member.accepted', 'workspace_member', $2,
-                jsonb_build_object('role', $3, 'invite_id', $4, 'trace_id', $5), '{}'::jsonb, $6::uuid, 'internal-api')`,
+                jsonb_build_object(
+                  'role', $3, 'invite_id', $4, 'trace_id', $5,
+                  'core_linked', $7::boolean, 'core_tenant_slug', $8
+                ), '{}'::jsonb, $6::uuid, 'internal-api')`,
               [
                 userId,
                 memberRows[0]?.id,
@@ -147,19 +164,21 @@ export async function acceptInviteViaFacade(token, input) {
                 invite.id,
                 traceId,
                 invite.workspaceId.value,
+                Boolean(coreLink?.linked),
+                coreLink?.tenantSlug ?? null,
               ]
             )
             .catch(() => {});
         }
       }
 
-      const txQuery = (text, params) => client.query(text, params);
       await publishDomainEvents(outbox, events, txQuery);
 
       return {
         member: memberRows[0] ?? null,
         workspaceId: invite.workspaceId.value,
         role: invite.role.value,
+        coreTenant: coreLink,
       };
     });
 
