@@ -10,14 +10,16 @@
 ## Go-Live Score
 
 ```
-█████████░  90%
+█████████░  91%
 ```
 
 | Área | Score | Bloqueador |
 |------|-------|------------|
 | Billing | 80% | E2E live sin cliente real |
-| Hub | 95% | Screenshot landing · widgets piloto |
-| Core | 90% | UX piloto restaurante |
+| Hub | 100% | DES v1.1 · system theme · HC |
+| Core | 98% | A3 cerrado · escaneo stock rápido |
+| LifeFlow | 98% | hex UI → tokens · system theme |
+| AkoeNet | 100% | dakinis-shell marker · Nexora intacto |
 | AI | 100% | — |
 | Support / ops | 99% | UptimeRobot 7 monitores ✅ |
 | Security | 99% | Sin GHAS · Gitleaks · CF RL · [`SECURITY.md`](./SECURITY.md) |
@@ -30,9 +32,8 @@
 
 | Ítem | Estado |
 |------|--------|
-| Redeploy SA API (`getPlatform` en `main`) | ⬜ confirmar Railway |
+| Invite staff + demo reunión Copérnico | ⬜ ops (bridge invite→Core en prod) |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
-| Invite piloto + demo reunión Copérnico | ⬜ ops |
 | Dependabot / CodeQL repos restantes | 🟡 tabletop / search |
 | MFA Cloudflare (perfil) | ⬜ ver [`SECURITY.md`](./SECURITY.md) |
 | Supabase: cutover LifeFlow goals/tx · `015b` AkoeNet | diferido — Issues / ROADMAP |
@@ -49,19 +50,19 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 |----------|---------|-----------------|
 | Gateway | 🟢 | — |
 | Auth | 🟢 | — |
-| Hub | 🟡 | Mi día widgets piloto · screenshot |
+| Hub | 🟡 | Piloto UX / widgets WIP local |
 | Billing | 🟡 | **E2E live** |
 | Notifications | 🟠 | Resend live · worker |
 | Search | 🟠 | Worker · pgvector |
 | Knowledge | 🟠 | Ingest masivo |
 | AI | 🟢 | Costes/workspace |
-| Internal API | 🟡 | — |
-| Core | 🟡 | UX piloto |
-| LifeFlow | 🟢 | SQLite → PG (parcial) |
-| AkoeNet | 🟡 | — |
-| StreamAutomator | 🟡 | Redeploy + React Doctor |
+| Internal API | 🟡 | — (invite→Core bridge live 28 jul) |
+| Core | 🟡 | UX piloto · demo Copérnico |
+| LifeFlow | 🟢 | SQLite → PG (parcial) · sin Gmail import |
+| AkoeNet | 🟡 | Verificar Media en prod |
+| StreamAutomator | 🟡 | React Doctor (WIP local) |
 | Tabletop | 🟠 | SQLite → Supabase |
-| Landing | 🟢 | Screenshot Hub real |
+| Landing | 🟢 | — (`hub.png` + Hub-first en prod 28 jul) |
 
 **Supabase prod:** fases A–H aplicadas (`000`–`036`, `048`–`054`, …). Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md).
 
@@ -79,14 +80,17 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 ### Piloto Copérnico
 
 - [x] Workspace + menú seed + admin carta/floor/inventory
-- [ ] Invite staff + demo reunión + feedback
+- [x] Hub invite → `core.tenant_memberships` (accept bridge en Internal `ensureCoreTenantMembership` · prod 28 jul)
+- [ ] Invite staff + demo reunión + feedback (ops)
 
 ### Hub SSO / Mi día
 
 - [x] SSO 3/3 productos (16 jul) · Mi día sin stub
-- [ ] Widgets con datos reales ≥2 productos
+- [x] Widgets con datos reales ≥2 productos (LifeFlow + Stream; seed `docs/scripts/seed_hub_mi_dia_widgets_velezcampeon.sql` · smoke `scripts/smoke-hub.ps1` asserts ≥2)
+- [x] Screenshot landing (`apps/landing/public/showcase/hub.png` — Mi día con KPIs · redeploy 28 jul)
+- [x] Login: redirect sesión con `<Navigate>` (sin `navigate()` en render · Hub prod 28 jul)
 
-Smokes: `smoke-prod-suite.ps1` · `smoke-billing-e2e.ps1` · ver [`OPERATIONS.md`](./OPERATIONS.md).
+Smokes: `smoke-prod-suite.ps1` · `smoke-billing-e2e.ps1` · `smoke-hub.ps1` · ver [`OPERATIONS.md`](./OPERATIONS.md).
 
 ---
 
@@ -101,5 +105,7 @@ Smokes: `smoke-prod-suite.ps1` · `smoke-billing-e2e.ps1` · ver [`OPERATIONS.md
 
 ---
 
-*Última actualización: 25 jul 2026 (docs cleanup v1).*  
-*Pregunta guía: ¿Qué necesita un cliente para pagar por Dakinis este mes?*
+*Última actualización: 31 jul 2026 (DES v1.1 · HC QA · Hub system theme).*  
+*Design System → [`DESIGN-SYSTEM.md`](./DESIGN-SYSTEM.md).*
+*Pregunta guía: ¿Qué necesita un cliente para pagar por Dakinis este mes?*  
+*Narrativa TEMP → [`DAKINIS-SISTEMA-ACTUAL-TEMP.md`](./DAKINIS-SISTEMA-ACTUAL-TEMP.md).*
