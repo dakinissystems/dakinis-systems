@@ -146,3 +146,15 @@ CREATE TABLE IF NOT EXISTS dakinis_core_prod.platform_kv (
   value_json TEXT NOT NULL,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Cuota advisor / tenant-intelligence (Core API · search_path)
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.ai_usage (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  user_id TEXT,
+  usage_type TEXT NOT NULL DEFAULT 'advisor',
+  year_month TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_business_month
+  ON dakinis_core_prod.ai_usage (business_id, usage_type, year_month);

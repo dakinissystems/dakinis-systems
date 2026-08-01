@@ -95,6 +95,14 @@ Mirror write-through: `POST /akoenet/servers/:serverId/levels/mirror` (Internal)
 
 Requiere schema `akoenet` (006) + Assistant (032â€“033).
 
+## Fase F++ â€” Core AI usage (055)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 55 | [`055_core_ai_usage.sql`](./055_core_ai_usage.sql) | â¬œ Â· `dakinis_core_prod.ai_usage` (cuota advisor / tenant-intelligence) |
+
+Sentry: `relation "ai_usage" does not exist` en Core API.
+
 ## Fase G â€” Security Advisor RLS + Media Player (034)
 
 | # | Archivo | Prod |
