@@ -1,5 +1,6 @@
 # Pilot checklist: create workspace invite + print accept URL.
 # Requires Internal API service key and an existing workspace id.
+# After accept (redeploy Internal): upserts core.tenant_memberships via workspace.core_tenant_slug.
 param(
     [Parameter(Mandatory = $true)]
     [string]$WorkspaceId,

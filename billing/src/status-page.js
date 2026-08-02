@@ -8,12 +8,19 @@ export function renderStatusPage({ service, title, phase, description, endpoints
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${title} — Dakinis Platform</title>
   <style>
-    :root { --bg:#08111d; --surface:#122840; --text:#f0f4f9; --muted:#b8c6d9; --accent:#2dd4bf; --line:#23415f; }
+    :root {
+      --bg: var(--dakinis-surface-0, #08111d);
+      --surface: var(--dakinis-surface-1, #122840);
+      --text: var(--dakinis-text, #f0f4f9);
+      --muted: var(--dakinis-muted, #b8c6d9);
+      --accent: var(--dakinis-accent, #2dd4bf);
+      --line: var(--dakinis-line, #23415f);
+    }
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); display: grid; place-items: center; padding: 1.5rem; }
-    main { max-width: 32rem; width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 1.5rem 1.75rem; }
+    body { margin: 0; min-height: 100vh; font-family: var(--dakinis-font-sans, Inter, system-ui, sans-serif); background: var(--bg); color: var(--text); display: grid; place-items: center; padding: 1.5rem; }
+    main { max-width: 32rem; width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: var(--dakinis-radius-card, 16px); padding: 1.5rem 1.75rem; }
     h1 { margin: 0 0 .25rem; font-size: 1.35rem; }
-    .badge { display: inline-block; margin-bottom: 1rem; padding: .2rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 600; background: rgba(45,212,191,.15); color: var(--accent); border: 1px solid rgba(45,212,191,.35); }
+    .badge { display: inline-block; margin-bottom: 1rem; padding: .2rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 600; background: var(--dakinis-accent-soft, rgba(45,212,191,.15)); color: var(--accent); border: 1px solid rgba(45,212,191,.35); }
     p { color: var(--muted); line-height: 1.5; margin: 0 0 1rem; }
     ul { margin: 0; padding-left: 1.15rem; color: var(--muted); }
     code { color: var(--accent); font-size: .9em; }

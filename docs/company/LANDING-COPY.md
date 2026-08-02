@@ -9,13 +9,15 @@
 
 **Headline (H1):**
 
-> Un sistema operativo para empresas modernas
+> Menos herramientas. Más negocio hecho.
 
 **Subheadline (canónica):**
 
-> Gestiona clientes, operaciones, facturación e inteligencia artificial desde un único lugar. **Empieza en tu Hub** y abre los productos que necesites — sin duplicar logins ni herramientas.
+> Una plataforma operativa modular: Hub, facturación e IA compartidos. **Empieza en tu Hub** y abre los productos que necesites — sin duplicar logins ni herramientas.
 
 **Frase refuerzo (opcional bajo hero):** *Todo vive en el Hub. Tu negocio comienza aquí.*
+
+*(Analogía “sistema operativo” solo en docs internos — no en H1 comercial.)*
 
 **CTA primario:** `Empezar gratis` → hub.dakinissystems.com o flujo registro  
 **CTA secundario:** `Descubrir Dakinis` o `Ver una demo` → ancla #como-funciona o demo Hub

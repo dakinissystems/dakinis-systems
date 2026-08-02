@@ -187,6 +187,18 @@ export async function removeWorkspaceMember(workspaceId, userId, actorId) {
   );
   if (!rows[0]) throw new Error("member_not_found");
 
+  // Drop Core tenancy for this workspace only (keep owner protected by SQL CASE above on accept).
+  await query(
+    `DELETE FROM core.tenant_memberships tm
+     USING core.tenants t, meta.workspaces w
+     WHERE tm.tenant_id = t.id
+       AND tm.user_id = $2::uuid
+       AND w.id = $1::uuid
+       AND lower(t.slug) = lower(coalesce(w.core_tenant_slug, w.slug))
+       AND lower(coalesce(tm.role, '')) <> 'owner'`,
+    [workspaceId, userId]
+  ).catch(() => {});
+
   await query(
     `SELECT meta.log_audit($1::uuid, 'workspace.member.removed', 'workspace_member', $2,
       jsonb_build_object('user_id', $3), '{}'::jsonb, $4::uuid, 'internal-api')`,

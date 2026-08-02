@@ -16,15 +16,14 @@
 }
 
 .dakinis-hub-product-icon--logo {
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--hub-icon-accent) 9%, transparent),
-    color-mix(in srgb, var(--hub-icon-accent-dark) 19%, transparent)
-  );
+  background: transparent;
+  border-color: color-mix(in srgb, var(--hub-icon-accent) 22%, transparent);
+  box-shadow: none;
 }
 
 .dakinis-hub-product-icon__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+  object-position: center;
 }

@@ -26,6 +26,14 @@
 - Billing: LiveCheckout unificado SA (probe 16 jul); E2E pago real pendiente
 - Secrets historial: akoenet `.env` purge + rotaciones; SA history scrub; Gitleaks `--log-opts=HEAD` en CI
 
+## Cierre ops 28 jul
+
+- Landing: Hub-first + `showcase/hub.png` en prod
+- Hub: fix `/login` (`Navigate` vs `navigate()` en render) · Mi día widgets ≥2 productos (seed/smoke)
+- Internal: invite accept → `core.tenant_memberships` (`ensureCoreTenantMembership`) en prod
+- StreamAutomator API: redeploy from-source (Railway)
+- LifeFlow: sin import Gmail (privacidad) ya en API/Web
+
 ## KPIs snapshot (jul, pre-slim STATUS)
 
 | Métrica | Valor (aprox.) |

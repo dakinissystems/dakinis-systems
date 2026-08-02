@@ -1,0 +1,85 @@
+{
+  "desVersion": "1.1.0",
+  "generatedAt": "2026-07-31T01:00:21.455Z",
+  "weights": {
+    "tokens": 30,
+    "shell": 20,
+    "components": 20,
+    "noLocalHexRoot": 10,
+    "themeEngine": 20
+  },
+  "results": [
+    {
+      "id": "hub",
+      "label": "Hub",
+      "score": 100,
+      "detail": {
+        "tokens": true,
+        "shell": true,
+        "components": true,
+        "noLocalHexRoot": true,
+        "themeEngine": true
+      }
+    },
+    {
+      "id": "core",
+      "label": "Dakinis One (Core)",
+      "score": 100,
+      "detail": {
+        "tokens": true,
+        "shell": true,
+        "components": true,
+        "noLocalHexRoot": true,
+        "themeEngine": true
+      }
+    },
+    {
+      "id": "lifeflow",
+      "label": "LifeFlow",
+      "score": 100,
+      "detail": {
+        "tokens": true,
+        "shell": true,
+        "components": true,
+        "noLocalHexRoot": true,
+        "themeEngine": true
+      }
+    },
+    {
+      "id": "landing",
+      "label": "Landing",
+      "score": 100,
+      "detail": {
+        "tokens": true,
+        "shell": true,
+        "components": true,
+        "noLocalHexRoot": true,
+        "themeEngine": true
+      }
+    },
+    {
+      "id": "akoenet",
+      "label": "AkoeNet",
+      "score": 100,
+      "detail": {
+        "tokens": true,
+        "shell": true,
+        "components": true,
+        "noLocalHexRoot": true,
+        "themeEngine": true
+      }
+    },
+    {
+      "id": "streamautomator",
+      "label": "StreamAutomator",
+      "score": 100,
+      "detail": {
+        "tokens": true,
+        "shell": true,
+        "components": true,
+        "noLocalHexRoot": true,
+        "themeEngine": true
+      }
+    }
+  ]
+}

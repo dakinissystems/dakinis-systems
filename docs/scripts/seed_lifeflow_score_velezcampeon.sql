@@ -1,4 +1,5 @@
 -- Seed LifeFlow score for Hub Mi dia widget (test user velezcampeon).
+-- Prefer full pilot seed (LifeFlow + Stream): seed_hub_mi_dia_widgets_velezcampeon.sql
 -- Run in Supabase SQL Editor after 030 app_user_links is healthy.
 
 INSERT INTO lifeflow.score_history (user_id, score, factors, recorded_at)

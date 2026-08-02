@@ -3,7 +3,9 @@
  */
 export const DES_COMPONENTS = {
   button: { status: "ready", package: "@dakinis/shared-ux", export: "Button" },
-  card: { status: "ready", package: "@dakinis/shared-ux", export: "DashboardCard" },
+  badge: { status: "ready", package: "@dakinis/shared-ux", export: "Badge" },
+  card: { status: "ready", package: "@dakinis/shared-ux", export: "Card" },
+  dashboardCard: { status: "ready", package: "@dakinis/shared-ux", export: "DashboardCard" },
   dialog: { status: "ready", package: "@dakinis/shared-ux", export: "Dialog" },
   input: { status: "ready", package: "@dakinis/shared-ux", export: "Input" },
   table: { status: "ready", package: "@dakinis/shared-ux", export: "Table" },
@@ -16,6 +18,9 @@ export const DES_COMPONENTS = {
   notifications: { status: "ready", package: "@dakinis/shared-ux", export: "react/NotificationsCenter.jsx" },
   commandPalette: { status: "ready", package: "@dakinis/shared-ux", export: "react/CommandPalette.jsx" },
   emptyState: { status: "ready", package: "@dakinis/shared-ux", export: "react/EmptyState.jsx" },
+  formPattern: { status: "ready", package: "@dakinis/shared-ux", export: "FormPattern" },
+  chatPattern: { status: "ready", package: "@dakinis/shared-ux", export: "ChatPattern" },
+  dashboardPattern: { status: "ready", package: "@dakinis/shared-ux", export: "DashboardPattern" },
 };
 
 export const DES_COMPONENT_CATEGORIES = ["actions", "data", "navigation", "feedback", "ai"];

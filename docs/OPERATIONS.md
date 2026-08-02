@@ -79,7 +79,9 @@ Workers (crear/redeploy) → [`RUNBOOKS/railway-workers.md`](./RUNBOOKS/railway-
 | StreamAutomator | `https://api.streamautomator.com/api/health` |
 | LifeFlow API | `https://finance-api.dakinissystems.com/health` |
 
-Smokes: `.\scripts\smoke-prod-suite.ps1` · `smoke-billing.ps1` · `smoke-hub.ps1` · `smoke-knowledge.ps1` · `smoke-ai.ps1`.
+Smokes: `.\scripts\smoke-prod-suite.ps1` · `smoke-billing.ps1` · `smoke-hub.ps1` (asserts `stub=false` + widgets ≥2 productos) · `smoke-knowledge.ps1` · `smoke-ai.ps1`.
+
+Hub Mi día seed (piloto): [`docs/scripts/seed_hub_mi_dia_widgets_velezcampeon.sql`](./scripts/seed_hub_mi_dia_widgets_velezcampeon.sql) — LifeFlow score + Stream programado/automatización (+ XP AkoeNet si hay server).
 
 ---
 
@@ -165,4 +167,5 @@ Antes de push Hub: `.\scripts\sync-hub-des.ps1`.
 
 ---
 
-*Actualizar al cerrar tareas de deploy o cambiar secrets en Railway/Supabase.*
+*Actualizar al cerrar tareas de deploy o cambiar secrets en Railway/Supabase.*  
+*Última nota ops: 28 jul 2026 — redeploy Hub · Landing · Internal API (invite→Core) · StreamAutomator API. Estado vivo → [`STATUS.md`](./STATUS.md).*

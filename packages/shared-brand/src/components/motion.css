@@ -1,0 +1,63 @@
+/* DES motion utilities — prefer tokens; honor prefers-reduced-motion */
+
+@keyframes dakinis-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes dakinis-slide-in {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes dakinis-skeleton {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+
+.dakinis-motion-fade-in {
+  animation: dakinis-fade-in var(--dakinis-motion-dropdown, 200ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+.dakinis-motion-slide-in {
+  animation: dakinis-slide-in var(--dakinis-motion-modal, 250ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+.dakinis-motion-skeleton {
+  animation: dakinis-skeleton 1.2s ease-in-out infinite;
+}
+
+.dakinis-motion-hover {
+  transition:
+    transform var(--dakinis-motion-hover, 150ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1)),
+    box-shadow var(--dakinis-motion-hover, 150ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1)),
+    border-color var(--dakinis-motion-hover, 150ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1)),
+    background var(--dakinis-motion-hover, 150ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1));
+}
+.dakinis-motion-hover:hover {
+  transform: scale(var(--dakinis-hover-scale, 1.02));
+}
+
+.dakinis-motion-dropdown {
+  transition:
+    opacity var(--dakinis-motion-dropdown, 200ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--dakinis-motion-dropdown, 200ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+.dakinis-motion-modal {
+  transition:
+    opacity var(--dakinis-motion-modal, 250ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1)),
+    transform var(--dakinis-motion-modal, 250ms) var(--dakinis-ease, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dakinis-motion-fade-in,
+  .dakinis-motion-slide-in,
+  .dakinis-motion-skeleton {
+    animation: none;
+  }
+  .dakinis-motion-hover,
+  .dakinis-motion-hover:hover,
+  .dakinis-motion-dropdown,
+  .dakinis-motion-modal,
+  .dakinis-card:hover {
+    transition: none;
+    transform: none;
+  }
+}

@@ -1,5 +1,6 @@
 import { getEmptyState } from "../empty-states.js";
 import { getIllustration, ILLUSTRATION_KEYS } from "../../../shared-illustrations/src/index.js";
+import Button from "./Button.jsx";
 
 /**
  * Estado vacío Dakinis — ilustración + copy emocional + CTAs.
@@ -38,14 +39,14 @@ export default function EmptyState({
       {(primaryLabel || secondaryLabel) && (
         <div className="dakinis-empty-state__actions">
           {primaryLabel ? (
-            <button type="button" className="btn" onClick={onPrimary}>
+            <Button type="button" variant="primary" onClick={onPrimary}>
               {primaryLabel}
-            </button>
+            </Button>
           ) : null}
           {secondaryLabel ? (
-            <button type="button" className="btn btn-outline" onClick={onSecondary}>
+            <Button type="button" variant="ghost" onClick={onSecondary}>
               {secondaryLabel}
-            </button>
+            </Button>
           ) : null}
         </div>
       )}

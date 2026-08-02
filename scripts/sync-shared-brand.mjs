@@ -1,6 +1,6 @@
 /**
- * Sincroniza packages/shared-brand (fuente) → landing y core vendoreados.
- * Uso desde raíz control repo: node scripts/sync-shared-brand.mjs
+ * Sync design-system packages into app vendors.
+ * Canonical: shared-foundation, shared-theme, shared-brand (facade + catalog).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -8,13 +8,22 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const src = path.join(root, "packages", "shared-brand");
+const packagesRoot = path.join(root, "packages");
 
-const targets = [
-  path.join(root, "apps", "landing", "packages", "shared-brand"),
-  path.join(root, "platform", "core", "packages", "shared-brand"),
-  path.join(root, "finanzas", "packages", "shared-brand"),
-  path.join(root, "hub", "packages", "shared-brand"),
+const PACKAGE_NAMES = [
+  "shared-foundation",
+  "shared-theme",
+  "shared-brand",
+  "shared-layouts",
+  "shared-ux",
+];
+
+const appRoots = [
+  path.join(root, "apps", "landing"),
+  path.join(root, "platform", "core"),
+  path.join(root, "finanzas"),
+  path.join(root, "hub"),
+  path.join(root, "apps", "akoenet", "Client"),
 ];
 
 function copyRecursive(from, to) {
@@ -28,26 +37,51 @@ function copyRecursive(from, to) {
   }
 }
 
-if (!fs.existsSync(src)) {
-  console.error("No se encontró fuente:", src);
-  process.exit(1);
+/** Refresh brand-local CSS mirrors from foundation/theme (self-contained tokens.css). */
+function mirrorCssIntoBrand() {
+  const brand = path.join(packagesRoot, "shared-brand", "src");
+  const foundation = path.join(packagesRoot, "shared-foundation", "src");
+  const theme = path.join(packagesRoot, "shared-theme", "src");
+  fs.mkdirSync(path.join(brand, "foundation"), { recursive: true });
+  fs.mkdirSync(path.join(brand, "semantic"), { recursive: true });
+  fs.mkdirSync(path.join(brand, "products"), { recursive: true });
+  fs.copyFileSync(
+    path.join(foundation, "foundation", "tokens-base.css"),
+    path.join(brand, "foundation", "tokens-base.css")
+  );
+  for (const f of fs.readdirSync(path.join(theme, "semantic"))) {
+    fs.copyFileSync(path.join(theme, "semantic", f), path.join(brand, "semantic", f));
+  }
+  for (const f of fs.readdirSync(path.join(theme, "products"))) {
+    fs.copyFileSync(path.join(theme, "products", f), path.join(brand, "products", f));
+  }
+  console.log("OK: mirrored foundation/theme CSS → shared-brand");
 }
 
+mirrorCssIntoBrand();
+
 let ok = 0;
-for (const dest of targets) {
-  if (!fs.existsSync(path.dirname(dest))) {
-    console.warn("SKIP (no existe carpeta padre):", dest);
+for (const appRoot of appRoots) {
+  if (!fs.existsSync(appRoot)) {
+    console.warn("SKIP (no app):", appRoot);
     continue;
   }
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  copyRecursive(src, dest);
-  console.log("OK:", dest);
-  ok += 1;
+  const destPackages = path.join(appRoot, "packages");
+  for (const name of PACKAGE_NAMES) {
+    const src = path.join(packagesRoot, name);
+    const dest = path.join(destPackages, name);
+    if (!fs.existsSync(src)) {
+      console.warn("SKIP missing source:", src);
+      continue;
+    }
+    copyRecursive(src, dest);
+    console.log("OK:", dest);
+    ok += 1;
+  }
 }
 
 if (ok === 0) {
-  console.error("Ningún destino sincronizado. ¿Tienes apps/landing y platform/core clonados?");
+  console.error("Ningún destino sincronizado.");
   process.exit(1);
 }
-
-console.log(`Sincronizado shared-brand → ${ok} destino(s).`);
+console.log(`Sincronizados ${ok} package-destinos (foundation + theme + brand + layouts + ux).`);
