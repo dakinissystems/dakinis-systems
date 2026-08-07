@@ -34,7 +34,7 @@
 | Delivery Channel Bus + Registry + idempotencia | 🟢 (Glovo/Uber = stubs partner) |
 | Caja: dinero inicio de día (localStorage) | 🟢 |
 | i18n: sin claves `ns.key` en UI | 🟢 |
-| Docs arquitectura por dominios | 🟢 (PR docs → `main`) |
+| Docs arquitectura por dominios | 🟢 en `main` |
 | CRM API v1 + migración `057` | 🟢 SQL prod ✅ · API en prod |
 | Migraciones `055` / `056` / `057` | ✅ aplicadas en Supabase prod |
 | System Health unificado | ⬜ diseño |
@@ -43,7 +43,7 @@
 
 Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/changelog/hospitality-2026-08.md).
 
-**Shipped:** Core `feat/restaurant-stock-ops-alerts` → `main` (ago 2026). Docs branch pendiente de PR (branch protegida).
+**Shipped (ago 2026):** Core hospitality → `main` + Railway · Docs ADRs/STATUS → `main` · SA security + `getPlatform` redeploy.
 
 ---
 
@@ -53,7 +53,7 @@ Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/c
 |------|--------|
 | Merge / redeploy Core hospitality + CRM | ✅ |
 | Migraciones `055`/`056`/`057` Supabase prod | ✅ |
-| Merge docs ADRs / STATUS → `main` (PR) | 🔄 |
+| Merge docs ADRs / STATUS → `main` | ✅ |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
 | Invite piloto + demo Copérnico | ⬜ ops |
 | Redeploy SA API (`getPlatform` + security) | ✅ Railway |
