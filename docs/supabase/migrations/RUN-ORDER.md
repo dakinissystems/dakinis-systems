@@ -64,9 +64,9 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · contrato [`akoenet-
 
 | # | Archivo | Prod |
 |---|---------|------|
-| 55 | [`055_core_ai_usage.sql`](./055_core_ai_usage.sql) | ⬜ (`ai_usage` — Sentry si falta) |
-| 56 | [`056_dakinis_core_rls_deny_policies.sql`](./056_dakinis_core_rls_deny_policies.sql) | ⬜ confirmar |
-| 57 | [`057_tenant_crm_core.sql`](./057_tenant_crm_core.sql) | ⬜ CRM tenant — confirmar prod |
+| 55 | [`055_core_ai_usage.sql`](./055_core_ai_usage.sql) | ✅ (`ai_usage`) |
+| 56 | [`056_dakinis_core_rls_deny_policies.sql`](./056_dakinis_core_rls_deny_policies.sql) | ✅ |
+| 57 | [`057_tenant_crm_core.sql`](./057_tenant_crm_core.sql) | ✅ CRM tenant |
 
 ## Fase G–L (034–049) — resumen
 

@@ -17,7 +17,7 @@
 |------|-------|------------|
 | Billing | 80% | E2E live sin cliente real |
 | Hub | 90% | Screenshot landing · widgets con datos reales |
-| Core | 90% | Piloto hospitality · confirmar CRM `057` en prod |
+| Core | 90% | Piloto hospitality · merge/redeploy Channel Bus + CRM |
 | AI | 95% | Costes / cuotas por workspace |
 | Support / ops | 99% | UptimeRobot OK · ver [`OPERATIONS.md`](./OPERATIONS.md) |
 | Security | 99% | Gitleaks · CF RL · [`SECURITY.md`](./SECURITY.md) |
@@ -26,23 +26,24 @@
 
 ---
 
-## Core / Hospitality (código en branch)
+## Core / Hospitality
 
 | Ítem | Estado |
 |------|--------|
-| Shell por tareas + TPV | 🟢 en branch Core |
-| Delivery Channel Bus + Registry + idempotencia | 🟢 en branch (Glovo/Uber = stubs partner) |
-| Caja: dinero inicio de día (localStorage) | 🟢 en branch |
-| i18n: sin claves `ns.key` en UI | 🟢 en branch |
+| Shell por tareas + TPV | 🟢 código listo (merge → `main`) |
+| Delivery Channel Bus + Registry + idempotencia | 🟢 (Glovo/Uber = stubs partner) |
+| Caja: dinero inicio de día (localStorage) | 🟢 |
+| i18n: sin claves `ns.key` en UI | 🟢 |
 | Docs arquitectura por dominios | 🟢 |
-| CRM API v1 + migración `057` | 🟡 confirmar SQL en prod |
+| CRM API v1 + migración `057` | 🟢 SQL prod ✅ · código en merge |
+| Migraciones `055` / `056` / `057` | ✅ aplicadas en Supabase prod |
 | System Health unificado | ⬜ diseño |
 | SSE/WS pulse | ⬜ roadmap |
 | Glovo/Uber API partner real | ⬜ stubs |
 
 Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/changelog/hospitality-2026-08.md).
 
-**Branches de trabajo:** Core `feat/restaurant-stock-ops-alerts` · Docs `chore/ops-alert-env-and-ai-usage` (no sustituyen `main` hasta merge).
+**Branches:** Core `feat/restaurant-stock-ops-alerts` · Docs `chore/ops-alert-env-and-ai-usage` → merge a `main` en curso.
 
 ---
 
@@ -50,8 +51,8 @@ Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/c
 
 | Ítem | Estado |
 |------|--------|
-| Merge / redeploy Core hospitality + CRM | ⬜ |
-| Confirmar `057` (y `055`/`056` si aplica) en Supabase prod | ⬜ |
+| Merge / redeploy Core hospitality + CRM | 🔄 en curso |
+| Migraciones `055`/`056`/`057` Supabase prod | ✅ |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
 | Invite piloto + demo Copérnico | ⬜ ops |
 | Redeploy SA API (`getPlatform` en `main`) | ⬜ Railway |
@@ -76,14 +77,14 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 | Knowledge | 🟠 | Ingest masivo |
 | AI | 🟢 | Costes / workspace |
 | Internal API | 🟡 | — |
-| Core | 🟡 | Merge hospitality · CRM `057` prod |
+| Core | 🟡 | Redeploy hospitality + Channel Bus |
 | LifeFlow | 🟢 | SQLite → PG (parcial) |
 | AkoeNet | 🟡 | Módulos Assistant (scaffolds ≠ todos live) |
 | StreamAutomator | 🟡 | Redeploy |
 | Tabletop | 🟠 | SQLite → Supabase |
 | Landing | 🟢 | Screenshot Hub real |
 
-**Supabase prod:** ver flags en [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md). No asumir migraciones de branch como aplicadas.
+**Supabase prod:** ver flags en [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md). `055`/`056`/`057` ✅ (ago 2026).
 
 ---
 
