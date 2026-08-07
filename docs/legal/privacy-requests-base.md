@@ -10,13 +10,13 @@
 
 **Formulario (AkoeNet):** https://akoenet.dakinissystems.com/legal/privacidad-solicitudes
 
-> Ruta EN: https://akoenet.dakinissystems.com/legal/privacy-requests · Legacy `/legal/dpo` redirige al canal de solicitudes.
+> Ruta EN: https://akoenet.dakinissystems.com/legal/privacy-requests ï¿½ Legacy `/legal/dpo` redirige al canal de solicitudes.
 
 ## Derechos que puedes ejercer
 
 - Acceso
 - Rectificacion
-- Supresion («derecho al olvido»)
+- Supresion (ï¿½derecho al olvidoï¿½)
 - Oposicion
 - Limitacion del tratamiento
 - Portabilidad (copia en formato estructurado y de uso habitual)

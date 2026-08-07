@@ -1,35 +1,35 @@
-# Flujos legales — referencia rápida
+# Flujos legales ï¿½ referencia rï¿½pida
 
-> Código: `apps/akoenet/Server/src/routes/{dpo,dmca}.routes.js`, `lib/legal-mail.js`, UI `Client/src/pages/DpoPage.jsx` (canal «Privacy requests»; la API sigue en `/dpo/*`).
+> Cï¿½digo: `apps/akoenet/Server/src/routes/{dpo,dmca}.routes.js`, `lib/legal-mail.js`, UI `Client/src/pages/DpoPage.jsx` (canal ï¿½Privacy requestsï¿½; la API sigue en `/dpo/*`).
 
-## Solicitudes de privacidad (RGPD) — AkoeNet
+## Solicitudes de privacidad (RGPD) ï¿½ AkoeNet
 
 ```
 Usuario ? /legal/privacy-requests | /legal/privacidad-solicitudes
        ? DpoPage (GET /dpo/contact, POST /dpo/message)
        ? INSERT dpo_requests
-       ? Resend: copia operador + confirmación usuario
-       ? Consulta estado: GET /dpo/request/:id?email=…
+       ? Resend: copia operador + confirmaciï¿½n usuario
+       ? Consulta estado: GET /dpo/request/:id?email=ï¿½
 ```
 
-- **Rutas públicas UI:** `/legal/privacy-requests` (EN), `/legal/privacidad-solicitudes` (ES)
+- **Rutas pï¿½blicas UI:** `/legal/privacy-requests` (EN), `/legal/privacidad-solicitudes` (ES)
 - **Legacy:** `/legal/dpo` redirige a `/legal/privacy-requests`
 - **API:** `/dpo/*` y alias `/privacy-requests/*` (mismo router)
 - **Email operador (privacy):** `LEGAL_INBOX_EMAIL` / `PRIVACY_INBOX_EMAIL` ? default `privacy@dakinissystems.com` (Cloudflare ? Gmail)
 - **Email operador (DMCA):** `DMCA_NOTIFY_EMAIL` ? default `legal@dakinissystems.com`
 - **Remitente Resend:** `akonet@streamautomator.com`
-- **Sin DPO designado:** canal «Privacy Requests» / «Solicitudes de privacidad»; no usar «DPO» en UI pública
+- **Sin DPO designado:** canal ï¿½Privacy Requestsï¿½ / ï¿½Solicitudes de privacidadï¿½; no usar ï¿½DPOï¿½ en UI pï¿½blica
 
-## Copyright / DMCA — AkoeNet
+## Copyright / DMCA ï¿½ AkoeNet
 
 ```
 Usuario ? /legal/dmca
        ? POST /dmca/takedown
        ? INSERT dmca_takedowns
-       ? Resend: equipo (getDmcaNotifyRecipients) + confirmación reclamante
+       ? Resend: equipo (getDmcaNotifyRecipients) + confirmaciï¿½n reclamante
 ```
 
-## Documentos estáticos — AkoeNet
+## Documentos estï¿½ticos ï¿½ AkoeNet
 
 ```
 /legal/:slug ? LegalDocPage (importa apps/akoenet/Client/docs/legal/*.md)
@@ -46,16 +46,16 @@ Textos en `platform/core/web/src/locales/legal-core.js` ? rutas `/privacy`, `/te
 - Live: `apps/web/src/pages/{Privacy,Terms,Cookies,LegalNotice}.js` (`/privacy`, `/terms`, `/cookies`, `/legal-notice`)
 - Markdown de referencia: `apps/streamautomator/docs/legal/` (ES + EN)
 
-## Canales de publicación (sin sync automático)
+## Canales de publicaciï¿½n (sin sync automï¿½tico)
 
-| Canal | Ubicación |
+| Canal | Ubicaciï¿½n |
 |-------|-----------|
 | Corpus corporativo | `docs/legal/*-base*` + `company.json` |
 | Core | `platform/core/web/src/locales/legal-core.js` |
 | AkoeNet | `apps/akoenet/Client/docs/legal/*.md` + formularios |
 | StreamAutomator | JSX live + `apps/streamautomator/docs/legal/` |
 
-Tras editar políticas, actualizar **los cuatro canales** (o el producto afectado) y la fecha. Identidad de marca: `company.json` ? `packages/shared-brand` vía `node scripts/sync-shared-brand.mjs` (no copia textos legales completos).
+Tras editar polï¿½ticas, actualizar **los cuatro canales** (o el producto afectado) y la fecha. Identidad de marca: `company.json` ? `packages/shared-brand` vï¿½a `node scripts/sync-shared-brand.mjs` (no copia textos legales completos).
 
 ## Fuente de verdad titular
 

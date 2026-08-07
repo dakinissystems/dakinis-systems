@@ -23,7 +23,10 @@ jobs:
             echo "::warning::BACKUP_DATABASE_URL not set. Use scripts/backup-postgres.ps1 locally."
             exit 0
           fi
-          pg_dump "$DATABASE_URL" --no-owner --no-acl | gzip > backup.sql.gz
+          # Prefer session pooler (IPv4) over direct db.*.supabase.co (often IPv6-only)
+          DUMP_URL="$(node scripts/pg-dump-compatible-url.mjs)"
+          node scripts/pg-dump-compatible-url.mjs --summary
+          pg_dump "$DUMP_URL" --no-owner --no-acl | gzip > backup.sql.gz
           ls -lh backup.sql.gz
 
       - uses: actions/upload-artifact@v4

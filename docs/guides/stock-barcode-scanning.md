@@ -17,20 +17,22 @@ Cómo Dakinis One lee códigos de barras / QR para **inventario y stock de cocin
 
 Los tres modos **normalizan** el código y llaman al mismo `onScan(code)`. En stock, eso dispara alta, entrada o salida.
 
-No se usa la API nativa `BarcodeDetector` ni `html5-qrcode`.
+No se usa la API nativa `BarcodeDetector` ni `html5-qrcode`. ZXing en vivo queda como mejora futura; ahora se prioriza un flujo Quagga estable.
 
 ---
 
-## Normalización y resolución
+## Normalización y validación
 
 1. **Normalizar:** trim, mayúsculas, quitar espacios (`dakinisNormalizeScanReading` / `dakinisNormalizeStockScanCode`).
-2. **Plausibilidad (front):** longitud mínima ~4; patrones numéricos típicos EAN/UPC.
-3. **Resolver a insumo:** `dakinisResolveStockItemSlug` busca coincidencia por:
+2. **Plausibilidad (front):** longitud mínima **8**; numéricos solo 8 / 12 / 13 / 14.
+3. **Checksum GTIN:** EAN-8, UPC-A, EAN-13 y GTIN-14 deben pasar dígito de control (`dakinisIsValidGtinChecksum`). Code128 puede omitirlo (códigos internos).
+4. **Resolver a insumo:** `dakinisResolveStockItemSlug` busca coincidencia por:
    - slug `bc-{codigo}`
    - barcode guardado en `config.stockBarcodes`
    - aliases: slug, `DK-{slug}`, etc.
 
-Códigos nuevos se persisten en `business.config_json.stockBarcodes` (mapa slug → barcode).
+Códigos nuevos se persisten en `business.config_json.stockBarcodes` (mapa slug → barcode).  
+Los códigos demo por slug son **EAN-13 con checksum válido** (`dakinisStockDemoBarcode`).
 
 ---
 
@@ -40,11 +42,20 @@ Códigos nuevos se persisten en `business.config_json.stockBarcodes` (mapa slug 
 
 1. Usuario pulsa **Iniciar cámara**.
 2. El navegador pide permiso; se usa cámara trasera si existe (`facingMode: environment`).
-3. Quagga2 analiza el stream 1D (EAN, UPC, Code128, Code39, Codabar, I2of5).
-4. Solo se confirma tras lecturas estables (varias detecciones en ~500 ms) y cooldown (~3,5 s) para no duplicar.
-5. Código confirmado → `onScan`.
+3. Se aplican, si el dispositivo lo permite: **autofocus continuo**, **zoom** ligero y **torch** (trasera).
+4. Quagga2 analiza ~**10 FPS** solo la **ROI central** (~18–22 % de margen), con `patchSize: large` y readers limitados (`ean`, `ean_8`, `upc`, `code_128`).
+5. Cada detección parcial se **ignora en la UI**. Solo se confirma tras:
+   - longitud / checksum OK
+   - **≥4 votos** del mismo código en ~700 ms (mapa de votos; el líder debe ganar claro)
+   - **estabilidad espacial** (el centro del box no salta demasiado)
+6. Confirmado → vibración corta → `onScan` → cooldown **~1 s** (no 3,5 s).
+7. React **no** hace `setState` con lecturas intermedias: el campo muestra “Buscando…” hasta el código confirmado.
 
-Se puede **voltear** cámara (frontal / trasera) sin salir del flujo.
+Se puede **voltear** cámara (frontal / trasera) sin salir del flujo. Quagga usa workers (`numOfWorkers`) cuando hay CPU suficiente.
+
+### Por qué no se muestran parciales
+
+Quagga puede devolver `97884` → `9788412` → … → `9788412345678` frame a frame. Eso **no** debe pintar el input: solo el consenso validado.
 
 ### Requisitos
 
@@ -67,7 +78,7 @@ Se puede **voltear** cámara (frontal / trasera) sin salir del flujo.
 1. Usuario elige **imagen** (`accept="image/*"`; en móvil puede abrir cámara con `capture`).
 2. FileReader → data URL.
 3. Decode en cascada:
-   - Quagga multi-config (y reescalados 1200/800 px)
+   - Quagga multi-config (y reescalados 1200/800 px), readers algo más amplios
    - Si falla → ZXing `BrowserMultiFormatReader` (incluye **QR**)
 4. Hit → `onScan`; miss → mensaje de error de imagen.
 
@@ -100,7 +111,8 @@ Los lectores USB suelen comportarse como **teclado**: teclean el código a gran 
 - Agrupa pulsaciones rápidas (gap ≤ ~120 ms).
 - Termina con Enter/Tab o pausa corta (~180 ms).
 - Ignora tecleo normal en inputs (salvo el campo wedge).
-- Cooldown ~800 ms entre lecturas.
+- Longitud mínima **8**; cooldown ~800 ms entre lecturas.
+- Checksum no es obligatorio (el hardware ya envía el código completo).
 
 ### Requisitos de hardware / puesto
 
@@ -167,6 +179,7 @@ En el panel de lotes, el mismo componente puede:
 │  Quagga     │  │  Quagga+ZX  │  │  HID wedge       │
 └──────┬──────┘  └──────┬──────┘  └────────┬─────────┘
        │                │                   │
+       │   votos+checksum+ROI               │
        └────────────────┼───────────────────┘
                         ▼
               normalize + confirmCode
@@ -180,13 +193,34 @@ En el panel de lotes, el mismo componente puede:
 
 ---
 
+## Optimizaciones de cámara (checklist)
+
+| Mejora | Estado |
+|--------|--------|
+| No mostrar lecturas parciales | Sí — solo “Buscando…” / código confirmado |
+| Votos (mapa, ≥4) | Sí |
+| Longitud ≥ 8 + checksum EAN/UPC | Sí |
+| Readers limitados (live) | Sí — ean / ean8 / upc / code128 |
+| ROI central + guía UI | Sí |
+| ~10 FPS (`frequency`) | Sí |
+| `patchSize: large` | Sí |
+| Autofocus / zoom / torch | Sí (si el device lo soporta) |
+| Estabilidad espacial del box | Sí |
+| Cooldown ~1 s + vibración | Sí |
+| `setState` solo al confirmar | Sí |
+| Workers Quagga | Sí (`numOfWorkers`) |
+| ZXing Live (sustituir Quagga) | Pendiente / opcional |
+
+---
+
 ## Checklist operativo
 
 - [ ] Core en HTTPS (cámara)
 - [ ] Permiso de cámara en el navegador
 - [ ] Usuario admin del tenant (API de mutación)
 - [ ] Pistola en modo teclado + Enter
-- [ ] Probar los tres modos con el mismo EAN conocido
+- [ ] Probar los tres modos con el mismo EAN-13 válido conocido
+- [ ] En cocina con poca luz: comprobar torch (Android suele soportarlo mejor)
 
 ---
 

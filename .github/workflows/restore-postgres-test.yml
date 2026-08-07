@@ -27,7 +27,10 @@ jobs:
             echo "::warning::BACKUP_DATABASE_URL not set — skip restore test."
             exit 0
           fi
-          pg_dump "$DATABASE_URL" --no-owner --no-acl | gzip > backup.sql.gz
+          # GitHub Actions often lacks IPv6; rewrite db.*.supabase.co → session pooler :5432
+          DUMP_URL="$(node scripts/pg-dump-compatible-url.mjs)"
+          node scripts/pg-dump-compatible-url.mjs --summary
+          pg_dump "$DUMP_URL" --no-owner --no-acl | gzip > backup.sql.gz
           ls -lh backup.sql.gz
           docker run -d --name pg-restore-test \
             -e POSTGRES_PASSWORD=test \
