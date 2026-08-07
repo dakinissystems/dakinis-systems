@@ -15,6 +15,8 @@
 
 **Riesgo principal:** más features antes de validación comercial.
 
+**Límite:** este archivo es **plan**. Realidad comercial y técnica → [`STATUS.md`](./STATUS.md) (hoy: 0 clientes de pago).
+
 **No iniciar (hasta validar pago):** Marketplace · nuevos servicios Railway vacíos · features sin cliente.
 
 Migraciones Supabase y métricas técnicas → [`STATUS.md`](./STATUS.md) / Issues — no aquí.

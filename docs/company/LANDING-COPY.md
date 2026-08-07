@@ -1,7 +1,8 @@
-# Landing — borrador de copy (jul 2026)
+# Landing — borrador de copy (ago 2026)
 
-> Implementar en `dakinis-landing` · Mensaje base → [`MESSAGING.md`](./MESSAGING.md)  
-> **Un CTA principal.** Jerarquía: Dakinis Platform → Hub → Productos. Cliente nunca ve “Core”.
+> **Borrador** · no es la landing live ni STATUS. Implementar en `dakinis-landing`.  
+> Mensaje base → [`MESSAGING.md`](./MESSAGING.md) · realidad comercial → [`../STATUS.md`](../STATUS.md) (0 clientes de pago).  
+> **Un CTA principal.** Jerarquía: Dakinis Platform → Hub → Productos.
 
 ---
 

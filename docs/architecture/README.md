@@ -79,6 +79,8 @@ Los ADR **no** documentan incidentes del día (429, emails CRITICAL, etc.).
 
 ## Roadmap de plataforma (visión)
 
+> Qué está **vivo hoy** → [`../STATUS.md`](../STATUS.md). Esta sección es dirección, no checklist de prod.
+
 ```
 Fase actual     TPV · Delivery Channel Bus · CRM v1 · Caja inicio día · Shell por tareas
 Próxima         Printer real · Escandallo · KDS · Glovo partner · float de caja en servidor

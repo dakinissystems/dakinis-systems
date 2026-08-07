@@ -72,7 +72,7 @@ flowchart LR
 | Delivery / Channel Bus | [`domains/hospitality/delivery.md`](./domains/hospitality/delivery.md) |
 | CRM | [`domains/crm/overview.md`](./domains/crm/overview.md) |
 | Connectors SDK | [`architecture/connector-sdk.md`](./architecture/connector-sdk.md) |
-| System Health | [`architecture/system-health.md`](./architecture/system-health.md) |
+| System Health | [`architecture/system-health.md`](./architecture/system-health.md) ⬜ diseño |
 | Principios | [`architecture/principles.md`](./architecture/principles.md) |
 
 ### Login (SSO)

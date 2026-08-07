@@ -1,7 +1,7 @@
-# System Health — bounded context
+# System Health — bounded context (diseño)
 
-> Estado agregado de dependencias · ago 2026  
-> Índice → [`README.md`](./README.md)
+> **Estado:** ⬜ no es un servicio tenant unificado todavía → [`STATUS.md`](../STATUS.md)  
+> Hoy: health parcial de Delivery (`GET …/delivery/providers`) + dots de header. Índice → [`README.md`](./README.md)
 
 Todos los verticales necesitan saber si la impresora, WhatsApp, pagos o delivery están vivos. No se consulta ad-hoc desde cada módulo.
 

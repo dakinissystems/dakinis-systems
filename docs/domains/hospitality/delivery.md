@@ -34,11 +34,15 @@ api/src/modules/hospitality/
 
 ---
 
-## Resiliencia (obligatorio)
+## Resiliencia (contrato obligatorio)
+
+Requisitos del connector (declarados en Provider + cola):
 
 - Idempotencia `provider + external_order_id`
-- Retries exponenciales · timeouts · circuit breaker declarado · rate limit
+- Retries exponenciales · timeouts · circuit breaker **declarado** · rate limit
 - Health checks · telemetría · DLQ (`tenant_delivery_jobs.status = failed`)
+
+**Enforcement runtime** de timeout/CB en llamadas partner reales = roadmap (hoy stubs + cola SQL).
 
 ---
 

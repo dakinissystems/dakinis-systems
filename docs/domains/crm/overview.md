@@ -1,9 +1,12 @@
 # CRM Core
 
 > Bounded context independiente · ago 2026  
+> **Estado:** API + migración `057` en código · **prod SQL 🟡 confirmar** → [`STATUS.md`](../../STATUS.md)  
 > Índice arquitectura → [`../../architecture/README.md`](../../architecture/README.md)
 
 Hospitality puede **consumir** CRM. CRM **no** depende de Hospitality.
+
+Sin tablas provisionadas → `crmReady: false` / listas vacías (**no** 404). Timeline automático desde eventos hospitality = **objetivo**, no cableado aún.
 
 ---
 

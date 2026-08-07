@@ -17,7 +17,7 @@
 | **Este archivo** | Filosofía + networking en evento | Repo |
 | [`company/STRATEGY.md`](./company/STRATEGY.md) | Competencia · FODA · posicionamiento | Repo |
 | [`company/MESSAGING.md`](./company/MESSAGING.md) | Jerarquía Hub · productos | Repo |
-| [`company/sales/README.md`](./company/sales/README.md) | Índice del kit GTM | Repo (stub) |
+| [`company/sales/README.md`](./company/sales/README.md) | Índice del kit GTM | Repo (mapa; fichas locales pueden estar gitignored) |
 | `sales/DEMO.md` … `OBJECTIONS.md` | Demo, ICP, CRM, objeciones | **Local** (gitignore) |
 | `sales/STRATEGY.md` | Hipótesis de validación GTM | **Local** — no sustituye `company/STRATEGY.md` |
 

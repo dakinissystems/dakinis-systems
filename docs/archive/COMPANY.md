@@ -71,4 +71,4 @@ hello@ · help@ · billing@ · legal@ — ver `company.json`
 
 ---
 
-*Julio 2026 · [`ORGANIZATION.md`](./ORGANIZATION.md)*
+*Julio 2026 · organización → [`../company/`](../company/)*
