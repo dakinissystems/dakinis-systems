@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'dakinissystems/dakinis-systems'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: pg_dump to artifact
         env:
