@@ -1,7 +1,7 @@
 # Dakinis — Estado actual
 
-> **Fuente canónica de estado** · actualizar al cerrar hitos · julio 2026  
-> Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Plan → [`ROADMAP.md`](./ROADMAP.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
+> **Fuente canónica de estado** · actualizar al cerrar hitos · agosto 2026  
+> Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Dominios Core → [`architecture/README.md`](./architecture/README.md) · Plan → [`ROADMAP.md`](./ROADMAP.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
 
 **Leyenda madurez:** 🟢 Production · 🟡 Beta · 🟠 MVP · ⚪ Experimental
 
@@ -17,12 +17,28 @@
 |------|-------|------------|
 | Billing | 80% | E2E live sin cliente real |
 | Hub | 95% | Screenshot landing · widgets piloto |
-| Core | 90% | UX piloto restaurante |
+| Core | 90% | Piloto hospitality · CRM `057` en prod · Channel Bus |
 | AI | 100% | — |
 | Support / ops | 99% | UptimeRobot 7 monitores ✅ |
 | Security | 99% | Sin GHAS · Gitleaks · CF RL · [`SECURITY.md`](./SECURITY.md) |
 
 **Piloto comercial:** 🟡 1 cliente fijo gratis (Heladería Copérnico) · 0 de pago
+
+---
+
+## Core / Hospitality (ago 2026)
+
+| Ítem | Estado |
+|------|--------|
+| Shell por tareas + TPV | 🟢 |
+| Delivery Channel Bus + idempotencia + Registry | 🟢 |
+| CRM API v1 + migración `057` | 🟡 confirmar prod |
+| Docs arquitectura por dominios | 🟢 [`architecture/`](./architecture/) |
+| Glovo/Uber partner real | ⬜ stubs |
+| System Health unificado | ⬜ |
+| SSE/WS pulse | ⬜ |
+
+Changelog técnico → [`architecture/changelog/hospitality-2026-08.md`](./architecture/changelog/hospitality-2026-08.md).
 
 ---
 
@@ -56,7 +72,7 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 | Knowledge | 🟠 | Ingest masivo |
 | AI | 🟢 | Costes/workspace |
 | Internal API | 🟡 | — |
-| Core | 🟡 | UX piloto |
+| Core | 🟡 | Hospitality Channel Bus · CRM `057` prod |
 | LifeFlow | 🟢 | SQLite → PG (parcial) |
 | AkoeNet | 🟡 | — |
 | StreamAutomator | 🟡 | Redeploy + React Doctor |

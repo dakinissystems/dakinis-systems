@@ -15,6 +15,12 @@ Registro de decisiones arquitectónicas Dakinis. Formato: **contexto → decisi�
 | [ADR-009](./ADR-009-railway-runtime.md) | Railway como runtime |
 | [ADR-010](./ADR-010-bullmq-event-bus.md) | BullMQ como bus de eventos |
 | [ADR-011](./ADR-011-internal-api-orchestration.md) | Internal API orquestador |
+| [ADR-012](./ADR-012-hospitality-shell.md) | Hospitality Shell vs dominio |
+| [ADR-013](./ADR-013-connectors.md) | Connectors / Channel Bus |
+| [ADR-014](./ADR-014-hospitality-event-bus.md) | Event Bus hospitality |
+| [ADR-015](./ADR-015-price-resolver.md) | PriceResolver strategy |
+
+Índice por dominios → [`../architecture/README.md`](../architecture/README.md)
 
 Plantilla para nuevos ADR:
 

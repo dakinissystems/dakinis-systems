@@ -9,7 +9,7 @@
 | Mes | Objetivo clave |
 |-----|----------------|
 | **Jul** | Billing E2E · SSO E2E · **primer piloto** Hub+Core |
-| **Ago** | Hub como escritorio · screenshot real en landing · **primer cliente de pago** |
+| **Ago** | Hub como escritorio · screenshot real en landing · **primer cliente de pago** · Core: Hospitality Channel Bus + CRM v1 |
 | **Sep** | Workspace Admin validado · LifeFlow → PostgreSQL · AkoeNet `@AI` prod |
 | **Q4** | Automatizaciones Hub · hire Full Stack · Marketplace **solo si clientes lo piden** |
 

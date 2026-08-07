@@ -1,6 +1,7 @@
 # Dakinis Systems — Arquitectura
 
-> **Estado vigente** · julio 2026 · decisiones de arquitectura y capas.  
+> **Estado vigente** · agosto 2026 · decisiones de arquitectura y capas.  
+> Dominios Core (Hospitality / CRM / Connectors) → [`architecture/README.md`](./architecture/README.md)  
 > Estado operativo → [`STATUS.md`](./STATUS.md) · Productos → [`archive/PRODUCTS.md`](./archive/PRODUCTS.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md)
 
 **¿Por qué estas decisiones?** → [`archive/WHY.md`](./archive/WHY.md) · ADRs → [`adr/`](./adr/)  
