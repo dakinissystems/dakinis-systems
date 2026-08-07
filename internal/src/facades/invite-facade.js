@@ -135,24 +135,10 @@ export async function acceptInviteViaFacade(token, input) {
       const traceId = input.ctx?.traceId ?? null;
       for (const event of events) {
         if (traceId) event.traceId = traceId;
-        if (event.type === "invite.accepted") {
-          await client
-            .query(
-              `SELECT meta.log_audit($1::uuid, 'workspace.member.accepted', 'workspace_member', $2,
-                jsonb_build_object('role', $3, 'invite_id', $4, 'trace_id', $5), '{}'::jsonb, $6::uuid, 'internal-api')`,
-              [
-                userId,
-                memberRows[0]?.id,
-                invite.role.value,
-                invite.id,
-                traceId,
-                invite.workspaceId.value,
-              ]
-            )
-            .catch(() => {});
-        }
       }
 
+      // Never .catch() a failed query inside the open TX — Postgres aborts the
+      // transaction and the next statement surfaces as "current transaction is aborted".
       const txQuery = (text, params) => client.query(text, params);
       await publishDomainEvents(outbox, events, txQuery);
 
@@ -160,11 +146,33 @@ export async function acceptInviteViaFacade(token, input) {
         member: memberRows[0] ?? null,
         workspaceId: invite.workspaceId.value,
         role: invite.role.value,
+        inviteId: String(invite.id),
+        traceId,
       };
     });
 
+    // Audit after COMMIT so a logging failure cannot poison the accept TX.
+    if (result.member?.id) {
+      await query(
+        `SELECT meta.log_audit($1::uuid, 'workspace.member.accepted', 'workspace_member', $2,
+          jsonb_build_object('role', $3, 'invite_id', $4, 'trace_id', $5), '{}'::jsonb, $6::uuid, 'internal-api')`,
+        [
+          userId,
+          result.member.id,
+          result.role,
+          result.inviteId,
+          result.traceId,
+          result.workspaceId,
+        ]
+      ).catch(() => {});
+    }
+
     await invalidateUserBffCache(userId).catch(() => {});
-    return result;
+    return {
+      member: result.member,
+      workspaceId: result.workspaceId,
+      role: result.role,
+    };
   } catch (err) {
     throw toServiceError(err);
   }
