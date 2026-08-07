@@ -46,6 +46,18 @@ Modo comercial: `?mode=comercial`. Operación: sesión autenticada.
 | **Operación** | Pedidos activos, health canales, cola/incidencias |
 | **Configuración** | Integraciones / tarifas (sin OAuth en cara del encargado) |
 
+## Caja
+
+- Resumen TPV: cobros, total, **dinero inicio de día**, efectivo esperado (inicio + cobros efectivo).
+- Persistencia local por negocio + fecha (`restaurantCashFloat.js`).
+- Cierre del día muestra las mismas cifras de fondo / esperado.
+
+## i18n (regla UX)
+
+- `t(key, fallback)` admite string de respaldo.
+- La UI **no** debe mostrar claves crudas tipo `fermina.viewPedido`.
+- Locales ES/EN alineados (`check-locales.mjs`).
+
 ---
 
 ## Pulse → realtime
@@ -74,7 +86,8 @@ Historial de fixes (429, reporter) → [`../../architecture/changelog/hospitalit
 |------|-----------|
 | Hits Ctrl+K con API real | Alta |
 | System Health real en header | Media |
-| Acciones contextuales mesa / caja turno | Media |
+| Acciones contextuales mesa | Media |
+| Abrir/cerrar caja según turno servidor (hoy float local) | Media |
 | Rename Hospitality* completo | Media |
 | KDS / escandallo / partner Glovo | Producto |
 | SSE/WS | Plataforma |

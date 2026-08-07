@@ -31,14 +31,18 @@
 | Ítem | Estado |
 |------|--------|
 | Shell por tareas + TPV | 🟢 |
-| Delivery Channel Bus + idempotencia + Registry | 🟢 |
-| CRM API v1 + migración `057` | 🟡 confirmar prod |
+| Delivery Channel Bus + idempotencia + Registry | 🟢 pushed `feat/restaurant-stock-ops-alerts` |
+| Caja: dinero inicio de día + efectivo esperado | 🟢 |
+| i18n: fallbacks (no claves `ns.key` en UI) | 🟢 |
 | Docs arquitectura por dominios | 🟢 [`architecture/`](./architecture/) |
+| CRM API v1 + migración `057` | 🟡 confirmar prod |
 | Glovo/Uber partner real | ⬜ stubs |
 | System Health unificado | ⬜ |
 | SSE/WS pulse | ⬜ |
 
 Changelog técnico → [`architecture/changelog/hospitality-2026-08.md`](./architecture/changelog/hospitality-2026-08.md).
+
+**Branches:** Core `feat/restaurant-stock-ops-alerts` · Docs `chore/ops-alert-env-and-ai-usage`.
 
 ---
 
@@ -72,7 +76,7 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 | Knowledge | 🟠 | Ingest masivo |
 | AI | 🟢 | Costes/workspace |
 | Internal API | 🟡 | — |
-| Core | 🟡 | Hospitality Channel Bus · CRM `057` prod |
+| Core | 🟡 | Channel Bus · Caja inicio día · CRM `057` prod |
 | LifeFlow | 🟢 | SQLite → PG (parcial) |
 | AkoeNet | 🟡 | — |
 | StreamAutomator | 🟡 | Redeploy + React Doctor |

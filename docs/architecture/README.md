@@ -80,7 +80,7 @@ Los ADR **no** documentan incidentes del día (429, emails CRITICAL, etc.).
 ## Roadmap de plataforma (visión)
 
 ```
-Fase actual     TPV · Delivery Channel Bus · CRM v1 · Shell por tareas
-Próxima         Printer real · Escandallo · KDS · Glovo partner
+Fase actual     TPV · Delivery Channel Bus · CRM v1 · Caja inicio día · Shell por tareas
+Próxima         Printer real · Escandallo · KDS · Glovo partner · float de caja en servidor
 Plataforma      Realtime (SSE→WS) · más Connectors · Analytics · Automation
 ```

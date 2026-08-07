@@ -20,4 +20,14 @@
 
 ## 2026-08-08 — Channel Bus / docs de dominio
 
-Promoción de notas TEMP a arquitectura canónica (`docs/architecture`, `docs/domains`, ADR-012…015). Sin cambio de decisión: formalización documental.
+Promoción de notas TEMP a arquitectura canónica (`docs/architecture`, `docs/domains`, ADR-012…015).  
+Código Core: Registry, idempotencia, `GET …/providers`, cola con estados, eventos, PriceResolver, PrintAdapter stub, QA providers.
+
+## 2026-08-08 — i18n + caja inicio de día
+
+| Síntoma / pedido | Causa / alcance | Fix |
+|------------------|-----------------|-----|
+| Botones con texto `fermina.viewPedido` / `ns.key` | `t(key, "fallback")` trataba el 2º arg como vars; claves ausentes devolvían la key | `LocaleContext`: fallback string + humanize; locales Delivery/Caja; bloque `restaurant` duplicado en `en.js` eliminado |
+| Falta dinero de apertura de caja | No había fondo de inicio | `RestaurantCajaTpvSummary` + cierre: inicio de día, efectivo esperado; `restaurantCashFloat.js` (localStorage por negocio/día) |
+
+Pushed: Core `feat/restaurant-stock-ops-alerts` · Docs `chore/ops-alert-env-and-ai-usage`.

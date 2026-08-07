@@ -67,6 +67,18 @@ Ver [ADR-015](../../adr/ADR-015-price-resolver.md).
 
 ---
 
+## UI Delivery
+
+| Vista | Contenido |
+|-------|-----------|
+| **Operación** | Pedidos activos · health agregado · cola/incidencias · simular |
+| **Configuración** | Enable integraciones · tarifas (PriceResolver) |
+
+Componente: `RestaurantDeliveryPanel.jsx` · alias `HospitalityDeliveryModule.jsx`  
+Deep-link: `?task=delivery`
+
+---
+
 ## Legal
 
 Glovo / Uber Eats / Just Eat: stubs hasta API partner. Manual + QA validan E2E sin incumplir ToS.
