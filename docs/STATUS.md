@@ -17,7 +17,7 @@
 |------|-------|------------|
 | Billing | 80% | E2E live sin cliente real |
 | Hub | 90% | Screenshot landing · widgets con datos reales |
-| Core | 90% | Piloto hospitality · merge/redeploy Channel Bus + CRM |
+| Core | 92% | Piloto hospitality Copérnico · Hub widgets |
 | AI | 95% | Costes / cuotas por workspace |
 | Support / ops | 99% | UptimeRobot OK · ver [`OPERATIONS.md`](./OPERATIONS.md) |
 | Security | 99% | Gitleaks · CF RL · [`SECURITY.md`](./SECURITY.md) |
@@ -30,12 +30,12 @@
 
 | Ítem | Estado |
 |------|--------|
-| Shell por tareas + TPV | 🟢 código listo (merge → `main`) |
+| Shell por tareas + TPV | 🟢 en `main` · redeployed |
 | Delivery Channel Bus + Registry + idempotencia | 🟢 (Glovo/Uber = stubs partner) |
 | Caja: dinero inicio de día (localStorage) | 🟢 |
 | i18n: sin claves `ns.key` en UI | 🟢 |
-| Docs arquitectura por dominios | 🟢 |
-| CRM API v1 + migración `057` | 🟢 SQL prod ✅ · código en merge |
+| Docs arquitectura por dominios | 🟢 (PR docs → `main`) |
+| CRM API v1 + migración `057` | 🟢 SQL prod ✅ · API en prod |
 | Migraciones `055` / `056` / `057` | ✅ aplicadas en Supabase prod |
 | System Health unificado | ⬜ diseño |
 | SSE/WS pulse | ⬜ roadmap |
@@ -43,7 +43,7 @@
 
 Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/changelog/hospitality-2026-08.md).
 
-**Branches:** Core `feat/restaurant-stock-ops-alerts` · Docs `chore/ops-alert-env-and-ai-usage` → merge a `main` en curso.
+**Shipped:** Core `feat/restaurant-stock-ops-alerts` → `main` (ago 2026). Docs branch pendiente de PR (branch protegida).
 
 ---
 
@@ -51,11 +51,12 @@ Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/c
 
 | Ítem | Estado |
 |------|--------|
-| Merge / redeploy Core hospitality + CRM | 🔄 en curso |
+| Merge / redeploy Core hospitality + CRM | ✅ |
 | Migraciones `055`/`056`/`057` Supabase prod | ✅ |
+| Merge docs ADRs / STATUS → `main` (PR) | 🔄 |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
 | Invite piloto + demo Copérnico | ⬜ ops |
-| Redeploy SA API (`getPlatform` en `main`) | ⬜ Railway |
+| Redeploy SA API (`getPlatform` + security) | ✅ Railway |
 | MFA Cloudflare (perfil) | ⬜ [`SECURITY.md`](./SECURITY.md) |
 
 Histórico jul → [`archive/CHANGELOG-ops-2026-07.md`](./archive/CHANGELOG-ops-2026-07.md).
@@ -77,10 +78,10 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 | Knowledge | 🟠 | Ingest masivo |
 | AI | 🟢 | Costes / workspace |
 | Internal API | 🟡 | — |
-| Core | 🟡 | Redeploy hospitality + Channel Bus |
+| Core | 🟡 | Piloto Copérnico · System Health |
 | LifeFlow | 🟢 | SQLite → PG (parcial) |
 | AkoeNet | 🟡 | Módulos Assistant (scaffolds ≠ todos live) |
-| StreamAutomator | 🟡 | Redeploy |
+| StreamAutomator | 🟡 | Dependabot / cuotas |
 | Tabletop | 🟠 | SQLite → Supabase |
 | Landing | 🟢 | Screenshot Hub real |
 
