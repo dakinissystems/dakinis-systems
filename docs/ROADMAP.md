@@ -1,6 +1,6 @@
 # Dakinis — Roadmap 2026
 
-> Julio 2026 · **Estado hoy** → [`STATUS.md`](./STATUS.md) · **Negocio** → [`company/STRATEGY.md`](./company/STRATEGY.md)
+> Agosto 2026 · **Estado hoy** → [`STATUS.md`](./STATUS.md) · **Negocio** → [`company/STRATEGY.md`](./company/STRATEGY.md) · **Arquitectura Core** → [`architecture/README.md`](./architecture/README.md)
 
 **Pregunta guía:** *¿Qué necesita un cliente para pagar por Dakinis este mes?*
 
@@ -9,11 +9,13 @@
 | Mes | Objetivo clave |
 |-----|----------------|
 | **Jul** | Billing E2E · SSO E2E · **primer piloto** Hub+Core |
-| **Ago** | Hub como escritorio · screenshot real en landing · **primer cliente de pago** |
+| **Ago** | Hub como escritorio · screenshot landing · **primer cliente de pago** · Core: Channel Bus + CRM v1 + Caja inicio día |
 | **Sep** | Workspace Admin validado · LifeFlow → PostgreSQL · AkoeNet `@AI` prod |
 | **Q4** | Automatizaciones Hub · hire Full Stack · Marketplace **solo si clientes lo piden** |
 
 **Riesgo principal:** más features antes de validación comercial.
+
+**Límite:** este archivo es **plan**. Realidad comercial y técnica → [`STATUS.md`](./STATUS.md) (hoy: 0 clientes de pago).
 
 **No iniciar (hasta validar pago):** Marketplace · nuevos servicios Railway vacíos · features sin cliente.
 

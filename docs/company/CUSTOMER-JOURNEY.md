@@ -1,7 +1,7 @@
 # Customer journey
 
 > **Guía de producto y GTM.** Entrada = **Hub** · Cliente nunca ve "Core".  
-> Ciclo workspace → [`../HUB-WORKSPACE.md`](../archive/HUB-WORKSPACE.md) · Estrategia → [`STRATEGY.md`](./STRATEGY.md)
+> Ciclo workspace (histórico) → [`../archive/HUB-WORKSPACE.md`](../archive/HUB-WORKSPACE.md) · Estrategia → [`STRATEGY.md`](./STRATEGY.md) · Estado → [`../STATUS.md`](../STATUS.md)
 
 **Regla:** Toda nueva funcionalidad debe preguntarse si mejora este recorrido. Si no → posponer hasta después del primer cliente piloto.
 

@@ -1,25 +1,27 @@
 # Canal de solicitudes de privacidad (RGPD)
 
-**Última actualización:** 19 mayo 2026
+**Ultima actualizacion:** 4 agosto 2026
 
-> **Nota:** No designamos delegado de protección de datos. Este canal es nuestro **contacto de privacidad** para ejercer derechos.
+> **Nota:** No designamos delegado de proteccion de datos. Este canal es nuestro **contacto de privacidad** para ejercer derechos.
 
 ## Contacto
 
 **Email:** privacy@dakinissystems.com
 
-**Formulario (AkoeNet):** https://akoenet.dakinissystems.com/legal/dpo
+**Formulario (AkoeNet):** https://akoenet.dakinissystems.com/legal/privacidad-solicitudes
+
+> Ruta EN: https://akoenet.dakinissystems.com/legal/privacy-requests ï¿½ Legacy `/legal/dpo` redirige al canal de solicitudes.
 
 ## Derechos que puedes ejercer
 
 - Acceso
-- Rectificación
-- Supresión («derecho al olvido»)
-- Oposición
-- Limitación del tratamiento
+- Rectificacion
+- Supresion (ï¿½derecho al olvidoï¿½)
+- Oposicion
+- Limitacion del tratamiento
 - Portabilidad (copia en formato estructurado y de uso habitual)
 
-## Cómo solicitarlo
+## Como solicitarlo
 
 1. Indica el derecho que ejerces y el producto (sitio corporativo, Dakinis One, AkoeNet, StreamAutomator, etc.).
 2. Facilita un email de contacto verificable.
@@ -27,8 +29,8 @@
 
 ## Plazos
 
-Respondemos en el plazo legal aplicable (habitualmente **un mes**, prorrogable según RGPD).
+Respondemos en el plazo legal aplicable (habitualmente **un mes**, prorrogable segun RGPD).
 
-## Reclamación ante la autoridad
+## Reclamacion ante la autoridad
 
-Tienes derecho a reclamar ante la **Agencia Española de Protección de Datos (AEPD)**: https://www.aepd.es
+Tienes derecho a reclamar ante la **Agencia Espanola de Proteccion de Datos (AEPD)**: https://www.aepd.es

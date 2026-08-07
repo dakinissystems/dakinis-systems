@@ -1,7 +1,8 @@
 # AkoeNet Assistant — Arquitectura modular
 
 > **Nota de producto** (Eng) · no es STATUS ni OPERATIONS.  
-> Mapa sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · SQL → [`032`](./supabase/migrations/032_akoenet_assistant_modules.sql) · [`033`](./supabase/migrations/033_akoenet_assistant_expansion.sql)  
+> **Visión vs shipped:** el árbol de módulos abajo es **diseño de producto**. Lo implementado está en «Componentes implementados» / handlers — muchos módulos son scaffold Fase 1.  
+> Estado → [`STATUS.md`](./STATUS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS.md) · SQL → [`032`](./supabase/migrations/032_akoenet_assistant_modules.sql) · [`033`](./supabase/migrations/033_akoenet_assistant_expansion.sql)  
 > Contrato → [`contracts/akoenet-assistant.json`](./contracts/akoenet-assistant.json)  
 > Setup histórico → [`archive/PLATFORM-SETUP-STEPS.md`](./archive/PLATFORM-SETUP-STEPS.md)
 

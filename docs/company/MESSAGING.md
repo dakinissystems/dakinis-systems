@@ -122,7 +122,7 @@ Alimenta Ctrl+K y copilot. Mismo peso narrativo que IA.
 | “Vendemos Core” | “Vendemos la plataforma; Dakinis One es el producto principal” |
 | Listar 40 módulos en landing | Un problema + 4 bullets |
 
-Detalle módulos → [`../PRODUCTS.md`](../archive/PRODUCTS.md) (post-login).
+Detalle módulos (post-login) → [`../SYSTEMS.md`](../SYSTEMS.md) · catálogo histórico → [`../archive/PRODUCTS.md`](../archive/PRODUCTS.md).
 
 ---
 

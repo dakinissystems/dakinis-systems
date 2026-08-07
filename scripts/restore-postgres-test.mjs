@@ -9,6 +9,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, existsSync, statSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { dumpCompatibleUrl, summarizeDatabaseUrl } from "./lib/pg-dump-url.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -37,19 +38,6 @@ function sleep(ms) {
   }
 }
 
-/** pg_dump cannot use transaction poolers (Supabase :6543?pgbouncer=true). */
-function dumpCompatibleUrl(raw) {
-  const u = new URL(raw);
-  u.searchParams.delete("pgbouncer");
-  if (u.port === "6543" || (u.hostname.includes("pooler") && !u.port)) {
-    u.port = "5432";
-  }
-  if (!u.searchParams.has("sslmode")) {
-    u.searchParams.set("sslmode", "require");
-  }
-  return u.toString();
-}
-
 const rawUrl = String(process.env.BACKUP_DATABASE_URL || process.env.DATABASE_URL || "").trim();
 if (!rawUrl) {
   console.error(
@@ -58,6 +46,10 @@ if (!rawUrl) {
   process.exit(1);
 }
 const databaseUrl = dumpCompatibleUrl(rawUrl);
+{
+  const s = summarizeDatabaseUrl(databaseUrl);
+  console.log(`[restore-test] dump target host=${s.host} port=${s.port} user=${s.user} ref=${s.ref}`);
+}
 if (!dockerReady()) {
   console.error("Docker engine not running. Start Docker Desktop and retry.");
   process.exit(1);

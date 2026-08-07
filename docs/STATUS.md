@@ -1,7 +1,7 @@
 # Dakinis — Estado actual
 
-> **Fuente canónica de estado** · actualizar al cerrar hitos · julio 2026  
-> Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Plan → [`ROADMAP.md`](./ROADMAP.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
+> **Fuente canónica de estado** · actualizar al cerrar hitos · **8 ago 2026**  
+> Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Dominios Core → [`architecture/README.md`](./architecture/README.md) · Plan → [`ROADMAP.md`](./ROADMAP.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
 
 **Leyenda madurez:** 🟢 Production · 🟡 Beta · 🟠 MVP · ⚪ Experimental
 
@@ -16,13 +16,34 @@
 | Área | Score | Bloqueador |
 |------|-------|------------|
 | Billing | 80% | E2E live sin cliente real |
-| Hub | 95% | Screenshot landing · widgets piloto |
-| Core | 90% | UX piloto restaurante |
-| AI | 100% | — |
-| Support / ops | 99% | UptimeRobot 7 monitores ✅ |
-| Security | 99% | Sin GHAS · Gitleaks · CF RL · [`SECURITY.md`](./SECURITY.md) |
+| Hub | 90% | Screenshot landing · widgets con datos reales |
+| Core | 92% | Piloto hospitality Copérnico · Hub widgets |
+| AI | 95% | Costes / cuotas por workspace |
+| Support / ops | 99% | UptimeRobot OK · ver [`OPERATIONS.md`](./OPERATIONS.md) |
+| Security | 99% | Gitleaks · CF RL · [`SECURITY.md`](./SECURITY.md) |
 
-**Piloto comercial:** 🟡 1 cliente fijo gratis (Heladería Copérnico) · 0 de pago
+**Piloto comercial:** 🟡 1 cliente fijo gratis (Heladería Copérnico) · **0 de pago**
+
+---
+
+## Core / Hospitality
+
+| Ítem | Estado |
+|------|--------|
+| Shell por tareas + TPV | 🟢 en `main` · redeployed |
+| Delivery Channel Bus + Registry + idempotencia | 🟢 (Glovo/Uber = stubs partner) |
+| Caja: dinero inicio de día (localStorage) | 🟢 |
+| i18n: sin claves `ns.key` en UI | 🟢 |
+| Docs arquitectura por dominios | 🟢 (PR docs → `main`) |
+| CRM API v1 + migración `057` | 🟢 SQL prod ✅ · API en prod |
+| Migraciones `055` / `056` / `057` | ✅ aplicadas en Supabase prod |
+| System Health unificado | ⬜ diseño |
+| SSE/WS pulse | ⬜ roadmap |
+| Glovo/Uber API partner real | ⬜ stubs |
+
+Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/changelog/hospitality-2026-08.md).
+
+**Shipped:** Core `feat/restaurant-stock-ops-alerts` → `main` (ago 2026). Docs branch pendiente de PR (branch protegida).
 
 ---
 
@@ -30,14 +51,15 @@
 
 | Ítem | Estado |
 |------|--------|
-| Redeploy SA API (`getPlatform` en `main`) | ⬜ confirmar Railway |
+| Merge / redeploy Core hospitality + CRM | ✅ |
+| Migraciones `055`/`056`/`057` Supabase prod | ✅ |
+| Merge docs ADRs / STATUS → `main` (PR) | 🔄 |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
-| Invite piloto + demo reunión Copérnico | ⬜ ops |
-| Dependabot / CodeQL repos restantes | 🟡 tabletop / search |
-| MFA Cloudflare (perfil) | ⬜ ver [`SECURITY.md`](./SECURITY.md) |
-| Supabase: cutover LifeFlow goals/tx · `015b` AkoeNet | diferido — Issues / ROADMAP |
+| Invite piloto + demo Copérnico | ⬜ ops |
+| Redeploy SA API (`getPlatform` + security) | ✅ Railway |
+| MFA Cloudflare (perfil) | ⬜ [`SECURITY.md`](./SECURITY.md) |
 
-Histórico jul (consola, PRs, KPIs densos) → [`archive/CHANGELOG-ops-2026-07.md`](./archive/CHANGELOG-ops-2026-07.md).
+Histórico jul → [`archive/CHANGELOG-ops-2026-07.md`](./archive/CHANGELOG-ops-2026-07.md).
 
 ---
 
@@ -49,21 +71,21 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 |----------|---------|-----------------|
 | Gateway | 🟢 | — |
 | Auth | 🟢 | — |
-| Hub | 🟡 | Mi día widgets piloto · screenshot |
+| Hub | 🟡 | Widgets datos reales · screenshot landing |
 | Billing | 🟡 | **E2E live** |
 | Notifications | 🟠 | Resend live · worker |
 | Search | 🟠 | Worker · pgvector |
 | Knowledge | 🟠 | Ingest masivo |
-| AI | 🟢 | Costes/workspace |
+| AI | 🟢 | Costes / workspace |
 | Internal API | 🟡 | — |
-| Core | 🟡 | UX piloto |
+| Core | 🟡 | Piloto Copérnico · System Health |
 | LifeFlow | 🟢 | SQLite → PG (parcial) |
-| AkoeNet | 🟡 | — |
-| StreamAutomator | 🟡 | Redeploy + React Doctor |
+| AkoeNet | 🟡 | Módulos Assistant (scaffolds ≠ todos live) |
+| StreamAutomator | 🟡 | Dependabot / cuotas |
 | Tabletop | 🟠 | SQLite → Supabase |
 | Landing | 🟢 | Screenshot Hub real |
 
-**Supabase prod:** fases A–H aplicadas (`000`–`036`, `048`–`054`, …). Orden → [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md).
+**Supabase prod:** ver flags en [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md). `055`/`056`/`057` ✅ (ago 2026).
 
 ---
 
@@ -83,10 +105,10 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 
 ### Hub SSO / Mi día
 
-- [x] SSO 3/3 productos (16 jul) · Mi día sin stub
+- [x] SSO productos · Mi día operativo (`stub=false` en smoke)
 - [ ] Widgets con datos reales ≥2 productos
 
-Smokes: `smoke-prod-suite.ps1` · `smoke-billing-e2e.ps1` · ver [`OPERATIONS.md`](./OPERATIONS.md).
+Smokes → [`OPERATIONS.md`](./OPERATIONS.md).
 
 ---
 
@@ -101,5 +123,5 @@ Smokes: `smoke-prod-suite.ps1` · `smoke-billing-e2e.ps1` · ver [`OPERATIONS.md
 
 ---
 
-*Última actualización: 25 jul 2026 (docs cleanup v1).*  
+*Última actualización: 8 ago 2026.*  
 *Pregunta guía: ¿Qué necesita un cliente para pagar por Dakinis este mes?*

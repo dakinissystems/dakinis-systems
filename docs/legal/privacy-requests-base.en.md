@@ -1,6 +1,6 @@
 # Privacy requests channel (GDPR)
 
-**Last updated:** 19 May 2026
+**Last updated:** 4 August 2026
 
 > **Note:** We do not appoint a data protection officer. This channel is our **privacy contact** for exercising your rights.
 
@@ -10,11 +10,13 @@
 
 **Form (AkoeNet):** https://akoenet.dakinissystems.com/legal/privacy-requests
 
+> ES form: https://akoenet.dakinissystems.com/legal/privacidad-solicitudes. Legacy `/legal/dpo` redirects to this channel.
+
 ## Rights you may exercise
 
 - Access
 - Rectification
-- Erasure («right to be forgotten»)
+- Erasure (right to be forgotten)
 - Objection
 - Restriction of processing
 - Data portability (copy in a structured, commonly used format)

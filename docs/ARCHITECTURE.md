@@ -1,10 +1,9 @@
 # Dakinis Systems — Arquitectura
 
-> **Estado vigente** · julio 2026 · decisiones de arquitectura y capas.  
-> Estado operativo → [`STATUS.md`](./STATUS.md) · Productos → [`archive/PRODUCTS.md`](./archive/PRODUCTS.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md)
-
-**¿Por qué estas decisiones?** → [`archive/WHY.md`](./archive/WHY.md) · ADRs → [`adr/`](./adr/)  
-**Estrategia / competencia** → [`company/STRATEGY.md`](./company/STRATEGY.md)
+> **Estado vigente** · agosto 2026 · decisiones de arquitectura y capas.  
+> **Estado operativo (qué está vivo):** [`STATUS.md`](./STATUS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS.md) · dominios Core → [`architecture/README.md`](./architecture/README.md)  
+> Ops → [`OPERATIONS.md`](./OPERATIONS.md) · ADRs → [`adr/`](./adr/) · estrategia → [`company/STRATEGY.md`](./company/STRATEGY.md)  
+> Histórico (no SoT): [`archive/`](./archive/)
 
 ---
 
@@ -174,7 +173,7 @@ flowchart TB
   MID --> INTAPI[Internal API]
 ```
 
-Identidad de **workspace** en `meta` — no en Core ni Billing. Detalle → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md).
+Identidad de **workspace** en `meta` — no en Core ni Billing. Diseño histórico → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md).
 
 ---
 
@@ -199,7 +198,7 @@ sequenceDiagram
   H-->>U: Tarjetas + acciones + launcher
 ```
 
-Sin migr. `016`–`029` en prod → `summary.stub: true`. Ver [`STATUS.md`](./STATUS.md).
+Hub Mi día operativo en prod (`stub=false` en smoke). Pendiente: widgets con datos reales ≥2 productos → [`STATUS.md`](./STATUS.md).
 
 ---
 
@@ -487,7 +486,7 @@ Vista [C4 Model](https://c4model.com/) nivel **contenedor**: quién habla con qu
 
 ```mermaid
 C4Container
-  title Dakinis Systems — contenedores (jul 2026)
+  title Dakinis Systems — contenedores (ago 2026)
 
   Person(user, "Usuario", "Owner o miembro del workspace PYME")
   Person(ops, "Equipo Dakinis", "Ops · super admin")
@@ -617,7 +616,7 @@ Los productos **consumen** capacidades vía Gateway o Internal API — no las re
 | Events / Automation | 🔄 BullMQ | Billing→Core, `@AI` |
 | Storage, Integrations, Marketplace, Banking | ⬜ Q4+ | Solo bajo demanda cliente |
 
-Detalle Hub → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md) · Servicios Railway → [`OPERATIONS.md`](./OPERATIONS.md).
+Detalle Hub (histórico) → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md) · Servicios Railway → [`OPERATIONS.md`](./OPERATIONS.md) · estado → [`STATUS.md`](./STATUS.md).
 
 ---
 
@@ -673,7 +672,7 @@ Logs · metrics · tracing (Sentry) · queue health · costes IA · `/health` po
 
 Contrato Internal API: [`contracts/internal-api.json`](./contracts/internal-api.json)
 
-### Hub — centro de experiencia ✅ v0.2.1
+### Hub — centro de experiencia 🟡
 
 `dakinis-hub` · `hub.dakinissystems.com` · schemas `hub` + `meta` (workspace identity).
 
@@ -703,7 +702,8 @@ mindmap
 Experiencia **inspirada en** Microsoft 365 / Zoho One (un escritorio, muchas apps); detalle comercial → [`company/STRATEGY.md`](./company/STRATEGY.md).
 
 Mensaje comercial → [`company/MESSAGING.md`](./company/MESSAGING.md)  
-Diseño admin → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md) · SQL migr. `031` · contrato [`admin-api.json`](./contracts/admin-api.json)
+Diseño admin (histórico) → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md) · SQL migr. `031` · contrato [`admin-api.json`](./contracts/admin-api.json)
+
 
 Registries: `HUB_DASHBOARD_SECTIONS` · `HUB_WIDGET_REGISTRY` en `@dakinis/shared-ux`.
 
@@ -713,9 +713,9 @@ Pendiente producto: SSO E2E creds · Hub Admin validación piloto → [`STATUS.m
 
 `dakinis-auth` · `auth.dakinissystems.com` · schema `dakinis_auth` · JWT central.
 
-### Knowledge + Search — memoria de la empresa ✅ API prod
+### Knowledge + Search — memoria de la empresa 🟠
 
-Servicio **independiente** de AI. **Activo estratégico:** docs, FAQ, RAG → Ctrl+K y copilot. Diagrama → [§9 Knowledge + IA](#9-knowledge--ia).
+Servicio **independiente** de AI. API desplegada; ingest masivo y worker aún pendientes → [`STATUS.md`](./STATUS.md).
 
 Repo [`dakinis-knowledge`](https://github.com/dakinissystems/dakinis-knowledge) · schema `knowledge` · contrato [`knowledge.json`](./contracts/knowledge.json)
 
@@ -779,7 +779,7 @@ Implementado: `ai`, `core`, `lifeflow`, `platform-services` · mirror [`packages
 
 ## Products
 
-Detalle funcional por producto: [`archive/PRODUCTS.md`](./archive/PRODUCTS.md).
+Detalle funcional por producto → [`SYSTEMS.md`](./SYSTEMS.md) · histórico → [`archive/PRODUCTS.md`](./archive/PRODUCTS.md) (no usar como estado).
 
 | Producto | Repo | BD | Consume platform |
 |----------|------|-----|------------------|
@@ -838,9 +838,9 @@ flowchart BT
 
 ---
 
-## Marketplace (capacidad platform)
+## Marketplace (capacidad platform) ⬜
 
-Apps · Plugins · Templates · Automations · AI Agents · Themes — UI Hub ⬜
+Apps · Plugins · Templates · Automations · AI Agents · Themes — **roadmap**, no servicio activo. Solo si un cliente lo pide ([`ROADMAP.md`](./ROADMAP.md)).
 
 ---
 

@@ -1,12 +1,13 @@
-# Dakinis Systems — Productos
+# Dakinis Systems — Productos (histórico)
 
-> **Productos** (capa Products) consumen **Platform**. Entrada usuario: **Hub** → elige producto.
+> **NO es source of truth.** Madurez y pendientes → [`../STATUS.md`](../STATUS.md) · mapa vivo → [`../SYSTEMS.md`](../SYSTEMS.md).  
+> Este archivo se conserva como narrativa de catálogo; **no uses sus ✅/🚧 como estado de prod**.
 
 | Referencia | Doc |
 |------------|-----|
-| Platform (Auth, Hub, AI, Billing…) | [`ARCHITECTURE.md`](./ARCHITECTURE.md) |
-| Estado operativo | [`STATUS.md`](./STATUS.md) |
-| Mensaje de marca | [`company/MESSAGING.md`](./company/MESSAGING.md) |
+| Platform | [`../ARCHITECTURE.md`](../ARCHITECTURE.md) |
+| Estado | [`../STATUS.md`](../STATUS.md) |
+| Mensaje | [`../company/MESSAGING.md`](../company/MESSAGING.md) |
 
 **Core = Dakinis One** — un producto, no el nombre de toda la plataforma.
 

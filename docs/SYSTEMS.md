@@ -1,6 +1,6 @@
 # Sistemas — mapa Dakinis
 
-> Una pantalla · detalle → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · deploy → [`OPERATIONS.md`](./OPERATIONS.md)
+> Una pantalla · detalle capas → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · dominios Core → [`architecture/README.md`](./architecture/README.md) · deploy → [`OPERATIONS.md`](./OPERATIONS.md)
 
 ## Vista rápida
 
@@ -46,6 +46,35 @@ flowchart TB
   AN --> Int
 ```
 
+### Core / Dakinis One — bounded contexts
+
+```mermaid
+flowchart LR
+  CP[Core Platform]
+  HS[Hospitality Shell]
+  HM[Hospitality Modules]
+  CRM[CRM]
+  CON[Connectors]
+  SH[System Health]
+  CP --> HS
+  HS --> HM
+  HM --> CON
+  HM --> CRM
+  CP --> CRM
+  SH --> HM
+  SH --> CON
+```
+
+| Contexto | Doc |
+|----------|-----|
+| Core Platform | [`platform/core.md`](./platform/core.md) |
+| Hospitality UX / Shell | [`domains/hospitality/ux.md`](./domains/hospitality/ux.md) |
+| Delivery / Channel Bus | [`domains/hospitality/delivery.md`](./domains/hospitality/delivery.md) |
+| CRM | [`domains/crm/overview.md`](./domains/crm/overview.md) |
+| Connectors SDK | [`architecture/connector-sdk.md`](./architecture/connector-sdk.md) |
+| System Health | [`architecture/system-health.md`](./architecture/system-health.md) ⬜ diseño |
+| Principios | [`architecture/principles.md`](./architecture/principles.md) |
+
 ### Login (SSO)
 
 ```mermaid
@@ -79,7 +108,7 @@ flowchart LR
 | Sistema | Rol | Dominio / ruta |
 |---------|-----|----------------|
 | **Hub** | Escritorio workspace · Mi día · admin | `hub.dakinissystems.com` |
-| **Core** (Dakinis One) | ERP verticales (restaurante, …) | `core.dakinissystems.com` · `/core/` |
+| **Core** (Dakinis One) | ERP + Platform embebida (Hospitality, CRM, Connectors) | `core.dakinissystems.com` · `/core/` |
 | **LifeFlow** | Finanzas personales | `finance.dakinissystems.com` · `finance-api…` |
 | **AkoeNet** | Comunidad / chat · `@AI` | `api.akoenet.dakinissystems.com` |
 | **StreamAutomator** (SA) | Automatización streams | `api.streamautomator.com` |

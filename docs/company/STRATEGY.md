@@ -166,7 +166,7 @@ Toda feature nueva debe mejorar:
 Landing → Registro → Workspace → Hub → Primer producto → Invita equipo → Pago → Uso diario → Marketplace
 ```
 
-Detalle → [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md) · Ciclo workspace → [`../HUB-WORKSPACE.md`](../archive/HUB-WORKSPACE.md)
+Detalle → [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md) · Hub (histórico) → [`../archive/HUB-WORKSPACE.md`](../archive/HUB-WORKSPACE.md)
 
 ---
 
@@ -229,7 +229,7 @@ Detalle → [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md) · Ciclo workspace �
 |-------|------------|
 | Nuevo microservicio sin cliente | Regla consolidar antes de ampliar |
 | Compararse comercialmente con M365 | Lenguaje "inspirado en" |
-| Docs solo técnicas | Esta carpeta `company/` + [`WHY.md`](../archive/WHY.md) |
+| Docs solo técnicas | Esta carpeta `company/` + [`WHY.md`](../archive/WHY.md) (histórico) |
 | Banking antes de piloto | Diseño doc; implementar post-validación |
 
 ---
