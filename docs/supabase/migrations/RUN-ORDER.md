@@ -170,6 +170,7 @@ Idempotente. El INSERT en `public."StreamDirectorSessions"` ya no se revierte si
 | 49 | [`049_stream_automation_runs.sql`](./049_stream_automation_runs.sql) | âœ… 16 jul 2026 Â· `stream.automation_runs` (mirror; primary SA Sequelize) |
 | 55 | [`055_core_ai_usage.sql`](./055_core_ai_usage.sql) | â¬œ `dakinis_core_prod.ai_usage` |
 | 56 | [`056_dakinis_core_rls_deny_policies.sql`](./056_dakinis_core_rls_deny_policies.sql) | â¬œ Deny-all anon/authenticated en `dakinis_core` (+prod/dev) — Advisor RLS Enabled No Policy |
+| 57 | [`057_tenant_crm_core.sql`](./057_tenant_crm_core.sql) | â¬œ `tenant_crm_companies/contacts/activities` para `/api/v1/crm/*` |
 
 > **Confirmado prod (15 jul 2026):** migraciones **037â€“047 aplicadas**. Hub **016â€“029** operativas (`hub.v1_get_dashboard`, `stub=false` en smoke).
 >
