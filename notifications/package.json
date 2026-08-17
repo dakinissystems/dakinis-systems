@@ -15,7 +15,7 @@
   "dependencies": {
     "@dakinis/shared-ai": "file:./packages/shared-ai",
     "bullmq": "^5.41.0",
-    "pg": "^8.16.0",
+    "pg": "^8.23.0",
     "redis": "^5.5.6"
   }
 }
