@@ -28,8 +28,6 @@ PYME España que quiere **un solo lugar** (Hub) para operar el negocio y abrir m
 
 ## Qué NO vendemos aún
 
-Marketplace · plugins · storage enterprise · banking global — post-validación comercial.
-
-Roadmap futuro: ver [`../ROADMAP.md`](../ROADMAP.md) § Q4 (Marketplace · Banking bajo demanda).
+Marketplace · plugins · storage enterprise · banking global — post-validación comercial ([`../STATUS.md`](../STATUS.md)).
 
 Detalle planes → [PRICING-STRATEGY.md](./PRICING-STRATEGY.md)

@@ -60,7 +60,7 @@ Eso permite crecer como **SaaS multiempresa** — patrón Zoho One / Atlassian C
 | Coach IA | ✅ Pro | ❌ | ❌ | ❌ |
 | PSD2 | ⬜ | ✅ | ❌ | ❌ |
 
-**Estrategia:** *El ProjectionLab español* — océano azul en planificación, no en agregación. PSD2 → roadmap Q4 [`../ROADMAP.md`](../ROADMAP.md).
+**Estrategia:** *El ProjectionLab español* — océano azul en planificación, no en agregación. PSD2 solo tras validación comercial ([`../STATUS.md`](../STATUS.md)).
 
 ### AkoeNet vs Discord
 
@@ -166,7 +166,7 @@ Toda feature nueva debe mejorar:
 Landing → Registro → Workspace → Hub → Primer producto → Invita equipo → Pago → Uso diario → Marketplace
 ```
 
-Detalle → [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md) · Hub (histórico) → [`../archive/HUB-WORKSPACE.md`](../archive/HUB-WORKSPACE.md)
+Detalle del funnel → [`../STATUS.md`](../STATUS.md) · Hub → [`../SYSTEMS.md`](../SYSTEMS.md)
 
 ---
 
@@ -229,7 +229,7 @@ Detalle → [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md) · Hub (histórico) �
 |-------|------------|
 | Nuevo microservicio sin cliente | Regla consolidar antes de ampliar |
 | Compararse comercialmente con M365 | Lenguaje "inspirado en" |
-| Docs solo técnicas | Esta carpeta `company/` + [`WHY.md`](../archive/WHY.md) (histórico) |
+| Docs solo técnicas | Esta carpeta `company/` + [`MESSAGING.md`](./MESSAGING.md) |
 | Banking antes de piloto | Diseño doc; implementar post-validación |
 
 ---

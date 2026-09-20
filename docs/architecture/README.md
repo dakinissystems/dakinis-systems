@@ -1,7 +1,7 @@
 # Architecture — Dakinis Platform
 
-> Índice de arquitectura por dominios · **ago 2026**  
-> Capas globales → [`ARCHITECTURE.md`](../ARCHITECTURE.md) · Sistemas → [`SYSTEMS.md`](../SYSTEMS.md) · ADRs → [`../adr/`](../adr/)
+> Índice de arquitectura por dominios · **sep 2026**  
+> Capas globales → [`ARCHITECTURE.md`](../ARCHITECTURE.md) · Sistemas → [`SYSTEMS.md`](../SYSTEMS.md) · ADRs → [`../adr/`](../adr/) · Estado → [`../STATUS.md`](../STATUS.md)
 
 Este índice es el punto de entrada para entender **Dakinis Platform** de arriba abajo (~1 h).
 
@@ -11,12 +11,8 @@ Dakinis Platform
   ├── Hospitality
   ├── CRM
   ├── Connectors
-  ├── System Health
-  ├── Analytics* / Automation*
   └── ADRs · Principles · Events
 ```
-
-\* roadmap
 
 ---
 
@@ -30,7 +26,6 @@ Dakinis Platform
 | **Hospitality Delivery / Channel Bus** | [`../domains/hospitality/delivery.md`](../domains/hospitality/delivery.md) |
 | **CRM** | [`../domains/crm/overview.md`](../domains/crm/overview.md) |
 | **Connectors (contrato)** | [`connector-sdk.md`](./connector-sdk.md) |
-| **System Health** | [`system-health.md`](./system-health.md) |
 | **Command Palette** (infra transversal) | [`command-palette.md`](./command-palette.md) |
 | **Org / Venture / Location** | [ADR-016](../adr/ADR-016-org-venture-location.md) |
 | **Dominios + Google Workspace** | [`../RUNBOOKS/google-workspace-domains.md`](../RUNBOOKS/google-workspace-domains.md) |
@@ -46,8 +41,7 @@ Dakinis Platform
 | **Core Platform** | Auth tenant, multi-tenant, permisos, telemetría, config, Command Palette | — |
 | **Hospitality** | Sala, Cocina, Inventario, Delivery UI, Caja, Shell ops | Core · Events · Connectors · CRM (consume) |
 | **CRM** | Contactos, empresas, timeline, actividades | Core · Events (escucha) |
-| **Connectors** | Providers externos (Delivery hoy; Payments/Commerce mañana) | Core · Registry · Telemetry |
-| **System Health** | Estado de API, DB, Redis, Printer, WhatsApp, Payments, Delivery | Todos consultan; nadie embebe health ad-hoc |
+| **Connectors** | Providers externos (Delivery hoy; Payments/Commerce según cliente) | Core · Registry · Telemetry |
 
 **Regla de dependencia CRM:** Hospitality puede consumir CRM. CRM **nunca** depende de Hospitality.
 
@@ -76,15 +70,3 @@ ADRs de plataforma global (Gateway, Billing, Redis…): [`../adr/README.md`](../
 | **STATUS** | ¿Qué está vivo / bloqueado ahora? | [`STATUS.md`](../STATUS.md) |
 
 Los ADR **no** documentan incidentes del día (429, emails CRITICAL, etc.).
-
----
-
-## Roadmap de plataforma (visión)
-
-> Qué está **vivo hoy** → [`../STATUS.md`](../STATUS.md). Esta sección es dirección, no checklist de prod.
-
-```
-Fase actual     TPV · Delivery Channel Bus · CRM v1 · Caja inicio día · Shell por tareas
-Próxima         Printer real · Escandallo · KDS · Glovo partner · float de caja en servidor
-Plataforma      Realtime (SSE→WS) · más Connectors · Analytics · Automation
-```

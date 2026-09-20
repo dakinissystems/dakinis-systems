@@ -38,7 +38,6 @@ Prefijos HTTP en dev (`localhost:80`): `/auth/`, `/core/`, `/streamautomator/`, 
 | [`docs/rules.md`](./docs/rules.md) | Reglas al modificar rutas del gateway |
 | [`docs/legal/`](./docs/legal/) | Textos legales |
 | [`docs/contracts/`](./docs/contracts/) | Contratos HTTP |
-| [`docs/archive/GITHUB-ORG.md`](./docs/archive/GITHUB-ORG.md) | Histórico alineación GitHub |
 | [`packages/README.md`](./packages/README.md) | Índice paquetes DES (target: `dakinis-shared`) |
 | [`billing/README.md`](./billing/README.md) | [dakinis-billing](https://github.com/dakinissystems/dakinis-billing) |
 | [`notifications/README.md`](./notifications/README.md) | [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |

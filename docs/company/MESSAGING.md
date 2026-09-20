@@ -1,6 +1,6 @@
 # Mensaje y posicionamiento
 
-> Para **landing**, demos e inversores. Técnico → [`../ARCHITECTURE.md`](../ARCHITECTURE.md) · Copy → [`LANDING-COPY.md`](./LANDING-COPY.md)
+> Para **landing**, demos e inversores. Técnico → [`../ARCHITECTURE.md`](../ARCHITECTURE.md) · Estado → [`../STATUS.md`](../STATUS.md)
 
 ## Pregunta guía
 
@@ -122,7 +122,7 @@ Alimenta Ctrl+K y copilot. Mismo peso narrativo que IA.
 | “Vendemos Core” | “Vendemos la plataforma; Dakinis One es el producto principal” |
 | Listar 40 módulos en landing | Un problema + 4 bullets |
 
-Detalle módulos (post-login) → [`../SYSTEMS.md`](../SYSTEMS.md) · catálogo histórico → [`../archive/PRODUCTS.md`](../archive/PRODUCTS.md).
+Detalle módulos (post-login) → [`../SYSTEMS.md`](../SYSTEMS.md).
 
 ---
 
@@ -131,8 +131,6 @@ Detalle módulos (post-login) → [`../SYSTEMS.md`](../SYSTEMS.md) · catálogo 
 ```
 Landing → Auth → Hub → Dakinis One → IA + Knowledge → Pago → Retención
 ```
-
-Ver [`CUSTOMER-JOURNEY.md`](./CUSTOMER-JOURNEY.md)
 
 ---
 

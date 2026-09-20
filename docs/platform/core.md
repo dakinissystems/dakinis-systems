@@ -39,7 +39,7 @@ Un `business` en Core = un **local** (TPV, stock, pedidos). No crear un business
 |-------|-----|
 | Principios | [`../architecture/principles.md`](../architecture/principles.md) |
 | Command Palette | [`../architecture/command-palette.md`](../architecture/command-palette.md) |
-| System Health | [`../architecture/system-health.md`](../architecture/system-health.md) |
+| System Health | ⬜ diseño (no doc separado; ver pendientes en [`../STATUS.md`](../STATUS.md)) |
 | Connector SDK | [`../architecture/connector-sdk.md`](../architecture/connector-sdk.md) |
 | Hospitality | [`../domains/hospitality/ux.md`](../domains/hospitality/ux.md) |
 | CRM | [`../domains/crm/overview.md`](../domains/crm/overview.md) |

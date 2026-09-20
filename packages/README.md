@@ -5,7 +5,7 @@ Monorepo local de paquetes DES. **Canónico:** [dakinis-shared](https://github.c
 Publicar cambios: `.\scripts\push-dakinis-shared.ps1`
 
 Índice detallado: [`experience-system/README.md`](./experience-system/README.md)  
-Guía GitHub org: [`docs/archive/GITHUB-ORG.md`](../docs/archive/GITHUB-ORG.md)
+Estado plataforma: [`docs/STATUS.md`](../docs/STATUS.md) · mapa → [`docs/SYSTEMS.md`](../docs/SYSTEMS.md)
 
 ## Mapa
 

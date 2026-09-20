@@ -1,7 +1,7 @@
 # Dakinis — Estado actual
 
 > **Fuente canónica de estado** · actualizar al cerrar hitos · **8 ago 2026**  
-> Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Dominios Core → [`architecture/README.md`](./architecture/README.md) · Plan → [`ROADMAP.md`](./ROADMAP.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
+> Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Dominios Core → [`architecture/README.md`](./architecture/README.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
 
 **Leyenda madurez:** 🟢 Production · 🟡 Beta · 🟠 MVP · ⚪ Experimental
 
@@ -60,8 +60,6 @@ Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/c
 | Invite piloto + demo Copérnico | ⬜ ops |
 | Redeploy SA API (`getPlatform` + security) | ✅ Railway |
 | MFA Cloudflare (perfil) | ⬜ [`SECURITY.md`](./SECURITY.md) |
-
-Histórico jul → [`archive/CHANGELOG-ops-2026-07.md`](./archive/CHANGELOG-ops-2026-07.md).
 
 ---
 

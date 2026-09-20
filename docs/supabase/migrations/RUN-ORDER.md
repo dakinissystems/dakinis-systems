@@ -95,7 +95,7 @@ Scripts de provision/smoke (monorepo root):
 - [`../../../scripts/deploy-billing-unified-greenfield.ps1`](../../../scripts/deploy-billing-unified-greenfield.ps1)
 - [`../../../scripts/smoke-billing-unified-sa.ps1`](../../../scripts/smoke-billing-unified-sa.ps1)
 
-Workspace scaffold (histórico): [`../../archive/DAKINIS-WORKSPACE.md`](../../archive/DAKINIS-WORKSPACE.md) · código [`../../../projects/workspace/`](../../../projects/workspace/)
+Workspace scaffold (código): [`../../../projects/workspace/`](../../../projects/workspace/)
 
 ## Seeds
 
