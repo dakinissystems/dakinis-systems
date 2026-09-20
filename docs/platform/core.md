@@ -19,6 +19,18 @@ Dakinis Platform (org)
 
 Core Platform **no** es “el restaurante”: es la base sobre la que montan verticales.
 
+### Tenant operativo (local)
+
+En el modelo Hub [ADR-016](../adr/ADR-016-org-venture-location.md):
+
+| Hub | Core |
+|-----|------|
+| Organization (`meta.workspaces`) | — (billing / IdP) |
+| Venture (`meta.ventures`) | tipo de negocio (restaurant…) |
+| Location (`meta.venture_locations`) | **`business`** (`slug` = `core_business_slug`) |
+
+Un `business` en Core = un **local** (TPV, stock, pedidos). No crear un business por holding.
+
 ---
 
 ## Piezas

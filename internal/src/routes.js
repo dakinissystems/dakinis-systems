@@ -1,4 +1,9 @@
-import { config } from "./config.js";
+﻿import { config } from "./config.js";
+import {
+  listVenturesForWorkspace,
+  getUserOrgContext,
+  setUserOrgContext,
+} from "./services/org-ventures.js";
 import { requireServiceAuth, readJson } from "./lib/auth.js";
 import { publishEvent, listQueuedEvents } from "./lib/events.js";
 import { indexPlatformEventForSearch } from "./lib/search-event-indexer.js";
@@ -64,6 +69,7 @@ import {
   routeAssistantCommand,
   dispatchAssistantEvent,
 } from "./services/akoenet-assistant.js";
+import { mirrorMemberXp } from "./services/levels-mirror.js";
 import { getPlatformMetrics } from "./services/platform-metrics.js";
 import { evaluateFeatureFlags } from "./services/feature-flags.js";
 import { mapToHttp } from "@dakinis/shared-error";
@@ -100,11 +106,7 @@ export const routes = {
         version: "0.3.1",
         redis: config.redisUrl ? "configured" : "not_configured",
         database: db.ok ? "configured" : config.databaseUrl ? "error" : "not_configured",
-        auth: config.serviceKey
-          ? "required"
-          : process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === "production"
-            ? "misconfigured"
-            : "dev_open",
+        auth: config.serviceKey ? "required" : "dev_open",
         eventBus,
       },
     };
@@ -480,7 +482,7 @@ export const routes = {
       status: 501,
       body: {
         error: "not_implemented",
-        message: "Supabase Storage / Cloudflare R2 — roadmap",
+        message: "Supabase Storage / Cloudflare R2 ÔÇö roadmap",
         purpose: body.purpose || "asset",
         filename: body.filename,
       },
@@ -489,7 +491,7 @@ export const routes = {
 
   "GET /storage/:objectId": () => ({
     status: 501,
-    body: { error: "not_implemented", message: "Signed URL read — Supabase Storage / R2 roadmap" },
+    body: { error: "not_implemented", message: "Signed URL read ÔÇö Supabase Storage / R2 roadmap" },
   }),
 
   // --- Hub Workspace Admin (migr. 031) ---
@@ -501,12 +503,58 @@ export const routes = {
       const workspace = await getWorkspaceForUser(userId);
       if (!workspace) return { status: 404, body: { error: "no_workspace" } };
       if (workspace.id) await touchWorkspaceAccess(workspace.id, userId);
-      return { status: 200, body: workspace };
+      let hierarchy = { items: [], domains: [] };
+      let orgContext = null;
+      if (workspace.id) {
+        hierarchy = await listVenturesForWorkspace(workspace.id);
+        orgContext = await getUserOrgContext(userId, workspace.id);
+      }
+      return {
+        status: 200,
+        body: {
+          ...workspace,
+          ventures: hierarchy.items,
+          domains: hierarchy.domains,
+          pendingMigration: hierarchy.pendingMigration || null,
+          orgContext,
+        },
+      };
     } catch (err) {
       return dbError(err);
     }
   },
 
+  "GET /workspaces/:id/ventures": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/ventures", "");
+    try {
+      const data = await listVenturesForWorkspace(id);
+      return { status: 200, body: data };
+    } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "PUT /workspaces/:id/context": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/context", "");
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const userId = String(body.userId || "").trim();
+    if (!userId) return { status: 400, body: { error: "user_id_required" } };
+    try {
+      const result = await setUserOrgContext(userId, id, {
+        ventureId: body.ventureId,
+        locationId: body.locationId,
+      });
+      return { status: 200, body: result };
+    } catch (err) {
+      if (err?.status) return { status: err.status, body: { error: err.message } };
+      return dbError(err);
+    }
+  },
   "GET /workspaces/:id": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
@@ -895,7 +943,7 @@ export const routes = {
     }
   },
 
-  // --- Super Admin (migr. 031) — UI futura: admin.dakinissystems.com ---
+  // --- Super Admin (migr. 031) ÔÇö UI futura: admin.dakinissystems.com ---
   "GET /admin/v1/overview": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
@@ -941,14 +989,6 @@ export const routes = {
   "POST /admin/v1/workspaces/:id/suspend": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
-    const rl = await enforceServiceRateLimit(req, "admin", "admin");
-    if (!rl.allowed) {
-      return {
-        status: 429,
-        body: { error: "rate_limited", retryAfterSec: rl.retryAfterSec },
-        headers: { "Retry-After": String(rl.retryAfterSec) },
-      };
-    }
     const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "").replace("/suspend", "");
     const body = await readJson(req);
     try {
@@ -962,14 +1002,6 @@ export const routes = {
   "POST /admin/v1/workspaces/:id/activate": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
-    const rl = await enforceServiceRateLimit(req, "admin", "admin");
-    if (!rl.allowed) {
-      return {
-        status: 429,
-        body: { error: "rate_limited", retryAfterSec: rl.retryAfterSec },
-        headers: { "Retry-After": String(rl.retryAfterSec) },
-      };
-    }
     const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "").replace("/activate", "");
     const body = await readJson(req);
     try {
@@ -1017,14 +1049,6 @@ export const routes = {
   "PATCH /admin/v1/features/:key": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
-    const rl = await enforceServiceRateLimit(req, "admin", "admin");
-    if (!rl.allowed) {
-      return {
-        status: 429,
-        body: { error: "rate_limited", retryAfterSec: rl.retryAfterSec },
-        headers: { "Retry-After": String(rl.retryAfterSec) },
-      };
-    }
     const key = decodeURIComponent((req.url || "").split("?")[0].replace("/admin/v1/features/", ""));
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
@@ -1116,6 +1140,24 @@ export const routes = {
       });
       return { status: 200, body: result };
     } catch (err) {
+      return dbError(err);
+    }
+  },
+
+  "POST /akoenet/servers/:serverId/levels/mirror": async (req) => {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return { status: auth.status, body: auth.body };
+    const serverId = (req.url || "")
+      .split("?")[0]
+      .replace("/akoenet/servers/", "")
+      .replace("/levels/mirror", "");
+    const body = await readJson(req);
+    if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    try {
+      const result = await mirrorMemberXp(serverId, body);
+      return { status: result.mirrored ? 200 : 202, body: result };
+    } catch (err) {
+      if (err?.status) return { status: err.status, body: { error: err.message } };
       return dbError(err);
     }
   },

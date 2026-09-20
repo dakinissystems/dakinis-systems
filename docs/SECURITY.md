@@ -120,3 +120,13 @@ Asistente consolas: `.\scripts\security-console-checklist.ps1`
 | Histórico jul ops | [`archive/CHANGELOG-ops-2026-07.md`](./archive/CHANGELOG-ops-2026-07.md) |
 
 P2+ (JWT servicio, audit log, RBAC, Guardian, mTLS, Vault, SIEM) → diferido hasta escala; no bloquear go-live.
+
+---
+
+## Hallazgos abiertos (revisión local 20 sep 2026)
+
+| Severidad | Área | Estado |
+|-----------|------|--------|
+| High | Guardian AI: pipeline `enqueueModerationAiEvaluate` / worker `akoenet.moderation-ai` ausente en WIP local de Internal (no incluido en commits org) | ⬜ no deployar ese WIP; restaurar antes de ship AkoeNet |
+| Medium | Rate-limit tenant: `x-tenant-id` / query spoofable en WIP `rate-limit.js` | ⬜ derivar tenant de contexto autenticado |
+| Medium | Org context: membership + venture/location scoped al workspace | ✅ mitigado en `org-ventures.setUserOrgContext` |

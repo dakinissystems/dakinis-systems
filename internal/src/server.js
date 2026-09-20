@@ -1,4 +1,4 @@
-import http from "node:http";
+﻿import http from "node:http";
 import { config } from "./config.js";
 import { routes } from "./routes.js";
 import { getRootPage } from "./root.js";
@@ -93,6 +93,12 @@ function matchRoute(method, path) {
   if (method === "GET" && /^\/workspaces\/[^/]+\/usage$/.test(bare)) {
     return routes["GET /workspaces/:id/usage"];
   }
+  if (method === "GET" && /^\/workspaces\/[^/]+\/ventures$/.test(bare)) {
+    return routes["GET /workspaces/:id/ventures"];
+  }
+  if (method === "PUT" && /^\/workspaces\/[^/]+\/context$/.test(bare)) {
+    return routes["PUT /workspaces/:id/context"];
+  }
   if (method === "GET" && /^\/workspaces\/[^/]+\/products$/.test(bare)) {
     return routes["GET /workspaces/:id/products"];
   }
@@ -151,6 +157,9 @@ function matchRoute(method, path) {
   }
   if (method === "POST" && /^\/akoenet\/servers\/[^/]+\/assistant\/events$/.test(bare)) {
     return routes["POST /akoenet/servers/:serverId/assistant/events"];
+  }
+  if (method === "POST" && /^\/akoenet\/servers\/[^/]+\/levels\/mirror$/.test(bare)) {
+    return routes["POST /akoenet/servers/:serverId/levels/mirror"];
   }
 
   return null;

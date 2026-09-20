@@ -53,7 +53,9 @@ Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/c
 |------|--------|
 | Merge / redeploy Core hospitality + CRM | ✅ |
 | Migraciones `055`/`056`/`057` Supabase prod | ✅ |
-| Merge docs ADRs / STATUS → `main` (PR) | 🔄 |
+| Merge docs ADRs / STATUS → `main` (PR) | ✅ |
+| Org → Venture → Location (ADR-016 / mig 058) | 🔄 código/docs listos · SQL ⬜ |
+| Dominios CF + Google Workspace (Calle Brava / Ármala) | ❌ no contratado · **verificar disponibilidad primero** → [`RUNBOOKS/google-workspace-domains.md`](./RUNBOOKS/google-workspace-domains.md) |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
 | Invite piloto + demo Copérnico | ⬜ ops |
 | Redeploy SA API (`getPlatform` + security) | ✅ Railway |

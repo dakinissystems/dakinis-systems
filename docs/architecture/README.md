@@ -32,6 +32,8 @@ Dakinis Platform
 | **Connectors (contrato)** | [`connector-sdk.md`](./connector-sdk.md) |
 | **System Health** | [`system-health.md`](./system-health.md) |
 | **Command Palette** (infra transversal) | [`command-palette.md`](./command-palette.md) |
+| **Org / Venture / Location** | [ADR-016](../adr/ADR-016-org-venture-location.md) |
+| **Dominios + Google Workspace** | [`../RUNBOOKS/google-workspace-domains.md`](../RUNBOOKS/google-workspace-domains.md) |
 | **Event Bus hospitality** | [ADR-014](../adr/ADR-014-hospitality-event-bus.md) |
 | **Changelog técnico** (bugs / fixes — no ADR) | [`changelog/`](./changelog/) |
 
