@@ -72,7 +72,7 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · contrato [`akoenet-
 
 | # | Archivo | Prod |
 |---|---------|------|
-| 58 | [`058_org_venture_location.sql`](./058_org_venture_location.sql) | ⬜ ventures / locations / domains |
+| 58 | [`058_org_venture_location.sql`](./058_org_venture_location.sql) | ✅ ventures / locations / domains (20 sep 2026) |
 
 Seed opcional (sin dominios): [`../scripts/provision_la_calle_brava_armala.sql`](../scripts/provision_la_calle_brava_armala.sql)  
 Dominios solo tras verificar: [`../scripts/provision_org_domains_candidates.sql`](../scripts/provision_org_domains_candidates.sql)  

@@ -36,7 +36,7 @@
 | i18n: sin claves `ns.key` en UI | 🟢 |
 | Docs arquitectura por dominios | 🟢 (PR docs → `main`) |
 | CRM API v1 + migración `057` | 🟢 SQL prod ✅ · API en prod |
-| Migraciones `055` / `056` / `057` | ✅ aplicadas en Supabase prod |
+| Migraciones `055` / `056` / `057` / `058` | ✅ aplicadas en Supabase prod |
 | System Health unificado | ⬜ diseño |
 | SSE/WS pulse | ⬜ roadmap |
 | Glovo/Uber API partner real | ⬜ stubs |
@@ -52,9 +52,9 @@ Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/c
 | Ítem | Estado |
 |------|--------|
 | Merge / redeploy Core hospitality + CRM | ✅ |
-| Migraciones `055`/`056`/`057` Supabase prod | ✅ |
+| Migraciones `055`/`056`/`057`/`058` Supabase prod | ✅ |
 | Merge docs ADRs / STATUS → `main` (PR) | ✅ |
-| Org → Venture → Location (ADR-016 / mig 058) | 🔄 código/docs listos · SQL ⬜ |
+| Org → Venture → Location (ADR-016 / mig 058) | ✅ SQL prod · código Hub/Internal pushed · seed Calle Brava ⬜ |
 | Dominios CF + Google Workspace (Calle Brava / Ármala) | ❌ no contratado · **verificar disponibilidad primero** → [`RUNBOOKS/google-workspace-domains.md`](./RUNBOOKS/google-workspace-domains.md) |
 | Billing E2E live (Stripe) | ⬜ cuando haya pago real |
 | Invite piloto + demo Copérnico | ⬜ ops |
@@ -87,7 +87,7 @@ URLs → [`OPERATIONS.md`](./OPERATIONS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS
 | Tabletop | 🟠 | SQLite → Supabase |
 | Landing | 🟢 | Screenshot Hub real |
 
-**Supabase prod:** ver flags en [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md). `055`/`056`/`057` ✅ (ago 2026).
+**Supabase prod:** ver flags en [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md). `055`/`056`/`057` ✅ (ago 2026) · `058` ✅ (20 sep 2026).
 
 ---
 
