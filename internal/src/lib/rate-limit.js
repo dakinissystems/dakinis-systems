@@ -35,15 +35,15 @@ export function resolveRateLimitTier(pathname) {
 
 /**
  * Tenant/workspace id for rate-limit buckets.
- * Only path-bound UUIDs are trusted ÔÇö never headers or query params
- * (spoofable ÔåÆ cross-tenant DoS on tenant-global buckets).
+ * Only path-bound UUIDs are trusted — never headers or query params
+ * (spoofable → cross-tenant DoS on tenant-global buckets).
  *
  * @param {import('http').IncomingMessage} _req
  * @param {URL} url
  */
 export function resolveTenantId(_req, url) {
   const bare = url.pathname || "";
-  // /workspaces/{uuid}/ÔÇª (not /workspaces/me/ÔÇª)
+  // /workspaces/{uuid}/… (not /workspaces/me/…)
   const m = bare.match(/^\/workspaces\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\/|$)/i);
   return m ? m[1] : "";
 }
