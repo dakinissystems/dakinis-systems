@@ -127,6 +127,6 @@ P2+ (JWT servicio, audit log, RBAC, Guardian, mTLS, Vault, SIEM) → diferido ha
 
 | Severidad | Área | Estado |
 |-----------|------|--------|
-| High | Guardian AI: pipeline `enqueueModerationAiEvaluate` / worker `akoenet.moderation-ai` ausente en WIP local de Internal (no incluido en commits org) | ⬜ no deployar ese WIP; restaurar antes de ship AkoeNet |
-| Medium | Rate-limit tenant: `x-tenant-id` / query spoofable en WIP `rate-limit.js` | ⬜ derivar tenant de contexto autenticado |
-| Medium | Org context: membership + venture/location scoped al workspace | ✅ mitigado en `org-ventures.setUserOrgContext` |
+| High | Guardian AI: pipeline `enqueueModerationAiEvaluate` / worker `akoenet.moderation-ai` | ✅ restaurado (WIP que lo quitaba descartado; worker + enqueue intactos en `main`) |
+| Medium | Rate-limit tenant: headers/query spoofable | ✅ `resolveTenantId` solo path `/workspaces/{uuid}/…` |
+| Medium | Org context: membership + venture/location scoped al workspace | ✅ `org-ventures.setUserOrgContext` |
