@@ -1,4 +1,4 @@
-﻿import { getRedis } from "./events.js";
+import { getRedis } from "./events.js";
 
 const WINDOW_SEC = 60;
 
