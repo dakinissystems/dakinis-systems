@@ -1,0 +1,23 @@
+{
+  "name": "@dakinis/design-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dakinis Design System (DES) — versioned entry for tokens, themes, components, layouts, patterns",
+  "exports": {
+    ".": "./src/index.js",
+    "./tokens": "./src/tokens.js",
+    "./themes": "./src/themes.js",
+    "./components": "./src/components.js",
+    "./layouts": "./src/layouts.js",
+    "./patterns": "./src/patterns.js",
+    "./ui-states": "./src/ui-states.js",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@dakinis/shared-des": "file:../shared-des"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

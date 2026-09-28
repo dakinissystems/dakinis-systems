@@ -3,6 +3,7 @@ import { config } from "./config.js";
 import { routes } from "./routes.js";
 import { getRootPage } from "./root.js";
 import { sendHtml } from "./status-page.js";
+import { subscribeUserEvents } from "./lib/event-stream.js";
 
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body);
@@ -27,11 +28,47 @@ function matchRoute(method, path) {
   return null;
 }
 
+function handleEventStream(req, res) {
+  const url = new URL(req.url || "/", "http://internal");
+  const userId = String(url.searchParams.get("userId") || "").trim();
+  if (!userId) {
+    sendJson(res, 400, { error: "validation", message: "userId query required" });
+    return;
+  }
+
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream; charset=utf-8",
+    "Cache-Control": "no-cache, no-transform",
+    Connection: "keep-alive",
+    "X-Dakinis-Service": config.service,
+  });
+  res.write(`event: ready\ndata: ${JSON.stringify({ ok: true, userId })}\n\n`);
+
+  const unsubscribe = subscribeUserEvents(userId, res);
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(`: ping ${Date.now()}\n\n`);
+    } catch {
+      clearInterval(heartbeat);
+      unsubscribe();
+    }
+  }, 25000);
+
+  req.on("close", () => {
+    clearInterval(heartbeat);
+    unsubscribe();
+  });
+}
+
 const server = http.createServer(async (req, res) => {
   const path = (req.url || "/").split("?")[0];
 
   if ((req.method || "GET") === "GET" && path === "/") {
     return sendHtml(res, 200, getRootPage(), config.service);
+  }
+
+  if ((req.method || "GET") === "GET" && path === "/v1/events/stream") {
+    return handleEventStream(req, res);
   }
 
   const handler = matchRoute(req.method || "GET", path);

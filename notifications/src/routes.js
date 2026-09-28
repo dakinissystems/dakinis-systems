@@ -3,6 +3,7 @@ import { enqueueNotification } from "./queue.js";
 import { checkDbHealth } from "./lib/db.js";
 import { listInbox, markNotificationRead } from "./lib/inbox-store.js";
 import { resendConfigured } from "./lib/resend.js";
+import { eventStreamStats, publishUserEvent } from "./lib/event-stream.js";
 
 async function readJson(req) {
   const chunks = [];
@@ -24,26 +25,43 @@ function parseInboxUserId(req) {
 function parseInboxNotificationId(req) {
   const path = (req.url || "").split("?")[0];
   const parts = path.split("/").filter(Boolean);
-  // /v1/inbox/:id/read
   if (parts.length >= 4 && parts[0] === "v1" && parts[1] === "inbox" && parts[3] === "read") {
     return decodeURIComponent(parts[2] || "");
   }
   return "";
 }
 
+function createLiveEvent({ userId, type, payload = {}, tenantId, product = "hub", severity = "info" }) {
+  return {
+    id: `evt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    type,
+    userId,
+    tenantId: tenantId || null,
+    product,
+    severity,
+    title: payload.title || payload.message || type,
+    message: payload.message || payload.detail || "",
+    href: payload.href,
+    createdAt: new Date().toISOString(),
+    payload,
+  };
+}
+
 export const routes = {
   "GET /health": async () => {
     const db = await checkDbHealth();
+    const streams = eventStreamStats();
     return {
       status: 200,
       body: {
         ok: true,
         service: config.service,
-        version: "0.3.1-inbox",
+        version: "0.4.0-events-sse",
         redis: config.redisUrl ? "configured" : "not_configured",
         postgres: db,
         resend: resendConfigured() ? "configured" : "not_configured",
         channels: CHANNELS,
+        eventStreams: streams,
       },
     };
   },
@@ -61,15 +79,44 @@ export const routes = {
       return { status: 400, body: { error: "validation", message: `channel must be one of: ${CHANNELS.join(", ")}` } };
     }
     const result = await enqueueNotification({ userId, channel, type, payload, tenantId });
+
+    let streamed = 0;
+    if (channel === "in-app") {
+      const event = createLiveEvent({ userId, type, payload, tenantId, product: payload.product || "hub" });
+      streamed = publishUserEvent(userId, event);
+    }
+
     return {
-      status: result.queued ? 202 : 503,
+      status: result.queued ? 202 : streamed > 0 ? 202 : 503,
       body: {
-        ok: result.queued,
+        ok: result.queued || streamed > 0,
         jobId: result.id,
         queue: config.queueName,
         queued: result.queued,
-        message: result.queued ? "Notification enqueued" : "REDIS_URL not configured",
+        streamed,
+        message: result.queued
+          ? "Notification enqueued"
+          : streamed > 0
+            ? "SSE delivered (queue unavailable)"
+            : "REDIS_URL not configured",
       },
+    };
+  },
+
+  "POST /v1/events": async (req) => {
+    const body = await readJson(req);
+    if (body === null) {
+      return { status: 400, body: { error: "invalid_json" } };
+    }
+    const { userId, type, payload = {}, tenantId, product, severity } = body;
+    if (!userId || !type) {
+      return { status: 400, body: { error: "validation", message: "userId and type required" } };
+    }
+    const event = createLiveEvent({ userId, type, payload, tenantId, product, severity });
+    const streamed = publishUserEvent(userId, event);
+    return {
+      status: 202,
+      body: { ok: true, event, streamed },
     };
   },
 
