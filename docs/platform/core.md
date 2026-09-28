@@ -19,6 +19,18 @@ Dakinis Platform (org)
 
 Core Platform **no** es “el restaurante”: es la base sobre la que montan verticales.
 
+### Tenant operativo (local)
+
+En el modelo Hub [ADR-016](../adr/ADR-016-org-venture-location.md):
+
+| Hub | Core |
+|-----|------|
+| Organization (`meta.workspaces`) | — (billing / IdP) |
+| Venture (`meta.ventures`) | tipo de negocio (restaurant…) |
+| Location (`meta.venture_locations`) | **`business`** (`slug` = `core_business_slug`) |
+
+Un `business` en Core = un **local** (TPV, stock, pedidos). No crear un business por holding.
+
 ---
 
 ## Piezas
@@ -27,7 +39,7 @@ Core Platform **no** es “el restaurante”: es la base sobre la que montan ver
 |-------|-----|
 | Principios | [`../architecture/principles.md`](../architecture/principles.md) |
 | Command Palette | [`../architecture/command-palette.md`](../architecture/command-palette.md) |
-| System Health | [`../architecture/system-health.md`](../architecture/system-health.md) |
+| System Health | ⬜ diseño (no doc separado; ver pendientes en [`../STATUS.md`](../STATUS.md)) |
 | Connector SDK | [`../architecture/connector-sdk.md`](../architecture/connector-sdk.md) |
 | Hospitality | [`../domains/hospitality/ux.md`](../domains/hospitality/ux.md) |
 | CRM | [`../domains/crm/overview.md`](../domains/crm/overview.md) |

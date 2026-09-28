@@ -87,12 +87,4 @@ Deep-link: `?task=delivery`
 
 Glovo / Uber Eats / Just Eat: stubs hasta API partner. Manual + QA validan E2E sin incumplir ToS.
 
----
-
-## Roadmap técnico
-
-1. Enforcement runtime timeout / circuit breaker en llamadas partner  
-2. BullMQ si `REDIS_URL`  
-3. GlovoProvider real  
-4. Packaging / comisión en margen  
-5. Métricas por canal (no MVP)
+Pendientes de producto (timeout partner, BullMQ, Glovo real, métricas) → [`../../STATUS.md`](../../STATUS.md).

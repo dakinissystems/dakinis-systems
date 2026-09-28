@@ -1,7 +1,8 @@
 import { query } from "../lib/db.js";
 import { HUB_APPS, HUB_SECTIONS } from "../hub-data.js";
 import { buildWidgetValues } from "../hub-widget-values.js";
-import { buildRecommendedActions } from "../hub-actions.js";
+import { buildHubAttention } from "../hub-attention.js";
+import { computeF1WidgetCoverage } from "../hub-f1-coverage.js";
 import {
   fetchUserHubProducts,
   dakinisFilterHubApps,
@@ -57,7 +58,28 @@ export function buildHubDashboardResponse(userId, opts = {}) {
       }
     : null;
   const unread = db?.unread_notifications ?? unreadExternal ?? 0;
-  const apps = dakinisFilterHubApps(HUB_APPS, enabledProducts);
+  const appsBase = dakinisFilterHubApps(HUB_APPS, enabledProducts);
+  const summary = {
+    notificationsUnread: Number(unread) || 0,
+    scheduledContents: db?.scheduled_contents ?? null,
+    streamScheduledWeek: db?.stream_scheduled_week ?? null,
+    streamUpcoming: db?.stream_upcoming ?? null,
+    lifeflowScore: db?.lifeflow_score ?? null,
+    tenantCount: Number(db?.core_tenant_count ?? 0) || (Array.isArray(db?.tenants) ? db.tenants.length : null),
+    recentItemsCount: Array.isArray(db?.recent_items) ? db.recent_items.length : 0,
+    timelineCount: Array.isArray(db?.timeline) ? db.timeline.length : 0,
+    stub: !db,
+  };
+
+  const { attention, apps, actions } = buildHubAttention({
+    db,
+    summary,
+    enabledProducts,
+    apps: appsBase,
+  });
+
+  const widgetValues = buildWidgetValues({ db, summary: { notificationsUnread: unread } });
+  const f1 = computeF1WidgetCoverage(widgetValues, enabledProducts);
 
   const payload = {
     userId,
@@ -71,25 +93,17 @@ export function buildHubDashboardResponse(userId, opts = {}) {
     isPlatformAdmin: Boolean(hubAccess.isPlatformAdmin),
     db: db ?? null,
     summary: {
-      notificationsUnread: Number(unread) || 0,
-      scheduledContents: db?.scheduled_contents ?? null,
-      streamScheduledWeek: db?.stream_scheduled_week ?? null,
-      streamUpcoming: db?.stream_upcoming ?? null,
-      lifeflowScore: db?.lifeflow_score ?? null,
-      tenantCount: Number(db?.core_tenant_count ?? 0) || (Array.isArray(db?.tenants) ? db.tenants.length : null),
-      recentItemsCount: Array.isArray(db?.recent_items) ? db.recent_items.length : 0,
-      timelineCount: Array.isArray(db?.timeline) ? db.timeline.length : 0,
-      stub: !db,
+      ...summary,
+      attentionCount: attention.length,
+      f1Ready: f1.f1Ready,
+      productsWithWidgetData: f1.productsWithData,
     },
-    widgetValues: buildWidgetValues({ db, summary: { notificationsUnread: unread } }),
+    widgetValues,
     notifications: inboxItems,
+    actions,
+    attention,
+    f1,
   };
-
-  payload.actions = buildRecommendedActions({
-    db,
-    summary: payload.summary,
-    enabledProducts,
-  });
 
   return payload;
 }

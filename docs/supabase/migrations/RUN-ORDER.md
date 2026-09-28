@@ -68,6 +68,16 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · contrato [`akoenet-
 | 56 | [`056_dakinis_core_rls_deny_policies.sql`](./056_dakinis_core_rls_deny_policies.sql) | ✅ |
 | 57 | [`057_tenant_crm_core.sql`](./057_tenant_crm_core.sql) | ✅ CRM tenant |
 
+## Fase F+++ — Org hierarchy (058)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 58 | [`058_org_venture_location.sql`](./058_org_venture_location.sql) | ✅ ventures / locations / domains (20 sep 2026) |
+
+Seed opcional (sin dominios): [`../scripts/provision_la_calle_brava_armala.sql`](../scripts/provision_la_calle_brava_armala.sql)  
+Dominios solo tras verificar: [`../scripts/provision_org_domains_candidates.sql`](../scripts/provision_org_domains_candidates.sql)  
+Runbook: [`../../RUNBOOKS/google-workspace-domains.md`](../../RUNBOOKS/google-workspace-domains.md)
+
 ## Fase G–L (034–049) — resumen
 
 | Rango | Tema | Prod |
@@ -85,7 +95,7 @@ Scripts de provision/smoke (monorepo root):
 - [`../../../scripts/deploy-billing-unified-greenfield.ps1`](../../../scripts/deploy-billing-unified-greenfield.ps1)
 - [`../../../scripts/smoke-billing-unified-sa.ps1`](../../../scripts/smoke-billing-unified-sa.ps1)
 
-Workspace scaffold (histórico): [`../../archive/DAKINIS-WORKSPACE.md`](../../archive/DAKINIS-WORKSPACE.md) · código [`../../../projects/workspace/`](../../../projects/workspace/)
+Workspace scaffold (código): [`../../../projects/workspace/`](../../../projects/workspace/)
 
 ## Seeds
 

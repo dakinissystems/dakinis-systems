@@ -12,17 +12,21 @@ import { dakinisHubProductEnabled } from "../../shared-brand/src/hub-product-acc
 import { dakinisWorkspaceAddonField } from "../../shared-brand/src/workspace-addons.js";
 import { HubProductIcon } from "../../shared-ux/src/HubProductIcon.jsx";
 import HubActionsPanel from "../../shared-ux/src/react/HubActionsPanel.jsx";
+import HubAttentionPanel from "../../shared-ux/src/react/HubAttentionPanel.jsx";
+import NotificationsCenter from "../../shared-ux/src/react/NotificationsCenter.jsx";
 import ActivityTimeline, { mapHubTimelineEvents } from "../../shared-ux/src/react/ActivityTimeline.jsx";
 import { dakinisHubT } from "../../shared-ux/src/hub-i18n.js";
+import { deriveHubAttention } from "../../shared-ux/src/hub-attention.js";
 import { dashboardCardStyles } from "../../shared-ux/src/DashboardCard.jsx";
 
 /**
  * Página referencia Hub «Mi día primero» — copiar/adaptar en repo dakinis-hub.
- * @param {{ userName?: string; dashboard?: object }} props
+ * @param {{ userName?: string; dashboard?: object; loading?: boolean }} props
  */
 export default function HubDashboardPage({
   userName = "Usuario",
   dashboard = null,
+  loading = false,
   sidebar = null,
   headerExtra = null,
   HeaderExtraComponent = null,
@@ -36,8 +40,15 @@ export default function HubDashboardPage({
   const apps = dashboard?.apps || [];
   const workspaceAddons = dashboard?.workspaceAddons || [];
   const enabledProducts = dashboard?.enabledProducts || null;
-  const recommendedActions = dashboard?.actions || [];
-  const timelineEvents = mapHubTimelineEvents(dashboard?.db?.timeline || []);
+  const recommendedActions = loading ? [] : dashboard?.actions || [];
+  const timelineEvents = loading ? [] : mapHubTimelineEvents(dashboard?.db?.timeline || []);
+  const attention = loading ? { count: 0, items: [], products: [] } : deriveHubAttention(dashboard);
+  const orgLabel =
+    dashboard?.orgContext?.locationName ||
+    dashboard?.orgContext?.ventureName ||
+    dashboard?.orgContext?.organizationName ||
+    dashboard?.workspace?.name ||
+    null;
 
   function widgetsForSection(sectionId) {
     const widgets = getWidgetsForSection(sectionId);
@@ -45,6 +56,22 @@ export default function HubDashboardPage({
     return widgets.filter(
       (w) => w.product === "hub" || dakinisHubProductEnabled(w.product, enabledProducts)
     );
+  }
+
+  function handleAttentionItem(item) {
+    if (item?.action) {
+      dakinisRunHubRecommendedAction(item.action, { apps, onAppOpen });
+      return;
+    }
+    if (item?.product && onAppOpen) {
+      const app = apps.find((a) => a.id === item.product || a.product === item.product);
+      if (app) onAppOpen(app);
+    }
+  }
+
+  function handleAttentionProduct(p) {
+    const app = apps.find((a) => a.id === p.id || a.product === p.product);
+    if (app && onAppOpen) onAppOpen(app);
   }
 
   return (
@@ -56,7 +83,13 @@ export default function HubDashboardPage({
             <div>
               <h1 className="dakinis-hub-header__title">Hola, {userName}</h1>
               <p className="dakinis-hub-header__subtitle">
-                {dashboard?.miDiaEnabled ? "Tu día en Dakinis" : "Centro de la suite Dakinis"}
+                {loading
+                  ? "Cargando tu día…"
+                  : orgLabel
+                    ? orgLabel
+                    : dashboard?.miDiaEnabled
+                      ? "Tu día en Dakinis"
+                      : "Centro de la suite Dakinis"}
               </p>
             </div>
             {HeaderExtraComponent ? (
@@ -81,7 +114,14 @@ export default function HubDashboardPage({
         .dakinis-dashboard-card--app-launcher .dakinis-dashboard-card__value { font-size: 1.15rem; font-weight: 600; }
       `}</style>
       <div className="dakinis-hub-dashboard">
-        {recommendedActions.length > 0 ? (
+        <HubAttentionPanel
+          dashboard={dashboard}
+          loading={loading}
+          t={(key) => dakinisHubT(key, locale)}
+          onItem={handleAttentionItem}
+          onProduct={handleAttentionProduct}
+        />
+        {!loading && recommendedActions.length > 0 && attention.count === 0 ? (
           <HubActionsPanel
             actions={recommendedActions}
             t={(key) => dakinisHubT(key, locale)}
@@ -97,9 +137,14 @@ export default function HubDashboardPage({
               </h2>
               <div className="dakinis-hub-section__grid">
                 {widgets.length === 0 ? (
-                  <DashboardCard title={section.title} value="—" status="Próximamente" />
+                  <DashboardCard title={section.title} value="—" status="Próximamente" loading={loading} />
                 ) : (
                   widgets.map((w) => {
+                    if (loading) {
+                      return (
+                        <DashboardCard key={w.id} title={w.title} icon={w.icon} loading />
+                      );
+                    }
                     const display = getWidgetDisplay(w.id, widgetValues);
                     const widgetAction = dakinisResolveHubWidgetOpen(w, apps);
                     return (
@@ -131,6 +176,14 @@ export default function HubDashboardPage({
                     onAction={(actionId) =>
                       dakinisRunHubRecommendedAction(actionId, { apps, onAppOpen })
                     }
+                  />
+                </div>
+              ) : null}
+              {section.id === "notifications" && !loading ? (
+                <div className="dakinis-hub-section__notifications" style={{ marginTop: "1rem" }}>
+                  <NotificationsCenter
+                    items={dashboard?.notifications || []}
+                    t={(key) => dakinisHubT(key, locale)}
                   />
                 </div>
               ) : null}

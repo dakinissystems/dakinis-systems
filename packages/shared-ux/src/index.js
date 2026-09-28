@@ -17,6 +17,7 @@ export { HubProductIcon } from "./HubProductIcon.jsx";
 export * from "./hub-widget-actions.js";
 export * from "./hub-widget-values.js";
 export * from "./hub-i18n.js";
+export * from "./hub-attention.js";
 export { default as ActivityTimeline } from "./react/ActivityTimeline.jsx";
 export { default as AiAction } from "./react/AiAction.jsx";
 export { default as AiConfidence } from "./react/AiConfidence.jsx";
@@ -35,6 +36,7 @@ export {
 } from "./react/CommandPalette.jsx";
 export { default as HubWidgetGrid } from "./react/HubWidgetGrid.jsx";
 export { default as HubActionsPanel } from "./react/HubActionsPanel.jsx";
+export { default as HubAttentionPanel } from "./react/HubAttentionPanel.jsx";
 export {
   getIllustration,
   ILLUSTRATION_KEYS,

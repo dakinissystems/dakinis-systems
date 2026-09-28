@@ -1,7 +1,7 @@
 -- Supabase — bootstrap schemas lógicos v2 (Dakinis Platform)
 -- Ejecutar en el proyecto Supabase "Dakinis Production".
 -- NO mueve tablas existentes; prepara migración gradual desde dakinis_* / public.
--- Ver docs/STATUS.md · Fase LifeFlow → docs/ROADMAP.md
+-- Ver docs/STATUS.md · estado → docs/STATUS.md
 
 CREATE EXTENSION IF NOT EXISTS vector;
 

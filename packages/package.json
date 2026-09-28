@@ -5,6 +5,7 @@
   "description": "Dakinis Experience System (DES) — monorepo npm. Target repo: github.com/dakinissystems/dakinis-shared",
   "type": "module",
   "workspaces": [
+    "design-system",
     "shared-des",
     "shared-brand",
     "shared-ux",
@@ -20,7 +21,7 @@
   "scripts": {
     "audit": "node design-audit/src/audit.mjs",
     "sync-brand": "node ../scripts/sync-shared-brand.mjs",
-    "test:imports": "node -e \"import('./shared-des/src/index.js').then(() => console.log('shared-des OK'))\""
+    "test:imports": "node -e \"import('./shared-des/src/index.js').then(() => console.log('shared-des OK')); import('./design-system/src/index.js').then(() => console.log('design-system OK'))\""
   },
   "engines": {
     "node": ">=20"

@@ -117,6 +117,14 @@ Asistente consolas: `.\scripts\security-console-checklist.ps1`
 | Monitorización / uptime | [`OPERATIONS.md#monitorizacion`](./OPERATIONS.md#monitorizacion) |
 | Leak de secretos (Gitleaks) | [`SECRET-LEAK-REMEDIATION.md`](./SECRET-LEAK-REMEDIATION.md) |
 | Reglas Gateway | [`rules.md`](./rules.md) |
-| Histórico jul ops | [`archive/CHANGELOG-ops-2026-07.md`](./archive/CHANGELOG-ops-2026-07.md) |
-
 P2+ (JWT servicio, audit log, RBAC, Guardian, mTLS, Vault, SIEM) → diferido hasta escala; no bloquear go-live.
+
+---
+
+## Hallazgos abiertos (revisión local 20 sep 2026)
+
+| Severidad | Área | Estado |
+|-----------|------|--------|
+| High | Guardian AI: pipeline `enqueueModerationAiEvaluate` / worker `akoenet.moderation-ai` | ✅ restaurado (WIP que lo quitaba descartado; worker + enqueue intactos en `main`) |
+| Medium | Rate-limit tenant: headers/query spoofable | ✅ `resolveTenantId` solo path `/workspaces/{uuid}/…` |
+| Medium | Org context: membership + venture/location scoped al workspace | ✅ `org-ventures.setUserOrgContext` |

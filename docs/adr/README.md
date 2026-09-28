@@ -19,6 +19,7 @@ Registro de decisiones arquitectónicas Dakinis. Formato: **contexto → decisi�
 | [ADR-013](./ADR-013-connectors.md) | Connectors / Channel Bus |
 | [ADR-014](./ADR-014-hospitality-event-bus.md) | Event Bus hospitality |
 | [ADR-015](./ADR-015-price-resolver.md) | PriceResolver strategy |
+| [ADR-016](./ADR-016-org-venture-location.md) | Organization → Venture → Location |
 
 Índice por dominios → [`../architecture/README.md`](../architecture/README.md)
 

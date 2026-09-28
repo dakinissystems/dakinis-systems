@@ -1,7 +1,6 @@
 # Documentación Dakinis Systems
 
-Repositorio de **orquestación** (gateway, Docker, SQL, legal, scripts).  
-Mapa de repos (histórico) → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md).
+Repositorio de **orquestación** (gateway, Docker, SQL, legal, scripts).
 
 ---
 
@@ -11,7 +10,6 @@ Mapa de repos (histórico) → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md
 |------------|-----|-----------|
 | **Estado hoy** | [`STATUS.md`](./STATUS.md) | Eng · Ops · CEO |
 | **Mapa de sistemas** | [`SYSTEMS.md`](./SYSTEMS.md) | Eng · Product |
-| **Qué viene** | [`ROADMAP.md`](./ROADMAP.md) | CEO · Product |
 | **Arquitectura** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Eng |
 | **Arquitectura por dominios** | [`architecture/README.md`](./architecture/README.md) | Eng |
 | **Hospitality / CRM / Connectors** | [`domains/`](./domains/) · [`platform/core.md`](./platform/core.md) | Eng · Product |
@@ -28,23 +26,18 @@ Mapa de repos (histórico) → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md
 | **Guías eng** | [`guides/`](./guides/) | Eng |
 | **Contratos HTTP** | [`contracts/`](./contracts/) | Eng |
 | **Producto AkoeNet AI** | [`AKOENET-ASSISTANT.md`](./AKOENET-ASSISTANT.md) | Eng · Product |
-| **Histórico / drafts** | [`archive/`](./archive/) — **no SoT** | — |
-
-Copy marketing borrador: [`company/LANDING-COPY.md`](./company/LANDING-COPY.md) (no es landing live).
 
 ---
 
 ## Reglas
 
-1. **Estado y pendientes** → solo [`STATUS.md`](./STATUS.md).
-2. **Roadmap** → [`ROADMAP.md`](./ROADMAP.md) (plan; no afirma “ya cobramos”).
-3. **Arquitectura estable** → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · dominios → [`architecture/`](./architecture/) · mapa → [`SYSTEMS.md`](./SYSTEMS.md).
-4. **ADRs** = por qué; **changelog técnico** = qué pasó ([`architecture/changelog/`](./architecture/changelog/)).
-5. **Ops** → [`OPERATIONS.md`](./OPERATIONS.md) + [`RUNBOOKS/`](./RUNBOOKS/).
-6. **Seguridad** → [`SECURITY.md`](./SECURITY.md).
-7. **No usar** prefijo `TEMP-` para decisiones de arquitectura.
-8. **No editar** `archive/` como si fuera vivo; enlaces internos del archive pueden estar rotos a propósito.
-9. No documentar como “en prod” lo que solo está en una feature branch.
+1. **Estado y pendientes** → solo [`STATUS.md`](./STATUS.md). No hay doc de roadmap separado.
+2. **Arquitectura estable** → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · dominios → [`architecture/`](./architecture/) · mapa → [`SYSTEMS.md`](./SYSTEMS.md).
+3. **ADRs** = por qué; **changelog técnico** = qué pasó ([`architecture/changelog/`](./architecture/changelog/)).
+4. **Ops** → [`OPERATIONS.md`](./OPERATIONS.md) + [`RUNBOOKS/`](./RUNBOOKS/).
+5. **Seguridad** → [`SECURITY.md`](./SECURITY.md).
+6. **No usar** prefijo `TEMP-` para decisiones de arquitectura.
+7. No documentar como “en prod” lo que solo está en una feature branch.
 
 Snapshot automático:
 
@@ -54,4 +47,4 @@ node scripts/generate-docs-status.mjs
 
 ---
 
-*Docs hygiene · ago 2026.*
+*Docs hygiene · sep 2026 — solo SoT de sistema / ops / legal / comercial canónico.*

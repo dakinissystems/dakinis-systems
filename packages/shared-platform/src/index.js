@@ -16,7 +16,26 @@ export { registerCachedQuery, executeCachedQuery } from "./cached-query.js";
 export { createPlatformContext, createContextFromRequest } from "./platform-context.js";
 export { CacheService } from "./cache-service.js";
 export { CapabilityRegistry, platformCapabilities } from "./capability-registry.js";
-export { PERMISSIONS, hasPermission, hasAllPermissions } from "./permissions.js";
+export {
+  PRODUCT_CAPABILITIES,
+  MODULE_TO_CAPABILITY,
+  buildNavFromCapabilities,
+  tenantHasCapability,
+  resolveTenantCapabilities,
+} from "./product-capabilities.js";
+export { PERMISSIONS, ROLE_PRESETS, hasPermission, hasAllPermissions } from "./permissions.js";
+export { evaluatePolicy, assertPolicy } from "./policy-engine.js";
+export {
+  DAKINIS_EVENT_TYPES,
+  EVENT_TRANSPORT,
+  createDakinisEvent,
+} from "./events.js";
+export { subscribeDakinisEvents } from "./event-sse.js";
+export {
+  UI_STATES,
+  normalizeUiError,
+  uiStateFromError,
+} from "./ui-states.js";
 export {
   background,
   enqueue as enqueueBackground,

@@ -1,6 +1,6 @@
 {
   "name": "@dakinis/shared-platform",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -14,7 +14,12 @@
     "./cached-query": "./src/cached-query.js",
     "./command-middleware": "./src/command-middleware.js",
     "./capabilities": "./src/capability-registry.js",
+    "./product-capabilities": "./src/product-capabilities.js",
     "./permissions": "./src/permissions.js",
+    "./policy": "./src/policy-engine.js",
+    "./events": "./src/events.js",
+    "./event-sse": "./src/event-sse.js",
+    "./ui-states": "./src/ui-states.js",
     "./director-state": "./src/state-machines/director.js",
     "./gateway-client": "./src/gateway-client.js"
   },

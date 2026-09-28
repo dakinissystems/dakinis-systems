@@ -1,5 +1,6 @@
 /** Timeline de actividad Hub — interactivo, sin datos mock. */
 import { EMPTY_EVENTS } from "./constants.js";
+import { resolveHubT } from "../hub-i18n.js";
 
 export default function ActivityTimeline({
   events = EMPTY_EVENTS,
@@ -7,27 +8,33 @@ export default function ActivityTimeline({
   onAction,
   t = (k) => k,
 }) {
+  const title = resolveHubT(t, "hub.timeline.title", "Actividad reciente");
+
   if (loading) {
     return (
-      <section className="hub-activity card" aria-label={t("hub.timeline.title")}>
-        <h4 className="hub-activity__title">{t("hub.timeline.title")}</h4>
-        <p className="hub-activity__empty">{t("hub.timeline.loading") || "Cargando…"}</p>
+      <section className="hub-activity card" aria-label={title}>
+        <h4 className="hub-activity__title">{title}</h4>
+        <p className="hub-activity__empty">
+          {resolveHubT(t, "hub.timeline.loading", "Cargando…")}
+        </p>
       </section>
     );
   }
 
   if (!events.length) {
     return (
-      <section className="hub-activity card" aria-label={t("hub.timeline.title")}>
-        <h4 className="hub-activity__title">{t("hub.timeline.title")}</h4>
-        <p className="hub-activity__empty">{t("hub.timeline.empty") || "Sin actividad reciente"}</p>
+      <section className="hub-activity card" aria-label={title}>
+        <h4 className="hub-activity__title">{title}</h4>
+        <p className="hub-activity__empty">
+          {resolveHubT(t, "hub.timeline.empty", "Sin actividad reciente")}
+        </p>
       </section>
     );
   }
 
   return (
-    <section className="hub-activity card" aria-label={t("hub.timeline.title")}>
-      <h4 className="hub-activity__title">{t("hub.timeline.title")}</h4>
+    <section className="hub-activity card" aria-label={title}>
+      <h4 className="hub-activity__title">{title}</h4>
       <ol className="hub-activity__list">
         {events.map((ev) => (
           <li key={ev.id} className={`hub-activity__item${ev.ai ? " hub-activity__item--ai" : ""}`}>

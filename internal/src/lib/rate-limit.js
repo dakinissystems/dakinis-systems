@@ -34,22 +34,18 @@ export function resolveRateLimitTier(pathname) {
 }
 
 /**
- * @param {import('http').IncomingMessage} req
+ * Tenant/workspace id for rate-limit buckets.
+ * Only path-bound UUIDs are trusted — never headers or query params
+ * (spoofable → cross-tenant DoS on tenant-global buckets).
+ *
+ * @param {import('http').IncomingMessage} _req
  * @param {URL} url
  */
-export function resolveTenantId(req, url) {
-  const fromQuery =
-    url.searchParams.get("tenantId") ||
-    url.searchParams.get("tenant_id") ||
-    url.searchParams.get("workspaceId") ||
-    "";
-  const h = req.headers || {};
-  const fromHeader =
-    (typeof h["x-tenant-id"] === "string" && h["x-tenant-id"]) ||
-    (typeof h["x-business-id"] === "string" && h["x-business-id"]) ||
-    (typeof h["x-dakinis-tenant"] === "string" && h["x-dakinis-tenant"]) ||
-    "";
-  return String(fromQuery || fromHeader || "").trim();
+export function resolveTenantId(_req, url) {
+  const bare = url.pathname || "";
+  // /workspaces/{uuid}/… (not /workspaces/me/…)
+  const m = bare.match(/^\/workspaces\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\/|$)/i);
+  return m ? m[1] : "";
 }
 
 /**

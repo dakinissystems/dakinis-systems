@@ -1,9 +1,8 @@
 # Dakinis Systems — Arquitectura
 
-> **Estado vigente** · agosto 2026 · decisiones de arquitectura y capas.  
+> **Estado vigente** · septiembre 2026 · decisiones de arquitectura y capas.  
 > **Estado operativo (qué está vivo):** [`STATUS.md`](./STATUS.md) · mapa → [`SYSTEMS.md`](./SYSTEMS.md) · dominios Core → [`architecture/README.md`](./architecture/README.md)  
-> Ops → [`OPERATIONS.md`](./OPERATIONS.md) · ADRs → [`adr/`](./adr/) · estrategia → [`company/STRATEGY.md`](./company/STRATEGY.md)  
-> Histórico (no SoT): [`archive/`](./archive/)
+> Ops → [`OPERATIONS.md`](./OPERATIONS.md) · ADRs → [`adr/`](./adr/) · estrategia → [`company/STRATEGY.md`](./company/STRATEGY.md)
 
 ---
 
@@ -173,7 +172,7 @@ flowchart TB
   MID --> INTAPI[Internal API]
 ```
 
-Identidad de **workspace** en `meta` — no en Core ni Billing. Diseño histórico → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md).
+Identidad de **workspace** en `meta` — no en Core ni Billing. Ver [`SYSTEMS.md`](./SYSTEMS.md) y Hub en prod.
 
 ---
 
@@ -412,7 +411,7 @@ flowchart TB
   COREW -.->|API| GW
 ```
 
-Mapa dominios y variables → [`OPERATIONS.md`](./OPERATIONS.md) · repos → [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md).
+Mapa dominios y variables → [`OPERATIONS.md`](./OPERATIONS.md).
 
 ---
 
@@ -616,7 +615,7 @@ Los productos **consumen** capacidades vía Gateway o Internal API — no las re
 | Events / Automation | 🔄 BullMQ | Billing→Core, `@AI` |
 | Storage, Integrations, Marketplace, Banking | ⬜ Q4+ | Solo bajo demanda cliente |
 
-Detalle Hub (histórico) → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md) · Servicios Railway → [`OPERATIONS.md`](./OPERATIONS.md) · estado → [`STATUS.md`](./STATUS.md).
+Servicios Railway → [`OPERATIONS.md`](./OPERATIONS.md) · estado → [`STATUS.md`](./STATUS.md).
 
 ---
 
@@ -654,7 +653,7 @@ Orden SQL: [`supabase/migrations/RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.
 
 ### Railway — ✅
 
-Contenedores · mapa servicios: [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md) · deploy: [`OPERATIONS.md`](./OPERATIONS.md)
+Deploy / mapa servicios: [`OPERATIONS.md`](./OPERATIONS.md) · [`SYSTEMS.md`](./SYSTEMS.md)
 
 ### Storage — ⬜
 
@@ -702,7 +701,7 @@ mindmap
 Experiencia **inspirada en** Microsoft 365 / Zoho One (un escritorio, muchas apps); detalle comercial → [`company/STRATEGY.md`](./company/STRATEGY.md).
 
 Mensaje comercial → [`company/MESSAGING.md`](./company/MESSAGING.md)  
-Diseño admin (histórico) → [`archive/HUB-WORKSPACE.md`](./archive/HUB-WORKSPACE.md) · SQL migr. `031` · contrato [`admin-api.json`](./contracts/admin-api.json)
+SQL migr. `031` · contrato [`admin-api.json`](./contracts/admin-api.json) · [`SYSTEMS.md`](./SYSTEMS.md)
 
 
 Registries: `HUB_DASHBOARD_SECTIONS` · `HUB_WIDGET_REGISTRY` en `@dakinis/shared-ux`.
@@ -767,7 +766,7 @@ Monorepo [`dakinis-shared`](https://github.com/dakinissystems/dakinis-shared) ·
 
 Foundations → Tokens → Components → Patterns → Layouts → Animations · A11y · Icons · Charts · Copywriting.
 
-No se despliega en Railway. Ver [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md).
+No se despliega en Railway. Mapa → [`SYSTEMS.md`](./SYSTEMS.md).
 
 ### SDK — 🔄
 
@@ -779,7 +778,7 @@ Implementado: `ai`, `core`, `lifeflow`, `platform-services` · mirror [`packages
 
 ## Products
 
-Detalle funcional por producto → [`SYSTEMS.md`](./SYSTEMS.md) · histórico → [`archive/PRODUCTS.md`](./archive/PRODUCTS.md) (no usar como estado).
+Detalle funcional por producto → [`SYSTEMS.md`](./SYSTEMS.md).
 
 | Producto | Repo | BD | Consume platform |
 |----------|------|-----|------------------|
@@ -840,7 +839,7 @@ flowchart BT
 
 ## Marketplace (capacidad platform) ⬜
 
-Apps · Plugins · Templates · Automations · AI Agents · Themes — **roadmap**, no servicio activo. Solo si un cliente lo pide ([`ROADMAP.md`](./ROADMAP.md)).
+Apps · Plugins · Templates · Automations · AI Agents · Themes — **no servicio activo**. Solo si un cliente lo pide ([`STATUS.md`](./STATUS.md)).
 
 ---
 
@@ -880,7 +879,7 @@ Carpeta `DND/` = desarrollo local **Tabletop** (repo `dakinis-tabletop`). En doc
 
 Ver [§12 Despliegue Railway](#12-despliegue-railway) en Arquitectura visual.
 
-Mapa deploy: [`OPERATIONS.md`](./OPERATIONS.md) · repos: [`archive/GITHUB-ORG.md`](./archive/GITHUB-ORG.md)
+Mapa deploy: [`OPERATIONS.md`](./OPERATIONS.md) · [`SYSTEMS.md`](./SYSTEMS.md)
 
 ---
 
