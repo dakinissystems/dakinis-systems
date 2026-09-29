@@ -245,6 +245,7 @@ Discord-like. `content-visibility` en filas chat (**hecho**); windowing Virtuoso
 | **Hub SSE client** | useHubLiveEvents + /api/hub/events/stream | P-EVT |
 | **plan-access ERP paths** | inventory/sales/reports + capability check | P-RBAC |
 | **F1 coverage flag** | internal `hub-f1-coverage` → `dashboard.f1` | F1 |
+| **Core→Hub timeline** | hospitality `hub-timeline-bridge` + `seed_copernico_hub_timeline.sql` | F1 pedidos/ventas/stock → Mi día |
 
 ---
 
@@ -319,7 +320,7 @@ Prioridad: **P0** bloquea demo/pago · **P1** UX/perf claro · **P2** higiene/es
 | P-EVT | Event bus + SSE Hub/Core/SA | P1 | notifications SSE ✅; Hub client + proxy ✅ |
 | P-ATT | Hub Attention con datos reales (stock, reservas, facturas) | P0 | Internal `attention[]` ✅; falta más fuentes live |
 | P-RBAC | Permisos `crm.contact.read` etc. en API + UI | P1 | plan-access + capabilities en rutas ERP ✅; permission keys fine-grained ⬜ |
-| F1 | Widgets Mi dia datos reales ≥2 productos | P0 | `f1.f1Ready` en dashboard ✅; depende de DB hub.v1_get_dashboard |
+| F1 | Widgets Mi dia datos reales ≥2 productos | P0 | Código: seed + hospitality→timeline bridge ✅; **SQL seed pendiente en Supabase prod** |
 | P-SEARCH | Global Search multi-dominio | P2 | ⬜ |
 | P-HEALTH | Dakinis Health interno (platform + products) | P2 | ⬜ |
 | P-MOB | Mobile strategy: hospitality first / reports desktop | P2 | ⬜ |
@@ -328,7 +329,7 @@ Prioridad: **P0** bloquea demo/pago · **P1** UX/perf claro · **P2** higiene/es
 
 | ID | Mejora | Donde | P |
 |----|--------|-------|---|
-| F1 | Widgets Mi dia datos reales ≥2 productos | Hub + Internal | P0 |
+| F1 | Widgets Mi dia datos reales ≥2 productos | Hub + Internal | P0 | Seed Copérnico + Core→Hub bridge en código; aplicar `seed_copernico_hub_timeline.sql` en prod |
 | F2 | Seed Calle Brava / Armala + OrgContext | Hub + SQL | P1 |
 | F3 | Invite + demo Copernico E2E | Ops | P0 |
 | F4 | Command palette hospitality hits API | Core | P2 |
