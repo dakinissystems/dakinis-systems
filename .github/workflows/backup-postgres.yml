@@ -1,5 +1,7 @@
 name: Postgres backup
 
+# Cliente pg_dump vía imagen Postgres 17 (Supabase prod = 17.x).
+
 on:
   schedule:
     - cron: "0 3 * * *"
@@ -12,22 +14,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
       - name: pg_dump to artifact
         env:
           DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          PG_IMAGE: pgvector/pgvector:pg17
         run: |
-          if [ -z "$DATABASE_URL" ]; then
+          set -euo pipefail
+          if [ -z "${DATABASE_URL:-}" ]; then
             echo "::warning::BACKUP_DATABASE_URL not set. Use scripts/backup-postgres.ps1 locally."
             exit 0
           fi
+
           # Prefer session pooler (IPv4) over direct db.*.supabase.co (often IPv6-only)
           DUMP_URL="$(node scripts/pg-dump-compatible-url.mjs)"
           node scripts/pg-dump-compatible-url.mjs --summary
-          pg_dump "$DUMP_URL" --no-owner --no-acl | gzip > backup.sql.gz
-          ls -lh backup.sql.gz
+
+          docker run --rm \
+            -e DATABASE_URL="$DUMP_URL" \
+            -v "$PWD:/out" \
+            "$PG_IMAGE" \
+            bash -c 'set -euo pipefail
+              pg_dump "$DATABASE_URL" --no-owner --no-acl \
+                --exclude-schema=vault \
+                --exclude-schema=pgsodium \
+                --exclude-schema=graphql \
+                --exclude-schema=graphql_public \
+                --exclude-schema=realtime \
+                --exclude-schema=_realtime \
+                --exclude-schema=supabase_functions \
+                --exclude-schema=net \
+                --exclude-schema=pgbouncer \
+                | gzip -c > /out/backup.sql.gz
+              ls -lh /out/backup.sql.gz'
 
       - uses: actions/upload-artifact@v4
         if: hashFiles('backup.sql.gz') != ''
