@@ -2,6 +2,7 @@ name: Postgres restore test
 
 # Prueba mensual de que un backup reciente se puede restaurar.
 # Requiere BACKUP_DATABASE_URL (misma URL que backup-postgres.yml).
+# Cliente y contenedor en Postgres 17 (Supabase prod = 17.x).
 
 on:
   schedule:
@@ -15,34 +16,53 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
       - name: Dump and restore to ephemeral database
         env:
           DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          PG_IMAGE: pgvector/pgvector:pg17
         run: |
           set -euo pipefail
-          if [ -z "$DATABASE_URL" ]; then
+          if [ -z "${DATABASE_URL:-}" ]; then
             echo "::warning::BACKUP_DATABASE_URL not set — skip restore test."
             exit 0
           fi
+
           # GitHub Actions often lacks IPv6; rewrite db.*.supabase.co → session pooler :5432
           DUMP_URL="$(node scripts/pg-dump-compatible-url.mjs)"
           node scripts/pg-dump-compatible-url.mjs --summary
-          pg_dump "$DUMP_URL" --no-owner --no-acl | gzip > backup.sql.gz
-          ls -lh backup.sql.gz
+
+          # pg_dump must be ≥ server major (Supabase 17.x). Match local restore-postgres-test.mjs.
+          docker run --rm \
+            -e DATABASE_URL="$DUMP_URL" \
+            -v "$PWD:/out" \
+            "$PG_IMAGE" \
+            bash -c 'set -euo pipefail
+              pg_dump "$DATABASE_URL" --no-owner --no-acl \
+                --exclude-schema=vault \
+                --exclude-schema=pgsodium \
+                --exclude-schema=graphql \
+                --exclude-schema=graphql_public \
+                --exclude-schema=realtime \
+                --exclude-schema=_realtime \
+                --exclude-schema=supabase_functions \
+                --exclude-schema=net \
+                --exclude-schema=pgbouncer \
+                | gzip -c > /out/backup.sql.gz
+              ls -lh /out/backup.sql.gz'
+
           docker run -d --name pg-restore-test \
             -e POSTGRES_PASSWORD=test \
             -e POSTGRES_USER=test \
             -e POSTGRES_DB=restore_test \
-            postgres:15
+            "$PG_IMAGE"
+
           for i in $(seq 1 30); do
             if docker exec pg-restore-test pg_isready -U test -d restore_test >/dev/null 2>&1; then
               break
             fi
             sleep 2
           done
+
           gunzip -c backup.sql.gz | docker exec -i pg-restore-test psql -U test -d restore_test -v ON_ERROR_STOP=1
           docker exec pg-restore-test psql -U test -d restore_test -c '\dn'
           docker rm -f pg-restore-test
