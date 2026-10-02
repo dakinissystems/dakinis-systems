@@ -13,6 +13,6 @@
   },
   "optionalDependencies": {
     "redis": "^6.2.1",
-    "bullmq": "^5.41.0"
+    "bullmq": "^6.3.8"
   }
 }
