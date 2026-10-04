@@ -72,6 +72,11 @@ export default function HubAttentionPanel({
                 <span className="hub-attention__body">
                   <span className="hub-attention__label">{item.title}</span>
                   {item.detail ? <span className="hub-attention__detail">{item.detail}</span> : null}
+                  {item.impact ? <span className="hub-attention__impact">{item.impact}</span> : null}
+                  {item.recommendation ? (
+                    <span className="hub-attention__rec">{item.recommendation}</span>
+                  ) : null}
+                  {item.ctaLabel ? <span className="hub-attention__cta">{item.ctaLabel}</span> : null}
                 </span>
               </button>
             </li>
@@ -142,6 +147,13 @@ const ATTENTION_CSS = `
   .hub-attention__body { min-width: 0; }
   .hub-attention__label { display: block; font-weight: 600; font-size: 0.9rem; line-height: 1.35; }
   .hub-attention__detail { display: block; font-size: 0.78rem; opacity: 0.7; margin-top: 0.15rem; line-height: 1.4; }
+  .hub-attention__impact { display: block; font-size: 0.76rem; opacity: 0.85; margin-top: 0.25rem; line-height: 1.35; color: var(--dakinis-warning, #fbbf24); }
+  .hub-attention__rec { display: block; font-size: 0.76rem; opacity: 0.75; margin-top: 0.15rem; line-height: 1.35; }
+  .hub-attention__cta {
+    display: inline-block; margin-top: 0.4rem; padding: 0.2rem 0.55rem; border-radius: 0.4rem;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em;
+    background: rgba(45, 212, 191, 0.14); color: var(--dakinis-primary, #2dd4bf);
+  }
   .hub-attention__products { margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--dakinis-border, rgba(255,255,255,0.08)); }
   .hub-attention__products-title { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.65; }
   .hub-attention__product-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.25rem; }

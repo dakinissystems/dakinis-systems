@@ -6,6 +6,12 @@
 
 *¿Qué necesita un cliente para pagar por Dakinis este mes?*
 
+**Narrativa corta (externos):** [`WHAT-IS-DAKINIS.md`](./WHAT-IS-DAKINIS.md)
+
+**Frase oficial:**
+
+> Dakinis Systems es una plataforma de software que reúne herramientas para gestionar, automatizar y conectar negocios y comunidades desde un mismo ecosistema.
+
 ---
 
 ## Jerarquía única (usar siempre)
@@ -126,11 +132,13 @@ Detalle módulos (post-login) → [`../SYSTEMS.md`](../SYSTEMS.md).
 
 ---
 
-## Recorrido mental del cliente (guía de producto)
+## Recorrido mental del cliente (Golden Path)
 
 ```
-Landing → Auth → Hub → Dakinis One → IA + Knowledge → Pago → Retención
+Landing → Auth → Hub (Mi día) → Dakinis One → valor diario → Pago → Retención
 ```
+
+Otros productos (LifeFlow, StreamAutomator, AkoeNet, Tabletop) = **ecosistema**, no onboarding obligatorio.
 
 ---
 
