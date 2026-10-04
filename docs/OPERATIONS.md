@@ -32,8 +32,14 @@ npm run dev:full:ai
 .\scripts\backup-postgres.ps1
 ```
 
-**Demo Core:** `admin@restaurante-demo.local` / `demo123` · tenant `restaurante-demo`.  
-**Cliente fijo Copérnico (pro free):** Hub/Core `admin@heladeria-copernico.local` / `Copernico2026!` · tenant `heladeria-copernico`.
+**Cuentas demo (sin passwords en git):** emails y tenants abajo; contraseñas solo en gestor de secretos / vars locales (`DEMO_ADMIN_EMAIL`, `DEMO_ADMIN_PASSWORD`, `COPERNICO_ADMIN_EMAIL`, `COPERNICO_ADMIN_PASSWORD`).
+
+| Uso | Email (público OK) | Tenant slug |
+|-----|--------------------|-------------|
+| Demo Core | `admin@restaurante-demo.local` | `restaurante-demo` |
+| Piloto Copérnico (pro free) | `admin@heladeria-copernico.local` | `heladeria-copernico` |
+
+Si alguna password salió en historial de docs → rotar y ver [`SECRET-LEAK-REMEDIATION.md`](./SECRET-LEAK-REMEDIATION.md).
 
 Plantilla variables: [`railway.env.example`](./railway.env.example).
 

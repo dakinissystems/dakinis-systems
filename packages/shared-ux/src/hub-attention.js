@@ -8,6 +8,9 @@
  * @property {string} id
  * @property {string} title
  * @property {string} [detail]
+ * @property {string} [impact]
+ * @property {string} [recommendation]
+ * @property {string} [ctaLabel]
  * @property {'critical'|'warning'|'info'} [severity]
  * @property {string} [product]
  * @property {string} [href]
@@ -30,6 +33,9 @@ export function deriveHubAttention(dashboard) {
       id: a.id || `att_${i}`,
       title: a.title || a.message || "Atención",
       detail: a.detail || a.message,
+      impact: a.impact,
+      recommendation: a.recommendation,
+      ctaLabel: a.ctaLabel,
       severity: a.severity || "warning",
       product: a.product,
       href: a.href,
@@ -42,6 +48,9 @@ export function deriveHubAttention(dashboard) {
         id: a.id,
         title: a.title,
         detail: a.detail,
+        impact: a.impact,
+        recommendation: a.recommendation,
+        ctaLabel: a.ctaLabel,
         severity: a.severity || "info",
         product: a.product,
         href: a.href,

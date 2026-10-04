@@ -1,28 +1,34 @@
 # Dakinis — Estado actual
 
-> **Fuente canónica de estado** · actualizar al cerrar hitos · **8 ago 2026**  
-> Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Dominios Core → [`architecture/README.md`](./architecture/README.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
+> **Fuente canónica de estado** · actualizar al cerrar hitos · **3 oct 2026**  
+> Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Narrativa → [`company/WHAT-IS-DAKINIS.md`](./company/WHAT-IS-DAKINIS.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
 
 **Leyenda madurez:** 🟢 Production · 🟡 Beta · 🟠 MVP · ⚪ Experimental
 
 ---
 
-## Go-Live Score
+## Dual score (no confundir)
+
+| Métrica | Score | Pregunta |
+|---------|-------|----------|
+| **Technical Readiness** | ~90% | ¿La plataforma está levantada y coherente? |
+| **Commercial Readiness** | ~55% | ¿Un negocio real opera 30 días y puede pagar sin ti? |
 
 ```
-█████████░  90%
+Technical   █████████░  90%
+Commercial  █████░░░░░  55%
 ```
 
-| Área | Score | Bloqueador |
-|------|-------|------------|
-| Billing | 80% | E2E live sin cliente real |
-| Hub | 90% | Screenshot landing · widgets con datos reales |
-| Core | 92% | Piloto hospitality Copérnico · Hub widgets |
-| AI | 95% | Costes / cuotas por workspace |
-| Support / ops | 99% | UptimeRobot OK · ver [`OPERATIONS.md`](./OPERATIONS.md) |
-| Security | 99% | Gitleaks · CF RL · [`SECURITY.md`](./SECURITY.md) |
+| Área técnica | Score | Bloqueador comercial |
+|--------------|-------|----------------------|
+| Billing | 80% tech | E2E live + cliente de pago |
+| Hub | 90% tech | Attention operable · narrativa Landing |
+| Core | 92% tech | Piloto Copérnico feedback · multi-location demo |
+| AI | 95% tech | Cuotas workspace · tool-calling gated |
+| Ops / Security | 99% / 8 | Secrets fuera de docs ✅ · MFA CF ⬜ · staging ⬜ |
 
-**Piloto comercial:** 🟡 1 cliente fijo gratis (Heladería Copérnico) · **0 de pago**
+**Piloto:** 🟡 Heladería Copérnico (gratis) · **0 de pago**  
+**Golden Path:** Landing → Hub → Dakinis One → valor → Billing (ver WHAT-IS-DAKINIS).
 
 ---
 
@@ -123,5 +129,6 @@ Smokes → [`OPERATIONS.md`](./OPERATIONS.md).
 
 ---
 
-*Última actualización: 8 ago 2026.*  
-*Pregunta guía: ¿Qué necesita un cliente para pagar por Dakinis este mes?*
+*Última actualización: 3 oct 2026.*  
+*Pregunta guía: ¿Puede un restaurante real usar Dakinis 30 días y pagar sin que intervengas?*  
+*Prioridades → [`_TEMP-dakinis-sistema-completo.md`](./_TEMP-dakinis-sistema-completo.md)*
