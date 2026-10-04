@@ -1,28 +1,19 @@
 /**
- * Acciones recomendadas para Hub «Mi día» — problem → impact → action.
- * @param {{ db?: object; summary?: object; enabledProducts?: string[] }} dashboard
+ * Acciones para Hub «Mi día».
+ * Cada ítem: qué pasa → por qué importa → qué hacer.
  */
+
+function label(n, singular, plural) {
+  return n === 1 ? singular : plural.replace("{n}", String(n));
+}
 
 /**
- * @typedef {{
- *   id: string;
- *   severity: 'info'|'warning'|'critical';
- *   title: string;
- *   detail?: string;
- *   impact?: string;
- *   recommendation?: string;
- *   ctaLabel?: string;
- *   action: string;
- *   product?: string;
- *   href?: string;
- * }} HubAction
+ * @param {{ db?: object; summary?: object; enabledProducts?: string[] }} dashboard
  */
-
 export function buildRecommendedActions(dashboard = {}) {
   const db = dashboard.db || {};
   const summary = dashboard.summary || {};
   const products = new Set(dashboard.enabledProducts || ["core"]);
-  /** @type {HubAction[]} */
   const actions = [];
 
   const unread = Number(summary.notificationsUnread ?? db.unread_notifications ?? 0);
@@ -30,10 +21,10 @@ export function buildRecommendedActions(dashboard = {}) {
     actions.push({
       id: "notifications-unread",
       severity: unread > 10 ? "warning" : "info",
-      title: unread === 1 ? "Tienes 1 notificación nueva" : `Tienes ${unread} notificaciones nuevas`,
-      detail: "Hay avisos sin leer en tu bandeja",
-      impact: "Puedes perder pedidos, stock o cobros si no los revisas",
-      recommendation: "Abre la bandeja y resuelve lo crítico primero",
+      title: label(unread, "Tienes 1 notificación nueva", "Tienes {n} notificaciones nuevas"),
+      detail: "Hay avisos sin leer",
+      impact: "Puede haber pedidos, stock o cobros esperando",
+      recommendation: "Mira primero lo urgente",
       ctaLabel: "Ver bandeja",
       action: "open-notifications",
       product: "hub",
@@ -46,10 +37,10 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "core-orders",
         severity: "warning",
-        title: pending === 1 ? "1 pedido espera tu atención" : `${pending} pedidos esperan tu atención`,
-        detail: "Hay comandas abiertas sin cerrar",
-        impact: pending === 1 ? "Un cliente espera preparación o entrega" : `${pending} clientes pueden sufrir demora`,
-        recommendation: "Confirma, prepara o asigna los pedidos pendientes",
+        title: label(pending, "1 pedido espera tu atención", "{n} pedidos esperan tu atención"),
+        detail: "Comandas abiertas sin cerrar",
+        impact: pending === 1 ? "Un cliente está esperando" : `${pending} clientes pueden estar esperando`,
+        recommendation: "Confirma o asigna lo pendiente",
         ctaLabel: "Ver pedidos",
         action: "open-core-orders",
         product: "core",
@@ -61,10 +52,10 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "core-stock",
         severity: "critical",
-        title: lowStock === 1 ? "Un producto con stock crítico" : `${lowStock} productos con stock crítico`,
-        detail: "Inventario por debajo del mínimo",
-        impact: "Riesgo de romper la carta o cortar ventas hoy",
-        recommendation: "Revisa cantidades y crea pedido de reposición",
+        title: label(lowStock, "Un producto con stock crítico", "{n} productos con stock crítico"),
+        detail: "Por debajo del mínimo",
+        impact: "Hoy puedes quedarte sin algo de la carta",
+        recommendation: "Revisa cantidades y pide reposición",
         ctaLabel: "Ver inventario",
         action: "open-core-inventory",
         product: "core",
@@ -76,9 +67,9 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "core-appointments",
         severity: "info",
-        title: appointments === 1 ? "Tienes 1 cita hoy" : `Tienes ${appointments} citas hoy`,
-        detail: "Agenda del día con eventos pendientes",
-        impact: "Si no preparas plaza/equipo, la experiencia del cliente baja",
+        title: label(appointments, "Tienes 1 cita hoy", "Tienes {n} citas hoy"),
+        detail: "Agenda del día",
+        impact: "Si no preparas plaza o equipo, se nota en el cliente",
         recommendation: "Revisa horarios y confirma recursos",
         ctaLabel: "Ver agenda",
         action: "open-core-calendar",
@@ -93,10 +84,10 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "lifeflow-score",
         severity: "warning",
-        title: "Tu LifeFlow Score necesita atención",
+        title: "Tu LifeFlow Score pide atención",
         detail: `Estás en ${Math.round(score)}`,
-        impact: "Salud financiera débil: mayor riesgo de impagos o falta de caja",
-        recommendation: "Revisa ingresos, gastos y metas activas",
+        impact: "Caja o salud financiera floja",
+        recommendation: "Revisa ingresos, gastos y metas",
         ctaLabel: "Abrir LifeFlow",
         action: "open-lifeflow",
         product: "lifeflow",
@@ -110,17 +101,22 @@ export function buildRecommendedActions(dashboard = {}) {
     const automationTotal = Number(db.stream_automation_total ?? 0);
     const nextAt = db.stream_next_at ? new Date(db.stream_next_at) : null;
     const now = Date.now();
-    const soonMs = 60 * 60 * 1000;
+    const hourMs = 60 * 60 * 1000;
+    const liveSoon =
+      nextAt &&
+      !Number.isNaN(nextAt.getTime()) &&
+      nextAt.getTime() - now > 0 &&
+      nextAt.getTime() - now <= hourMs;
 
-    if (nextAt && !Number.isNaN(nextAt.getTime()) && nextAt.getTime() - now > 0 && nextAt.getTime() - now <= soonMs) {
+    if (liveSoon) {
       const mins = Math.max(1, Math.round((nextAt.getTime() - now) / 60000));
       actions.push({
         id: "stream-live-soon",
         severity: "warning",
         title: mins <= 60 ? `Directo en ${mins} min` : "Tienes un directo pronto",
         detail: db.stream_next_title || "Stream programado",
-        impact: "Sin preparación, pierdes anuncios, Discord y overlays a tiempo",
-        recommendation: "Abre Director y verifica OBS / anuncios",
+        impact: "Sin prep, se te escapan anuncios, Discord y overlays",
+        recommendation: "Abre Director y revisa OBS / anuncios",
         ctaLabel: "Abrir Director",
         action: "open-stream-director",
         product: "streamautomator",
@@ -129,30 +125,30 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "stream-schedule",
         severity: "info",
-        title: "Aún no tienes publicaciones programadas",
+        title: "Aún no tienes nada programado",
         detail: "Calendario de la semana vacío",
-        impact: "Menos reach y menos consistencia con tu audiencia",
-        recommendation: "Programa al menos un stream o post esta semana",
+        impact: "Menos reach y menos constancia con la audiencia",
+        recommendation: "Programa al menos un stream o post",
         ctaLabel: "Ir al calendario",
         action: "open-stream-calendar",
         product: "streamautomator",
       });
     } else if (upcoming > 0) {
+      const hasRules = automationEnabled > 0;
       actions.push({
         id: "stream-automation",
         severity: "info",
-        title: `${upcoming} publicación${upcoming === 1 ? "" : "es"} programada${upcoming === 1 ? "" : "s"}`,
-        detail:
-          automationEnabled > 0
-            ? `${automationEnabled} regla${automationEnabled === 1 ? "" : "s"} IF/THEN activa${automationEnabled === 1 ? "" : "s"}`
-            : "Tienes contenido sin automatizar anuncios",
-        impact:
-          automationEnabled > 0
-            ? "Las reglas activas reducirán trabajo manual en el próximo live"
-            : "Sin reglas IF/THEN, tendrás que anunciar a mano",
-        recommendation:
-          automationEnabled > 0 ? "Revisa automatización antes del directo" : "Crea reglas IF/THEN para Discord y Hub",
-        ctaLabel: automationEnabled > 0 ? "Automatización" : "Crear reglas",
+        title: label(upcoming, "1 publicación programada", "{n} publicaciones programadas"),
+        detail: hasRules
+          ? label(automationEnabled, "1 regla IF/THEN activa", "{n} reglas IF/THEN activas")
+          : "Contenido sin automatizar anuncios",
+        impact: hasRules
+          ? "Las reglas te ahorran trabajo en el próximo live"
+          : "Sin reglas IF/THEN, anuncias a mano",
+        recommendation: hasRules
+          ? "Echa un vistazo a la automatización antes del directo"
+          : "Crea reglas para Discord y Hub",
+        ctaLabel: hasRules ? "Automatización" : "Crear reglas",
         action: "open-stream-automation",
         product: "streamautomator",
       });
@@ -162,8 +158,8 @@ export function buildRecommendedActions(dashboard = {}) {
         severity: "info",
         title: "Automatiza tus directos",
         detail: "Todavía no hay reglas IF/THEN",
-        impact: "Cada stream requiere trabajo manual repetido",
-        recommendation: "Crea reglas para Discord, AkoeNet y notificaciones Hub",
+        impact: "Cada stream es trabajo manual repetido",
+        recommendation: "Crea reglas para Discord, AkoeNet y Hub",
         ctaLabel: "Configurar",
         action: "open-stream-automation",
         product: "streamautomator",
@@ -177,10 +173,10 @@ export function buildRecommendedActions(dashboard = {}) {
       actions.push({
         id: "akoenet-dm",
         severity: "info",
-        title: dm === 1 ? "1 mensaje sin leer en tu comunidad" : `${dm} mensajes sin leer en tu comunidad`,
+        title: label(dm, "1 mensaje sin leer en tu comunidad", "{n} mensajes sin leer en tu comunidad"),
         detail: "Conversaciones privadas pendientes",
-        impact: "Respuestas lentas bajan engagement y retención",
-        recommendation: "Responde cuando puedas desde AkoeNet",
+        impact: "Responder tarde enfría el engagement",
+        recommendation: "Contesta cuando puedas desde AkoeNet",
         ctaLabel: "Abrir AkoeNet",
         action: "open-akoenet",
         product: "akoenet",
@@ -193,9 +189,9 @@ export function buildRecommendedActions(dashboard = {}) {
       id: "setup-mi-dia",
       severity: "info",
       title: "Personaliza tu Mi día",
-      detail: "Aún no hay señales de productos conectados",
-      impact: "Sin apps activas, Hub no puede avisarte de lo urgente",
-      recommendation: "Abre Dakinis One u otra app para empezar a operar",
+      detail: "Todavía no hay señales de productos",
+      impact: "Sin apps activas, Hub no te puede avisar de lo urgente",
+      recommendation: "Abre Dakinis One u otra app para empezar",
       ctaLabel: "Ver aplicaciones",
       action: "open-apps",
       product: "hub",

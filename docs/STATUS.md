@@ -129,6 +129,17 @@ Smokes → [`OPERATIONS.md`](./OPERATIONS.md).
 
 ---
 
+## Próximo foco (comercial)
+
+1. Copérnico E2E: invite staff + operación + feedback  
+2. Billing E2E live (checkout → webhook → plan)  
+3. Hub Mi día con datos/acciones reales (≥2 productos)  
+4. Landing: Golden Path + «Qué es Dakinis» en ≤30 s  
+5. Staging mínimo + smoke E2E  
+
+Narrativa → [`company/WHAT-IS-DAKINIS.md`](./company/WHAT-IS-DAKINIS.md) · Messaging → [`company/MESSAGING.md`](./company/MESSAGING.md).
+
+---
+
 *Última actualización: 3 oct 2026.*  
-*Pregunta guía: ¿Puede un restaurante real usar Dakinis 30 días y pagar sin que intervengas?*  
-*Prioridades → [`_TEMP-dakinis-sistema-completo.md`](./_TEMP-dakinis-sistema-completo.md)*
+*Pregunta guía: ¿Puede un restaurante real usar Dakinis 30 días y pagar sin que intervengas?*

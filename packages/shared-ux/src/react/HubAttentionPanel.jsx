@@ -7,10 +7,7 @@ const SEVERITY_ICON = {
   info: "ℹ",
 };
 
-/**
- * Hub Attention Center — “qué requiere atención ahora” (OS del negocio).
- * @param {{ dashboard?: object; items?: object[]; onItem?: (item: object) => void; onProduct?: (p: object) => void; t?: Function; loading?: boolean }} props
- */
+/** Panel «qué necesita atención ahora» en el Hub. */
 export default function HubAttentionPanel({
   dashboard = null,
   items: itemsProp = null,
@@ -60,26 +57,7 @@ export default function HubAttentionPanel({
       ) : (
         <ul className="hub-attention__list">
           {items.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                className={`hub-attention__item hub-attention__item--${item.severity || "info"}`}
-                onClick={() => onItem?.(item)}
-              >
-                <span className="hub-attention__icon" aria-hidden>
-                  {SEVERITY_ICON[item.severity] || SEVERITY_ICON.info}
-                </span>
-                <span className="hub-attention__body">
-                  <span className="hub-attention__label">{item.title}</span>
-                  {item.detail ? <span className="hub-attention__detail">{item.detail}</span> : null}
-                  {item.impact ? <span className="hub-attention__impact">{item.impact}</span> : null}
-                  {item.recommendation ? (
-                    <span className="hub-attention__rec">{item.recommendation}</span>
-                  ) : null}
-                  {item.ctaLabel ? <span className="hub-attention__cta">{item.ctaLabel}</span> : null}
-                </span>
-              </button>
-            </li>
+            <AttentionRow key={item.id} item={item} onItem={onItem} />
           ))}
         </ul>
       )}
@@ -90,15 +68,9 @@ export default function HubAttentionPanel({
           <ul className="hub-attention__product-list">
             {products.map((p) => (
               <li key={p.id}>
-                <button
-                  type="button"
-                  className="hub-attention__product"
-                  onClick={() => onProduct?.(p)}
-                >
+                <button type="button" className="hub-attention__product" onClick={() => onProduct?.(p)}>
                   <span>{p.name}</span>
-                  <span
-                    className={`hub-attention__badge${p.badge > 0 ? " hub-attention__badge--hot" : ""}`}
-                  >
+                  <span className={`hub-attention__badge${p.badge > 0 ? " hub-attention__badge--hot" : ""}`}>
                     {p.badge > 0 ? `● ${p.badge}` : "0"}
                   </span>
                 </button>
@@ -110,6 +82,30 @@ export default function HubAttentionPanel({
 
       <style>{ATTENTION_CSS}</style>
     </section>
+  );
+}
+
+function AttentionRow({ item, onItem }) {
+  const severity = item.severity || "info";
+  return (
+    <li>
+      <button
+        type="button"
+        className={`hub-attention__item hub-attention__item--${severity}`}
+        onClick={() => onItem?.(item)}
+      >
+        <span className="hub-attention__icon" aria-hidden>
+          {SEVERITY_ICON[severity] || SEVERITY_ICON.info}
+        </span>
+        <span className="hub-attention__body">
+          <span className="hub-attention__label">{item.title}</span>
+          {item.detail ? <span className="hub-attention__detail">{item.detail}</span> : null}
+          {item.impact ? <span className="hub-attention__impact">{item.impact}</span> : null}
+          {item.recommendation ? <span className="hub-attention__rec">{item.recommendation}</span> : null}
+          {item.ctaLabel ? <span className="hub-attention__cta">{item.ctaLabel}</span> : null}
+        </span>
+      </button>
+    </li>
   );
 }
 
