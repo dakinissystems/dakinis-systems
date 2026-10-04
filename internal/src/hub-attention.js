@@ -1,31 +1,30 @@
 /**
- * Hub Attention payload — derived from recommended actions + product badges.
- * Consumed by HubAttentionPanel via dashboard.attention / apps[].alertCount.
+ * Attention del Hub: acciones recomendadas + badges por producto.
  */
 
 import { buildRecommendedActions } from "./hub-actions.js";
 
+function toAttentionItem(a) {
+  return {
+    id: a.id,
+    title: a.title,
+    detail: a.detail,
+    impact: a.impact,
+    recommendation: a.recommendation,
+    ctaLabel: a.ctaLabel,
+    severity: a.severity,
+    product: a.product,
+    action: a.action,
+    href: a.href,
+  };
+}
+
 /**
  * @param {{ db?: object; summary?: object; enabledProducts?: string[]; apps?: object[]; actions?: object[] }} input
- * @returns {{ attention: object[]; apps: object[]; actions: object[] }}
  */
 export function buildHubAttention(input = {}) {
   const actions = Array.isArray(input.actions) ? input.actions : buildRecommendedActions(input);
-  const attention = actions
-    .filter((a) => a.severity === "critical" || a.severity === "warning" || a.severity === "info")
-    .slice(0, 8)
-    .map((a) => ({
-      id: a.id,
-      title: a.title,
-      detail: a.detail,
-      impact: a.impact,
-      recommendation: a.recommendation,
-      ctaLabel: a.ctaLabel,
-      severity: a.severity,
-      product: a.product,
-      action: a.action,
-      href: a.href,
-    }));
+  const attention = actions.slice(0, 8).map(toAttentionItem);
 
   const counts = Object.create(null);
   for (const item of attention) {
