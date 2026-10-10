@@ -1,6 +1,8 @@
 # Sistemas — mapa Dakinis
 
-> Una pantalla · detalle capas → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · dominios Core → [`architecture/README.md`](./architecture/README.md) · deploy → [`OPERATIONS.md`](./OPERATIONS.md)
+> Una pantalla · detalle capas → [`ARCHITECTURE.md`](./ARCHITECTURE.md) · dominios Core → [`architecture/README.md`](./architecture/README.md) · deploy → [`OPERATIONS.md`](./OPERATIONS.md) · vocabulario README → [`DOC-STANDARDS.md`](./DOC-STANDARDS.md)
+
+**Empresa** = Dakinis Systems · **Plataforma** = Auth, Gateway, Billing, Internal, AI, Search, Notifications, Knowledge, DES · **Productos** = One (Core), LifeFlow, StreamAutomator, AkoeNet, Hub, Landing, … · **One** = nombre comercial · **Core** = código/repo.
 
 ## Vista rápida
 

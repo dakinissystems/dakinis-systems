@@ -158,3 +158,138 @@ CREATE TABLE IF NOT EXISTS dakinis_core_prod.ai_usage (
 );
 CREATE INDEX IF NOT EXISTS idx_ai_usage_business_month
   ON dakinis_core_prod.ai_usage (business_id, usage_type, year_month);
+
+-- Hospitality floor / menu / delivery (059)
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_menu_categories (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  name TEXT NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  active INTEGER NOT NULL DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS idx_menu_categories_business ON dakinis_core_prod.tenant_menu_categories(business_id);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_menu_items (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  category_id TEXT REFERENCES dakinis_core_prod.tenant_menu_categories(id),
+  name TEXT NOT NULL,
+  name_es TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  active INTEGER NOT NULL DEFAULT 1,
+  station TEXT,
+  meta_json TEXT NOT NULL DEFAULT '{}'
+);
+CREATE INDEX IF NOT EXISTS idx_menu_items_business ON dakinis_core_prod.tenant_menu_items(business_id);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_menu_prices (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  item_id TEXT NOT NULL REFERENCES dakinis_core_prod.tenant_menu_items(id),
+  channel TEXT NOT NULL DEFAULT 'salon',
+  price_cents INTEGER NOT NULL DEFAULT 0,
+  currency TEXT NOT NULL DEFAULT 'EUR',
+  UNIQUE (business_id, item_id, channel)
+);
+CREATE INDEX IF NOT EXISTS idx_menu_prices_business ON dakinis_core_prod.tenant_menu_prices(business_id);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_menu_modifiers (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  name TEXT NOT NULL,
+  price_cents INTEGER NOT NULL DEFAULT 0,
+  allergen_tags_json TEXT NOT NULL DEFAULT '[]'
+);
+CREATE INDEX IF NOT EXISTS idx_menu_modifiers_business ON dakinis_core_prod.tenant_menu_modifiers(business_id);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_menu_item_modifiers (
+  item_id TEXT NOT NULL REFERENCES dakinis_core_prod.tenant_menu_items(id),
+  modifier_id TEXT NOT NULL REFERENCES dakinis_core_prod.tenant_menu_modifiers(id),
+  required INTEGER NOT NULL DEFAULT 0,
+  max_qty INTEGER NOT NULL DEFAULT 1,
+  PRIMARY KEY (item_id, modifier_id)
+);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_tables (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  zone TEXT NOT NULL DEFAULT '',
+  label TEXT NOT NULL,
+  x DOUBLE PRECISION NOT NULL DEFAULT 0,
+  y DOUBLE PRECISION NOT NULL DEFAULT 0,
+  seats INTEGER NOT NULL DEFAULT 2,
+  status TEXT NOT NULL DEFAULT 'libre',
+  meta_json TEXT NOT NULL DEFAULT '{}'
+);
+CREATE INDEX IF NOT EXISTS idx_tables_business ON dakinis_core_prod.tenant_tables(business_id);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_table_sessions (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  table_id TEXT NOT NULL REFERENCES dakinis_core_prod.tenant_tables(id),
+  opened_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  closed_at TIMESTAMPTZ,
+  cart_json TEXT NOT NULL DEFAULT '[]',
+  notes TEXT NOT NULL DEFAULT '',
+  waiter_user_id TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_table_sessions_business ON dakinis_core_prod.tenant_table_sessions(business_id);
+CREATE INDEX IF NOT EXISTS idx_table_sessions_open ON dakinis_core_prod.tenant_table_sessions(business_id, table_id, closed_at);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_price_lists (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  key TEXT NOT NULL,
+  name TEXT NOT NULL,
+  channel TEXT NOT NULL DEFAULT '',
+  is_default INTEGER NOT NULL DEFAULT 0,
+  markup_pct DOUBLE PRECISION,
+  markup_fixed_cents INTEGER,
+  round_to_cents INTEGER,
+  active INTEGER NOT NULL DEFAULT 1,
+  UNIQUE (business_id, key)
+);
+CREATE INDEX IF NOT EXISTS idx_price_lists_business ON dakinis_core_prod.tenant_price_lists(business_id);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_price_list_items (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  price_list_id TEXT NOT NULL REFERENCES dakinis_core_prod.tenant_price_lists(id),
+  item_id TEXT NOT NULL REFERENCES dakinis_core_prod.tenant_menu_items(id),
+  price_cents INTEGER NOT NULL,
+  currency TEXT NOT NULL DEFAULT 'EUR',
+  UNIQUE (price_list_id, item_id)
+);
+CREATE INDEX IF NOT EXISTS idx_price_list_items_business ON dakinis_core_prod.tenant_price_list_items(business_id);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_delivery_integrations (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  provider TEXT NOT NULL,
+  enabled INTEGER NOT NULL DEFAULT 0,
+  api_key TEXT,
+  refresh_token TEXT,
+  store_id TEXT,
+  location TEXT,
+  webhook_secret TEXT,
+  status TEXT NOT NULL DEFAULT 'disconnected',
+  last_sync_at TIMESTAMPTZ,
+  last_error TEXT,
+  meta_json TEXT NOT NULL DEFAULT '{}',
+  UNIQUE (business_id, provider)
+);
+CREATE INDEX IF NOT EXISTS idx_delivery_integrations_business ON dakinis_core_prod.tenant_delivery_integrations(business_id);
+
+CREATE TABLE IF NOT EXISTS dakinis_core_prod.tenant_delivery_jobs (
+  id TEXT PRIMARY KEY,
+  business_id TEXT NOT NULL REFERENCES dakinis_core_prod.business(id),
+  provider TEXT NOT NULL,
+  job_type TEXT NOT NULL,
+  payload_json TEXT NOT NULL DEFAULT '{}',
+  status TEXT NOT NULL DEFAULT 'pending',
+  attempts INTEGER NOT NULL DEFAULT 0,
+  last_error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_delivery_jobs_business ON dakinis_core_prod.tenant_delivery_jobs(business_id, status);

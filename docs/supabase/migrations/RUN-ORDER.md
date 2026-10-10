@@ -74,6 +74,12 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · contrato [`akoenet-
 |---|---------|------|
 | 58 | [`058_org_venture_location.sql`](./058_org_venture_location.sql) | ✅ ventures / locations / domains (20 sep 2026) |
 
+## Fase F++++ — Hospitality floor / menu / delivery (059)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 59 | [`059_hospitality_floor_menu_delivery.sql`](./059_hospitality_floor_menu_delivery.sql) | ⬜ **aplicar ya** — Sentry 4 oct 2026 (`tenant_tables`, `tenant_price_lists`, `tenant_delivery_*`) |
+
 Seed opcional (sin dominios): [`../scripts/provision_la_calle_brava_armala.sql`](../scripts/provision_la_calle_brava_armala.sql)  
 Dominios solo tras verificar: [`../scripts/provision_org_domains_candidates.sql`](../scripts/provision_org_domains_candidates.sql)  
 Runbook: [`../../RUNBOOKS/google-workspace-domains.md`](../../RUNBOOKS/google-workspace-domains.md)

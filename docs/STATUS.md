@@ -43,6 +43,7 @@ Commercial  █████░░░░░  55%
 | Docs arquitectura por dominios | 🟢 (PR docs → `main`) |
 | CRM API v1 + migración `057` | 🟢 SQL prod ✅ · API en prod |
 | Migraciones `055` / `056` / `057` / `058` | ✅ aplicadas en Supabase prod |
+| Migración `059` hospitality (floor/menu/delivery) | ⬜ **aplicar** — Sentry: `tenant_tables` / price lists / delivery missing |
 | System Health unificado | ⬜ diseño |
 | SSE/WS pulse | ⬜ roadmap |
 | Glovo/Uber API partner real | ⬜ stubs |
