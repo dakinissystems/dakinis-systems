@@ -12,7 +12,7 @@
     "./bullmq-bus": "./src/bullmq-bus.js"
   },
   "optionalDependencies": {
-    "redis": "^6.2.1",
+    "redis": "^6.3.0",
     "bullmq": "^6.3.8"
   }
 }
