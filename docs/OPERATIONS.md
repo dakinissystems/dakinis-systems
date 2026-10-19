@@ -165,6 +165,7 @@ Antes de push Hub: `.\scripts\sync-hub-des.ps1`.
 |------|-----|
 | LifeFlow env / reset | [`RUNBOOKS/lifeflow-env.md`](./RUNBOOKS/lifeflow-env.md) |
 | Auth + Google OAuth | [`RUNBOOKS/auth-google-oauth.md`](./RUNBOOKS/auth-google-oauth.md) |
+| Fiscal / VERI*FACTU (Core) | [`RUNBOOKS/fiscal-verifactu.md`](./RUNBOOKS/fiscal-verifactu.md) |
 | Billing E2E | [`RUNBOOKS/billing-e2e.md`](./RUNBOOKS/billing-e2e.md) |
 | Railway workers | [`RUNBOOKS/railway-workers.md`](./RUNBOOKS/railway-workers.md) |
 | Dominios + Google Workspace | [`RUNBOOKS/google-workspace-domains.md`](./RUNBOOKS/google-workspace-domains.md) |
