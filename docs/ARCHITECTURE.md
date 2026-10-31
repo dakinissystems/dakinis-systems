@@ -208,7 +208,7 @@ sequenceDiagram
   participant U as Usuario
   participant H as Hub
   participant A as Auth
-  participant P as Producto (Core / LF / …)
+  participant P as "Producto (Core / LF / …)"
 
   U->>H: Login
   H->>A: Credenciales / OIDC
@@ -226,9 +226,9 @@ sequenceDiagram
 
 ```mermaid
 flowchart TB
-  subgraph cobrar [Capacidad: Cobrar]
+  subgraph cobrar ["Capacidad: Cobrar"]
     STRIPE[Stripe Checkout / Portal] --> WH[Webhook prod]
-    WH --> BILL[Billing :4080]
+    WH --> BILL["Billing :4080"]
     BILL --> SB[(billing.subscriptions)]
     BILL --> EVT[Evento plan_updated]
     EVT --> CORE[Core business.plan]
@@ -422,12 +422,12 @@ Flujo completo go-live: pago exitoso, propagación de plan e impago con **degrad
 ```mermaid
 sequenceDiagram
   autonumber
-  participant U as Admin / owner
-  participant WEB as Core Web o Hub /admin
+  participant U as "Admin / owner"
+  participant WEB as "Core Web o Hub /admin"
   participant GW as Gateway
-  participant B as Billing :4080
+  participant B as "Billing :4080"
   participant S as Stripe
-  participant DB as Supabase billing.*
+  participant DB as "Supabase billing.*"
   participant R as Redis BullMQ
   participant C as Core API
 
@@ -485,7 +485,7 @@ Vista [C4 Model](https://c4model.com/) nivel **contenedor**: quién habla con qu
 
 ```mermaid
 C4Container
-  title Dakinis Systems — contenedores (ago 2026)
+  title Dakinis Systems — contenedores, agosto 2026
 
   Person(user, "Usuario", "Owner o miembro del workspace PYME")
   Person(ops, "Equipo Dakinis", "Ops · super admin")
@@ -587,6 +587,8 @@ Pendientes operativos → [`STATUS.md`](./STATUS.md). No duplicar estado aquí.
 
 No mezclar capas. Diagrama → [§1 Cuatro capas](#1-cuatro-capas).
 
+| Capa | Incluye | No incluye |
+|------|---------|------------|
 | **Foundation** | DES, SDK, `packages/`, contracts, ADR, migraciones SQL | Runtime desplegado |
 | **Infrastructure** | Gateway, Redis, Supabase, Railway, Storage, Observability | Lógica de negocio de productos |
 | **Platform** | Auth, Hub, AI, Billing, Notifications, Search, Knowledge, Events | Core, LifeFlow, SA… |
@@ -671,7 +673,9 @@ Logs · metrics · tracing (Sentry) · queue health · costes IA · `/health` po
 
 Contrato Internal API: [`contracts/internal-api.json`](./contracts/internal-api.json)
 
-### Hub — centro de experiencia 🟡
+### Hub
+
+Centro de experiencia · 🟡
 
 `dakinis-hub` · `hub.dakinissystems.com` · schemas `hub` + `meta` (workspace identity).
 
