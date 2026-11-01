@@ -63,7 +63,10 @@ jobs:
             sleep 2
           done
 
-          gunzip -c backup.sql.gz | docker exec -i pg-restore-test psql -U test -d restore_test -v ON_ERROR_STOP=1
+          # pgvector/pgvector:pg17 no trae extensiones solo de Supabase. Misma exclusión que scripts/restore-postgres-test.mjs.
+          gunzip -c backup.sql.gz \
+            | grep -vE 'EXTENSION.*(supabase_vault|pg_graphql|pg_net|wrappers|pgsodium|pgjwt|pg_stat_statements)' \
+            | docker exec -i pg-restore-test psql -U test -d restore_test -v ON_ERROR_STOP=1
           docker exec pg-restore-test psql -U test -d restore_test -c '\dn'
           docker rm -f pg-restore-test
           echo "Restore test PASSED."
