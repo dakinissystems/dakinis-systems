@@ -29,6 +29,12 @@ export const PERMISSIONS = {
   hospitalityTableRead: "hospitality.table.read",
   hospitalityTableManage: "hospitality.table.manage",
   hospitalityOrderCreate: "hospitality.order.create",
+  // Payroll — opt-in, not included in manager/waiter presets
+  payrollView: "payroll.view",
+  payrollManage: "payroll.manage",
+  payrollRun: "payroll.run",
+  payrollApprove: "payroll.approve",
+  payrollPay: "payroll.pay",
   // Platform
   platformAdmin: "platform:admin",
   wildcard: "*",

@@ -45,6 +45,7 @@ Commercial  █████░░░░░  55%
 | Migraciones `055` / `056` / `057` / `058` | ✅ aplicadas en Supabase prod |
 | Migración `059` hospitality (floor/menu/delivery) | ✅ aplicada en Supabase el 12 nov 2026 |
 | Migración `060` fiscal VERI*FACTU base | ✅ SQL en Supabase el 12 nov 2026. Core `1c67ec5` en Railway desde las 19:03 CET. No es un SIF certificado. Falta recorrer Config → Fiscal ([runbook](./RUNBOOKS/fiscal-verifactu.md)) |
+| Migración `061` nómina | ✅ SQL en Supabase (motor genérico, sin tarifas de país) · [runbook](./RUNBOOKS/payroll.md) · API Core aún no |
 | Migración `062` audit append-only | ✅ SQL en Supabase el 12 nov 2026. `UPDATE` y `DELETE` en `meta.audit_logs` fallan por trigger. El rol de la aplicación no está comprobado |
 | System Health unificado | ⬜ diseño |
 | SSE/WS pulse | ⬜ roadmap |
