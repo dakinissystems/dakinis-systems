@@ -109,7 +109,7 @@ flowchart LR
 | Sistema | Rol | Dominio / ruta |
 |---------|-----|----------------|
 | **Hub** | Escritorio workspace · Mi día · admin | `hub.dakinissystems.com` |
-| **Core** (Dakinis One) | ERP + Platform embebida (Hospitality, CRM, Connectors) | `core.dakinissystems.com` · `/core/` |
+| **Core** (Dakinis One) | ERP + Platform embebida (Hospitality, CRM, Nómina, Connectors) | `core.dakinissystems.com` · `/core/` |
 | **LifeFlow** | Finanzas personales | `finance.dakinissystems.com` · `finance-api…` |
 | **AkoeNet** | Comunidad / chat · `@AI` | `api.akoenet.dakinissystems.com` |
 | **StreamAutomator** (SA) | Automatización streams | `api.streamautomator.com` |

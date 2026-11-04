@@ -1,0 +1,16 @@
+{
+  "name": "@dakinis/payroll",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Market-neutral payroll calculation. Statutory rates are data, not code.",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}

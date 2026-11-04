@@ -18,6 +18,7 @@ describe("product-capabilities", () => {
     assert.equal(tenantHasCapability(["crm"], "crm"), true);
     assert.equal(tenantHasCapability(["crm"], "whatsapp"), false);
     assert.ok(PRODUCT_CAPABILITIES.hospitality.nav.length >= 1);
+    assert.ok(PRODUCT_CAPABILITIES.payroll.nav.length >= 1);
   });
 
   it("resolves capabilities from plan modules + hospitality type", async () => {
@@ -36,6 +37,8 @@ describe("permissions + policy", () => {
     assert.equal(hasPermission(["inventory.*"], PERMISSIONS.inventoryProductRead), true);
     assert.equal(hasPermission(ROLE_PRESETS.waiter, PERMISSIONS.hospitalityOrderCreate), true);
     assert.equal(hasPermission(ROLE_PRESETS.waiter, PERMISSIONS.billingInvoiceManage), false);
+    assert.equal(hasPermission(ROLE_PRESETS.manager, PERMISSIONS.payrollView), false);
+    assert.equal(hasPermission(["payroll.*"], PERMISSIONS.payrollPay), true);
     assert.equal(
       evaluatePolicy(
         { permissions: ["sales.*"] },

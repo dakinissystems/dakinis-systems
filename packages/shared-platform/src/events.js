@@ -18,6 +18,7 @@ export const DAKINIS_EVENT_TYPES = Object.freeze({
   // System
   SYSTEM_ALERT: "system.alert",
   BILLING_DEGRADED: "billing.degraded",
+  PAYROLL_RUN_CALCULATED: "payroll.run_calculated",
   // Org
   ORG_CONTEXT_CHANGED: "org.context_changed",
 });
