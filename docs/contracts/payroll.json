@@ -1,0 +1,42 @@
+{
+  "service": "dakinis-core",
+  "status": "experimental",
+  "description": "Market-neutral payroll. Statutory rules are tenant data (jurisdiction, components, brackets), not hardcoded country logic.",
+  "gatewayPrefix": "/core/",
+  "schema": "dakinis_core",
+  "module": "api/src/modules/payroll",
+  "engine": "packages/payroll",
+  "migration": "docs/supabase/migrations/061_payroll.sql",
+  "money": {
+    "unit": "minor",
+    "rates": "basis points, 10000 = 100%",
+    "quantities": "milli-units, 1000 = 1 hour, day, or piece"
+  },
+  "routes": {
+    "GET /api/tenant/payroll/settings": "Read payroll settings (payroll.view)",
+    "PATCH /api/tenant/payroll/settings": "Enable module, default currency, rounding (payroll.manage)",
+    "GET /api/tenant/payroll/jurisdictions": "List jurisdiction profiles",
+    "POST /api/tenant/payroll/jurisdictions": "Create a market profile: currency, exponent, identifier labels",
+    "GET /api/tenant/payroll/components": "List earnings, deductions, employer contributions",
+    "POST /api/tenant/payroll/components": "Create a component and optional marginal brackets",
+    "GET /api/tenant/payroll/engagements": "List worker engagements",
+    "POST /api/tenant/payroll/engagements": "Create salary, hourly, daily, or piece engagement",
+    "POST /api/tenant/payroll/periods": "Open a pay period",
+    "POST /api/tenant/payroll/runs": "Calculate slips with @dakinis/payroll. Refuses locked slips.",
+    "POST /api/tenant/payroll/runs/:id/approve": "Lock the run (payroll.approve)",
+    "POST /api/tenant/payroll/slips/:id/pay": "Record a payment instruction, not a bank file (payroll.pay)"
+  },
+  "permissions": [
+    "payroll.view",
+    "payroll.manage",
+    "payroll.run",
+    "payroll.approve",
+    "payroll.pay"
+  ],
+  "outOfScope": [
+    "Country statutory rate tables",
+    "Bank file formats (SEPA, ACH, SPEI)",
+    "Filing payroll tax with an authority",
+    "Storing raw bank account numbers; use instrument_ref"
+  ]
+}
