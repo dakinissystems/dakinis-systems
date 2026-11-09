@@ -37,7 +37,7 @@ Mapa detallado: [`docs/SYSTEMS.md`](./docs/SYSTEMS.md).
 |------------|------------------|------------------|
 | Contratos HTTP | `docs/contracts/` en este repo | Actualizar en el mismo PR que el gateway |
 | Gateway rutas | `gateway/` | + `docs/rules.md` |
-| DES / shared UI | [`dakinis-shared`](https://github.com/dakinissystems/dakinis-shared) | `packages/` es working copy → `.\scripts\push-dakinis-shared.ps1` / sync scripts |
+| DES / shared UI | `packages/` en este repo | El remoto `dakinis-shared` no está en la org pública. No enlazar una URL que responde 404 |
 | SQL / migraciones | `docs/supabase/migrations/` | Orden en `RUN-ORDER.md` |
 | Estado go-live | `docs/STATUS.md` | Solo aquí |
 

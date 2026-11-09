@@ -1,5 +1,7 @@
 # Dakinis Media Player — addon AkoeNet
 
+Fuente de verdad de este addon. `projects/akoenet-media-player/` es el diseño anterior y no se actualiza.
+
 > Reproductor inspirado en Winamp (estética retro, ventanas flotantes) integrado en AkoeNet como **addon instalable**, no como página tradicional.
 
 **Identidad:** nostálgico por fuera, moderno por dentro — Web Audio API, salas “escuchar juntos”, skins de comunidad, plugins opcionales.

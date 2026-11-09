@@ -1,6 +1,6 @@
 # dakinis-tabletop
 
-**Producto público:** Dakinis Tabletop · **Hub:** 🎲 Tabletop  
+**Producto público:** Dakinis Tabletop  
 **Web:** `tabletop.dakinissystems.com` · **API:** `tabletop-api.dakinissystems.com`  
 **Estado:** MVP (reglas SRD 5e como primer ruleset)
 
@@ -8,7 +8,7 @@ Modern tabletop RPG platform with character management, campaigns, and cross-dev
 
 Plataforma de rol de mesa para Dakinis Systems: gestión de personajes, campañas compartidas, sincronización en nube y modo offline.
 
-> Carpeta local en el monorepo de orquestación: `DND/` (nombre interno). Repositorio GitHub: [`dakinissystems/dakinis-tabletop`](https://github.com/dakinissystems/dakinis-tabletop).
+> El código de este producto, en el repo público, está en la carpeta `DND/` de `dakinis-systems`. No hay un repositorio `dakinis-tabletop` en la organización pública.
 
 ## Características
 

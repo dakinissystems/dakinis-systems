@@ -47,6 +47,7 @@ Desktop.ini
 # --- Ruido local (no versionar) ---
 /backups/
 *.code-workspace
+/DND/node_modules/
 /DND/.github/
 /DND/.gitleaks.toml
 /DND/.pre-commit-config.yaml
