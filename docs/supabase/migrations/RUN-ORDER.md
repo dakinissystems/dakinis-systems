@@ -90,7 +90,7 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · contrato [`akoenet-
 
 | # | Archivo | Prod |
 |---|---------|------|
-| 61 | [`061_payroll.sql`](./061_payroll.sql) | ⬜ aplicar — contratos, conceptos y recibos sin tarifa de país ([runbook](../../RUNBOOKS/payroll.md)) |
+| 61 | [`061_payroll.sql`](./061_payroll.sql) | ✅ SQL aplicado en Supabase (9 nov 2026) · motor en el PR, no en `main` ([runbook](../../RUNBOOKS/payroll.md)) |
 
 Seed opcional (sin dominios): [`../scripts/provision_la_calle_brava_armala.sql`](../scripts/provision_la_calle_brava_armala.sql)  
 Dominios solo tras verificar: [`../scripts/provision_org_domains_candidates.sql`](../scripts/provision_org_domains_candidates.sql)  
