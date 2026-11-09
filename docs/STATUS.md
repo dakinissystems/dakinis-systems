@@ -1,6 +1,6 @@
 # Dakinis — Estado actual
 
-> **Fuente canónica de estado** · actualizar al cerrar hitos · **3 oct 2026**  
+> **Fuente canónica de estado** · actualizar al cerrar hitos · **9 nov 2026**  
 > Sistemas → [`SYSTEMS.md`](./SYSTEMS.md) · Narrativa → [`company/WHAT-IS-DAKINIS.md`](./company/WHAT-IS-DAKINIS.md) · Ops → [`OPERATIONS.md`](./OPERATIONS.md) · Seguridad → [`SECURITY.md`](./SECURITY.md)
 
 **Leyenda madurez:** 🟢 Production · 🟡 Beta · 🟠 MVP · ⚪ Experimental
@@ -40,7 +40,7 @@ Commercial  █████░░░░░  55%
 | Delivery Channel Bus + Registry + idempotencia | 🟢 (Glovo/Uber = stubs partner) |
 | Caja: dinero inicio de día (localStorage) | 🟢 |
 | i18n: sin claves `ns.key` en UI | 🟢 |
-| Docs arquitectura por dominios | 🟢 (PR docs → `main`) |
+| Docs arquitectura por dominios | 🟢 en `main` |
 | CRM API v1 + migración `057` | 🟢 SQL prod ✅ · API en prod |
 | Migraciones `055` / `056` / `057` / `058` | ✅ aplicadas en Supabase prod |
 | Migración `059` hospitality (floor/menu/delivery) | ⬜ **aplicar** — Sentry: `tenant_tables` / price lists / delivery missing |
@@ -51,7 +51,7 @@ Commercial  █████░░░░░  55%
 
 Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/changelog/hospitality-2026-08.md).
 
-**Shipped:** Core `feat/restaurant-stock-ops-alerts` → `main` (ago 2026). Docs branch pendiente de PR (branch protegida).
+**Shipped:** Core `feat/restaurant-stock-ops-alerts` → `main` (ago 2026). Docs de arquitectura ya están en `main`. El restore de Postgres ignora extensiones solo de Supabase (PR 61).
 
 ---
 
@@ -143,5 +143,5 @@ Narrativa → [`company/WHAT-IS-DAKINIS.md`](./company/WHAT-IS-DAKINIS.md) · Me
 
 ---
 
-*Última actualización: 3 oct 2026.*  
+*Última actualización: 9 nov 2026.*  
 *Pregunta guía: ¿Puede un restaurante real usar Dakinis 30 días y pagar sin que intervengas?*

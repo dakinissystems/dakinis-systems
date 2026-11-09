@@ -22,7 +22,7 @@ Repositorio de **orquestación** (gateway, Docker, SQL, legal, scripts).
 | **Networking / ventas** | [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md) · [`company/sales/`](./company/sales/) | Sales · CEO |
 | **Estrategia / mensaje** | [`company/STRATEGY.md`](./company/STRATEGY.md) · [`company/MESSAGING.md`](./company/MESSAGING.md) | CEO · Sales |
 | **ADRs** | [`adr/`](./adr/) | Eng |
-| **Legal** | [`legal/`](./legal/) | Legal · CEO |
+| **Legal** | [`legal/`](./legal/) · [índice](./legal/README.md) | Legal · CEO |
 | **SQL** | [`supabase/migrations/`](./supabase/migrations/) · [`RUN-ORDER.md`](./supabase/migrations/RUN-ORDER.md) | Eng |
 | **Guías eng** | [`guides/`](./guides/) | Eng |
 | **Contratos HTTP** | [`contracts/`](./contracts/) | Eng |
@@ -48,4 +48,4 @@ node scripts/generate-docs-status.mjs
 
 ---
 
-*Docs hygiene · sep 2026 — solo SoT de sistema / ops / legal / comercial canónico.*
+*Docs hygiene · nov 2026 — solo SoT de sistema / ops / legal / comercial canónico.*
