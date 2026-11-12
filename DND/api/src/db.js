@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { randomBytes, randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import Database from "better-sqlite3";
 import { dndHashPassword } from "./password.js";
 
@@ -125,7 +125,7 @@ export function dndGenerateInviteCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
   for (let i = 0; i < 8; i++) {
-    code += chars[randomBytes(1)[0] % chars.length];
+    code += chars[randomInt(chars.length)];
   }
   const exists = db.prepare(`SELECT 1 FROM campaigns WHERE invite_code = ?`).get(code);
   return exists ? dndGenerateInviteCode() : code;

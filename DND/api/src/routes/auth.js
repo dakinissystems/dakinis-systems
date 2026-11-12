@@ -28,8 +28,10 @@ import {
 } from "../lib/public-url.js";
 import { maskEmailForDisplay, newRawToken, sha256Hex } from "../lib/tokens.js";
 import { verifyPlatformAccessToken } from "../lib/platform-auth.js";
+import { dndApiLimiter, dndAuthLimiter } from "../lib/rate-limit.js";
 
 const router = Router();
+router.use(dndApiLimiter);
 
 function normalizeEmail(value) {
   return String(value ?? "").trim().toLowerCase();
@@ -44,7 +46,7 @@ function isValidRawToken(token) {
   return /^[a-f0-9]{64}$/i.test(String(token || "").trim());
 }
 
-router.post("/register", (req, res) => {
+router.post("/register", dndAuthLimiter, (req, res) => {
   const email = normalizeEmail(req.body?.email);
   const password = String(req.body?.password ?? "");
   const displayName = String(req.body?.displayName ?? req.body?.name ?? "").trim();
@@ -60,7 +62,7 @@ router.post("/register", (req, res) => {
   res.status(201).json({ user, token });
 });
 
-router.post("/register/start", async (req, res) => {
+router.post("/register/start", dndAuthLimiter, async (req, res) => {
   const email = normalizeEmail(req.body?.email);
   if (!email || !email.includes("@")) {
     return res.status(400).json({ error: "Email válido requerido" });
@@ -109,7 +111,7 @@ router.get("/register/pending", (req, res) => {
   return res.json({ email_masked: maskEmailForDisplay(row.email_norm) });
 });
 
-router.post("/register/complete", (req, res) => {
+router.post("/register/complete", dndAuthLimiter, (req, res) => {
   const rawToken = String(req.body?.token ?? "").trim();
   const password = String(req.body?.password ?? "");
   const displayName = String(req.body?.displayName ?? req.body?.name ?? "").trim();
@@ -131,7 +133,7 @@ router.post("/register/complete", (req, res) => {
   return res.status(201).json({ user, token });
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", dndAuthLimiter, (req, res) => {
   const email = normalizeEmail(req.body?.email);
   const password = String(req.body?.password ?? "");
   if (!email || !password) {
@@ -146,7 +148,7 @@ router.post("/login", (req, res) => {
   res.json({ user, token });
 });
 
-router.post("/password-reset/start", async (req, res) => {
+router.post("/password-reset/start", dndAuthLimiter, async (req, res) => {
   const email = normalizeEmail(req.body?.email);
   if (!email || !email.includes("@")) {
     return res.status(400).json({ error: "Email válido requerido" });
@@ -196,7 +198,7 @@ router.get("/password-reset/pending", (req, res) => {
   return res.json({ email_masked: maskEmailForDisplay(row.email_norm) });
 });
 
-router.post("/password-reset/complete", (req, res) => {
+router.post("/password-reset/complete", dndAuthLimiter, (req, res) => {
   const rawToken = String(req.body?.token ?? "").trim();
   const password = String(req.body?.password ?? "");
   if (!isValidRawToken(rawToken) || !password || password.length < 6) {
@@ -218,7 +220,7 @@ router.post("/password-reset/complete", (req, res) => {
   return res.json({ user, email: user.email });
 });
 
-router.post("/platform-exchange", async (req, res) => {
+router.post("/platform-exchange", dndAuthLimiter, async (req, res) => {
   const platformToken = String(
     req.body?.platformToken || req.body?.token || req.headers.authorization?.replace(/^Bearer\s+/i, "") || "",
   ).trim();

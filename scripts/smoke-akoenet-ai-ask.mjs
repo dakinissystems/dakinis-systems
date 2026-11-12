@@ -97,7 +97,7 @@ async function main() {
     const startedAt = Date.now();
     const sinceIso = new Date(startedAt - 2000).toISOString();
 
-    console.log(`Enqueue ai.ask server=${serverId} channel=${channelId} user=${userId}`);
+    console.log(`Enqueue ai.ask server=${serverId} channel=${channelId}`);
     const res = await fetch(`${internalBase}/akoenet/servers/${serverId}/assistant/command`, {
       method: "POST",
       headers: {
@@ -115,7 +115,7 @@ async function main() {
     if (!res.ok) throw new Error(`command HTTP ${res.status}: ${JSON.stringify(body)}`);
 
     const cmd = body.result || body;
-    console.log("command:", JSON.stringify(cmd));
+    console.log(`command HTTP ${res.status} status=${cmd.status ?? "unknown"}`);
 
     if (cmd.status === "replied" || cmd.status === "replied_fallback") {
       const wallMs = Date.now() - startedAt;

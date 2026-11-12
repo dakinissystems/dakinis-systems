@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { dndRequireAuth } from "../auth.js";
+import { dndApiLimiter } from "../lib/rate-limit.js";
 import {
   dndDeleteCharacter,
   dndListCharacters,
@@ -8,6 +9,7 @@ import {
 } from "../db.js";
 
 const router = Router();
+router.use(dndApiLimiter);
 router.use(dndRequireAuth);
 
 router.get("/", (req, res) => {

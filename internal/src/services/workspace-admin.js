@@ -13,27 +13,10 @@ function normalizeUuid(value) {
 }
 
 /**
- * @param {string} email
- */
-async function resolveAuthUserIdByEmail(email) {
-  const norm = String(email || "").trim().toLowerCase();
-  if (!norm) return null;
-  const { rows } = await query(
-    `SELECT id FROM dakinis_auth.users WHERE lower(trim(email)) = $1 LIMIT 1`,
-    [norm],
-  );
-  return rows[0]?.id ? String(rows[0].id) : null;
-}
-
-/**
  * @param {string} userId
- * @param {{ email?: string }} [opts]
  */
-export async function getWorkspaceForUser(userId, opts = {}) {
-  let uid = normalizeUuid(userId);
-  if (!uid && opts.email) {
-    uid = await resolveAuthUserIdByEmail(opts.email);
-  }
+export async function getWorkspaceForUser(userId) {
+  const uid = normalizeUuid(userId);
   if (!uid) return null;
 
   try {

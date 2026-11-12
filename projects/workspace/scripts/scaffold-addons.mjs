@@ -11,6 +11,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const catalogPath = path.join(root, "catalog", "workspace-addons.json");
 const depsPath = path.join(root, "catalog", "addon-dependencies.json");
+function writeIfAbsent(full, body) {
+  try {
+    fs.writeFileSync(full, body, { flag: "wx" });
+  } catch (err) {
+    if (err && err.code === "EEXIST") return;
+    throw err;
+  }
+}
+
 const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
 const depsCatalog = JSON.parse(fs.readFileSync(depsPath, "utf8"));
 
@@ -104,7 +113,7 @@ for (const addon of catalog.addons) {
     const full = path.join(base, rel);
     fs.mkdirSync(path.dirname(full), { recursive: true });
     if (rel.endsWith(".gitkeep")) {
-      if (!fs.existsSync(full)) fs.writeFileSync(full, "");
+      writeIfAbsent(full, "");
       continue;
     }
     if (rel === "src/manifest.json") {
@@ -129,9 +138,7 @@ const desktopDirs = [
 for (const rel of desktopDirs) {
   const full = path.join(root, rel);
   fs.mkdirSync(path.dirname(full), { recursive: true });
-  if (!fs.existsSync(full)) {
-    fs.writeFileSync(full, `# ${path.basename(path.dirname(full))}\n\nShell component — see \`docs/ARCHITECTURE.md\`.\n`);
-  }
+  writeIfAbsent(full, `# ${path.basename(path.dirname(full))}\n\nShell component — see \`docs/ARCHITECTURE.md\`.\n`);
 }
 
 const pkgDirs = [
@@ -150,9 +157,7 @@ const pkgDirs = [
 for (const rel of pkgDirs) {
   const full = path.join(root, rel);
   fs.mkdirSync(path.dirname(full), { recursive: true });
-  if (!fs.existsSync(full)) {
-    fs.writeFileSync(full, `// ${path.basename(full)} — scaffold\n`);
-  }
+  writeIfAbsent(full, `// ${path.basename(full)} — scaffold\n`);
 }
 
 const svcDirs = [
@@ -165,7 +170,7 @@ const svcDirs = [
 for (const rel of svcDirs) {
   const full = path.join(root, rel);
   fs.mkdirSync(path.dirname(full), { recursive: true });
-  if (!fs.existsSync(full)) fs.writeFileSync(full, `# ${path.basename(path.dirname(full))}\n`);
+  writeIfAbsent(full, `# ${path.basename(path.dirname(full))}\n`);
 }
 
 console.log(`Scaffolded ${catalog.addons.length} addons under projects/workspace/addons/`);
