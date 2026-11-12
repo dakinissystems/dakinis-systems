@@ -28,6 +28,15 @@ function parseArgs(argv) {
 /**
  * @param {string} routeKey e.g. "GET /internal/hub/dashboard/:userId"
  */
+function routeIdentifier(method, routePath) {
+  const raw = `${method}_${routePath}`
+    .replace(/[^A-Za-z0-9_]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
+  if (!raw) return "route";
+  return /^[A-Za-z_]/.test(raw) ? raw : `route_${raw}`;
+}
+
 function parseRoute(routeKey) {
   const space = routeKey.indexOf(" ");
   const method = routeKey.slice(0, space).toUpperCase();
@@ -79,11 +88,7 @@ function generateTs(contract, basename) {
   lines.push(`export interface ${typeBase}Paths {`);
   for (const [routeKey] of entries) {
     const { method, path: routePath, params } = parseRoute(routeKey);
-    const methodName = `${method.toLowerCase()}_${routePath
-      .replace(/^\//, "")
-      .replace(/[:/.-]+/g, "_")
-      .replace(/_+/g, "_")
-      .replace(/^_|_$/g, "")}`;
+    const methodName = routeIdentifier(method.toLowerCase(), routePath);
     const paramType =
       params.length === 0
         ? "Record<string, never>"
@@ -96,11 +101,7 @@ function generateTs(contract, basename) {
   lines.push(`export const ${typeBase}PathBuilders: ${typeBase}Paths = {`);
   for (const [routeKey] of entries) {
     const { method, path: routePath, params } = parseRoute(routeKey);
-    const methodName = `${method.toLowerCase()}_${routePath
-      .replace(/^\//, "")
-      .replace(/[:/.-]+/g, "_")
-      .replace(/_+/g, "_")
-      .replace(/^_|_$/g, "")}`;
+    const methodName = routeIdentifier(method.toLowerCase(), routePath);
     if (params.length === 0) {
       lines.push(`  ${methodName}: () => ${JSON.stringify(routePath)},`);
     } else {
