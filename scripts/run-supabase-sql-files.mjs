@@ -55,7 +55,7 @@ function sslFromUrl(url) {
     if (host === "localhost" || host === "127.0.0.1") return undefined;
     const sslmode = parsed.searchParams.get("sslmode");
     if (sslmode === "disable") return undefined;
-    if (host.includes("supabase.com") || parsed.port === "6543" || parsed.port === "5432") {
+    if (host === "supabase.com" || host.endsWith(".supabase.com") || parsed.port === "6543" || parsed.port === "5432") {
       return { rejectUnauthorized: false };
     }
   } catch {

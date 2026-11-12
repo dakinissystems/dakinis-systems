@@ -196,8 +196,13 @@ function buildAnalysis({ leads, hipotesis, objeciones, frases, eventos }) {
 }
 
 function mergeGeneratedSection(filePath, sectionTitle, tableMd) {
-  if (!fs.existsSync(filePath)) return;
-  let content = fs.readFileSync(filePath, "utf8");
+  let content;
+  try {
+    content = fs.readFileSync(filePath, "utf8");
+  } catch (err) {
+    if (err && err.code === "ENOENT") return;
+    throw err;
+  }
   const start = `<!-- SYNC:${sectionTitle}:START -->`;
   const end = `<!-- SYNC:${sectionTitle}:END -->`;
   const block = `${start}\n${tableMd}\n${end}`;
@@ -219,8 +224,10 @@ const SHEET_TABS = [
 
 function loadSheetConfig() {
   const configPath = path.join(DATA_DIR, "sheet.config.json");
-  if (fs.existsSync(configPath)) {
+  try {
     return JSON.parse(fs.readFileSync(configPath, "utf8"));
+  } catch (err) {
+    if (!err || err.code !== "ENOENT") throw err;
   }
   const fromEnv = process.env.SALES_SHEET_ID?.trim();
   if (fromEnv) return { spreadsheetId: fromEnv };
@@ -228,13 +235,19 @@ function loadSheetConfig() {
 }
 
 async function fetchSheetTab(spreadsheetId, sheetName) {
-  const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+  const url = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(spreadsheetId)}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url, { redirect: "follow" });
   if (!res.ok) {
     throw new Error(`HTTP ${res.status} al descargar "${sheetName}"`);
   }
   const text = await res.text();
-  if (text.includes("<!DOCTYPE html") || text.includes("accounts.google.com")) {
+  let landedOnLogin = false;
+  try {
+    landedOnLogin = new URL(res.url).hostname === "accounts.google.com";
+  } catch {
+    landedOnLogin = false;
+  }
+  if (text.includes("<!DOCTYPE html") || landedOnLogin) {
     throw new Error(
       `Sheet no accesible para "${sheetName}". Comparte el libro: Cualquier persona con el enlace → Lector.`
     );
