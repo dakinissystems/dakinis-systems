@@ -43,8 +43,9 @@ Commercial  █████░░░░░  55%
 | Docs arquitectura por dominios | 🟢 en `main` |
 | CRM API v1 + migración `057` | 🟢 SQL prod ✅ · API en prod |
 | Migraciones `055` / `056` / `057` / `058` | ✅ aplicadas en Supabase prod |
-| Migración `059` hospitality (floor/menu/delivery) | ⬜ **aplicar** — Sentry: `tenant_tables` / price lists / delivery missing |
-| Migración `060` fiscal VERI*FACTU base | ⬜ aplicar — módulo Core + UI Config→Fiscal ([runbook](./RUNBOOKS/fiscal-verifactu.md)) |
+| Migración `059` hospitality (floor/menu/delivery) | ✅ aplicada en Supabase el 12 nov 2026 |
+| Migración `060` fiscal VERI*FACTU base | ✅ SQL en Supabase el 12 nov 2026. Core `1c67ec5` en Railway desde las 19:03 CET. No es un SIF certificado. Falta recorrer Config → Fiscal ([runbook](./RUNBOOKS/fiscal-verifactu.md)) |
+| Migración `062` audit append-only | ✅ SQL en Supabase el 12 nov 2026. `UPDATE` y `DELETE` en `meta.audit_logs` fallan por trigger. El rol de la aplicación no está comprobado |
 | System Health unificado | ⬜ diseño |
 | SSE/WS pulse | ⬜ roadmap |
 | Glovo/Uber API partner real | ⬜ stubs |

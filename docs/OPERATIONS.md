@@ -20,13 +20,13 @@ curl -sS https://finance-api.dakinissystems.com/health
 curl -sS https://tabletop-api.dakinissystems.com/health
 curl -sS https://core.dakinissystems.com/hub -o /dev/null -w "%{http_code}`n"
 
-# Finanzas / LifeFlow local
-cd D:\dakinis-systems\finanzas
-npm run dev
-
-# Dakinis AI + Core (Copilot)
-cd D:\dakinis-systems\platform\core
-npm run dev:full:ai
+# Checkouts anidados en D:\dakinis-systems. Este worktree no los trae.
+# LifeFlow: D:\dakinis-systems\finanzas   (raíz api/ + web/)
+# Core:     D:\dakinis-systems\platform\core
+# Hub:      D:\dakinis-systems\hub
+# Auth:     D:\dakinis-systems\platform\auth
+# Landing:  D:\dakinis-systems\apps\landing
+# AI:       D:\dakinis-systems\ai
 
 # Backup Postgres (secret GitHub `BACKUP_DATABASE_URL`)
 .\scripts\backup-postgres.ps1
@@ -59,10 +59,18 @@ Plantilla variables: [`railway.env.example`](./railway.env.example).
 | AkoeNet | `akoenet-*` | `api.akoenet.dakinissystems.com` |
 | LifeFlow Web / API | `lifeflow` | `finance…` · **`finance-api.dakinissystems.com`** |
 | Tabletop Web / API | `dakinis-tabletop` | `tabletop…` · **`tabletop-api…`** |
-| Billing / Notifications / Search / Knowledge / Internal | platform repos | `/billing/` · `/notifications/` · `/search/` · `/knowledge/` · `/internal/` |
+| Billing | repo `dakinis-billing` | `/billing/` |
+| Notifications | repo `dakinis-notifications` | `/notifications/` |
+| Search | repo `dakinis-search` | `/search/` |
+| Knowledge | repo `dakinis-knowledge` | `/knowledge/` |
+| Internal | repo `dakinis-internal-api` | `/internal/` |
 | Redis | plugin | AI · SA · Billing · Notifications · Search · Knowledge |
 
 ⚠️ **No usar** `api.finance.dakinissystems.com` — SSL Cloudflare free no cubre subdominio de 2º nivel.
+
+**Fuente de verdad.** El servicio de Railway es el repo de la tabla, no la carpeta homónima de este repo (`billing/`, `notifications/`, `search/`, `internal/`). Esas carpetas no se parchean como si el cambio llegara a producción. Un Dependabot abierto sobre ellas no despliega. Hasta retirar la copia, no se editan los dos árboles a la vez.
+
+**Madurez.** Infraestructura en producción no es producto cerrado. Un servicio cuenta como usable cuando un negocio completa el escenario sin asistencia. Circuito → [`RUNBOOKS/circuito-comercial.md`](./RUNBOOKS/circuito-comercial.md).
 
 Pendientes por servicio → [`STATUS.md`](./STATUS.md).  
 Workers (crear/redeploy) → [`RUNBOOKS/railway-workers.md`](./RUNBOOKS/railway-workers.md).
@@ -167,6 +175,7 @@ Antes de push Hub: `.\scripts\sync-hub-des.ps1`.
 | Auth + Google OAuth | [`RUNBOOKS/auth-google-oauth.md`](./RUNBOOKS/auth-google-oauth.md) |
 | Fiscal / VERI*FACTU (Core) | [`RUNBOOKS/fiscal-verifactu.md`](./RUNBOOKS/fiscal-verifactu.md) |
 | Billing E2E | [`RUNBOOKS/billing-e2e.md`](./RUNBOOKS/billing-e2e.md) |
+| Circuito comercial (piloto) | [`RUNBOOKS/circuito-comercial.md`](./RUNBOOKS/circuito-comercial.md) |
 | Railway workers | [`RUNBOOKS/railway-workers.md`](./RUNBOOKS/railway-workers.md) |
 | Dominios + Google Workspace | [`RUNBOOKS/google-workspace-domains.md`](./RUNBOOKS/google-workspace-domains.md) |
 | Incidencias | [`RUNBOOKS/incidents.md`](./RUNBOOKS/incidents.md) |

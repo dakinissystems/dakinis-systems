@@ -11,6 +11,7 @@ Repositorio de **orquestación** (gateway, Docker, SQL, legal, scripts).
 | **Estado hoy** | [`STATUS.md`](./STATUS.md) | Eng · Ops · CEO |
 | **Estándar de README / vocabulario** | [`DOC-STANDARDS.md`](./DOC-STANDARDS.md) · plantilla servicio [`README-TEMPLATE-SERVICE.md`](./README-TEMPLATE-SERVICE.md) | Eng · Docs |
 | **Mapa de sistemas** | [`SYSTEMS.md`](./SYSTEMS.md) | Eng · Product |
+| **Carpetas en D:\\** | [`inventario-d.md`](./inventario-d.md) | Eng · Product |
 | **Arquitectura** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Eng |
 | **Arquitectura por dominios** | [`architecture/README.md`](./architecture/README.md) | Eng |
 | **Hospitality / CRM / Connectors** | [`domains/`](./domains/) · [`platform/core.md`](./platform/core.md) | Eng · Product |

@@ -1,4 +1,5 @@
 -- 059_hospitality_floor_menu_delivery.sql
+-- Aplicada en Supabase el 12 nov 2026.
 -- Floor / carta / tarifas / delivery para Core API (hospitality).
 -- Corrige Sentry: relation "tenant_tables|tenant_price_lists|tenant_delivery_*" does not exist.
 -- Idempotente. Solo schemas Core que ya tengan `business`.
