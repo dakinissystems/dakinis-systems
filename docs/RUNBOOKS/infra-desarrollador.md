@@ -147,7 +147,7 @@ Los números por IP y por cuenta están en la segunda pasada y en el código. No
 
 En el código, sin evidencia de despliegue: límite por cuenta, políticas distintas, respuesta igual en la recuperación y retraso a partir del tercer fallo. La prueba de tiempos de enumeración no está hecha. El límite es por proceso: varias réplicas no comparten el contador.
 
-En el código, sin desplegar: `GET /auth/sessions`, `POST /auth/sessions/revoke` y `POST /auth/sessions/revoke-others`. El cambio de contraseña ya marca `revoked_at`. El access token corto sigue válido hasta `exp`. La evidencia de la condición 3 es un refresh revocado que responde 401. MFA de usuario y la pantalla de Hub van después.
+En el código, sin desplegar: `GET /auth/sessions`, `POST /auth/sessions/revoke` y `POST /auth/sessions/revoke-others`. El cambio de contraseña ya marca `revoked_at`. El access token sale con `JWT_ACCESS_TTL`, y si esa variable no está el valor es `15m`. Sigue válido hasta `exp`. Revocar la familia de refresh no lo invalida antes. Si alguien reporta un access token robado: se revoca la familia, se fuerza el cambio de contraseña (eso revoca los refresh) y el access token caduca en ese plazo. El corte inmediato del access token no existe. La evidencia de la condición 3 es un refresh revocado que responde 401. MFA de usuario y la pantalla de Hub van después.
 
 Sigue sin implementar:
 
@@ -195,7 +195,7 @@ Redis no es el libro de cobros. La primera protección es de infraestructura, no
 3. Dos colas en el mismo Redis comparten memoria, CPU, conexiones y latencia. Redis aparte para Billing solo si las métricas muestran contención.
 4. Esquema del job, idempotencia y reintentos con tope. Cola de fallidos con un procedimiento de reproceso.
 5. El correo valida destinatario y plantilla.
-6. Persistencia, decisión explícita y aún abierta: sin AOF, un reinicio pierde jobs; con AOF, el disco puede guardar datos personales y hace falta cifrado en reposo. El cobro no depende de esa elección.
+6. AOF es de la instancia Redis, no de cada cola. Compartir instancia es compartir esa política. La retención de jobs completados y fallidos es `removeOnComplete` y `removeOnFail`. El cobro no vive en Redis: vive en PostgreSQL.
 7. HMAC solo si un job cruza una frontera menos fiable que la red privada de Railway. Si se hace, lleva caducidad, clave con rotación y protección contra reenviar un mensaje válido. No es el siguiente cambio.
 
 Métricas mínimas, sin un dashboard nuevo: trabajos pendientes, antigüedad del más viejo, fallos.
@@ -207,7 +207,9 @@ Métricas mínimas, sin un dashboard nuevo: trabajos pendientes, antigüedad del
 | `/health/live` | El proceso responde | Que Postgres o Redis estén bien |
 | `/health/ready` | Puede hacer la operación que depende de esa pieza | Que un proveedor externo opcional esté arriba |
 
-Las dos comprobaciones tienen timeout. Un healthcheck no puede generar más carga de la que intenta mirar.
+Las dos comprobaciones tienen timeout. Un healthcheck no puede generar más carga de la que intenta mirar. Si el servicio necesita Postgres o Redis para operar, `/health/ready` no puede omitir esa dependencia en silencio.
+
+`/health` sigue en Auth, Billing e Internal para no romper UptimeRobot. Afirma el proceso, no la dependencia. Cuando las sondas apunten a `/health/ready` o a `/health/live`, se retira `/health`. Hasta entonces hay dos rutas y la canónica para el despliegue es `/health/ready`. Railway la usa al activar una versión y no vuelve a llamarla: la vigilancia continua sigue en UptimeRobot.
 
 ## Datos, logs y RGPD
 
@@ -251,6 +253,8 @@ En este árbol no hay workflows `pull_request_target`. Confirmar lo mismo en los
 
 Lockfile y `npm ci` en el circuito comercial. Imágenes pinneadas por digest cuando se consolide el pipeline, no en este paso. SBOM en ese mismo momento.
 
+Un lock escrito en Windows no basta para construir en Linux. npm solo guarda el binario opcional de la plataforma donde se generó. Vite 8 (rolldown y lightningcss) y cualquier otro paquete con binario nativo necesitan la entrada `linux-x64-gnu` en el lock si Railway es glibc. La imagen `node:20-bookworm-slim` trae npm 10.8.2: en el lock de StreamAutomator ese npm aborta `npm ci` (`edgesOut` y lock desincronizado). El Dockerfile de `apps/api` instala npm 11.6.2 antes de `npm ci` (`4717992` en `dakinis-streamautomator`). akoenet-client, en Railpack, instala los bindings que falten antes de `vite build` (`0dbe5b5`). Los dos commits están en `origin/main`. Railway marcó success para `4717992` a las 04:56 CET y para `0dbe5b5` a las 13:29 CET. A las 21:52 CET la API de StreamAutomator llevaba 61026 s en marcha, el mismo minuto de ese success. El worker y el scheduler no tienen un health público aparte. `akoenet.dakinissystems.com` respondió 200; eso no demuestra qué bundle está sirviendo.
+
 ## Después del circuito, no ahora
 
 OpenTelemetry. Métricas de conexiones, bloqueos y consultas lentas de PostgreSQL. Circuit breaker en Search, Knowledge y el proveedor de IA cuando esas llamadas existan. Prueba de carga de Core, Auth y Billing antes de escalar. Coste por servicio. Infraestructura como código cuando staging ya esté estable. El tope de 200 peticiones de AI por tenant y día está decidido y sin implementar. `security.txt` ya está en el árbol de la landing.
@@ -262,13 +266,15 @@ Las ocho también están en [STATUS](../STATUS.md). Siguen abiertas. Dueño: el 
 | # | Condición | Evidencia |
 |---|---|---|
 | 1 | Una empresa no lee datos de otra | Dos tenants sintéticos. Falla la lectura, la escritura, la exportación, la búsqueda y el worker |
-| 2 | Un rol sin permiso no ejecuta la operación | Sigue pendiente. Hay comprobaciones en el código y no hay evidencia |
-| 3 | Una sesión se puede revocar | Cerrar una sesión y el refresh deja de valer. P0 de Auth. El MFA de usuario no sustituye esta prueba |
-| 4 | Un secreto comprometido se puede invalidar | Una rotación real en staging y el procedimiento de cada familia. `JWT_SECRET` solo no cubre Stripe, `service_role`, OAuth, Redis ni Railway |
+| 2 | Un rol sin permiso no ejecuta la operación | Sigue pendiente. `AKOENET_MEMBER_KEY` no es el usuario. El alta de Search acepta el tenant de la clave de servicio. No hay evidencia |
+| 3 | Una sesión se puede revocar | Cerrar una sesión y el refresh deja de valer. El access token dura `JWT_ACCESS_TTL` (15 min si no se define). El MFA de usuario no sustituye esta prueba |
+| 4 | Un secreto comprometido se puede invalidar | Ensayo de `JWT_SECRET` y ensayo de `DAKINIS_INTERNAL_SERVICE_KEY` en staging, más el procedimiento de cada familia. El JWT solo no cubre la clave que comparten siete servicios |
 | 5 | Un reintento no duplica un cobro | `UNIQUE` en la base viva y las tres pruebas de Billing |
 | 6 | La base se recupera aislada | Ficha de restauración dentro del RPO y el RTO |
-| 7 | Una acción administrativa queda registrada | Fila en el audit log del dueño, no una línea de Railway |
-| 8 | Una incidencia P0 tiene procedimiento | Niveles P0–P3 y el plazo de 72 h si hay datos personales |
+| 7 | Una acción administrativa queda registrada | Fila en el audit log de la aplicación y revisión mensual del audit log nativo de Railway, Cloudflare, Supabase, Stripe y GitHub |
+| 8 | Una incidencia P0 tiene procedimiento | Niveles P0–P3, el plazo de 72 h si hay datos personales, y un suplente nombrado |
+
+Orden para cerrarlas, cuando haya evidencia: 3, 4, 5, 8, 7, 6, 1, 2. La 8 va antes de la 6: el procedimiento y el suplente cubren el resto cuando algo falla. Escribir el orden no cierra ninguna.
 
 ## Segunda pasada — decisiones que dejan de estar abiertas
 
@@ -280,7 +286,7 @@ Para cada servicio en el dashboard de Railway anota commit, rama, tag de imagen 
 
 ### Familias de secretos
 
-Se ensaya una rotación real (la de `JWT_SECRET` en staging vale como ensayo). El procedimiento escrito, aunque no se rote cada una ahora, cubre: Stripe API y secreto de webhook (coordinar Billing y el dashboard, con ventana), `service_role` (redesplegar todos los servicios que la usan en el mismo cambio), OAuth, Redis, cifrado versionado de StreamAutomator, y tokens de Railway. Si un servicio se queda con el valor viejo, el ensayo no cuenta.
+Se ensayan dos rotaciones en staging, con la misma ficha (fecha, servicios, ventana, resultado): `JWT_SECRET` y `DAKINIS_INTERNAL_SERVICE_KEY`. La segunda es la que comparten Internal, Knowledge, AkoeNet, StreamAutomator, Hub, Search y Notifications. Sin ese ensayo, la condición 4 no cubre la clave de más servicios. El procedimiento escrito, aunque no se rote cada una ahora, cubre también: Stripe API y secreto de webhook (coordinar Billing y el dashboard, con ventana), `service_role` (redesplegar todos los servicios que la usan en el mismo cambio), OAuth, Redis, cifrado versionado de StreamAutomator, y tokens de Railway. Si un servicio se queda con el valor viejo, el ensayo no cuenta. No se rotan todas las credenciales en la misma ventana en la que se despliegan los JWT de persona, las claves de worker y el gateway.
 
 ### LifeFlow — opción B
 
@@ -334,29 +340,37 @@ Exportación: desde el tenant A, la exportación de Core no incluye ninguna fila
 
 Workers que tocan datos de negocio, uno por uno: el de Internal no procesa un evento de otro tenant; el de Search no devuelve un documento ajeno; el de Knowledge respeta la clasificación; el de Notifications no escribe a un destinatario de otro tenant. Cada uno con su archivo de evidencia.
 
-En el código, sin desplegar y sin evidencia: en Search, los ámbitos `clients`, `invoices`, `messages`, `events` y `chats` solo salen si el documento y la consulta traen el mismo `tenantId` o `businessId`. Un documento de esos ámbitos sin tenant no sale. Los mensajes de AkoeNet indexados sin tenant dejan de aparecer en este índice; la búsqueda SQL de AkoeNet no pasa por Search. Knowledge, documentation y global sin tenant siguen saliendo. Internal, en `POST /search`, usa el tenant del JWT y rechaza otro. Search ignora el tenant de la query si no llega `X-Dakinis-Actor`. Sin ese JWT los ámbitos privados no salen. El alta del índice sigue aceptando el tenant que ponga la clave de servicio. Search necesita el mismo `JWT_SECRET` que Auth. Internal reenvía el JWT en `POST /search`. Notifications manda un solo correo, ignora `html` salvo `NOTIFICATION_ALLOW_HTML=true` y no envía si el payload trae una clave con password, token o secret, también dentro de un objeto anidado. El envío, el inbox, marcar leído, las preferencias y el stream exigen `X-Dakinis-Actor`, y el `userId` tiene que ser el `sub`. Internal y Hub reenvían ese JWT. Hace falta el mismo `JWT_SECRET` que Auth. En local, sin secreto y fuera de Railway, el cuerpo sigue eligiendo el destinatario. En Railway, Search y Notifications exigen `DAKINIS_INTERNAL_SERVICE_KEY` en la ruta de datos. `/health` sigue abierto. Antes de desplegar esos dos servicios, la misma clave tiene que estar en Internal, Knowledge, AkoeNet y StreamAutomator. No va en el gateway ni en el frontend. Eso no cierra la condición 1.
+En el código, sin desplegar y sin evidencia: en Search, los ámbitos `clients`, `invoices`, `messages`, `events` y `chats` solo salen si el documento y la consulta traen el mismo `tenantId` o `businessId`. Un documento de esos ámbitos sin tenant no sale. Los mensajes de AkoeNet indexados sin tenant dejan de aparecer en este índice; la búsqueda SQL de AkoeNet no pasa por Search. Knowledge, documentation y global sin tenant siguen saliendo. Internal, en `POST /search`, usa el tenant del JWT y rechaza otro. Search ignora el tenant de la query si no llega `X-Dakinis-Actor`. Sin ese JWT los ámbitos privados no salen. El alta del índice sigue aceptando el tenant que ponga la clave de servicio. Eso envenena el índice: un documento del negocio B puede quedar como si fuera del A, y la consulta con el JWT de A lo devuelve. Hasta que el tenant del documento salga de una fuente autorizada, el alta de ámbitos privados no se enciende en producción. La prueba negativa es `docs/evidence/search-index-poison-YYYYMMDD.txt`: la clave de servicio escribe el tenant B y la consulta con el JWT de A no lo devuelve. Si lo devuelve, el filtro de consulta no protege lo que dice proteger. Quién indexó, con qué tenant y con qué clave, todavía no queda registrado. Search necesita el mismo `JWT_SECRET` que Auth. Internal reenvía el JWT en `POST /search`. Notifications manda un solo correo, ignora `html` salvo `NOTIFICATION_ALLOW_HTML=true` y no envía si el payload trae una clave con password, token o secret, también dentro de un objeto anidado. El envío, el inbox, marcar leído, las preferencias y el stream exigen `X-Dakinis-Actor`, y el `userId` tiene que ser el `sub`. Internal y Hub reenvían ese JWT. Hace falta el mismo `JWT_SECRET` que Auth. En local, sin secreto y fuera de Railway, el cuerpo sigue eligiendo el destinatario. En Railway, Search y Notifications exigen `DAKINIS_INTERNAL_SERVICE_KEY` en la ruta de datos. `/health` sigue abierto. Antes de desplegar esos dos servicios, la misma clave tiene que estar en Internal, Knowledge, AkoeNet y StreamAutomator. No va en el gateway ni en el frontend. Eso no cierra la condición 1.
 
 Internal, en las rutas de una persona (dashboard, perfil, inbox, `workspaces/me`, aceptar invitación y contexto de organización), exige además `X-Dakinis-Actor`: el JWT del IdP, con `sub` igual al `userId`. Hub reenvía el Bearer que ya verificó. En Railway, Internal sin `JWT_SECRET` responde 503 en esas rutas. Hay que poner el mismo secreto que Auth y desplegar Hub a la vez: si Internal sale antes, el dashboard responde 401. `JWT_STRICT_ISS_AUD=false` relaja emisor y audiencia, igual que en Auth. El gateway vacía `X-Dakinis-Actor`, `X-Dakinis-Akoenet-Member` y `X-Dakinis-Worker` en `/internal/`. Hub y AkoeNet hablan con Internal por la red privada, no por ese borde. El JWT sin `exp` no vale. El portal de Billing exige que ese `sub` sea el `userId` del cuerpo. La suscripción que pide Hub tiene que coincidir con el tenant del JWT. Invitar, cambiar un rol, quitar un miembro, editar el workspace, ver el uso y cambiar productos miran en `meta.workspace_members` que el actor sea owner, admin, dueño del workspace o admin de plataforma. Ver el workspace, los miembros, los ventures, los productos y los addons exige ser miembro activo, viewer incluido. El listado de invitaciones es de administración y ya no incluye el token; el token sale solo al crearla. Las feature flags exigen el mismo JWT. Si la query trae `userId` o `tenantId`, tienen que coincidir con el token. Si trae `workspaceId`, el actor tiene que ser miembro. En local, sin `JWT_SECRET` y fuera de Railway, esa comprobación no corre. `/admin/v1`, el listado de la cola y la DLQ exigen `is_super_admin` o el rol `platform_admin` en `dakinis_auth.users`. Suspender, activar y cambiar una feature usan el `sub` verificado, no el `actorId` del cuerpo. Cambiar qué productos ve un tenant en el Hub es de plataforma; leerlos también vale si el slug es el del JWT. El aviso sale al `sub`, no a un `userId` distinto. La suscripción de otro tenant solo la lee un admin de plataforma. Activar addons del workspace exige owner o admin. Si `POST /events` trae `X-Dakinis-Actor`, el `userId` y el tenant quedan los del JWT. Sin esa cabecera hace falta `DAKINIS_WORKER_KEY`, distinta de la clave de servicio, en `X-Dakinis-Worker`. Copiar la clave de servicio no vale. Con esa clave el evento no puede traer `userId`, `tenantId` ni `platformUserId`. En local, sin la clave y fuera de Railway, sí puede. En Railway, sin esa clave, la ruta responde 503. En local, sin la clave y fuera de Railway, la clave de servicio sigue publicando. La misma clave va en Internal y en el proceso que publica, no en el gateway ni en el frontend. El SDK la envía cuando está definida. En AkoeNet, el alta de módulo, el comando, el evento del assistant y el reflejo de XP miran `akoenet.server_members` o `owner_id`: el UUID de plataforma tiene que ser miembro, owner o admin de plataforma. Si llega el JWT, el cuerpo no puede nombrar a otra persona. Sin JWT, hace falta `AKOENET_MEMBER_KEY`, distinta de la clave de servicio, en `X-Dakinis-Akoenet-Member`; el id local de AkoeNet no basta. La clave compartida ya no nombra a un miembro. Quien tiene la clave de AkoeNet sigue pudiendo nombrar a otro. En Railway, sin esa clave, esas cuatro rutas responden 503. En local, sin la clave y fuera de Railway, el respaldo anterior se mantiene. La misma clave va en Internal y en akoenet-backend, no en el gateway ni en el frontend. El catálogo y `GET` de módulos del servidor exigen `AKOENET_MEMBER_KEY`. Niveles y automod los leen desde el proceso de AkoeNet. La clave de servicio compartida ya no basta. Eso no cierra la condición 2. Hub ya no acepta un JWT cuya firma falle cuando el secreto está definido.
 
-### Redis por cola
+### Redis
 
-Billing: AOF activo, retención 24–48 h, cifrado en reposo si el proveedor lo tiene. Perder un job de cobro no es aceptable. Notifications, Search y Knowledge: AOF apagado o `everysec` con retención corta. Perder un aviso se acepta. No es una decisión para todo Redis a la vez. HMAC sigue fuera.
+AOF se configura en la instancia, no en cada cola. Billing, Notifications, Search y Knowledge comparten Redis en este ciclo, así que comparten una sola política de persistencia. No se afirma persistencia distinta por cola. Una instancia aparte para Billing se justifica solo si el cobro necesita otra política, o si las métricas muestran contención. Hoy no está separada.
+
+La retención de trabajos completados y fallidos es `removeOnComplete` y `removeOnFail`, por edad y por cantidad. No es la retención del fichero AOF. PostgreSQL sigue siendo la fuente de verdad de la venta y del cobro. HMAC sigue fuera. La antigüedad del job pendiente más viejo se mira por cola. La alerta automática de esa antigüedad y de los fallos todavía no existe.
 
 ### Arranque, CORS y Sentry
 
-En Railway, Auth no arranca si `NODE_ENV` no es `production`. El nombre de entorno que contenga `stag` exige `JWT_SECRET_PROD_SHA256` y `DATABASE_URL_PROD_SHA256`; si el sha256 coincide, no arranca. Esos hashes son de referencia, no el secreto.
+Staging usa `NODE_ENV=production` y secretos distintos de producción. El guard es el sha256: si el nombre del entorno contiene `stag`, Auth no arranca cuando `JWT_SECRET` o `DATABASE_URL` coinciden con `JWT_SECRET_PROD_SHA256` o `DATABASE_URL_PROD_SHA256`. Esos hashes son de referencia, no el secreto. No se distingue staging con `NODE_ENV=staging`. La prueba de arranque es un staging cuyo `JWT_SECRET` coincide con producción y no llega a escuchar.
 
-CORS: con `NODE_ENV=production` y sin lista, orígenes fijos. Con `CORS_ORIGINS` vacío, no arranca. Fuera de Railway, en development, test o sin `NODE_ENV`, refleja el Origin. Cualquier otro caso sin lista no arranca.
+En Railway, Auth no arranca si `NODE_ENV` no es `production`. Un valor vacío tampoco.
+
+CORS, hoy en Auth: con `NODE_ENV=production` y sin lista, orígenes fijos. `CORS_ORIGINS` vacío no arranca. Fuera de Railway, en `development`, `test` o sin `NODE_ENV`, refleja el Origin. Cualquier otro caso sin lista no arranca. Nunca se combina `*` con credenciales. Reflejar el Origin cuando falta `NODE_ENV` es un hueco: un proceso expuesto fuera de Railway, sin la variable, se comporta como desarrollo. La regla siguiente, todavía no en el código, reserva la reflexión para `APP_ENV=development`. `staging`, `production` y un valor desconocido exigen lista o no arrancan. No se mezcla ese cambio con el despliegue de staging. Internal, Notifications y AkoeNet tampoco deben tratar «no estoy en Railway» como desarrollo cuando el servicio se expone. Hoy varias comprobaciones se saltan fuera de Railway si falta el secreto. Eso queda escrito como hueco, no como modo seguro.
 
 Sentry en Auth y Core sigue con `sendDefaultPii: false` y ahora `beforeSend` tapa authorization, cookie, code, state, password y token. Falta el error de prueba en producción. `/health` de Auth ya no devuelve el prefijo de la clave de Resend.
 
 ### Audit log
 
-`docs/supabase/migrations/062_audit_logs_append_only.sql` crea un trigger que rechaza `UPDATE` y `DELETE` en `meta.audit_logs`, y revoca esos permisos a `PUBLIC`. No está aplicado. El número no debe chocar con `061` de la rama de nómina. El dueño de la tabla puede desactivar el trigger. La hoja de cambios de Railway, Cloudflare, Supabase, Stripe y GitHub sigue vacía.
+`docs/supabase/migrations/062_audit_logs_append_only.sql` está aplicada en Supabase el 12 nov 2026. El trigger rechaza `UPDATE` y `DELETE` en `meta.audit_logs`, y el archivo revoca esos permisos a `PUBLIC`. Es append-only para el rol de la aplicación, no un almacén inmutable: el propietario puede desactivar el trigger. Revocar a `PUBLIC` no quita un `GRANT` explícito. Sigue sin comprobarse que el rol con el que corre la aplicación no tenga `UPDATE` ni `DELETE`. La prueba es `docs/evidence/audit-app-role-YYYYMMDD.txt`.
+
+La `061` de nómina ya estaba aplicada, así que `062` conservó el número. `060` también quedó aplicada el 12 nov 2026. Lo aplicado, por entorno, se anota en `docs/evidence/migrations-YYYYMMDD.txt` con fecha y commit. Ese archivo sigue vacío.
+
+El plano de control no entra en `meta.audit_logs`. La fuente es el audit log nativo de Railway, Cloudflare, Supabase, Stripe y GitHub. Revisión mensual del operador: altas y bajas de miembros, rotación de tokens, cambios de política, cambios de webhook y merges en ramas protegidas. Evidencia `docs/evidence/audit-<sistema>-YYYYMMDD.txt`, sin secretos. Una hoja manual vacía no cierra la condición 7.
 
 ### request_id
 
-El gateway reenvía `X-Request-Id` con `$request_id` de Nginx. No está redesplegado. Core lo copia a `meta.requestId`, a la cabecera de respuesta y al evento del bus. Billing e Internal lo copian a la respuesta y al evento que encolan. Falta la prueba de que el mismo valor sale en el log de los tres. Hub no lo propaga todavía.
+El gateway reenvía `X-Request-Id` con `$request_id` de Nginx. No está redesplegado. Core lo copia a `meta.requestId`, a la cabecera de respuesta y al evento del bus. Billing e Internal lo copian a la respuesta y al evento que encolan. Hub reenvía el identificador en el proxy hacia Internal y en el stream de Notifications, y lo devuelve en la respuesta. No está comprobado que ese valor quede escrito en el log de Hub. Reenviar la cabecera y dejarla en el log son dos comprobaciones. La prueba pide el mismo identificador en el log de Core, Billing e Internal, y en la respuesta de Hub.
 
 ### RGPD
 
@@ -364,7 +378,7 @@ Las 72 horas no se aplican a cualquier incidencia con datos personales. La notif
 
 ### Otros cierres de esta pasada
 
-- `059` y `060` no tienen migración inversa. Son aditivas. Un `DROP` de la fiscal rompería la cadena. El retroceso es el backup.
+- `059` y `060` no tienen migración inversa. Son aditivas. Un `DROP` de la fiscal rompería la cadena. El arreglo de una migración aditiva es otra migración hacia delante. Restaurar la base entera queda para un daño grave: una restauración pisa operaciones posteriores al backup.
 - Tabletop: la copia cifrada es la que ya hace el usuario en el producto. No hay backup de servidor del SQLite hasta que pase a Postgres. Decisión explícita, no un olvido.
 - `security.txt` está en `apps/landing/public/.well-known/security.txt`. Cuenta cuando la landing desplegada lo sirva.
 - La imagen de producción del gateway queda fijada por digest en `gateway/Dockerfile`. El compose local puede seguir con el tag.
@@ -376,16 +390,40 @@ Las 72 horas no se aplican a cualquier incidencia con datos personales. La notif
 
 No se monta Kubernetes ni se migra a AWS. No se crea un microservicio «Dakinis Security». No se activa `FORCE ROW LEVEL SECURITY` en producción sin la prueba de esa tabla. No se copian datos reales a staging. No se trata Vault como bóveda. No se firma cada job con HMAC por defecto. No se marca hecho un control de dashboard desde el repositorio.
 
+## Correcciones del 12 nov 2026
+
+El diseño de seguridad se detiene aquí. Lo siguiente es ejecutar este runbook y guardar evidencias. Estas decisiones quedan escritas para no reabrirlas en el despliegue de staging.
+
+1. JWT. HS256 compartido permite que Search o Notifications firmen tokens que parecen de Auth. Se mantiene así mientras se estabiliza el circuito. Después, RS256 o ES256: la privada solo en Auth, la pública en quien verifica, con `kid` y rotación. No se mezcla con el despliegue de staging. El nombre canónico es `JWT_SECRET`.
+2. Credencial de servicio. Una clave en siete servicios no dice quién llama. Después del despliegue estable, una credencial por emisor y receptor, con revocación propia. No hace falta un IAM nuevo. No se rotan todas en la ventana de este despliegue.
+3. AkoeNet. `AKOENET_MEMBER_KEY` demuestra que el proceso conoce el secreto, no qué persona actúa. Las acciones de una persona salen del JWT verificado y de su fila de miembro. La clave queda para llamadas de servidor que no actúan por un usuario, y esas llamadas no pueden nombrar a otro miembro. El gateway vacía la cabecera en `/internal/`. En `/akoenet/` no la vacía; el backend la pone desde el entorno y no la copia del cliente. Confirmar eso en el borde antes de darlo por cerrado.
+4. Search. `POST /v1/index` no puede fiar el tenant a la clave de servicio. Hasta la prueba negativa, el alta de ámbitos privados no se enciende en producción. Knowledge, documentation y global pueden seguir.
+5. Redis. Una instancia, una política de AOF. Retención de jobs en BullMQ. PostgreSQL es la fuente de verdad del dinero.
+6. Entorno. Solo un modo de desarrollo explícito refleja el Origin. Hoy, fuera de Railway y sin `NODE_ENV`, Auth lo refleja. Eso se cambia después de staging, no durante.
+7. Audit log. Comprobar el rol real de la aplicación. El trigger no frena al propietario. Los cinco paneles se revisan por su audit log nativo, una vez al mes.
+8. `request_id`. Hub reenvía la cabecera en el proxy y en el stream. Falta verla en su log. La condición se verifica cuando el mismo valor se sigue de punta a punta.
+9. Migraciones. La `061` de nómina ya estaba aplicada y `062` conservó el número. `060` y `062` quedaron aplicadas el 12 nov 2026. Las aditivas se corrigen hacia delante.
+10. AI. El tope de 200 peticiones por tenant y día se completa con tope de tokens de entrada y salida, concurrencia y un presupuesto diario. No se implementa en los dos checkouts a la vez, y no entra antes de comparar esas historias.
+11. Arranque. Si falta una variable de la que el servicio depende, el proceso no escucha. Un healthcheck no esconde esa falta.
+12. Continuidad. El suplente de las condiciones 4, 6 y 8 se nombra antes del segundo negocio, con acceso al runbook y a una prueba de restauración.
+13. `exp`. Internal, Search y Notifications rechazan un JWT sin `exp` numérico. Auth y Core usan `jsonwebtoken`: un token caducado falla, y un token que nunca trajo `exp` puede pasar. La prueba es un token sin `exp` que responde 401 en Auth, Core, Internal, Search y Notifications. Hoy esa prueba no está hecha, y en Auth y Core el rechazo no está escrito.
+14. CSV de Vault. No se abre desde el repositorio ni desde el agente. Para saber qué rotar, o se listan solo los servicios en una máquina sin red y se rota cada uno en su panel, o se rotan todas las credenciales del inventario de secretos sin abrir el archivo. La evidencia anota la fecha y los servicios, sin valores. El archivo en claro se borra al terminar.
+15. Límite de login. El contador de Auth es por proceso. Varias réplicas no comparten la cuenta. Un contador distribuido espera a que Auth escale, no a este ciclo.
+
+El hito que demuestra integración y una parte de la seguridad es una venta en staging con dos empresas aisladas, un worker, Billing coherente con Stripe y Hub mostrando el resultado. Después, el mismo escenario con Copérnico. Eso no sustituye las ocho evidencias. Es el primer sitio donde se pueden producir.
+
 ## Revisión después de estos cambios
 
-Nada de esta pasada está desplegado ni verificado. Recorrer esta lista antes de dar el árbol por bueno. El resultado, cuando exista, se guarda en `docs/evidence/` con la fecha en el nombre. Escribir la lista no cierra ninguna condición.
+Esta pasada no está verificada. Recorrer esta lista antes de dar el árbol por bueno. El resultado, cuando exista, se guarda en `docs/evidence/` con la fecha en el nombre. Escribir la lista no cierra ninguna condición.
+
+A las 04:14 CET del 12 nov, Sentry (`e8d3dc58`, proyecto javascript-react, servicio `dakinis-core-api`) vio producción en el commit `8789a3b`. El error era el `INSERT OR IGNORE` del menú de hostelería. Ese release no cierra ninguna de las ocho condiciones. Railway publicó `1c67ec5` (incluye `a74b6dc`) en `awake-inspiration / production` a las 19:03 CET, con estado success. A las 21:47 CET `/api/health/live` llevaba 9902 s en marcha, el mismo minuto de ese despliegue. La carta y Config → Fiscal no se han recorrido en el navegador. Los builds de la madrugada de StreamAutomator (`e3713883`, `91bcb54e`, `ac2b6121`) y de akoenet-client (`5ce445b0`) fallaron; el success posterior está en «CI y cadena de suministro».
 
 ### Secretos que tienen que coincidir
 
 | Variable | Dónde | Qué mirar |
 |---|---|---|
-| `JWT_SECRET` o `DAKINIS_JWT_SECRET` | Auth, Internal, Hub, Search, Notifications | El mismo valor. En Search y Notifications es nuevo: sin él, en Railway el envío responde 503 y la consulta privada queda vacía |
-| `DAKINIS_INTERNAL_SERVICE_KEY` | Internal, Knowledge, AkoeNet, StreamAutomator, Hub, Search, Notifications | La misma. No va en el gateway ni en un frontend |
+| `JWT_SECRET` | Auth, Internal, Hub, Search y Notifications | El nombre canónico. HS256: quien lo tiene puede firmar tokens que parecen de Auth. En Search y Notifications es nuevo: sin él, en Railway el envío responde 503 y la consulta privada queda vacía. `DAKINIS_JWT_SECRET`, si está definido, tiene que ser el mismo valor. Rotar uno y dejar el otro no es una rotación. El alias se quita del código después de staging, no en este despliegue |
+| `DAKINIS_INTERNAL_SERVICE_KEY` | Internal, Knowledge, AkoeNet, StreamAutomator, Hub, Search, Notifications | La misma en los siete. Quien la tiene puede llamar como cualquiera de ellos. No identifica al emisor. No va en el gateway ni en un frontend. El ensayo de rotación en staging es parte de la condición 4. Credenciales distintas por emisor, con revocación propia, van después de estabilizar este despliegue, no en la misma ventana |
 | `AKOENET_MEMBER_KEY` | Internal y akoenet-backend | Distinta de la clave de servicio. Las dos a la vez. Sin ella, en Railway las rutas de módulos de AkoeNet responden 503 y niveles y automod dejan de ver la config del servidor |
 | `DAKINIS_WORKER_KEY` | Internal y cada proceso que publique en `POST /events` | Distinta de la clave de servicio. El SDK la envía si está definida. Sin ella, en Railway publicar sin JWT responde 503 |
 
@@ -393,7 +431,7 @@ Nada de esta pasada está desplegado ni verificado. Recorrer esta lista antes de
 
 ### Orden, cuando se despliegue
 
-No desplegar todavía. Cuando se haga, este orden:
+Este orden es el de las variables nuevas: `JWT_SECRET` en Search y Notifications, las claves de worker y de AkoeNet, y Hub junto a Internal. Una corrección de build no lo sustituye. Core ya llegó a producción en `8789a3b` sin esta ventana. Esas variables no se dan por puestas. Cuando se haga, este orden:
 
 1. Anotar en Railway el commit, la rama y el root directory de cada servicio antes de cambiar nada.
 2. Poner `JWT_SECRET` en Search y Notifications, el mismo de Auth, antes de publicar esas imágenes.
@@ -401,15 +439,15 @@ No desplegar todavía. Cuando se haga, este orden:
 4. Poner `AKOENET_MEMBER_KEY` en Internal y en akoenet-backend, en la misma ventana. Si Internal sale antes, módulos, comandos, eventos del assistant, XP y la lectura de módulos responden 503.
 5. Publicar Hub en la misma ventana que Internal. El dashboard, el inbox y el stream de eventos reenvían el JWT. Si Internal sale antes, responden 401.
 6. Recargar el gateway. `/internal/` vacía `X-Dakinis-Actor`, `X-Dakinis-Akoenet-Member` y `X-Dakinis-Worker`. Hub, AkoeNet, Search y Notifications se hablan por la red privada, no por ese borde.
-7. No aplicar `059`, `060` ni `062`. No activar `FORCE ROW LEVEL SECURITY`. No rotar `service_role` ni el webhook de Stripe en el mismo cambio.
+7. `059`, `060` y `062` ya están en Supabase (12 nov 2026). No volver a aplicarlas. No activar `FORCE ROW LEVEL SECURITY`. No rotar `service_role` ni el webhook de Stripe en el mismo cambio.
 
 ### Qué probar en cuanto haya un entorno
 
 - Dos tenants parecidos: búsqueda, exportación y un worker. Artefacto `docs/evidence/isolation-export-YYYYMMDD.txt` y uno por worker. Hoy no hay exportación que probar si Core aún no exporta: el hueco se escribe, no se marca hecho.
 - `POST /events` con la clave de worker y un `userId` en el cuerpo responde 403. Con el JWT, el `userId` y el tenant quedan los del token.
-- Search: una query de `invoices` con la clave de servicio y el tenant de otro no devuelve filas. La misma query con el JWT de ese tenant sí, si el documento está etiquetado. El `POST /v1/index` con la clave de servicio todavía puede escribir el tenant que quiera: mirar si un documento envenenado aparece luego en la consulta del JWT.
+- Search: una query de `invoices` con la clave de servicio y el tenant de otro no devuelve filas. La misma query con el JWT de ese tenant sí, si el documento está etiquetado. La prueba negativa del alta es aparte: la clave de servicio escribe el tenant B y el JWT de A no lo lee. Si lo lee, el filtro de consulta no basta.
 - Notifications: `POST /v1/send` y el stream con un `userId` distinto del `sub` responden 403. El inbox de otra persona también.
-- AkoeNet: cambiar un módulo sin `AKOENET_MEMBER_KEY` responde 503 en Railway. Con la clave, el UUID tiene que ser miembro. Un UUID de otro miembro, presentado por esa clave, hoy entra: anotarlo, no darlo por cerrado.
+- AkoeNet: cambiar un módulo sin `AKOENET_MEMBER_KEY` responde 503 en Railway. Con la clave, el UUID tiene que ser miembro. Un UUID de otro miembro, presentado por esa clave, hoy entra. La condición 2 no se cierra con esa clave. El disparador para exigir el JWT de la persona es encender las pantallas de workspace: o van con el JWT reenviado, o siguen apagadas.
 - El dashboard de Hub con el JWT correcto abre. Con el `userId` de otra persona, 403. El stream igual, también si el UUID cambia de mayúsculas.
 - El mismo `X-Request-Id` en el log de Core, Billing e Internal. Hub lo reenvía en el proxy y en el stream; falta verlo en el log.
 - Un refresh revocado responde 401. El access token sigue válido hasta `exp`: la condición 3 no se cierra con esta pasada.
@@ -419,11 +457,11 @@ No desplegar todavía. Cuando se haga, este orden:
 
 - Las llamadas de workspace de AkoeNet (`feature-flags`, `workspaces/me`, addons, escritorio y el dashboard interno) siguen yendo solo con la clave de servicio. En producción esas rutas de persona responden 401. No se fabrica un JWT en el backend de AkoeNet. Hay que reenviar el JWT del IdP desde la petición del usuario, o dejar esas pantallas apagadas hasta entonces.
 - Quien tiene `AKOENET_MEMBER_KEY` sigue pudiendo nombrar el UUID de otro miembro en el alta de módulo, el comando, el evento y el reflejo de XP. Cerrarlo exige el JWT de esa persona en la petición, no otra clave compartida.
-- El alta de Search sigue eligiendo el tenant del documento. La consulta ya no.
-- El access token no se revoca antes de `exp`. El corte del WebSocket de AkoeNet espera a esa revocación.
+- El alta de Search, en el código, sigue eligiendo el tenant del documento. La consulta ya no. En producción el alta de ámbitos privados no se enciende hasta la prueba negativa.
+- El access token no se revoca antes de `exp`. El plazo por defecto es 15 min (`JWT_ACCESS_TTL`). El corte del WebSocket de AkoeNet espera a la revocación del refresh. El procedimiento de un token robado está en `docs/RUNBOOKS/incidents.md`.
 - Suplente de las condiciones 4, 6 y 8: sigue sin nombrar.
 - Hoja de cambios de Railway, Cloudflare, Supabase, Stripe y GitHub: sigue vacía. MFA y Access de Cloudflare no se activan desde el repo.
 - El CSV de contraseñas de Vault no se lee, no se mueve y no se borra desde aquí. Lo mueve quien tenga la copia, y rota lo que haya dentro.
 - Los dos checkouts de AI se comparan antes de borrar uno y antes de poner el tope de 200 peticiones. No se implementa el tope en los dos a la vez.
-- `059` y `060` no tienen migración inversa. `062` está escrita y no aplicada. El número no debe chocar con `061` de nómina.
+- `059`, `060` y `062` están aplicadas en Supabase el 12 nov 2026. Ninguna tiene migración inversa. La `061` de nómina ya estaba aplicada y `062` conservó el número.
 - Comparar las copias de `actor.js` en Internal, Search y Notifications si se cambia la verificación del JWT. Tienen que seguir iguales.

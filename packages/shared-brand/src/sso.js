@@ -89,11 +89,13 @@ export function dakinisReadIdpTokens() {
   }
 }
 
-/**
- * URL de lanzamiento a producto externo o ruta Core.
- * @param {string} productId
- * @param {{ session?: { token?: string }, returnUrl?: string }} [opts]
- */
+/** Ruta interna de Core. No acepta un origen ni una query. */
+export function dakinisSafeProductPath(raw) {
+  const value = String(raw || "").trim();
+  if (!/^\/app\/[a-z0-9/-]+$/.test(value)) return "";
+  return value;
+}
+
 export function dakinisBuildProductLaunchUrl(productId, opts = {}) {
   const product = dakinisGetProduct(productId);
   if (!product) return "/";
@@ -108,6 +110,8 @@ export function dakinisBuildProductLaunchUrl(productId, opts = {}) {
   const origin = base.replace(/\/$/, "");
   const hubPath = product.sso?.hubSsoPath || "";
   const url = new URL(hubPath ? `${origin}${hubPath.startsWith("/") ? hubPath : `/${hubPath}`}` : origin);
+  const appPath = dakinisSafeProductPath(opts.path);
+  if (appPath && !hubPath) url.pathname = appPath;
   url.searchParams.set("utm_source", "dakinis-hub");
   url.searchParams.set("utm_medium", "ecosystem");
 

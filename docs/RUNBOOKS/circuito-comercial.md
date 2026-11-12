@@ -6,9 +6,9 @@ Relacionado: [billing E2E](./billing-e2e.md) · [STATUS](../STATUS.md) · [opera
 
 ## Orden
 
-1. Invitación y permisos del piloto Copérnico (`heladeria-copernico`).
+1. Invitación y permisos del piloto Copérnico (`heladeria-copernico`). En Hub, Admin → Miembros. Quien aún no tiene cuenta crea la suya sin perder el enlace. Entra con el IdP y acepta; después, si solo hay un negocio, Core lo abre. Owner y admin quedan como admin y member como member. Viewer no se crea. Está en main de Hub y Core. No se ha recorrido en el navegador.
 2. Billing de punta a punta, en el repo `dakinis-billing`.
-3. Hub con datos reales de Core y de al menos otro producto.
+3. Hub con datos reales de Core y de al menos otro producto. Una venta o un stock bajo se anota en Mi día para los miembros de ese negocio cuando la petición lleva el JWT del IdP. Core no nombra personas. Está en main de Core e Internal. No se ha recorrido en el navegador.
 4. Onboarding: empresa, empleados, productos, inventario y una venta, sin asistencia.
 5. Staging mínimo y MFA de Cloudflare antes de repetir el circuito con un segundo negocio. El staging del escenario incluye Gateway, Auth, Core, Billing, Hub e Internal API, más el worker que lleve la venta hasta Hub. El detalle está en [infra del desarrollador](./infra-desarrollador.md).
 
@@ -32,7 +32,7 @@ Para quien usa el producto es una sola operación. Por dentro pueden intervenir 
 1. Un empleado registra una venta en Core.
 2. El inventario se descuenta.
 3. Quien administra consulta el resultado.
-4. Si falta stock, el aviso aparece en Hub con una acción, no solo un número.
+4. Si falta stock, el aviso aparece en Hub con una acción, no solo un número. «Ver inventario» abre `/app/inventario` y «Ver pedidos» abre `/app/ventas`. Si Core pide login, vuelve a esa pantalla. Está en main de Hub y Core. No se ha pulsado en el navegador.
 5. El plan del negocio coincide con lo pagado en Stripe.
 
 Si el paso 5 no tiene un webhook en **200**, el piloto sigue en cortesía. No se anuncia cobro.
@@ -51,7 +51,7 @@ Hecho cuando `billing.subscriptions` y `business.plan` muestran el mismo plan tr
 | Search, Knowledge, pgvector | Un producto consulta el índice |
 | Cuotas de AI y tool-calling | Hay uso medible en el piloto |
 | Nómina (PR #64) | El circuito de arriba ya cobra |
-| Fiscal `059` / `060` y Config → Fiscal | SQL aplicado en Supabase y revisión normativa aparte. No es un SIF certificado |
+| Fiscal `060` y Config → Fiscal | `059` y `060` ya están en Supabase (12 nov 2026). Core `1c67ec5` está en Railway desde las 19:03 CET. Revisión normativa aparte. No es un SIF certificado |
 | AkoeNet Assistant | La comunidad ya se usa sin el asistente |
 | Automatizaciones compartidas | Hay al menos un disparador real (venta, pago o stream) ya observado |
 

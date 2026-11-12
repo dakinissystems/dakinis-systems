@@ -43,8 +43,9 @@ Commercial  █████░░░░░  55%
 | Docs arquitectura por dominios | 🟢 (PR docs → `main`) |
 | CRM API v1 + migración `057` | 🟢 SQL prod ✅ · API en prod |
 | Migraciones `055` / `056` / `057` / `058` | ✅ aplicadas en Supabase prod |
-| Migración `059` hospitality (floor/menu/delivery) | ⬜ **aplicar** — Sentry: `tenant_tables` / price lists / delivery missing |
-| Migración `060` fiscal VERI*FACTU base | ⬜ aplicar — módulo Core + UI Config→Fiscal ([runbook](./RUNBOOKS/fiscal-verifactu.md)) |
+| Migración `059` hospitality (floor/menu/delivery) | ✅ aplicada en Supabase el 12 nov 2026 |
+| Migración `060` fiscal VERI*FACTU base | ✅ SQL en Supabase el 12 nov 2026. Core `1c67ec5` en Railway desde las 19:03 CET. No es un SIF certificado. Falta recorrer Config → Fiscal ([runbook](./RUNBOOKS/fiscal-verifactu.md)) |
+| Migración `062` audit append-only | ✅ SQL en Supabase el 12 nov 2026. `UPDATE` y `DELETE` en `meta.audit_logs` fallan por trigger. El rol de la aplicación no está comprobado |
 | System Health unificado | ⬜ diseño |
 | SSE/WS pulse | ⬜ roadmap |
 | Glovo/Uber API partner real | ⬜ stubs |
@@ -149,12 +150,14 @@ Condiciones de aceptación. Escribirlas no las cierra. Cada una necesita estado 
 |---|---|---|
 | 1 | Una empresa no lee datos de otra | Pruebas con dos tenants, también en búsqueda, exportación y workers |
 | 2 | Un rol sin el permiso no ejecuta la operación | Falta la evidencia. Quien tiene `AKOENET_MEMBER_KEY` todavía puede nombrar a otro miembro. El alta de Search sigue aceptando el tenant de la clave de servicio. Las llamadas de workspace de AkoeNet no reenvían el JWT y en producción responden 401. El runbook tiene la revisión posterior |
-| 3 | Una sesión se puede revocar | Sesiones revocables en Auth. El MFA de usuario no bloquea esta puerta |
-| 4 | Un secreto comprometido se puede invalidar | Inventario y una rotación ensayada |
+| 3 | Una sesión se puede revocar | Sesiones revocables en Auth. El access token dura `JWT_ACCESS_TTL` (15 min si no se define) y sigue válido hasta `exp`. El MFA de usuario no bloquea esta puerta |
+| 4 | Un secreto comprometido se puede invalidar | Inventario y dos rotaciones ensayadas: `JWT_SECRET` y `DAKINIS_INTERNAL_SERVICE_KEY` |
 | 5 | Un reintento no duplica un cobro | `UNIQUE` visto en la base viva, más eventos repetidos, desordenados y a medias |
 | 6 | La base se recupera en un entorno aislado | Restauración contra el RPO y el RTO del runbook, con evidencia |
-| 7 | Una acción administrativa queda registrada | Audit log con dueño: Auth (identidad), Core (negocio), Billing (cobro). No vale el log de Railway |
-| 8 | Una incidencia P0 tiene procedimiento | Niveles P0–P3 y el plazo de 72 h si hay datos personales |
+| 7 | Una acción administrativa queda registrada | Audit log de la aplicación (Auth, Core, Billing) y revisión mensual del audit log nativo de Railway, Cloudflare, Supabase, Stripe y GitHub |
+| 8 | Una incidencia P0 tiene procedimiento | Niveles P0–P3, el plazo de 72 h si hay datos personales, y un suplente nombrado |
+
+Orden para cerrarlas, cuando haya evidencia: 3, 4, 5, 8, 7, 6, 1, 2. La 8 va antes de la 6. Escribir el orden no cierra ninguna.
 
 Antes del segundo negocio, y fuera de estas ocho: reautenticación para exportar, borrar una organización o crear una clave API; exportación y borrado de la cuenta (RGPD), distinguiendo lo que la factura obliga a conservar.
 

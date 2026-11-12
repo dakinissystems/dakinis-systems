@@ -44,6 +44,17 @@ Checklist setup → [`billing-e2e.md`](./billing-e2e.md).
 1. Ejecutar [`../supabase/migrations/034_rls_security_advisor_deny_policies.sql`](../supabase/migrations/034_rls_security_advisor_deny_policies.sql)
 2. O gaps puntuales en `006b-rls-policies-missing-tables.sql`
 
+## Access token robado
+
+El access token dura `JWT_ACCESS_TTL`. Si no está definida, 15 min. Revocar la familia de refresh no lo invalida antes de `exp`.
+
+1. Revocar la familia de sesión de ese usuario (`POST /auth/sessions/revoke` o revoke-others).
+2. Forzar el cambio de contraseña. Eso marca `revoked_at` en los refresh.
+3. Revisar el audit log de identidad de esa cuenta en la ventana del token.
+4. Si la violación puede suponer un riesgo para los derechos de la persona, corre el plazo de 72 h desde que hay constancia. El detalle está en el runbook de infraestructura.
+
+No hay corte inmediato del access token. El procedimiento es este, no una improvisación.
+
 ## Post-incidente
 
 - [ ] Causa en CHANGELOG o issue

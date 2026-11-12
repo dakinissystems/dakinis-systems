@@ -1,5 +1,5 @@
 -- 062_audit_logs_append_only.sql
--- No aplicado. No chocar con 061 (nómina, otra rama): confirmar el número antes de pegarlo.
+-- Aplicada en Supabase el 12 nov 2026. La 061 de nómina ya estaba aplicada; este archivo conserva el 062.
 -- meta.audit_logs solo acepta INSERT. UPDATE y DELETE fallan por trigger.
 -- El dueño de la tabla puede desactivar el trigger; este archivo no sustituye un rol de solo inserción.
 

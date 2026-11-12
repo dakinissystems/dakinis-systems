@@ -27,6 +27,22 @@ const TIMELINE_EVENT_META = {
   "invite.accepted": { title: "Invitación aceptada", product: "hub" },
 };
 
+/** Miembros activos del workspace solo si quien opera ya es owner, admin o member. */
+export const WORKSPACE_TIMELINE_MEMBERS_SQL = `
+  SELECT m.user_id::text AS user_id
+  FROM meta.workspace_members m
+  JOIN meta.workspaces w ON w.id = m.workspace_id
+  WHERE m.status = 'active'
+    AND lower(coalesce(nullif(w.core_tenant_slug, ''), w.slug)) = lower($1)
+    AND EXISTS (
+      SELECT 1 FROM meta.workspace_members actor
+      WHERE actor.workspace_id = w.id
+        AND actor.user_id = $2::uuid
+        AND actor.status = 'active'
+        AND actor.role IN ('owner', 'admin', 'member')
+    )
+`;
+
 const TIMELINE_PREFIXES = [
   "stream.",
   "order.",
@@ -53,6 +69,39 @@ function shouldRecordTimeline(eventType) {
   if (!eventType || typeof eventType !== "string") return false;
   if (TIMELINE_EVENT_META[eventType]) return true;
   return TIMELINE_PREFIXES.some((prefix) => eventType.startsWith(prefix));
+}
+
+function workspaceTimelineEvent(eventType) {
+  return eventType.startsWith("sale.") || eventType.startsWith("order.") || eventType.startsWith("stock.");
+}
+
+async function copyTimelineToWorkspaceMembers({ eventType, userId, title, payload, at }) {
+  const slug = String(payload?.workspaceSlug || "").trim();
+  if (!slug || !workspaceTimelineEvent(eventType)) return 0;
+  let rows;
+  try {
+    const result = await query(WORKSPACE_TIMELINE_MEMBERS_SQL, [slug, userId]);
+    rows = result.rows || [];
+  } catch (err) {
+    console.warn(
+      "[internal] hub timeline workspace:",
+      err instanceof Error ? err.message : err
+    );
+    return 0;
+  }
+  let copied = 0;
+  for (const row of rows) {
+    const memberId = String(row.user_id || "");
+    if (!memberId || memberId === userId) continue;
+    await query(
+      `INSERT INTO hub.timeline (user_id, tenant_id, event_type, title, payload, occurred_at)
+       VALUES ($1::uuid, NULL, $2, $3, $4::jsonb, coalesce($5::timestamptz, now()))`,
+      [memberId, eventType, title, JSON.stringify(payload), at]
+    );
+    await invalidateUserBffCache(memberId);
+    copied += 1;
+  }
+  return copied;
 }
 
 async function resolvePlatformUserId(platformEvt = {}) {
@@ -118,7 +167,14 @@ export async function recordHubTimelineFromPlatformEvent(platformEvt = {}) {
       ]
     );
     await invalidateUserBffCache(String(userId));
-    return { ok: true };
+    const copied = await copyTimelineToWorkspaceMembers({
+      eventType,
+      userId,
+      title,
+      payload,
+      at: platformEvt.at || null,
+    });
+    return { ok: true, copied };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     if (message.includes("does not exist") || message.includes("relation")) {

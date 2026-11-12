@@ -72,8 +72,8 @@ export function dakinisRunHubWidgetAction(action, handlers = {}) {
 const RECOMMENDED_ACTION_TARGETS = {
   "open-notifications": { type: "scroll", targetId: "notifications" },
   "open-apps": { type: "scroll", targetId: "apps" },
-  "open-core-orders": { product: "core" },
-  "open-core-inventory": { product: "core" },
+  "open-core-orders": { product: "core", path: "/app/ventas" },
+  "open-core-inventory": { product: "core", path: "/app/inventario" },
   "open-core-calendar": { product: "core" },
   "open-lifeflow": { product: "lifeflow" },
   "open-stream-calendar": { product: "streamautomator" },
