@@ -1,8 +1,14 @@
 # Dakinis Billing
 
-**Platform billing** — planes Stripe, suscripciones, facturas, usage y portal de cliente.
+Servicio de **plataforma** para planes Stripe, suscripciones, facturas, usage y Customer Portal. Consumido por Core, Hub y StreamAutomator.
 
-> **Prod:** Gateway [/billing/](https://api.dakinissystems.com/billing/health) · E2E pago live pendiente → [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md)
+> **Estado:** infraestructura y gateway desplegados · **ciclo de cobro E2E live pendiente** → [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md)
+
+| Capacidad | Madurez |
+|-----------|---------|
+| Servicio + health en gateway | 🟡 Beta / desplegado |
+| Integración Stripe (código + webhooks) | 🟡 |
+| Cobro E2E producción validado | ⬜ |
 
 | | |
 |---|---|
@@ -11,47 +17,43 @@
 | **Health** | `GET /billing/health` |
 | **Database** | Supabase schema `billing` |
 | **Runbook** | [billing-e2e](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/RUNBOOKS/billing-e2e.md) |
+| **Contrato** | [billing.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/billing.json) |
 
-## Scope
+## Propósito
 
-- Plans (Growth / Pro · product plans SA…)
+- Plans (Growth / Pro · planes de producto)
 - Stripe Customer Portal + webhooks
 - Invoices, licenses, usage (AI / storage)
-- Consumido por Core, Hub, StreamAutomator
 
 ## Local
 
 ```powershell
 npm install
+cp .env.example .env
 npm run dev
+```
+
+```powershell
 curl http://localhost:4080/health
 ```
 
-## Environment
-
-Copy `.env.example` → `.env`. Never commit secrets.
+Nunca commitear secretos.
 
 ## Deploy (Railway)
 
-1. Builder **Dockerfile** (`railway.toml`)
+1. Dockerfile (`railway.toml`)
 2. `PORT`, `DATABASE_URL`, `STRIPE_*`, `REDIS_URL`, service keys
 3. Healthcheck `/health`
 4. Webhook Stripe Live → `https://api.dakinissystems.com/billing/v1/webhooks/stripe`
 
-## Contracts
+## Seguridad
 
-- [billing.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/billing.json)
-- [ARCHITECTURE](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/ARCHITECTURE.md)
+- Llamadas entre servicios con claves de plataforma; no exponer Billing al browser sin proxy/producto autorizado.
+- Webhooks: verificar firma Stripe.
 
-## Documentación del ecosistema
+## Docs canónicas
 
-Canónica en [dakinis-systems/docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs):
-
-| Doc | Contenido |
-|-----|-----------|
-| [Índice](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/README.md) | Source of truth |
-| [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) | Mapa productos / plataforma |
-| [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) | Estado / go-live |
-| [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) | Deploy, health, monitorización |
-| [SECURITY](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SECURITY.md) | Checklist seguridad P0–P1 |
-| [ARCHITECTURE](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/ARCHITECTURE.md) | Arquitectura |
+Estado → [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) ·
+Mapa → [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) ·
+Ops → [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) ·
+Índice → [docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs)

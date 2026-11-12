@@ -193,7 +193,6 @@ export async function listWorkspaceInvites(workspaceId) {
       expiresAt: row.expiresAt,
       usedAt: row.usedAt,
       createdAt: row.createdAt,
-      token: row.token,
     })),
   };
 }

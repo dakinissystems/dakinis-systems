@@ -1,49 +1,49 @@
 # Dakinis Internal API
 
-**Platform Internal API** — server-to-server surface for products (never browser-direct in prod).
+API **server-to-server** de plataforma para productos (Hub dashboard, eventos, proxies a Search/Billing/Notifications).
+
+> **No** consumir desde el navegador en producción. El Hub u otros frontends deben usar su propio BFF/proxy.
 
 | | |
 |---|---|
-| **GitHub** | [dakinissystems/dakinis-internal-api](https://github.com/dakinissystems/dakinis-internal-api) |
-| **Gateway prefix** | `/internal/` |
-| **Local port** | `4083` |
-| **Railway DNS** | `dakinis-internal-api.railway.internal:4083` |
+| **GitHub** | [dakinis-internal-api](https://github.com/dakinissystems/dakinis-internal-api) |
+| **Gateway** | `https://api.dakinissystems.com/internal/` |
+| **Health** | `GET /internal/health` · local `:4083` |
 | **Auth** | `Authorization: Bearer $DAKINIS_INTERNAL_SERVICE_KEY` |
+| **Contrato** | [internal-api.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/internal-api.json) |
 
-## Routes
+## Rutas (resumen)
 
-| Method | Path | Status |
-|--------|------|--------|
-| GET | `/health` | ✅ |
-| GET | `/hub/dashboard/:userId` | ✅ Supabase `hub.v1_get_dashboard` |
-| POST | `/events` | ✅ Redis queue |
-| GET | `/events` | ✅ recent |
-| POST | `/notifications/send` | ✅ proxy |
-| POST | `/search` | ✅ proxy |
-| GET | `/billing/plans` | ✅ proxy |
+| Método | Path | Notas |
+|--------|------|-------|
+| GET | `/health` | Liveness |
+| GET | `/hub/dashboard/:userId` | Dashboard Hub |
+| POST/GET | `/events` | Cola / recientes |
+| POST | `/notifications/send` | Proxy |
+| POST | `/search` | Proxy |
+| GET | `/billing/plans` | Proxy |
 
 ## Local
 
 ```powershell
-cd internal
 npm install
+cp .env.example .env
 npm run dev
+```
+
+```powershell
 curl http://localhost:4083/health
 ```
 
-Via gateway: `https://api.dakinissystems.com/internal/health`
+## Seguridad
 
-Contrato (control repo): `docs/contracts/internal-api.json`
+- Service key compartida solo entre backends de confianza.
+- Validar permisos por recurso en cada handler (el Bearer no implica acceso total a todos los `userId`).
+- No documentar valores reales de claves. DNS internos Railway solo para ops.
 
-## Documentación del ecosistema
+## Docs canónicas
 
-Canónica en [dakinis-systems/docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs):
-
-| Doc | Contenido |
-|-----|-----------|
-| [Índice](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/README.md) | Source of truth |
-| [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) | Mapa productos / plataforma |
-| [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) | Estado / go-live |
-| [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) | Deploy, health, monitorización |
-| [SECURITY](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SECURITY.md) | Checklist seguridad P0–P1 |
-| [ARCHITECTURE](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/ARCHITECTURE.md) | Arquitectura |
+Estado → [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) ·
+Mapa → [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) ·
+Ops → [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) ·
+Índice → [docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs)

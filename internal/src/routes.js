@@ -4,10 +4,12 @@ import {
   getUserOrgContext,
   setUserOrgContext,
 } from "./services/org-ventures.js";
-import { requireServiceAuth, readJson } from "./lib/auth.js";
-import { publishEvent, listQueuedEvents } from "./lib/events.js";
+import { requireServiceAuth, readJson, requireActor } from "./lib/auth.js";
+import { akoenetMemberFallback } from "./lib/akoenet-member-key.js";
+import { eventClaimsIdentity, workerPublishFallback } from "./lib/worker-key.js";
+import { publishEvent, listQueuedEvents, checkRedisHealth } from "./lib/events.js";
 import { indexPlatformEventForSearch } from "./lib/search-event-indexer.js";
-import { proxyJson } from "./lib/proxy.js";
+import { actorForwardHeaders, proxyJson } from "./lib/proxy.js";
 import { checkDbHealth } from "./lib/db.js";
 import { getHubDashboard, validateUserId } from "./services/hub-dashboard.js";
 import {
@@ -30,6 +32,9 @@ import {
   listWorkspaceMembers,
   listWorkspaceProducts,
   updateMemberRole,
+  assertCanManageMembers,
+  assertWorkspaceMember,
+  assertPlatformAdmin,
   getWorkspaceUsage,
   setWorkspaceProducts,
 } from "./services/workspace-admin.js";
@@ -68,6 +73,7 @@ import {
   upsertServerModule,
   routeAssistantCommand,
   dispatchAssistantEvent,
+  assertAkoeNetServerMember,
 } from "./services/akoenet-assistant.js";
 import { mirrorMemberXp } from "./services/levels-mirror.js";
 import { getPlatformMetrics } from "./services/platform-metrics.js";
@@ -83,6 +89,87 @@ import { buildInternalContext } from "./platform/context.js";
 const MEMBER_ROLES = new Set(["owner", "admin", "member", "viewer"]);
 
 
+function denyActor(req, userId) {
+  const actor = requireActor(req, userId);
+  if (actor.ok) return null;
+  return { status: actor.status, body: actor.body };
+}
+
+async function managerActor(req, workspaceId) {
+  const actor = requireActor(req);
+  if (!actor.ok) return { error: { status: actor.status, body: actor.body } };
+  if (actor.dev) return { actorId: null, dev: true };
+  try {
+    await assertCanManageMembers(workspaceId, actor.sub);
+  } catch (err) {
+    if (err?.status) return { error: { status: err.status, body: { error: err.message } } };
+    return { error: dbError(err) };
+  }
+  return { actorId: actor.sub, dev: false };
+}
+
+async function memberActor(req, workspaceId) {
+  const actor = requireActor(req);
+  if (!actor.ok) return { error: { status: actor.status, body: actor.body } };
+  if (actor.dev) return { actorId: null, dev: true };
+  try {
+    await assertWorkspaceMember(workspaceId, actor.sub);
+  } catch (err) {
+    if (err?.status) return { error: { status: err.status, body: { error: err.message } } };
+    return { error: dbError(err) };
+  }
+  return { actorId: actor.sub, dev: false };
+}
+
+async function platformAdminActor(req) {
+  const actor = requireActor(req);
+  if (!actor.ok) return { error: { status: actor.status, body: actor.body } };
+  if (actor.dev) return { actorId: null, dev: true, tenant: null };
+  try {
+    await assertPlatformAdmin(actor.sub);
+  } catch (err) {
+    if (err?.status) return { error: { status: err.status, body: { error: err.message } } };
+    return { error: dbError(err) };
+  }
+  return { actorId: actor.sub, dev: false, tenant: actor.tenant || null };
+}
+
+function sameTenant(actor, asked) {
+  const value = String(asked || "").trim();
+  if (!value) return true;
+  return Boolean(actor.tenant) && value.toLowerCase() === actor.tenant.toLowerCase();
+}
+
+async function akoenetMember(req, serverId, claimedUserId) {
+  const actor = requireActor(req);
+  if (actor.dev) return { userId: claimedUserId || null, dev: true };
+  const claimed = String(claimedUserId || "").trim();
+  if (actor.ok) {
+    if (claimed && claimed.toLowerCase() !== actor.sub.toLowerCase()) {
+      return { error: { status: 403, body: { error: "forbidden" } } };
+    }
+    try {
+      await assertAkoeNetServerMember(serverId, actor.sub);
+    } catch (err) {
+      if (err?.status) return { error: { status: err.status, body: { error: err.message } } };
+      return { error: dbError(err) };
+    }
+    return { userId: actor.sub, dev: false };
+  }
+  if (actor.body?.error !== "actor_required") {
+    return { error: { status: actor.status, body: actor.body } };
+  }
+  const fallback = akoenetMemberFallback(req);
+  if (!fallback.ok) return { error: { status: fallback.status, body: fallback.body } };
+  try {
+    await assertAkoeNetServerMember(serverId, claimed);
+  } catch (err) {
+    if (err?.status) return { error: { status: err.status, body: { error: err.message } } };
+    return { error: dbError(err) };
+  }
+  return { userId: claimed, dev: false, service: true };
+}
+
 function platformEvent(type, payload, meta = {}) {
   return {
     event: type,
@@ -95,6 +182,26 @@ function platformEvent(type, payload, meta = {}) {
 }
 
 export const routes = {
+  "GET /health/live": async () => ({
+    status: 200,
+    body: { status: "live", service: config.service },
+  }),
+
+  "GET /health/ready": async () => {
+    const db = await checkDbHealth();
+    const redis = await checkRedisHealth();
+    const ready = db.ok && redis.ok;
+    return {
+      status: ready ? 200 : 503,
+      body: {
+        status: ready ? "ready" : "not_ready",
+        service: config.service,
+        database: db.ok ? "ok" : "down",
+        redis: redis.skipped ? "not_used" : redis.ok ? "ok" : "down",
+      },
+    };
+  },
+
   "GET /health": async () => {
     const db = await checkDbHealth();
     const eventBus = await getBusHealthSummary();
@@ -115,12 +222,30 @@ export const routes = {
   "GET /feature-flags/evaluate": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const actor = requireActor(req);
+    if (!actor.ok) return { status: actor.status, body: actor.body };
     const url = new URL(req.url || "/", "http://internal.local");
     const keys = url.searchParams.get("keys") || "";
     const workspaceId = url.searchParams.get("workspaceId") || undefined;
     const tenantId = url.searchParams.get("tenantId") || undefined;
     const userId = url.searchParams.get("userId") || undefined;
     const plan = url.searchParams.get("plan") || undefined;
+    if (!actor.dev) {
+      if (userId && userId.toLowerCase() !== actor.sub.toLowerCase()) {
+        return { status: 403, body: { error: "forbidden" } };
+      }
+      if (tenantId && (!actor.tenant || tenantId.toLowerCase() !== actor.tenant.toLowerCase())) {
+        return { status: 403, body: { error: "forbidden" } };
+      }
+      if (workspaceId) {
+        try {
+          await assertWorkspaceMember(workspaceId, actor.sub);
+        } catch (err) {
+          if (err?.status) return { status: err.status, body: { error: err.message } };
+          return dbError(err);
+        }
+      }
+    }
     try {
       const flags = await evaluateFeatureFlags(keys, { workspaceId, tenantId, userId, plan });
       return { status: 200, body: { flags } };
@@ -158,6 +283,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/users/", "");
+    const denied = denyActor(req, id);
+    if (denied) return denied;
     return {
       status: 200,
       body: { id, email: null, displayName: null, stub: true },
@@ -168,6 +295,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const userId = (req.url || "").split("?")[0].replace("/profile/", "");
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     return {
       status: 200,
       body: { userId, locale: "es", theme: "dark", products: ["core"], stub: true },
@@ -181,9 +310,13 @@ export const routes = {
     if (!validateUserId(userId)) {
       return { status: 400, body: { error: "validation", message: "userId must be a UUID" } };
     }
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     let notificationsUnread;
     let notificationsItems;
-    const inbox = await proxyJson(config.notificationsUrl, `/v1/inbox/${encodeURIComponent(userId)}`);
+    const inbox = await proxyJson(config.notificationsUrl, `/v1/inbox/${encodeURIComponent(userId)}`, {
+      headers: actorForwardHeaders(req),
+    });
     if (inbox.status === 200 && inbox.body) {
       if (inbox.body.unread != null) notificationsUnread = inbox.body.unread;
       if (Array.isArray(inbox.body.items)) notificationsItems = inbox.body.items;
@@ -196,6 +329,8 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const url = new URL(req.url || "/", "http://internal.local");
     const userId = url.pathname.replace("/hub/dashboard/aggregated/", "").split("/")[0];
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const rl = await enforceServiceRateLimit(req, userId);
     if (!rl.allowed) {
       return {
@@ -218,6 +353,8 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const url = new URL(req.url || "/", "http://internal.local");
     const userId = url.pathname.replace("/workspace/summary/", "").split("/")[0];
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const rl = await enforceServiceRateLimit(req, userId);
     if (!rl.allowed) {
       return {
@@ -239,6 +376,12 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const slug = decodeURIComponent((req.url || "").split("?")[0].replace("/hub/tenant-access/", ""));
+    const actor = requireActor(req);
+    if (!actor.ok) return { status: actor.status, body: actor.body };
+    if (!actor.dev && !sameTenant(actor, slug)) {
+      const gate = await platformAdminActor(req);
+      if (gate.error) return gate.error;
+    }
     try {
       const data = await getTenantHubProducts(slug);
       return { status: 200, body: data };
@@ -256,6 +399,8 @@ export const routes = {
     const slug = decodeURIComponent((req.url || "").split("?")[0].replace("/hub/tenant-access/", ""));
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     try {
       const data = await upsertTenantHubProducts(slug, body.products);
       return { status: 200, body: data };
@@ -272,6 +417,24 @@ export const routes = {
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     if (!body.event) return { status: 400, body: { error: "validation", message: "event required" } };
+    const rawActor = req.headers["x-dakinis-actor"];
+    if (typeof rawActor === "string" && rawActor.trim()) {
+      const actor = requireActor(req, body.userId ? String(body.userId) : undefined);
+      if (!actor.ok) return { status: actor.status, body: actor.body };
+      if (!actor.dev && body.tenantId && !sameTenant(actor, body.tenantId)) {
+        return { status: 403, body: { error: "forbidden" } };
+      }
+      if (!actor.dev) {
+        body.userId = actor.sub;
+        if (actor.tenant) body.tenantId = actor.tenant;
+      }
+    } else {
+      const worker = workerPublishFallback(req);
+      if (!worker.ok) return { status: worker.status, body: worker.body };
+      if (!worker.dev && eventClaimsIdentity(body)) {
+        return { status: 403, body: { error: "forbidden" } };
+      }
+    }
     const event = platformEvent(body.event, body.payload || {}, body);
     const pub = await publishEvent(event);
     recordHubTimelineFromPlatformEvent(event).catch((err) => {
@@ -286,6 +449,8 @@ export const routes = {
   "GET /events": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     const items = await listQueuedEvents(25);
     return { status: 200, body: { items, count: items.length } };
   },
@@ -300,6 +465,8 @@ export const routes = {
   "GET /events/dlq": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     const url = new URL(req.url || "/", "http://internal.local");
     const body = await listDeadLetterJobs(url.searchParams);
     return { status: 200, body };
@@ -308,6 +475,8 @@ export const routes = {
   "POST /events/dlq/replay": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     const jobId = body.jobId || body.id;
@@ -320,6 +489,8 @@ export const routes = {
   "POST /events/dlq/discard": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     const jobId = body.jobId || body.id;
@@ -334,15 +505,21 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const actor = requireActor(req, String(body.userId || ""));
+    if (!actor.ok) return { status: actor.status, body: actor.body };
+    if (!actor.dev && body.tenantId && !sameTenant(actor, body.tenantId)) {
+      return { status: 403, body: { error: "forbidden" } };
+    }
     const payload = {
-      userId: body.userId,
+      userId: actor.dev ? body.userId : actor.sub,
       type: body.type || "platform.notification",
       channel: body.channel || "in-app",
       payload: body.payload || {},
-      tenantId: body.tenantId,
+      tenantId: actor.dev ? body.tenantId : actor.tenant || null,
     };
     const proxied = await proxyJson(config.notificationsUrl, "/v1/send", {
       method: "POST",
+      headers: actorForwardHeaders(req),
       body: JSON.stringify(payload),
     });
     return { status: proxied.status, body: { proxied: true, ...proxied.body } };
@@ -352,10 +529,11 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const userId = (req.url || "").split("?")[0].replace("/notifications/inbox/", "");
-    const proxied = await proxyJson(
-      config.notificationsUrl,
-      `/v1/inbox/${encodeURIComponent(userId)}`
-    );
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
+    const proxied = await proxyJson(config.notificationsUrl, `/v1/inbox/${encodeURIComponent(userId)}`, {
+      headers: actorForwardHeaders(req),
+    });
     return { status: proxied.status, body: proxied.body };
   },
 
@@ -364,9 +542,19 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const actor = requireActor(req);
+    if (!actor.ok) return { status: actor.status, body: actor.body };
+    const asked = body.tenantId || body.businessId || "";
+    if (!actor.dev && asked && !sameTenant(actor, asked)) {
+      return { status: 403, body: { error: "forbidden" } };
+    }
+    const tenant = actor.dev ? asked : actor.tenant || "";
     const q = encodeURIComponent(body.query || body.q || "");
     const scope = encodeURIComponent((body.scopes && body.scopes[0]) || body.scope || "all");
-    const proxied = await proxyJson(config.searchUrl, `/v1/query?q=${q}&scope=${scope}`);
+    const tenantQuery = tenant ? `&tenantId=${encodeURIComponent(String(tenant))}` : "";
+    const proxied = await proxyJson(config.searchUrl, `/v1/query?q=${q}&scope=${scope}${tenantQuery}`, {
+      headers: actorForwardHeaders(req),
+    });
     return { status: proxied.status, body: { proxied: true, ...proxied.body } };
   },
 
@@ -381,6 +569,12 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const tenantId = (req.url || "").split("?")[0].replace("/billing/subscriptions/", "");
+    const actor = requireActor(req);
+    if (!actor.ok) return { status: actor.status, body: actor.body };
+    if (!actor.dev && !sameTenant(actor, decodeURIComponent(tenantId))) {
+      const gate = await platformAdminActor(req);
+      if (gate.error) return gate.error;
+    }
     const proxied = await proxyJson(
       config.billingUrl,
       `/v1/subscriptions/${encodeURIComponent(tenantId)}`,
@@ -396,6 +590,12 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const actor = requireActor(req, body.userId ? String(body.userId) : undefined);
+    if (!actor.ok) return { status: actor.status, body: actor.body };
+    const checkoutTenant = body.tenantId || body.businessId || "";
+    if (!actor.dev && checkoutTenant && !sameTenant(actor, checkoutTenant)) {
+      return { status: 403, body: { error: "forbidden" } };
+    }
     const proxied = await proxyJson(config.billingUrl, "/v1/checkout", {
       method: "POST",
       body: JSON.stringify(body),
@@ -411,6 +611,8 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const denied = denyActor(req, String(body.userId || ""));
+    if (denied) return denied;
     const proxied = await proxyJson(config.billingUrl, "/v1/portal", {
       method: "POST",
       body: JSON.stringify(body),
@@ -499,6 +701,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const userId = (req.url || "").split("?")[0].replace("/workspaces/me/", "");
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     try {
       const workspace = await getWorkspaceForUser(userId);
       if (!workspace) return { status: 404, body: { error: "no_workspace" } };
@@ -528,6 +732,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/ventures", "");
+    const gate = await memberActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const data = await listVenturesForWorkspace(id);
       return { status: 200, body: data };
@@ -544,6 +750,8 @@ export const routes = {
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     const userId = String(body.userId || "").trim();
     if (!userId) return { status: 400, body: { error: "user_id_required" } };
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     try {
       const result = await setUserOrgContext(userId, id, {
         ventureId: body.ventureId,
@@ -559,6 +767,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "");
+    const gate = await memberActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const workspace = await getWorkspace(id);
       if (!workspace) return { status: 404, body: { error: "not_found" } };
@@ -574,8 +784,10 @@ export const routes = {
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "");
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const gate = await managerActor(req, id);
+    if (gate.error) return gate.error;
     try {
-      const workspace = await updateWorkspace(id, body, body.actorId);
+      const workspace = await updateWorkspace(id, body, gate.actorId || body.actorId);
       return { status: 200, body: workspace };
     } catch (err) {
       const message = err instanceof Error ? err.message : "db_error";
@@ -591,8 +803,10 @@ export const routes = {
     const match = path.match(/^\/workspaces\/([^/]+)\/members\/([^/]+)$/);
     if (!match) return { status: 400, body: { error: "invalid_path" } };
     const body = await readJson(req);
+    const gate = await managerActor(req, match[1]);
+    if (gate.error) return gate.error;
     try {
-      const result = await removeWorkspaceMember(match[1], match[2], body?.actorId);
+      const result = await removeWorkspaceMember(match[1], match[2], gate.actorId || body?.actorId);
       return { status: 200, body: result };
     } catch (err) {
       const message = err instanceof Error ? err.message : "db_error";
@@ -604,6 +818,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/members", "");
+    const gate = await memberActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const members = await listWorkspaceMembers(id);
       return { status: 200, body: { items: members, count: members.length } };
@@ -618,6 +834,8 @@ export const routes = {
     const path = (req.url || "").split("?")[0];
     const match = path.match(/^\/workspaces\/([^/]+)\/invites$/);
     if (!match) return { status: 400, body: { error: "invalid_path" } };
+    const gate = await managerActor(req, match[1]);
+    if (gate.error) return gate.error;
     try {
       return { status: 200, body: await listWorkspaceInvites(match[1]) };
     } catch (err) {
@@ -631,6 +849,8 @@ export const routes = {
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/members/invite", "");
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const gate = await managerActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const role = MEMBER_ROLES.has(body.role) ? body.role : "member";
       const result = await commandBus.execute(
@@ -638,9 +858,7 @@ export const routes = {
           workspaceId: id,
           email: body.email,
           role,
-          invitedBy: body.invitedBy,
-          actorRole: body.actorRole,
-          isPlatformAdmin: body.isPlatformAdmin,
+          invitedBy: gate.actorId || (gate.dev ? body.invitedBy : undefined),
         })
       );
       return { status: result.created ? 201 : 200, body: result };
@@ -657,8 +875,10 @@ export const routes = {
     if (!match) return { status: 400, body: { error: "invalid_path" } };
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const userId = String(body.userId || "").trim();
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     try {
-      const userId = body.userId;
       const result = await commandBus.execute(
         createCommand(
           "workspace.invite.accept",
@@ -690,8 +910,10 @@ export const routes = {
     if (!match) return { status: 400, body: { error: "invalid_path" } };
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const gate = await managerActor(req, match[1]);
+    if (gate.error) return gate.error;
     try {
-      const member = await updateMemberRole(match[1], match[2], body.role, body.actorId);
+      const member = await updateMemberRole(match[1], match[2], body.role, gate.actorId || body.actorId);
       return { status: 200, body: member };
     } catch (err) {
       const message = err instanceof Error ? err.message : "db_error";
@@ -704,6 +926,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/usage", "");
+    const gate = await managerActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const usage = await getWorkspaceUsage(id);
       return { status: 200, body: usage };
@@ -716,6 +940,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/products", "");
+    const gate = await memberActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const products = await listWorkspaceProducts(id);
       return { status: 200, body: { items: products } };
@@ -730,6 +956,8 @@ export const routes = {
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/products", "");
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const gate = await managerActor(req, id);
+    if (gate.error) return gate.error;
     if (!Array.isArray(body.products)) {
       return { status: 400, body: { error: "validation", message: "products array required" } };
     }
@@ -756,6 +984,8 @@ export const routes = {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/addons", "");
+    const gate = await memberActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const items = await listWorkspaceAddons(id);
       return { status: 200, body: { items } };
@@ -772,6 +1002,8 @@ export const routes = {
     const key = parts[3];
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const gate = await managerActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const row = await upsertWorkspaceAddon(id, key, body);
       return { status: 200, body: row };
@@ -785,6 +1017,8 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/workspaces/", "").replace("/addons/enable-all", "");
     const body = (await readJson(req)) || {};
+    const gate = await managerActor(req, id);
+    if (gate.error) return gate.error;
     try {
       const rows = await enableAllWorkspaceAddons(id, { pinKeys: body.pinKeys });
       return { status: 200, body: { enabled: rows.length, items: rows } };
@@ -799,6 +1033,8 @@ export const routes = {
     const url = new URL(req.url || "/", "http://internal.local");
     const bare = url.pathname;
     const userId = bare.replace("/workspaces/me/", "").replace("/addons", "");
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const email = url.searchParams.get("email") || undefined;
     try {
       const data = await listWorkspaceAddonsForUser(userId, { email });
@@ -816,6 +1052,8 @@ export const routes = {
     const parts = bare.split("/").filter(Boolean);
     const userId = parts[2];
     const addonKey = parts[4];
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const email = url.searchParams.get("email") || undefined;
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
@@ -842,6 +1080,8 @@ export const routes = {
     const url = new URL(req.url || "/", "http://internal.local");
     const bare = url.pathname;
     const userId = bare.replace("/workspaces/me/", "").replace("/desktop/profiles", "");
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const email = url.searchParams.get("email") || undefined;
     try {
       const data = await listDesktopProfilesForUser(userId, { email });
@@ -859,6 +1099,8 @@ export const routes = {
     const parts = bare.split("/").filter(Boolean);
     const userId = parts[2];
     const addonId = parts[5];
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const profileKey = url.searchParams.get("profileKey") || undefined;
     const email = url.searchParams.get("email") || undefined;
     try {
@@ -877,6 +1119,8 @@ export const routes = {
     const parts = bare.split("/").filter(Boolean);
     const userId = parts[2];
     const addonId = parts[5];
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const email = url.searchParams.get("email") || undefined;
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
@@ -906,6 +1150,8 @@ export const routes = {
     const parts = bare.split("/").filter(Boolean);
     const userId = parts[2];
     const addonKey = parts[5];
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const email = url.searchParams.get("email") || undefined;
     try {
       const data = await getAddonDataForUser(userId, addonKey, { email });
@@ -923,6 +1169,8 @@ export const routes = {
     const parts = bare.split("/").filter(Boolean);
     const userId = parts[2];
     const addonKey = parts[5];
+    const denied = denyActor(req, userId);
+    if (denied) return denied;
     const email = url.searchParams.get("email") || undefined;
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
@@ -947,6 +1195,8 @@ export const routes = {
   "GET /admin/v1/overview": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     try {
       const overview = await getPlatformOverview();
       const eventBus = await getBusHealthSummary();
@@ -959,6 +1209,8 @@ export const routes = {
   "GET /admin/v1/workspaces": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     const url = new URL(req.url || "/", "http://internal.local");
     try {
       const data = await listWorkspaces({
@@ -976,6 +1228,8 @@ export const routes = {
   "GET /admin/v1/workspaces/:id": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "");
     try {
       const workspace = await getWorkspaceDetail(id);
@@ -991,8 +1245,10 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "").replace("/suspend", "");
     const body = await readJson(req);
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     try {
-      const workspace = await setWorkspaceStatus(id, "suspended", body?.reason, body?.actorId);
+      const workspace = await setWorkspaceStatus(id, "suspended", body?.reason, gate.actorId || body?.actorId);
       return { status: 200, body: workspace };
     } catch (err) {
       return dbError(err);
@@ -1004,8 +1260,10 @@ export const routes = {
     if (!auth.ok) return { status: auth.status, body: auth.body };
     const id = (req.url || "").split("?")[0].replace("/admin/v1/workspaces/", "").replace("/activate", "");
     const body = await readJson(req);
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     try {
-      const workspace = await setWorkspaceStatus(id, "active", null, body?.actorId);
+      const workspace = await setWorkspaceStatus(id, "active", null, gate.actorId || body?.actorId);
       return { status: 200, body: workspace };
     } catch (err) {
       return dbError(err);
@@ -1015,6 +1273,8 @@ export const routes = {
   "GET /admin/v1/billing/dashboard": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     try {
       const dashboard = await getRevenueDashboard();
       return { status: 200, body: dashboard };
@@ -1026,6 +1286,8 @@ export const routes = {
   "GET /admin/v1/audit": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     const url = new URL(req.url || "/", "http://internal.local");
     try {
       const items = await listAuditLogs({ limit: url.searchParams.get("limit") || undefined });
@@ -1038,6 +1300,8 @@ export const routes = {
   "GET /admin/v1/features": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     try {
       const items = await listFeatureFlags();
       return { status: 200, body: { items, count: items.length } };
@@ -1052,8 +1316,10 @@ export const routes = {
     const key = decodeURIComponent((req.url || "").split("?")[0].replace("/admin/v1/features/", ""));
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const gate = await platformAdminActor(req);
+    if (gate.error) return gate.error;
     try {
-      const flag = await setFeatureFlag(key, Boolean(body.enabled), body.actorId);
+      const flag = await setFeatureFlag(key, Boolean(body.enabled), gate.actorId || body.actorId);
       return { status: 200, body: flag };
     } catch (err) {
       const message = err instanceof Error ? err.message : "db_error";
@@ -1065,6 +1331,8 @@ export const routes = {
   "GET /akoenet/assistant/modules": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const member = akoenetMemberFallback(req);
+    if (!member.ok) return { status: member.status, body: member.body };
     try {
       const items = await listAssistantModules();
       return { status: 200, body: { items, count: items.length } };
@@ -1076,6 +1344,8 @@ export const routes = {
   "GET /akoenet/servers/:serverId/modules": async (req) => {
     const auth = requireServiceAuth(req);
     if (!auth.ok) return { status: auth.status, body: auth.body };
+    const member = akoenetMemberFallback(req);
+    if (!member.ok) return { status: member.status, body: member.body };
     const serverId = (req.url || "").split("?")[0].replace("/akoenet/servers/", "").replace("/modules", "");
     try {
       const items = await getServerModules(serverId);
@@ -1093,6 +1363,8 @@ export const routes = {
     if (!match) return { status: 400, body: { error: "invalid_path" } };
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const member = await akoenetMember(req, match[1], body.platformUserId);
+    if (member.error) return member.error;
     try {
       const row = await upsertServerModule(match[1], decodeURIComponent(match[2]), body);
       return { status: 200, body: row };
@@ -1108,11 +1380,13 @@ export const routes = {
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     if (!body.action) return { status: 400, body: { error: "validation", message: "action required" } };
+    const member = await akoenetMember(req, serverId, body.platformUserId);
+    if (member.error) return member.error;
     try {
       const result = await routeAssistantCommand({
         serverId,
         action: body.action,
-        userId: body.userId,
+        userId: member.dev ? body.userId : member.userId,
         channelId: body.channelId,
         payload: body.payload,
         type: body.type,
@@ -1130,6 +1404,8 @@ export const routes = {
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     if (!body.type) return { status: 400, body: { error: "validation", message: "type required" } };
+    const member = await akoenetMember(req, serverId, body.platformUserId || body.metadata?.platformUserId);
+    if (member.error) return member.error;
     try {
       const result = await dispatchAssistantEvent({
         serverId,
@@ -1153,8 +1429,13 @@ export const routes = {
       .replace("/levels/mirror", "");
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
+    const member = await akoenetMember(req, serverId, body.platformUserId);
+    if (member.error) return member.error;
     try {
-      const result = await mirrorMemberXp(serverId, body);
+      const result = await mirrorMemberXp(serverId, {
+        ...body,
+        platformUserId: member.dev ? body.platformUserId : member.userId,
+      });
       return { status: result.mirrored ? 200 : 202, body: result };
     } catch (err) {
       if (err?.status) return { status: err.status, body: { error: err.message } };

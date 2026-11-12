@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { config } from "../config.js";
+import { currentRequestId } from "./request-context.js";
 
 /** @type {import('redis').RedisClientType | null} */
 let client = null;
@@ -14,6 +15,23 @@ export async function getRedis() {
   client.on("error", (err) => console.error("[internal:redis]", err.message));
   await client.connect();
   return client;
+}
+
+export async function checkRedisHealth(timeoutMs = 800) {
+  if (!config.redisUrl) return { ok: true, skipped: true };
+  let timer;
+  try {
+    const redis = await getRedis();
+    const timeout = new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error("timeout")), timeoutMs);
+    });
+    await Promise.race([redis.ping(), timeout]);
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
@@ -36,11 +54,15 @@ async function pushEventToRedis(redis, event) {
 }
 
 export async function publishEvent(event) {
+  const stamped = {
+    ...event,
+    requestId: event?.requestId || currentRequestId(),
+  };
   const redis = await getRedis();
   if (redis) {
-    return pushEventToRedis(redis, event);
+    return pushEventToRedis(redis, stamped);
   }
-  memoryEvents.unshift(event);
+  memoryEvents.unshift(stamped);
   if (memoryEvents.length > 100) memoryEvents.pop();
   return { queued: false, memory: true };
 }

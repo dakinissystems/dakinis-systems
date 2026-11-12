@@ -1,4 +1,5 @@
 import { config } from "./config.js";
+import { checkRedisHealth } from "./events.js";
 import { checkDbHealth } from "./db.js";
 import { PUBLIC_PLANS, getPlanById } from "./plans.js";
 import { constructWebhookEvent } from "./stripe.js";
@@ -55,7 +56,27 @@ export const routes = {
         stripe: config.stripeConfigured ? "configured" : "not_configured",
         webhook: config.stripeWebhookSecret ? "configured" : "not_configured",
         eventBus: process.env.DAKINIS_EVENT_BUS || "redis-list",
-        database: db.ok ? "connected" : db.reason,
+        database: db.ok ? "connected" : "down",
+      },
+    };
+  },
+
+  "GET /health/live": async () => ({
+    status: 200,
+    body: { status: "live", service: config.service },
+  }),
+
+  "GET /health/ready": async () => {
+    const db = await checkDbHealth();
+    const redis = await checkRedisHealth();
+    const ready = db.ok && redis.ok;
+    return {
+      status: ready ? 200 : 503,
+      body: {
+        status: ready ? "ready" : "not_ready",
+        service: config.service,
+        database: db.ok ? "ok" : "down",
+        redis: redis.skipped ? "not_used" : redis.ok ? "ok" : "down",
       },
     };
   },

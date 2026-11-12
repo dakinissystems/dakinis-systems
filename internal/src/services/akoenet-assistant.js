@@ -77,6 +77,41 @@ function getOrchestrator() {
   return orchestratorSingleton;
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function forbid() {
+  const err = new Error("forbidden");
+  err.status = 403;
+  throw err;
+}
+
+/** El userId local de AkoeNet no autoriza. Hace falta el UUID de plataforma y ser miembro u owner. */
+export async function assertAkoeNetServerMember(serverId, platformUserId) {
+  const sid = Number(serverId);
+  const uid = String(platformUserId || "").trim();
+  if (!Number.isFinite(sid) || sid <= 0 || !UUID_RE.test(uid)) forbid();
+  const { rows } = await query(
+    `SELECT
+       (s.owner_id = u.id) AS is_owner,
+       EXISTS (
+         SELECT 1 FROM akoenet.server_members sm
+         WHERE sm.server_id = s.id AND sm.user_id = u.id
+       ) AS is_member,
+       u.is_super_admin,
+       u.role AS auth_role
+     FROM akoenet.servers s
+     JOIN dakinis_auth.users u ON u.id = $2::uuid
+     WHERE s.id = $1::bigint
+     LIMIT 1`,
+    [sid, uid]
+  );
+  const row = rows[0];
+  const platform =
+    row?.is_super_admin || String(row?.auth_role || "").toLowerCase() === "platform_admin";
+  if (!platform && !row?.is_owner && !row?.is_member) forbid();
+}
+
 export async function listAssistantModules() {
   const { rows } = await query(
     `SELECT key, name, description, category, version, capabilities, default_config,

@@ -1,9 +1,19 @@
 import { config } from "../config.js";
 
+const EMAIL = /^[^\s@<>]{1,64}@[^\s@<>]{1,255}\.[^\s@<>]{2,24}$/;
+const SENSITIVE = /password|token|secret|authorization|api[_-]?key/i;
+
 function resolveRecipient(payload = {}) {
   const to = payload.to || payload.email || payload.recipient;
-  if (!to) return null;
-  return Array.isArray(to) ? to.filter(Boolean) : [String(to).trim()].filter(Boolean);
+  if (!to || Array.isArray(to)) return [];
+  const one = String(to).trim();
+  if (!EMAIL.test(one)) return [];
+  return [one];
+}
+
+function payloadHasSecret(value, depth = 0) {
+  if (!value || typeof value !== "object" || depth > 3) return false;
+  return Object.keys(value).some((key) => SENSITIVE.test(key) || payloadHasSecret(value[key], depth + 1));
 }
 
 function resolveSubject(type, payload = {}) {
@@ -11,7 +21,7 @@ function resolveSubject(type, payload = {}) {
 }
 
 function resolveHtml(type, payload = {}) {
-  if (payload.html) return String(payload.html);
+  if (payload.html && process.env.NOTIFICATION_ALLOW_HTML === "true") return String(payload.html);
   const text = payload.message || payload.body || payload.text;
   if (text) return `<p>${String(text).replace(/</g, "&lt;")}</p>`;
   return `<p>${String(type || "notification")}</p>`;
@@ -26,6 +36,9 @@ export async function sendResendEmail(job) {
   }
 
   const payload = job.payload && typeof job.payload === "object" ? job.payload : {};
+  if (payloadHasSecret(payload)) {
+    return { sent: false, reason: "sensitive_field" };
+  }
   const to = resolveRecipient(payload);
   if (!to.length) {
     return { sent: false, reason: "no_recipient" };

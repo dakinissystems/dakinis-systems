@@ -129,17 +129,14 @@ export async function searchDocuments(q, scope = "all", tenantId = null) {
       } catch {
         continue;
       }
-      if (tenant) {
-        const docTenant = doc.metadata?.businessId || doc.metadata?.tenantId;
-        if (docTenant) {
-          if (String(docTenant) !== tenant) continue;
-        } else if (doc.metadata?.product === "akoenet") {
-          /* mensajes cross-product visibles en Hub */
-        } else if (["knowledge", "documentation", "global"].includes(sc)) {
-          /* docs globales / knowledge */
-        } else {
-          continue;
-        }
+      const docTenant = doc.metadata?.businessId || doc.metadata?.tenantId;
+      const privateScope = ["clients", "invoices", "messages", "events", "chats"].includes(sc);
+      if (privateScope) {
+        if (!docTenant || !tenant || String(docTenant) !== String(tenant)) continue;
+      } else if (docTenant) {
+        if (!tenant || String(docTenant) !== String(tenant)) continue;
+      } else if (tenant && !["knowledge", "documentation", "global"].includes(sc)) {
+        continue;
       }
       const hay = `${doc.title || ""} ${doc.body || ""}`.toLowerCase();
       if (!needle || hay.includes(needle)) {

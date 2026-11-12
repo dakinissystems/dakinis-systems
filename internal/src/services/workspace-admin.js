@@ -292,6 +292,62 @@ export async function acceptWorkspaceInvite(token, input) {
  * @param {string} role
  * @param {string} [actorId]
  */
+async function workspaceActorRow(workspaceId, actorId) {
+  const uid = normalizeUuid(actorId);
+  const workspace = normalizeUuid(workspaceId);
+  if (!uid || !workspace) {
+    const err = new Error("forbidden");
+    err.status = 403;
+    throw err;
+  }
+  const { rows } = await query(
+    `SELECT u.is_super_admin, u.role AS auth_role, wm.role AS member_role,
+            (w.owner_id = u.id) AS is_owner
+     FROM dakinis_auth.users u
+     LEFT JOIN meta.workspaces w ON w.id = $2::uuid
+     LEFT JOIN meta.workspace_members wm
+       ON wm.workspace_id = w.id AND wm.user_id = u.id AND wm.status = 'active'
+     WHERE u.id = $1::uuid
+     LIMIT 1`,
+    [uid, workspace]
+  );
+  return rows[0] || null;
+}
+
+function platformActor(row) {
+  return Boolean(row?.is_super_admin || String(row?.auth_role || "").toLowerCase() === "platform_admin");
+}
+
+function forbid() {
+  const err = new Error("forbidden");
+  err.status = 403;
+  throw err;
+}
+
+export async function assertCanManageMembers(workspaceId, actorId) {
+  const row = await workspaceActorRow(workspaceId, actorId);
+  const memberRole = String(row?.member_role || "").toLowerCase();
+  if (!platformActor(row) && !row?.is_owner && memberRole !== "owner" && memberRole !== "admin") forbid();
+}
+
+export async function assertPlatformAdmin(actorId) {
+  const uid = normalizeUuid(actorId);
+  if (!uid) forbid();
+  const { rows } = await query(
+    `SELECT is_super_admin, role FROM dakinis_auth.users WHERE id = $1::uuid LIMIT 1`,
+    [uid]
+  );
+  const row = rows[0];
+  if (!row?.is_super_admin && String(row?.role || "").toLowerCase() !== "platform_admin") forbid();
+}
+
+export async function assertWorkspaceMember(workspaceId, actorId) {
+  const row = await workspaceActorRow(workspaceId, actorId);
+  const memberRole = String(row?.member_role || "").toLowerCase();
+  const known = ["owner", "admin", "member", "viewer"].includes(memberRole);
+  if (!platformActor(row) && !row?.is_owner && !known) forbid();
+}
+
 export async function updateMemberRole(workspaceId, userId, role, actorId) {
   if (!MEMBER_ROLES.has(role)) throw new Error("invalid_role");
   const { rows } = await query(

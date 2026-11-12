@@ -1,31 +1,36 @@
 # Dakinis Notifications
 
-**Notificaciones cross-product** — email, push, in-app, webhooks.
+Notificaciones **cross-product**: email, push, in-app y webhooks (según adapters habilitados).
 
-> **Prod:** Gateway [/notifications/](https://api.dakinissystems.com/notifications/health)
+> **Estado:** API + worker en plataforma — canales concretos y proveedores → contrato + STATUS
 
 | | |
 |---|---|
 | **GitHub** | [dakinis-notifications](https://github.com/dakinissystems/dakinis-notifications) |
-| **Gateway** | `/notifications/` |
+| **Gateway** | `https://api.dakinissystems.com/notifications/` |
 | **Health** | `GET /notifications/health` |
+| **Contrato** | [notifications.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/notifications.json) |
 
-## Flow
+## Flujo
 
+```text
+Producto → evento / API → cola → Worker → adapters (email, push, in-app…)
 ```
-Product → Event bus → Notifications Worker → adapters (email, push, in-app…)
-```
 
-| Process | Start | Role |
-|---------|-------|------|
-| API | `npm start` | REST |
-| Worker | `npm run worker` | BullMQ consumer |
+| Proceso | Comando | Rol |
+|---------|---------|-----|
+| API | `npm start` / `npm run dev` | REST |
+| Worker | `npm run worker` | Consumidor BullMQ |
 
 ## Local
 
 ```powershell
 npm install
+cp .env.example .env
 npm run dev
+```
+
+```powershell
 npm run worker
 ```
 
@@ -33,19 +38,15 @@ npm run worker
 
 Railway: API + worker. Runbook → [railway-workers](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/RUNBOOKS/railway-workers.md)
 
-## Contracts
+Fallos de proveedor: reintentos/deduplicación según implementación del worker — ver contrato y código; no asumir entrega garantizada sin dead-letter documentado.
 
-[notifications.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/notifications.json)
+## Seguridad
 
-## Documentación del ecosistema
+- Solo servicios/productos autenticados; no endpoint público anónimo para envío masivo.
 
-Canónica en [dakinis-systems/docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs):
+## Docs canónicas
 
-| Doc | Contenido |
-|-----|-----------|
-| [Índice](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/README.md) | Source of truth |
-| [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) | Mapa productos / plataforma |
-| [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) | Estado / go-live |
-| [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) | Deploy, health, monitorización |
-| [SECURITY](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SECURITY.md) | Checklist seguridad P0–P1 |
-| [ARCHITECTURE](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/ARCHITECTURE.md) | Arquitectura |
+Estado → [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) ·
+Mapa → [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) ·
+Ops → [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) ·
+Índice → [docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs)

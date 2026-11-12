@@ -4,6 +4,8 @@ import { routes } from "./routes.js";
 import { getRootPage } from "./root.js";
 import { sendHtml } from "./status-page.js";
 import { subscribeUserEvents } from "./lib/event-stream.js";
+import { requireServiceAuth } from "./lib/service-auth.js";
+import { requireActor } from "./lib/actor.js";
 
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body);
@@ -35,6 +37,12 @@ function handleEventStream(req, res) {
     sendJson(res, 400, { error: "validation", message: "userId query required" });
     return;
   }
+  const actor = requireActor(req, userId);
+  if (!actor.ok) {
+    sendJson(res, actor.status, actor.body);
+    return;
+  }
+  const boundUserId = actor.dev ? userId : actor.sub;
 
   res.writeHead(200, {
     "Content-Type": "text/event-stream; charset=utf-8",
@@ -42,9 +50,9 @@ function handleEventStream(req, res) {
     Connection: "keep-alive",
     "X-Dakinis-Service": config.service,
   });
-  res.write(`event: ready\ndata: ${JSON.stringify({ ok: true, userId })}\n\n`);
+  res.write(`event: ready\ndata: ${JSON.stringify({ ok: true, userId: boundUserId })}\n\n`);
 
-  const unsubscribe = subscribeUserEvents(userId, res);
+  const unsubscribe = subscribeUserEvents(boundUserId, res);
   const heartbeat = setInterval(() => {
     try {
       res.write(`: ping ${Date.now()}\n\n`);
@@ -68,6 +76,8 @@ const server = http.createServer(async (req, res) => {
   }
 
   if ((req.method || "GET") === "GET" && path === "/v1/events/stream") {
+    const auth = requireServiceAuth(req);
+    if (!auth.ok) return sendJson(res, auth.status, auth.body);
     return handleEventStream(req, res);
   }
 

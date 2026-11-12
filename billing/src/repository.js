@@ -6,19 +6,16 @@ import { query } from "./db.js";
  * @param {unknown} payload
  */
 export async function recordWebhookEvent(stripeEventId, type, payload) {
-  const existing = await query(
-    `SELECT id FROM billing.stripe_webhook_events WHERE stripe_event_id = $1`,
-    [stripeEventId]
-  );
-  if (existing.rowCount > 0) {
-    return { duplicate: true };
-  }
-
-  await query(
+  const inserted = await query(
     `INSERT INTO billing.stripe_webhook_events (stripe_event_id, type, payload)
-     VALUES ($1, $2, $3::jsonb)`,
+     VALUES ($1, $2, $3::jsonb)
+     ON CONFLICT (stripe_event_id) DO NOTHING
+     RETURNING id`,
     [stripeEventId, type, JSON.stringify(payload ?? {})]
   );
+  if (inserted.rowCount === 0) {
+    return { duplicate: true };
+  }
   return { duplicate: false };
 }
 

@@ -1,5 +1,10 @@
 import { createInternalClient } from "@dakinis/sdk-auth";
 
+function workerHeader() {
+  const key = String(process.env.DAKINIS_WORKER_KEY || "").trim();
+  return key ? { "X-Dakinis-Worker": key } : {};
+}
+
 /**
  * Local pub/sub + Internal API publish. Transport (WS/Redis) stays behind this module.
  * @param {{ baseUrl?: string; apiKey?: string; fetch?: typeof fetch }} [opts]
@@ -75,6 +80,7 @@ export function createEventsModule(opts = {}) {
       const payload = body.payload ?? body;
       const published = await client.request("/events", {
         method: "POST",
+        headers: workerHeader(),
         body: JSON.stringify({
           event,
           payload,
@@ -92,6 +98,7 @@ export function createEventsModule(opts = {}) {
     publish(body) {
       return client.request("/events", {
         method: "POST",
+        headers: workerHeader(),
         body: JSON.stringify(body),
       });
     },

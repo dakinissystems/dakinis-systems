@@ -1,5 +1,29 @@
 import { config, SEARCH_SCOPES } from "./config.js";
 import { indexDocument, removeDocument, searchDocuments } from "./index-store.js";
+import { getRedis } from "./lib/redis.js";
+import { requireServiceAuth } from "./lib/service-auth.js";
+import { tenantForSearch } from "./lib/query-tenant.js";
+
+function deny(req) {
+  const auth = requireServiceAuth(req);
+  if (auth.ok) return null;
+  return { status: auth.status, body: auth.body };
+}
+
+async function probe(work) {
+  let timer;
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(() => resolve(false), 800);
+  });
+  try {
+    return await Promise.race([
+      work().then((value) => value !== false).catch(() => false),
+      timeout,
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 async function readJson(req) {
   const chunks = [];
@@ -39,9 +63,28 @@ export const routes = {
     },
   }),
 
+  "GET /health/live": () => ({ status: 200, body: { ok: true } }),
+
+  "GET /health/ready": async () => {
+    if (!config.redisUrl) return { status: 200, body: { ok: true, redis: "skipped" } };
+    const ok = await probe(async () => {
+      const redis = await getRedis();
+      if (!redis) return false;
+      await redis.ping();
+      return true;
+    });
+    return ok
+      ? { status: 200, body: { ok: true, redis: "ok" } }
+      : { status: 503, body: { ok: false, redis: "down" } };
+  },
+
   "GET /v1/query": async (req) => {
+    const denied = deny(req);
+    if (denied) return denied;
     const { q, scope, tenantId } = parseQuery(req);
-    const result = await searchDocuments(q, scope, tenantId);
+    const tenant = tenantForSearch(req, tenantId);
+    if (!tenant.ok) return { status: tenant.status, body: tenant.body };
+    const result = await searchDocuments(q, scope, tenant.tenant);
     return {
       status: 200,
       body: {
@@ -53,6 +96,8 @@ export const routes = {
   },
 
   "POST /v1/index": async (req) => {
+    const denied = deny(req);
+    if (denied) return denied;
     const body = await readJson(req);
     if (body === null) return { status: 400, body: { error: "invalid_json" } };
     const { scope, id, title = "", body: text = "", metadata = {} } = body;
@@ -71,6 +116,8 @@ export const routes = {
   },
 
   "DELETE /v1/index/:scope/:id": async (req) => {
+    const denied = deny(req);
+    if (denied) return denied;
     const path = (req.url || "").split("?")[0];
     const parsed = parseDeletePath(path);
     if (!parsed) return { status: 400, body: { error: "invalid_path" } };

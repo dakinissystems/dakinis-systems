@@ -85,6 +85,7 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · contrato [`akoenet-
 | # | Archivo | Prod |
 |---|---------|------|
 | 60 | [`060_fiscal_invoicing_verifactu.sql`](./060_fiscal_invoicing_verifactu.sql) | ⬜ aplicar — settings + facturas encadenadas + eventos ([runbook](../../RUNBOOKS/fiscal-verifactu.md)) |
+| 62 | [`062_audit_logs_append_only.sql`](./062_audit_logs_append_only.sql) | ⬜ no aplicar todavía. Confirmar que no choca con `061` de la rama de nómina. Trigger append-only en `meta.audit_logs` |
 
 Seed opcional (sin dominios): [`../scripts/provision_la_calle_brava_armala.sql`](../scripts/provision_la_calle_brava_armala.sql)  
 Dominios solo tras verificar: [`../scripts/provision_org_domains_candidates.sql`](../scripts/provision_org_domains_candidates.sql)  

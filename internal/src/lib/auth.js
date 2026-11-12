@@ -1,5 +1,8 @@
 import { config } from "../config.js";
+import { requireActor } from "./actor.js";
 import { verifyServiceBearer } from "./service-auth-keys.js";
+
+export { requireActor };
 
 /** @param {import("node:http").IncomingMessage} req */
 export function requireServiceAuth(req) {

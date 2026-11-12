@@ -11,12 +11,14 @@ Repositorio de **orquestación** (gateway, Docker, SQL, legal, scripts).
 | **Estado hoy** | [`STATUS.md`](./STATUS.md) | Eng · Ops · CEO |
 | **Estándar de README / vocabulario** | [`DOC-STANDARDS.md`](./DOC-STANDARDS.md) · plantilla servicio [`README-TEMPLATE-SERVICE.md`](./README-TEMPLATE-SERVICE.md) | Eng · Docs |
 | **Mapa de sistemas** | [`SYSTEMS.md`](./SYSTEMS.md) | Eng · Product |
+| **Carpetas en D:\\** | [`inventario-d.md`](./inventario-d.md) | Eng · Product |
 | **Arquitectura** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Eng |
 | **Arquitectura por dominios** | [`architecture/README.md`](./architecture/README.md) | Eng |
 | **Hospitality / CRM / Connectors** | [`domains/`](./domains/) · [`platform/core.md`](./platform/core.md) | Eng · Product |
 | **Deploy / ops** | [`OPERATIONS.md`](./OPERATIONS.md) | Ops · Eng |
 | **Runbooks** | [`RUNBOOKS/`](./RUNBOOKS/) | Ops |
 | **Seguridad** | [`SECURITY.md`](./SECURITY.md) | Ops · Eng |
+| **Infra del desarrollador** | [`RUNBOOKS/infra-desarrollador.md`](./RUNBOOKS/infra-desarrollador.md) | Eng · Ops |
 | **Leak de secretos** | [`SECRET-LEAK-REMEDIATION.md`](./SECRET-LEAK-REMEDIATION.md) | Ops |
 | **Gateway rules** | [`rules.md`](./rules.md) | Eng |
 | **Networking / ventas** | [`PLAYBOOK-NETWORKING.md`](./PLAYBOOK-NETWORKING.md) · [`company/sales/`](./company/sales/) | Sales · CEO |

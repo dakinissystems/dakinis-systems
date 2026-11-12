@@ -28,11 +28,19 @@ export async function query(text, params = []) {
   return p.query(text, params);
 }
 
-export async function checkDbHealth() {
+function withTimeout(promise, ms) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error("timeout")), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+export async function checkDbHealth(timeoutMs = 800) {
   try {
     const p = getPool();
     if (!p) return { ok: false, reason: "not_configured" };
-    await p.query("SELECT 1");
+    await withTimeout(p.query("SELECT 1"), timeoutMs);
     return { ok: true };
   } catch (err) {
     return { ok: false, reason: err instanceof Error ? err.message : "db_error" };

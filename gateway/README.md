@@ -12,7 +12,7 @@ Logs de acceso → **stdout**, errores → **stderr** (adecuado para `docker log
 
 **502** hacia StreamAutomator/AkoeNet vía `:80` suele ser upstream inalcanzable o IP antigua tras recrear solo los servicios de aplicación. Este repo usa **`resolver 127.0.0.11`** y **`proxy_pass` con variables** para que Nginx vuelva a resolver los hostnames Docker en cada petición (tras cambios recarga el gateway: `docker compose up -d --force-recreate gateway` o `docker exec dakinis-gateway nginx -s reload`).
 
-**Rate limiting:** zona `api_limit` (`10r/s`, burst 20); clave **`$sess_or_anon_key`** (huella `sess:` + 48 caracteres del JWT, o `anon:` + IP sin Bearer). Cuenta intentos **antes** de `auth_request` (incluye fallos). No sustituye cuotas por tenant en aplicación.
+**Rate limiting:** zona `api_limit` (`10r/s`, burst 20); clave **`$sess_or_anon_key`** (huella `sess:` + 48 caracteres del JWT, o `anon:` + IP sin Bearer). Cuenta intentos **antes** de `auth_request` (incluye fallos). No sustituye cuotas por tenant en aplicación. Login usa `auth_login` (`10r/m`). Registro usa `auth_register` (`5r/m`). La recuperación usa `auth_reset` (`5r/m`). El límite por cuenta está en Auth, no en Nginx. `/auth/` no envía `Access-Control-Allow-Credentials` junto a origen `*`.
 
 **CORS:** `Access-Control-*` en `/auth/`, `/core/`, `/streamautomator/` (preflight `OPTIONS`), más `Allow-Credentials` (ver nota abajo).
 

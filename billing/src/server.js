@@ -1,15 +1,18 @@
 import http from "node:http";
 import { config } from "./config.js";
 import { routes } from "./routes.js";
+import { currentRequestId, runWithRequest } from "./request-context.js";
 import { getRootPage } from "./root.js";
 import { sendHtml } from "./status-page.js";
 
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body);
+  const requestId = currentRequestId();
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Content-Length": Buffer.byteLength(payload),
     "X-Dakinis-Service": config.service,
+    ...(requestId ? { "X-Request-Id": requestId } : {}),
   });
   res.end(payload);
 }
@@ -44,7 +47,7 @@ async function handle(req, res) {
   }
 
   try {
-    const result = await handler(req);
+    const result = await runWithRequest(req, () => handler(req));
     sendJson(res, result.status, result.body);
   } catch (err) {
     console.error("[billing]", err);

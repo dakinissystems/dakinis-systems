@@ -47,8 +47,8 @@ function normalizeJob(raw) {
 
 async function dispatch(rawJob) {
   const job = normalizeJob(rawJob);
-  const { channel, type, userId } = job;
-  console.log(`[worker] dispatch channel=${channel} type=${type} user=${userId} id=${job.id || ""}`);
+  const { channel, type } = job;
+  console.log(`[worker] dispatch channel=${channel} type=${type} id=${job.id || ""}`);
 
   switch (channel) {
     case "email": {

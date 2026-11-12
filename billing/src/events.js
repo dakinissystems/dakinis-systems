@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { config } from "./config.js";
+import { currentRequestId } from "./request-context.js";
 
 /** @type {import("redis").RedisClientType | null} */
 let client = null;
@@ -18,6 +19,24 @@ async function getRedis() {
   return client;
 }
 
+export async function checkRedisHealth(timeoutMs = 800) {
+  if (!config.redisUrl) return { ok: true, skipped: true };
+  let timer;
+  try {
+    const redis = await getRedis();
+    if (!redis) return { ok: true, skipped: true };
+    const timeout = new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error("timeout")), timeoutMs);
+    });
+    await Promise.race([redis.ping(), timeout]);
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /**
  * @param {string} type
  * @param {Record<string, unknown>} payload
@@ -28,6 +47,7 @@ export async function publishBillingEvent(type, payload = {}) {
     payload,
     ts: new Date().toISOString(),
     source: config.service,
+    requestId: currentRequestId() || (typeof payload.requestId === "string" ? payload.requestId : undefined),
   };
 
   if (isBullMqMode() && config.redisUrl) {

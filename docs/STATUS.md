@@ -137,11 +137,28 @@ Smokes → [`OPERATIONS.md`](./OPERATIONS.md).
 2. Billing E2E live (checkout → webhook → plan)  
 3. Hub Mi día con datos/acciones reales (≥2 productos)  
 4. Landing: Golden Path + «Qué es Dakinis» en ≤30 s  
-5. Staging mínimo + smoke E2E  
+5. Staging mínimo + smoke E2E, con el orden de [`RUNBOOKS/infra-desarrollador.md`](./RUNBOOKS/infra-desarrollador.md)
 
 Narrativa → [`company/WHAT-IS-DAKINIS.md`](./company/WHAT-IS-DAKINIS.md) · Messaging → [`company/MESSAGING.md`](./company/MESSAGING.md).
 
+## Puerta antes del segundo negocio (11 nov 2026)
+
+Condiciones de aceptación. Escribirlas no las cierra. Cada una necesita estado de código, despliegue y verificación en [`RUNBOOKS/infra-desarrollador.md`](./RUNBOOKS/infra-desarrollador.md). La prueba, cuando se haga, se guarda en [`evidence/`](./evidence/README.md). Hoy esa carpeta no tiene resultados. Dueño: el operador. Suplente de las condiciones 4, 6 y 8: sin nombrar.
+
+| # | Condición | Qué la bloquea |
+|---|---|---|
+| 1 | Una empresa no lee datos de otra | Pruebas con dos tenants, también en búsqueda, exportación y workers |
+| 2 | Un rol sin el permiso no ejecuta la operación | Falta la evidencia. Quien tiene `AKOENET_MEMBER_KEY` todavía puede nombrar a otro miembro. El alta de Search sigue aceptando el tenant de la clave de servicio. Las llamadas de workspace de AkoeNet no reenvían el JWT y en producción responden 401. El runbook tiene la revisión posterior |
+| 3 | Una sesión se puede revocar | Sesiones revocables en Auth. El MFA de usuario no bloquea esta puerta |
+| 4 | Un secreto comprometido se puede invalidar | Inventario y una rotación ensayada |
+| 5 | Un reintento no duplica un cobro | `UNIQUE` visto en la base viva, más eventos repetidos, desordenados y a medias |
+| 6 | La base se recupera en un entorno aislado | Restauración contra el RPO y el RTO del runbook, con evidencia |
+| 7 | Una acción administrativa queda registrada | Audit log con dueño: Auth (identidad), Core (negocio), Billing (cobro). No vale el log de Railway |
+| 8 | Una incidencia P0 tiene procedimiento | Niveles P0–P3 y el plazo de 72 h si hay datos personales |
+
+Antes del segundo negocio, y fuera de estas ocho: reautenticación para exportar, borrar una organización o crear una clave API; exportación y borrado de la cuenta (RGPD), distinguiendo lo que la factura obliga a conservar.
+
 ---
 
-*Última actualización: 3 oct 2026.*  
+*Foto comercial: 3 oct 2026. Puerta de seguridad añadida el 11 nov 2026.*  
 *Pregunta guía: ¿Puede un restaurante real usar Dakinis 30 días y pagar sin que intervengas?*

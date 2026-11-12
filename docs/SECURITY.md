@@ -117,6 +117,7 @@ Asistente consolas: `.\scripts\security-console-checklist.ps1`
 | Monitorización / uptime | [`OPERATIONS.md#monitorizacion`](./OPERATIONS.md#monitorizacion) |
 | Leak de secretos (Gitleaks) | [`SECRET-LEAK-REMEDIATION.md`](./SECRET-LEAK-REMEDIATION.md) |
 | Reglas Gateway | [`rules.md`](./rules.md) |
+| Infra que hace el desarrollador (Supabase, Railway, Cloudflare) | [`RUNBOOKS/infra-desarrollador.md`](./RUNBOOKS/infra-desarrollador.md) |
 P2+ (JWT servicio, audit log, RBAC, Guardian, mTLS, Vault, SIEM) → diferido hasta escala; no bloquear go-live.
 
 ---

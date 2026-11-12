@@ -3,13 +3,16 @@ import { config } from "./config.js";
 import { routes } from "./routes.js";
 import { getRootPage } from "./root.js";
 import { sendHtml } from "./status-page.js";
+import { currentRequestId, runWithRequest } from "./lib/request-context.js";
 
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body);
+  const requestId = currentRequestId();
   res.writeHead(status, {
     "Content-Type": "application/json; charset=utf-8",
     "Content-Length": Buffer.byteLength(payload),
     "X-Dakinis-Service": config.service,
+    ...(requestId ? { "X-Request-Id": requestId } : {}),
   });
   res.end(payload);
 }
@@ -178,7 +181,7 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 404, { error: "not_found", path });
   }
   try {
-    const result = await handler(req);
+    const result = await runWithRequest(req, () => handler(req));
     sendJson(res, result.status, result.body);
   } catch (err) {
     console.error("[internal]", err);

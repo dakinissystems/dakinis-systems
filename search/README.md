@@ -1,20 +1,31 @@
 # Dakinis Search
 
-**Búsqueda global** Hub + productos.
+Búsqueda global para **Hub** y productos del ecosistema (índice unificado / proxies según contrato).
 
-> **Prod:** Gateway [/search/](https://api.dakinissystems.com/search/health)
+> **Estado:** desplegado detrás del gateway — límites y cobertura por producto → [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md)
 
 | | |
 |---|---|
 | **GitHub** | [dakinis-search](https://github.com/dakinissystems/dakinis-search) |
-| **Gateway** | `/search/` |
+| **Gateway** | `https://api.dakinissystems.com/search/` |
 | **Health** | `GET /search/health` |
+| **Contrato** | [search.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/search.json) |
+| **Consumidores** | Hub, Internal API (proxy), productos |
+
+## Propósito
+
+- Consultas cross-product para el dashboard Hub y experiencias de producto
+- Si un producto/índice no está disponible, el contrato/cliente debe degradar (no asumir 100% cobertura)
 
 ## Local
 
 ```powershell
 npm install
+cp .env.example .env
 npm run dev
+```
+
+```powershell
 curl http://localhost:4082/health
 ```
 
@@ -22,19 +33,13 @@ curl http://localhost:4082/health
 
 API + worker. Runbook → [railway-workers](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/RUNBOOKS/railway-workers.md)
 
-## Contracts
+## Seguridad
 
-[search.json](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/contracts/search.json)
+- Acceso vía gateway / service keys según contrato; no exponer búsqueda interna sin auth de producto.
 
-## Documentación del ecosistema
+## Docs canónicas
 
-Canónica en [dakinis-systems/docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs):
-
-| Doc | Contenido |
-|-----|-----------|
-| [Índice](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/README.md) | Source of truth |
-| [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) | Mapa productos / plataforma |
-| [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) | Estado / go-live |
-| [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) | Deploy, health, monitorización |
-| [SECURITY](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SECURITY.md) | Checklist seguridad P0–P1 |
-| [ARCHITECTURE](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/ARCHITECTURE.md) | Arquitectura |
+Estado → [STATUS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/STATUS.md) ·
+Mapa → [SYSTEMS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/SYSTEMS.md) ·
+Ops → [OPERATIONS](https://github.com/dakinissystems/dakinis-systems/blob/main/docs/OPERATIONS.md) ·
+Índice → [docs](https://github.com/dakinissystems/dakinis-systems/tree/main/docs)
