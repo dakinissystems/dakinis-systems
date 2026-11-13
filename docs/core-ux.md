@@ -162,11 +162,11 @@ Esto sale del código de `e0d1f5c`, no de un recorrido en el navegador.
 
 7. **Carga.** La app perezosa dice «Cargando…». No hay esqueleto común.
 
-8. **`/hub` de Core sigue existiendo** para quien no es un negocio, con el rótulo «Módulos». La paleta «Ir al Hub» sale al Hub del ecosistema. CRM sigue ofreciendo el Hub interno en un enlace.
+8. **`/hub` de Core sigue existiendo** para quien no es un negocio, con el rótulo «Módulos». La paleta «Ir al Hub» sale al Hub del ecosistema. CRM ya no enlaza al Hub interno.
 
-9. **El cierre de caja, en `9920c03`, compara efectivo contado y esperado.** Un fondo vacío no se guarda como 0 €. El botón se llama «Confirmar cierre» y queda bloqueado si falta el fondo. Si la diferencia no es cero, pide un motivo. El cierre se audita. No se ha pulsado en una sesión real. El coste de una producción sigue sin calcularse. Comensales en la ficha de mesa sigue en «Sin registro».
+9. **El cierre de caja, en `738943b`, compara efectivo contado y esperado.** Un fondo vacío no se guarda como 0 €. El botón se llama «Confirmar cierre» y usa `disabled` real si falta el fondo. Si la diferencia no es cero, pide un motivo. El cierre se audita. No se ha pulsado en una sesión real. El coste de una producción sigue sin calcularse. Comensales en la ficha de mesa sigue en «Sin registro».
 
-10. **El panel titula con el nombre comercial.** Las alertas de stock no se repiten. Entrada/Salida aparece al elegir producto. El modal de mesa tiene un solo scroll. WhatsApp se titula «Enviar mensaje». Un canal sin cobros no aparece a 0 €.
+10. **El panel titula con el nombre comercial.** La alerta de stock y el siguiente paso van en la misma tarjeta. Sin producto el inventario no confirma. CRM vacío oculta el buscador. WhatsApp se titula «Enviar mensaje». Cabecera: «Vista previa».
 
 ## Orden que queda
 
@@ -176,4 +176,4 @@ Sin añadir secciones nuevas.
 
 **Después.** Que Ventas y analítica, fuera de hostelería, enseñen cobros reales o sigan en el vacío sin prometer una serie. Skeletons. Recomendaciones que se puedan aceptar solo cuando haya un destino y un registro de esa decisión. El coste de producción, cuando los ingredientes tengan un coste guardado.
 
-La revisión del 13 nov 2026 añade al contrato, en `DAKINIS-UX-ARCHITECTURE.md`, que una recomendación no puede afirmar lo que los datos no demuestran, que las incidencias de carga no son alertas de mercadería, que el movimiento de inventario es un solo flujo y que Próximamente no se configura. Ese código está en `origin/main` de Core como `9920c03`. No está verificado en el navegador ni se da por desplegado en Railway.
+La revisión del 13 nov 2026 añade al contrato, en `DAKINIS-UX-ARCHITECTURE.md`, que una recomendación no puede afirmar lo que los datos no demuestran, que las incidencias de carga no son alertas de mercadería, que el movimiento de inventario es un solo flujo y que Próximamente no se configura. Ese código está en `origin/main` de Core como `738943b`. GitHub sí; Railway no anotado; aceptación en entorno real no hecha.

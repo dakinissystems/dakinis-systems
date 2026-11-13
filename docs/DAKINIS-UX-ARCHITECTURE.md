@@ -75,9 +75,15 @@ El panel agrupa rendimiento, operación y atención. El título es el nombre com
 | Repo | Commit en `origin/main` | Qué entra |
 | --- | --- | --- |
 | `dakinis-hub` | `d521b9a` | Mi día ordenado. Si el actor interno falla, la sesión no se cierra. Un 503 del canal deja de reintentarse solo. |
-| `dakinis-core` | `9920c03` | Incluye `9c54721` y `049b6dc`. Nombre comercial en el panel, Entrada/Salida al elegir producto, modal de mesa con un solo scroll, «Confirmar cierre» bloqueado sin renombrarlo, canales sin cobros fuera de la tabla a 0 €, y WhatsApp titulado como envío de mensaje. |
+| `dakinis-core` | `738943b` | Incluye `9920c03`. Inventario en dos fases, cierre con `disabled` real, alerta de stock con siguiente paso en la misma tarjeta, CRM vacío sin buscador, estados de sala con texto y «Vista previa» en la cabecera. |
 
-Esos commits están en GitHub. Este archivo no afirma que Railway ya los sirva. Una sesión real del navegador no se ha recorrido después de `9920c03`. El 403 del plano se vio en el sitio cuando la pantalla aún decía «Diseño activo».
+| Estado | Situación |
+|---|---|
+| Código en GitHub | `738943b` |
+| Railway | No anotado |
+| Aceptación en entorno real | No hecha |
+
+`git fetch` del 13 nov por la tarde confirma esos SHA en GitHub. Este archivo no afirma que Railway ya los sirva. Una sesión real del navegador no se ha recorrido después de `738943b`. El 403 del plano se vio en el sitio cuando la pantalla aún decía «Diseño activo».
 
 ## Patrones de interacción
 
@@ -102,7 +108,7 @@ El alta de cliente tiene una sola acción, Nuevo cliente. CRM no enlaza al Hub i
 
 ## Responsive
 
-Escritorio: sidebar y varias columnas. Tablet y móvil de hostelería: el control frecuente (mesa, lector, reintentar) tiene al menos 44 px de alto. El plano de mesas dice Libre o Cuenta con texto, no solo con color.
+Escritorio: sidebar y varias columnas. Tablet y móvil de hostelería: el control frecuente (mesa, lector, reintentar) tiene al menos 44 px de alto; las mesas del plano, al menos 48 px. El plano de mesas dice Libre o Cuenta con texto, no solo con color. API, Delivery y Caja del encabezado muestran etiqueta, no solo el punto.
 
 ## Accesibilidad
 
@@ -126,12 +132,13 @@ Ningún componente comunica un estado más favorable o más avanzado que el esta
 
 | Área | Regla |
 | --- | --- |
-| Dashboard | El título es el nombre comercial. Cada métrica lleva contexto. La hora es la de la última consulta del panel. Atención usa borde ámbar solo en inventario. Configuración, actividad y adopción viven aparte y no repiten las alertas de stock. |
-| Inteligencia | Una recomendación solo se muestra si `available` no es falso. Una alerta de stock mínimo es escasez. «¿Qué platos debería promocionar?» no se pinta sin una lista `promoDishes`. Contar recetas o un stock por encima del mínimo no fabrica esa lista. |
-| CRM | Una sola acción principal por tarea. Sin enlace al Hub interno. Sin sugerencia de reactivación si no hay clientes. Sin importar Excel mientras esa función no exista. |
-| Inventario | Un único flujo de movimiento. Entrada/Salida aparece al identificar el producto. El stock resultante se enseña antes de confirmar. Un producto nuevo solo admite entrada. |
+| Dashboard | El título es el nombre comercial. «Panel consultado a las…». Un fallo se lee en la tarjeta («Sin consultar»), no en un aviso global. Atención: alerta de stock y siguiente paso en la misma tarjeta ámbar. |
+| Inteligencia | Una recomendación solo se muestra si `available` no es falso. Si ya hay alertas de stock en Atención, no se repite como IA: aparece «Siguiente paso recomendado». «¿Qué platos debería promocionar?» no se pinta sin una lista `promoDishes`. |
+| CRM | Una sola acción principal por tarea. Sin enlace al Hub interno. Sin ficha vacía si no hay clientes. «Abrir WhatsApp» en lugar de Comunicaciones. Sin sugerencia de reactivación si no hay clientes. Sin importar Excel mientras esa función no exista. |
+| WhatsApp | Si la pantalla es un envío por número, el título es «Enviar mensaje». No se presenta como bandeja de conversaciones. Sin botones CRM/Hub al pie. |
+| Inventario | Un único flujo en dos fases. Sin producto solo «Continuar» deshabilitado. Entrada/Salida, cantidad y resultado aparecen al identificar. Un producto nuevo solo admite entrada. |
 | Producción | No se registra si el inventario no cubre los ingredientes. No hay un atajo de excepción. |
-| Delivery | La acción depende de la disponibilidad: ver requisitos, configurar, gestionar, diagnosticar, no disponible aún, o crear pedido de prueba en la simulación. Pendiente de acceso y Próximamente no enseñan «0 pendientes». Un canal bloqueado usa etiqueta, no casilla. La cola técnica va en español y bajo un detalle plegable. |
+| Delivery | La acción depende de la disponibilidad. Pendiente de acceso y Próximamente no enseñan «0 pendientes». La simulación manual no aparece en la lista de canales reales. «Pendientes marketplace» solo si hay un canal conectado. Un canal bloqueado usa etiqueta, no casilla. La cola técnica va en español y bajo un detalle plegable. |
 | Alertas | Las incidencias de carga no van en la lista de mercadería. No se descartan como si fueran un aviso de stock: primero se reintenta. Mientras no haya motor de reglas, el formulario se llama aviso manual. |
 | Compras | Una entrega prevista no entra mercancía. Recibido y recepción parcial crean un lote con la cantidad indicada y no modifican el stock de cocina. La agenda lista las entregas ya guardadas. |
 | Caja | Un fondo vacío no se guarda como 0 €. El botón se llama «Confirmar cierre» y queda bloqueado si falta el fondo, con la explicación debajo. Los canales sin cobros no aparecen a 0 €. |
@@ -139,7 +146,7 @@ Ningún componente comunica un estado más favorable o más avanzado que el esta
 | Plano | Operación y Diseño son dos controles con instrucciones distintas. El modal de pedido tiene un solo scroll y pie fijo. Vaciar mesa pide confirmación. El cobro solo se habilita con productos en la comanda. Comensales dice «Sin registro». |
 | Fiscal | La activación queda al final y no se habilita sin nombre y NIF/CIF. El aviso de base técnica VERI*FACTU sigue visible. No es una certificación. El IVA por defecto es del emisor, no de cada producto. |
 
-Estas reglas describen el contrato. El código de Core que las aplica está en `origin/main` como `9920c03`. Este archivo no afirma que Railway ya lo sirva, ni que un recorrido de aceptación lo haya verificado.
+Estas reglas describen el contrato. El código de Core que las aplica está en `origin/main` como `738943b`. Este archivo no afirma que Railway ya lo sirva, ni que un recorrido de aceptación lo haya verificado.
 
 ## Qué queda para después
 
