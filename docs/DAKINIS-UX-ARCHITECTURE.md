@@ -68,22 +68,22 @@ El panel, cuando el KPI es de hostelería y trae clave conocida, abre Sala, Coci
 
 Fiscal de ticket sigue siendo base técnica VERI*FACTU. No se presenta como un sistema certificado.
 
-El panel agrupa rendimiento, operación y atención. Un módulo que falla no esconde a los demás: el error nombra el módulo, conserva lo ya cargado y ofrece reintentar. La salud no se resume en un solo 6/100. Se lee en configuración, salud operativa, actividad comercial y adopción. Un negocio sin configurar no se presenta como incidencia. El benchmark sectorial no se muestra: no hay fuente, periodo ni tamaño de muestra. El crecimiento no se pinta hasta que existan factores medidos. Ingresos de 30 días y ventas de hoy, si no hay un total real, dicen «Datos no disponibles». La fórmula que ponía un mínimo de 420 € y la que multiplicaba comandas por 85 ya no está en el código. La hora del panel es la de la última consulta de ese lote, no una actualización simultánea de todos los módulos.
+El panel agrupa rendimiento, operación y atención. El título es el nombre comercial del negocio, no la clave interna del vertical. Un módulo que falla no esconde a los demás: el error nombra el módulo, conserva lo ya cargado y ofrece reintentar. La salud no se resume en un solo 6/100. Configuración, actividad y adopción viven en «Estado del negocio»; las alertas de inventario solo en Atención. Un negocio sin configurar no se presenta como incidencia. El benchmark sectorial no se muestra. El crecimiento no se pinta hasta que existan factores medidos. Si el módulo no mide la cifra, el texto es «El módulo no proporciona ese dato». Si la consulta falló, «No se pudo consultar el servicio». Un cero medido sigue siendo cero. La fórmula que ponía un mínimo de 420 € y la que multiplicaba comandas por 85 ya no está en el código. La hora del panel es la de la última consulta de ese lote.
 
 ## En origin el 13 nov 2026
 
 | Repo | Commit en `origin/main` | Qué entra |
 | --- | --- | --- |
 | `dakinis-hub` | `d521b9a` | Mi día ordenado. Si el actor interno falla, la sesión no se cierra. Un 503 del canal deja de reintentarse solo. |
-| `dakinis-core` | `049b6dc` | Cifras reales, 429 legible, movimiento único de inventario, recomendaciones acotadas a los datos, acciones de delivery según el estado, arqueo de caja, ficha de mesa con los campos que la sesión trae, y el propietario deja de quedar como miembro cuando el IdP dice `user`. |
+| `dakinis-core` | `9c54721` | Incluye `049b6dc`. Nombre comercial en el panel, alertas de stock sin duplicar, textos distintos para dato ausente y fallo de consulta, sugerencias de IA ocultas sin datos, canales sin acceso sin «0 pendientes», vaciado de mesa con confirmación y fondo de caja vacío que no se guarda como 0 €. |
 
-Esos commits están en GitHub. Este archivo no afirma que Railway ya los sirva. Una sesión real del navegador no se ha recorrido después de `049b6dc`. El 403 del plano se vio en el sitio cuando la pantalla aún decía «Diseño activo».
+Esos commits están en GitHub. Este archivo no afirma que Railway ya los sirva. Una sesión real del navegador no se ha recorrido después de `9c54721`. El 403 del plano se vio en el sitio cuando la pantalla aún decía «Diseño activo».
 
 ## Patrones de interacción
 
 Una acción, un contexto, un resultado. Desde el Hub se abre el destino de Core que corresponde (Caja, Inventario, Sala) y la pantalla de origen no se rellena con una cifra inventada.
 
-El alta de cliente tiene una sola acción, Nuevo cliente. CRM no repite la barra principal. Inventario, ventas, analítica y WhatsApp no vuelven como mosaico dentro de Clientes. La entrada y la salida de stock son un solo movimiento, con identificación manual, lector o cámara, y un botón de confirmación que dice entrada o salida según lo elegido. Detectar un código no registra el movimiento. Una integración Próximamente no ofrece configurarla: la acción es «No disponible aún». Pendiente de acceso muestra requisitos. Conectado gestiona. Error diagnostica solo si hay un fallo real de esa conexión. No configurado se configura. La simulación sigue en un bloque aparte. En el plano hay dos modos visibles, Operación y Diseño. Diseño solo aparece si el rol ya podía editar. Un camarero no arrastra mesas. Un error de límite (429) se lee como «no hemos podido cargar estos datos» y ofrece reintentar. No se muestra un total de caja si esa carga no llegó. El arqueo de efectivo contado sigue pendiente: no hay un campo de efectivo contado.
+El alta de cliente tiene una sola acción, Nuevo cliente. CRM no enlaza al Hub interno ni sugiere reactivar clientes si la cartera está vacía. Inventario, ventas, analítica y WhatsApp no vuelven como mosaico dentro de Clientes. La entrada y la salida de stock son un solo movimiento, con identificación manual, lector o cámara, y un botón de confirmación que dice entrada o salida según lo elegido. Detectar un código no registra el movimiento. Una integración Próximamente no ofrece configurarla: la acción es «No disponible aún». Pendiente de acceso muestra requisitos y no inventa pedidos. Conectado gestiona. Error diagnostica solo si hay un fallo real. No configurado se configura. La simulación sigue en un bloque aparte. En el plano hay dos modos visibles, Operación y Diseño. Diseño solo aparece si el rol ya podía editar. Un camarero no arrastra mesas. Vaciar mesa pide confirmación y explica que no envía ni cobra. Un error de límite (429) se lee como «no hemos podido cargar estos datos». Sin fondo de inicio el cierre dice qué falta y no se confirma.
 
 ## Estados de datos
 
@@ -91,7 +91,8 @@ El alta de cliente tiene una sola acción, Nuevo cliente. CRM no repite la barra
 | --- | --- |
 | Con datos | La cifra y, si existe, de dónde sale |
 | Sin registros | Vacío y la acción real, si la hay |
-| Datos no disponibles | El campo no se ha medido. No es un cero |
+| El módulo no proporciona ese dato | El campo no se mide todavía. No es un cero |
+| No se pudo consultar el servicio | La consulta falló. Se puede reintentar |
 | Desconectado | Solo si esa integración llegó a estar conectada y ahora falla. Un stub o un acceso de partner pendiente no es una desconexión |
 | Error | La operación no se ha confirmado |
 | Procesando | La acción sigue en curso |
@@ -117,7 +118,7 @@ P0. La interfaz no muestra URLs internas, variables de entorno ni instrucciones 
 
 P1. Cada tarea tiene una acción principal. Una integración sin API no se presenta como desconectada ni se puede marcar activa. El formulario de un movimiento enseña el stock resultante antes de confirmar. El estado vacío dice el siguiente paso que existe. Un cero medido no se escribe igual que un dato que no llegó. Carga, error y confirmación usan el mismo lenguaje.
 
-P2. Una recepción parcial que actualice el stock, un cierre de caja con efectivo contado y una ficha de mesa con capacidad, tiempo e importe quedan pendientes: esas pantallas no tienen todavía el dato o el registro. Una recomendación de IA dice de qué señal sale y que no calcula un importe.
+P2. Una recepción parcial que actualice el stock de cocina y un recuento de comensales siguen pendientes: el sistema no guarda esos datos. Una recomendación de IA dice de qué señal sale y que no calcula un importe.
 
 ## Reglas de la revisión del 13 nov 2026
 
@@ -125,20 +126,20 @@ Ningún componente comunica un estado más favorable o más avanzado que el esta
 
 | Área | Regla |
 | --- | --- |
-| Dashboard | Cada métrica lleva contexto. La hora es la de la última consulta del panel, no de todos los módulos a la vez. Atención usa borde ámbar o rojo solo en una incidencia operativa. Configuración, actividad y adopción se quedan neutras. |
-| Inteligencia | Una recomendación solo propone una acción que los datos pueden justificar. Una alerta de stock mínimo es escasez. «¿Qué platos debería promocionar?» solo se activa si llega una lista `promoDishes`. Contar recetas o un stock por encima del mínimo no fabrica esa lista. |
-| CRM | Una sola acción principal por tarea. Sin navegación duplicada de la barra. Sin importar Excel mientras esa función no exista. |
+| Dashboard | El título es el nombre comercial. Cada métrica lleva contexto. La hora es la de la última consulta del panel. Atención usa borde ámbar solo en inventario. Configuración, actividad y adopción viven aparte y no repiten las alertas de stock. |
+| Inteligencia | Una recomendación solo se muestra si `available` no es falso. Una alerta de stock mínimo es escasez. «¿Qué platos debería promocionar?» no se pinta sin una lista `promoDishes`. Contar recetas o un stock por encima del mínimo no fabrica esa lista. |
+| CRM | Una sola acción principal por tarea. Sin enlace al Hub interno. Sin sugerencia de reactivación si no hay clientes. Sin importar Excel mientras esa función no exista. |
 | Inventario | Un único flujo de movimiento, manual o con escáner. El botón de confirmación cambia con la dirección. El stock resultante se enseña antes de confirmar. |
 | Producción | No se registra si el inventario no cubre los ingredientes. No hay un atajo de excepción. |
-| Delivery | La acción depende de la disponibilidad: ver requisitos, configurar, gestionar, diagnosticar, no disponible aún, o crear pedido de prueba en la simulación. Un volumen vacío explica si no hay pedidos, si no se pudo consultar o si no hay canales conectados. |
+| Delivery | La acción depende de la disponibilidad: ver requisitos, configurar, gestionar, diagnosticar, no disponible aún, o crear pedido de prueba en la simulación. Pendiente de acceso y Próximamente no enseñan «0 pendientes». Un canal bloqueado usa etiqueta, no casilla. La cola técnica va en español y bajo un detalle plegable. |
 | Alertas | Las incidencias de carga no van en la lista de mercadería. No se descartan como si fueran un aviso de stock: primero se reintenta. Mientras no haya motor de reglas, el formulario se llama aviso manual. |
 | Compras | Una entrega prevista no entra mercancía. Recibido y recepción parcial crean un lote con la cantidad indicada y no modifican el stock de cocina. La agenda lista las entregas ya guardadas. |
-| Caja | El cierre pide el efectivo contado. Si la diferencia no es cero, exige un motivo. La instantánea guarda importe, diferencia, quién y cuándo en la auditoría. Sin fondo de inicio no se cierra, porque el esperado no está calculado. |
+| Caja | Un fondo vacío no se guarda como 0 €. El cierre pide el efectivo contado. Si la diferencia no es cero, exige un motivo. Sin fondo de inicio el botón dice qué falta y no se confirma. |
 | Carta | Un precio vacío no se guarda como 0 €. Un 0 real se etiqueta como precio cero. Un campo sin valor es «Sin precio». |
-| Plano | Operación y Diseño son dos controles con el modo actual marcado. Al seleccionar una mesa se ve la capacidad (`seats`), el tiempo si hay `openedAt`, el estado de la cuenta y el importe del carrito. Comensales dice «Sin registro»: la sesión no guarda ese dato. |
+| Plano | Operación y Diseño son dos controles. Al seleccionar una mesa se ve la capacidad (`seats`), el tiempo si hay `openedAt`, el estado de la cuenta y el importe. Comensales dice «Sin registro». Vaciar mesa pide confirmación. El cobro solo se habilita con productos en la comanda. |
 | Fiscal | La activación queda al final y no se habilita sin nombre y NIF/CIF. El aviso de base técnica VERI*FACTU sigue visible. No es una certificación. El IVA por defecto es del emisor, no de cada producto. |
 
-Estas reglas describen el contrato. El código de Core que las aplica está en `origin/main` como `049b6dc`. Este archivo no afirma que Railway ya lo sirva, ni que un recorrido de aceptación lo haya verificado.
+Estas reglas describen el contrato. El código de Core que las aplica está en `origin/main` como `9c54721`. Este archivo no afirma que Railway ya lo sirva, ni que un recorrido de aceptación lo haya verificado.
 
 ## Qué queda para después
 
