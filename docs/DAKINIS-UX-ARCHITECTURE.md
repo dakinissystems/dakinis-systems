@@ -75,9 +75,9 @@ El panel agrupa rendimiento, operación y atención. El título es el nombre com
 | Repo | Commit en `origin/main` | Qué entra |
 | --- | --- | --- |
 | `dakinis-hub` | `d521b9a` | Mi día ordenado. Si el actor interno falla, la sesión no se cierra. Un 503 del canal deja de reintentarse solo. |
-| `dakinis-core` | `9c54721` | Incluye `049b6dc`. Nombre comercial en el panel, alertas de stock sin duplicar, textos distintos para dato ausente y fallo de consulta, sugerencias de IA ocultas sin datos, canales sin acceso sin «0 pendientes», vaciado de mesa con confirmación y fondo de caja vacío que no se guarda como 0 €. |
+| `dakinis-core` | `9920c03` | Incluye `9c54721` y `049b6dc`. Nombre comercial en el panel, Entrada/Salida al elegir producto, modal de mesa con un solo scroll, «Confirmar cierre» bloqueado sin renombrarlo, canales sin cobros fuera de la tabla a 0 €, y WhatsApp titulado como envío de mensaje. |
 
-Esos commits están en GitHub. Este archivo no afirma que Railway ya los sirva. Una sesión real del navegador no se ha recorrido después de `9c54721`. El 403 del plano se vio en el sitio cuando la pantalla aún decía «Diseño activo».
+Esos commits están en GitHub. Este archivo no afirma que Railway ya los sirva. Una sesión real del navegador no se ha recorrido después de `9920c03`. El 403 del plano se vio en el sitio cuando la pantalla aún decía «Diseño activo».
 
 ## Patrones de interacción
 
@@ -129,17 +129,17 @@ Ningún componente comunica un estado más favorable o más avanzado que el esta
 | Dashboard | El título es el nombre comercial. Cada métrica lleva contexto. La hora es la de la última consulta del panel. Atención usa borde ámbar solo en inventario. Configuración, actividad y adopción viven aparte y no repiten las alertas de stock. |
 | Inteligencia | Una recomendación solo se muestra si `available` no es falso. Una alerta de stock mínimo es escasez. «¿Qué platos debería promocionar?» no se pinta sin una lista `promoDishes`. Contar recetas o un stock por encima del mínimo no fabrica esa lista. |
 | CRM | Una sola acción principal por tarea. Sin enlace al Hub interno. Sin sugerencia de reactivación si no hay clientes. Sin importar Excel mientras esa función no exista. |
-| Inventario | Un único flujo de movimiento, manual o con escáner. El botón de confirmación cambia con la dirección. El stock resultante se enseña antes de confirmar. |
+| Inventario | Un único flujo de movimiento. Entrada/Salida aparece al identificar el producto. El stock resultante se enseña antes de confirmar. Un producto nuevo solo admite entrada. |
 | Producción | No se registra si el inventario no cubre los ingredientes. No hay un atajo de excepción. |
 | Delivery | La acción depende de la disponibilidad: ver requisitos, configurar, gestionar, diagnosticar, no disponible aún, o crear pedido de prueba en la simulación. Pendiente de acceso y Próximamente no enseñan «0 pendientes». Un canal bloqueado usa etiqueta, no casilla. La cola técnica va en español y bajo un detalle plegable. |
 | Alertas | Las incidencias de carga no van en la lista de mercadería. No se descartan como si fueran un aviso de stock: primero se reintenta. Mientras no haya motor de reglas, el formulario se llama aviso manual. |
 | Compras | Una entrega prevista no entra mercancía. Recibido y recepción parcial crean un lote con la cantidad indicada y no modifican el stock de cocina. La agenda lista las entregas ya guardadas. |
-| Caja | Un fondo vacío no se guarda como 0 €. El cierre pide el efectivo contado. Si la diferencia no es cero, exige un motivo. Sin fondo de inicio el botón dice qué falta y no se confirma. |
+| Caja | Un fondo vacío no se guarda como 0 €. El botón se llama «Confirmar cierre» y queda bloqueado si falta el fondo, con la explicación debajo. Los canales sin cobros no aparecen a 0 €. |
 | Carta | Un precio vacío no se guarda como 0 €. Un 0 real se etiqueta como precio cero. Un campo sin valor es «Sin precio». |
-| Plano | Operación y Diseño son dos controles. Al seleccionar una mesa se ve la capacidad (`seats`), el tiempo si hay `openedAt`, el estado de la cuenta y el importe. Comensales dice «Sin registro». Vaciar mesa pide confirmación. El cobro solo se habilita con productos en la comanda. |
+| Plano | Operación y Diseño son dos controles con instrucciones distintas. El modal de pedido tiene un solo scroll y pie fijo. Vaciar mesa pide confirmación. El cobro solo se habilita con productos en la comanda. Comensales dice «Sin registro». |
 | Fiscal | La activación queda al final y no se habilita sin nombre y NIF/CIF. El aviso de base técnica VERI*FACTU sigue visible. No es una certificación. El IVA por defecto es del emisor, no de cada producto. |
 
-Estas reglas describen el contrato. El código de Core que las aplica está en `origin/main` como `9c54721`. Este archivo no afirma que Railway ya lo sirva, ni que un recorrido de aceptación lo haya verificado.
+Estas reglas describen el contrato. El código de Core que las aplica está en `origin/main` como `9920c03`. Este archivo no afirma que Railway ya lo sirva, ni que un recorrido de aceptación lo haya verificado.
 
 ## Qué queda para después
 
