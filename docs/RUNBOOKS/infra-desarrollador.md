@@ -420,17 +420,23 @@ A las 04:14 CET del 12 nov, Sentry (`e8d3dc58`, proyecto javascript-react, servi
 
 ### Código en origin el 13 nov 2026
 
-`git ls-remote` después del push del 13 nov: `dakinis-hub` `main` es `d521b9a`. `dakinis-core` `main` es `9920c03`. Eso es el remoto de Git. No es un success de Railway y no cierra ninguna de las ocho condiciones. `docs/evidence/` sigue vacío.
+`git fetch` de la tarde del 13 nov: `dakinis-hub` `main` es `d521b9a`. `dakinis-core` `main` es `738943b` (`738943b61b5b76e105d81e1b9bb19d8780d93881`). Eso es el remoto de Git. No es un success de Railway y no cierra ninguna de las ocho condiciones. `docs/evidence/` sigue vacío.
+
+| Estado | Situación |
+|---|---|
+| Código en GitHub | `738943b` |
+| Railway | No anotado |
+| Aceptación en entorno real | No hecha |
 
 `d521b9a` incluye `4ef4a6e`. Si Internal rechaza al actor en `/api/hub/me/dashboard`, Hub responde 502 `upstream_actor_rejected` y el front no hace logout. Un 401 porque Hub no puede leer el JWT sigue yendo al login. Un 503 de `/api/hub/events/stream` deja de reabrir el canal solo. El 401 y los tres 503 se vieron en consola antes de este commit. No se ha vuelto a abrir `hub.dakinissystems.com` después del push.
 
-`9920c03` incluye `9c54721`, `049b6dc`, `8d04bb9`, `9c081e4`, `e0d1f5c` y `734e0bc`. El panel titula con el nombre comercial. Las alertas de stock no se repiten. Entrada/Salida del inventario aparece al elegir producto. El modal de mesa tiene un solo scroll y pie fijo. «Confirmar cierre» se mantiene como nombre y queda bloqueado si falta el fondo. Glovo/Uber no salen a 0 € sin cobros. WhatsApp se titula «Enviar mensaje». Un fallo de `/api` ya no enseña `API_UPSTREAM`. `POST /api/tenant/restaurant/cash-close` escribe la auditoría del arqueo solo si hay efectivo esperado y, cuando la diferencia no es cero, una justificación. Al autenticar un token del IdP, la membresía del workspace tiene prioridad. El 403 «Rol insuficiente» del plano se vio en el sitio antes de `049b6dc`, con el botón «Diseño activo». No se ha vuelto a abrir `core.dakinissystems.com` después del push de `9920c03`.
+`738943b` incluye `9920c03`, `9c54721`, `049b6dc`, `8d04bb9`, `9c081e4`, `e0d1f5c` y `734e0bc`. Sin producto el inventario no confirma. «Confirmar cierre» conserva el nombre y usa `disabled` real. La alerta de stock y el siguiente paso van en una sola tarjeta. CRM vacío oculta el buscador. Cabecera: «Vista previa». Un fallo de `/api` ya no enseña `API_UPSTREAM`. `POST /api/tenant/restaurant/cash-close` escribe la auditoría del arqueo solo si hay efectivo esperado y, cuando la diferencia no es cero, una justificación. El 403 «Rol insuficiente» del plano se vio en el sitio antes de `049b6dc`. No se ha vuelto a abrir `core.dakinissystems.com` después del push de `738943b`.
 
 En el código de Core, el cupo de `/api/*` con `Authorization: Bearer` usa la firma del JWT y `x-business-id`. El tope es `DAKINIS_AUTHED_RATE_LIMIT_MAX`, 1.200 por minuto si la variable no está. Login, exchange y tenants siguen en 15 por minuto. Sin Bearer, el cupo sigue siendo la IP (`DAKINIS_RATE_LIMIT_MAX_REQUESTS`, 300 por defecto). Esa IP solo es el primer `X-Forwarded-For` si `TRUST_PROXY=true`. Si no, todas las peticiones detrás de Cloudflare comparten la dirección del proxy. El 429 responde `RATE_LIMIT_EXCEEDED` y `Retry-After`. El front lo enseña como «No hemos podido cargar estos datos» y no pinta el total de caja si esa carga no llegó.
 
 Antes de `e0d1f5c`, el navegador vio `429` en `GET https://core.dakinissystems.com/api/tenant/restaurant/menu`. No se ha vuelto a pedir esa URL después del push. No se ejecuta el script de límite contra producción. El límite de Nginx del gateway (10 req/s, burst 20) es otro contador y no queda sustituido por el de la aplicación.
 
-El panel de Core, desde `e0d1f5c`, ya no fabrica un ingreso mínimo de 420 € ni unas ventas de hoy iguales a comandas × 85. Sin un total medido, la tarjeta dice «Datos no disponibles».
+El panel de Core, desde `e0d1f5c`, ya no fabrica un ingreso mínimo de 420 € ni unas ventas de hoy iguales a comandas × 85. Desde `9c54721`, si el módulo no mide la cifra el texto es «El módulo no proporciona ese dato»; si la consulta falló, «No se pudo consultar el servicio». Un cero medido sigue siendo cero.
 
 ### Secretos que tienen que coincidir
 
