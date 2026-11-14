@@ -32,11 +32,11 @@ curl -sS https://core.dakinissystems.com/hub -o /dev/null -w "%{http_code}`n"
 .\scripts\backup-postgres.ps1
 ```
 
-**Cuentas demo (sin passwords en git):** emails y tenants abajo; contraseñas solo en gestor de secretos / vars locales (`DEMO_ADMIN_EMAIL`, `DEMO_ADMIN_PASSWORD`, `COPERNICO_ADMIN_EMAIL`, `COPERNICO_ADMIN_PASSWORD`).
+**Cuentas demo (sin passwords en git):** emails y tenants abajo; contraseñas solo en gestor de secretos / vars locales (`DEMO_ADMIN_EMAIL`, `DEMO_ADMIN_PASSWORD`, `COPERNICO_ADMIN_EMAIL`, `COPERNICO_ADMIN_PASSWORD`). **A6:** en producción, login de cuentas seed (`demo@local`, `admin@*-demo.local`, `admin@dakinis-platform.local`) debe fallar; el piloto Copérnico no es seed. No activar `CORE_SEED_DEMO`.
 
 | Uso | Email (público OK) | Tenant slug |
 |-----|--------------------|-------------|
-| Demo Core | `admin@restaurante-demo.local` | `restaurante-demo` |
+| Demo Core (solo local) | `admin@restaurante-demo.local` | `restaurante-demo` |
 | Piloto Copérnico (pro free) | `admin@heladeria-copernico.local` | `heladeria-copernico` |
 
 Si alguna password salió en historial de docs → rotar y ver [`SECRET-LEAK-REMEDIATION.md`](./SECRET-LEAK-REMEDIATION.md).
@@ -47,24 +47,26 @@ Plantilla variables: [`railway.env.example`](./railway.env.example).
 
 ## Railway — mapa servicios
 
-| Servicio | Repo | Dominio |
-|----------|------|---------|
-| Gateway | `dakinis-systems` | `api.dakinissystems.com` |
-| Auth | `dakinis-auth` | `auth.dakinissystems.com` |
-| Core API / Web | `dakinis-core` | `core-api…` · `core.dakinissystems.com` · `/core/` |
-| Hub | `dakinis-hub` | `hub.dakinissystems.com` |
-| AI API / Worker | `dakinis-ai` | `ai.dakinissystems.com` |
-| Landing | `dakinis-landing` | `dakinissystems.com` |
-| StreamAutomator | `dakinis-streamautomator` | `api.streamautomator.com` |
-| AkoeNet | `akoenet-*` | `api.akoenet.dakinissystems.com` |
-| LifeFlow Web / API | `lifeflow` | `finance…` · **`finance-api.dakinissystems.com`** |
-| Tabletop Web / API | `dakinis-tabletop` | `tabletop…` · **`tabletop-api…`** |
-| Billing | repo `dakinis-billing` | `/billing/` |
-| Notifications | repo `dakinis-notifications` | `/notifications/` |
-| Search | repo `dakinis-search` | `/search/` |
-| Knowledge | repo `dakinis-knowledge` | `/knowledge/` |
-| Internal | repo `dakinis-internal-api` | `/internal/` |
-| Redis | plugin | AI · SA · Billing · Notifications · Search · Knowledge |
+| Servicio | Repo canónico | Rama | Root directory | Dominio |
+|----------|---------------|------|----------------|---------|
+| Gateway | `dakinis-systems` | `main` | `gateway/` | `api.dakinissystems.com` |
+| Auth | `dakinis-auth` | `main` | `/` | `auth.dakinissystems.com` |
+| Core API / Web | `dakinis-core` | `main` | anotar api/web en Railway | `core-api…` · `core.dakinissystems.com` · `/core/` |
+| Hub | `dakinis-hub` | `main` | `/` | `hub.dakinissystems.com` |
+| AI API / Worker | `dakinis-ai` | `main` | **pendiente captura** (dos checkouts en disco) | `ai.dakinissystems.com` |
+| Landing | `dakinis-landing` | `main` | `/` o `apps/landing` | `dakinissystems.com` |
+| StreamAutomator | `dakinis-streamautomator` | `main` | `apps/api` · `apps/web` · worker/scheduler | `api.streamautomator.com` |
+| AkoeNet | repos Railway `akoenet-*` (no el fork `ChristianDVillar/Akoenet`) | `main` | client/backend — confirmar dashboard | `api.akoenet…` · `akoenet.dakinissystems.com` |
+| LifeFlow Web / API | `lifeflow` (`finanzas/`) | `main` | `api/` · `web/` | `finance…` · **`finance-api.dakinissystems.com`** |
+| Tabletop Web / API | `dakinis-tabletop` (`DND/`) | `main` | `api/` · `web/` | `tabletop…` · **`tabletop-api…`** |
+| Billing | `dakinis-billing` | `main` | anotar | `/billing/` |
+| Notifications | `dakinis-notifications` | `main` | anotar | `/notifications/` |
+| Search | `dakinis-search` | `main` | anotar | `/search/` |
+| Knowledge | `dakinis-knowledge` | `main` | anotar | `/knowledge/` |
+| Internal | `dakinis-internal-api` | `main` | anotar | `/internal/` |
+| Redis | plugin | — | — | AI · SA · Billing · Notifications · Search · Knowledge |
+
+**A7 — checkouts duplicados (14 nov 2026):** AI (`ai/` vs `platform/ai`), StreamAutomator (`D:\dakinis-streamautomator` vs `apps/streamautomator`), AkoeNet (`D:\AkoNet` vs `apps/akoenet`), Tabletop (`D:\DND` vs `DND/`) y shared. No archivar el secundario hasta comparar historias y anotar el commit/root que Railway despliega. Detalle → [`inventario-d.md`](./inventario-d.md).
 
 ⚠️ **No usar** `api.finance.dakinissystems.com` — SSL Cloudflare free no cubre subdominio de 2º nivel.
 

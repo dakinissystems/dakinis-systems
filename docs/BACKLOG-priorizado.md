@@ -32,10 +32,10 @@ Al cerrar un ítem: cambia su fila a `hecho`, anota commit Railway si aplica, y 
 | # | ID | Qué | Estado | Evidencia |
 |---|-----|-----|--------|-----------|
 | 1 | A1 | CSV de Vault | abierto (manual operador; agente no abre el CSV) | — |
-| 2 | A2 + A3 | Gateway caché/rate + deep-link SSO | A2: código · A3: Auth+Hub+Tabletop código; falta deploy/HAR | — |
-| 3 | A4 | Claves por defecto / tenant Core | código + tests locales; sin Railway/evidencia | — |
-| 4 | A5 | MFA FIDO2 cuentas críticas | abierto | — |
-| 5 | B3 + B4 | Outbox ventas + caja en servidor | abierto | — |
+| 2 | A2 + A3 | Gateway caché/rate + deep-link SSO | A2: rama `fix/gateway-sess-key-a2` · A3: en main Auth/Hub; Tabletop en `chore/gitleaks` | — |
+| 3 | A4 | Claves por defecto / tenant Core | en `main` (`2a59a57`); falta Railway/evidencia | — |
+| 4 | A5 | MFA FIDO2 cuentas críticas | abierto (manual) | — |
+| 5 | B3 + B4 | Outbox ventas + caja en servidor | B4: código local (cash-day API); B3 abierto | — |
 | 6 | B5 + B6 | Catálogo planes + Billing E2E vivo | abierto | — |
 | 7 | B1 + B2 | Copérnico real + miembros/roles | abierto | — |
 | 8 | C4 | Suplente y procedimiento P0 | abierto | — |
@@ -53,8 +53,8 @@ Al cerrar un ítem: cambia su fila a `hecho`, anota commit Railway si aplica, y 
 | A3 | Token en la URL del deep-link SSO (Hub → producto) | Sustituido por código de un solo uso con TTL corto, canjeado en backend. Un HAR del flujo no muestra ningún token en la URL | M | código Auth `/sso/handoff`+`/consume`, Hub sin JWT en URL, Tabletop canjea; falta Railway + HAR + resto de productos |
 | A4 | Core: claves por defecto y tenant por cabecera. `dakinis-dev-key` y `x-business-id` como fuente de autoridad | Core no arranca en producción con claves de desarrollo. El tenant sale solo del JWT. Test que lo comprueba | S | código + tests; falta Railway + evidencia |
 | A5 | MFA FIDO2 en Cloudflare, Railway, Supabase, Stripe y GitHub | Inventario con fecha de cada cuenta (sin secretos). Sin Global API Key de Cloudflare | S | abierto |
-| A6 | Cuentas demo en producción (`demo@local`/`demo123` de LifeFlow con Premium, demo admin de Core) | Intento de login falla en producción; contraseñas demo solo en variables locales | S | abierto |
-| A7 | Checkouts duplicados (AI, StreamAutomator, AkoeNet/AkoNet, Tabletop, shared) | Tabla en `OPERATIONS.md` con repo canónico, rama y root directory por servicio Railway; el otro archivado tras comparar historias | M | abierto |
+| A6 | Cuentas demo en producción (`demo@local`/`demo123` de LifeFlow con Premium, demo admin de Core) | Intento de login falla en producción; contraseñas demo solo en variables locales | S | código local Core+LifeFlow (piloto Copérnico excluido); falta push/Railway |
+| A7 | Checkouts duplicados (AI, StreamAutomator, AkoeNet/AkoNet, Tabletop, shared) | Tabla en `OPERATIONS.md` con repo canónico, rama y root directory por servicio Railway; el otro archivado tras comparar historias | M | tabla en OPERATIONS; falta comparar historias y archivar secundarios |
 
 ---
 
@@ -67,7 +67,7 @@ Meta: ¿Puede un restaurante usar Dakinis 30 días y pagar sin que intervengas?
 | B1 | Recorrer Copérnico en entorno real tras `738943b` (carta, venta, inventario, caja, CRM) | Recorrido con captura/nota fechada; fallos abiertos como incidencias | M | abierto |
 | B2 | Invitar al personal (Admin → Miembros) y probar permisos por rol | Un empleado entra con su cuenta y solo hace lo que su rol permite | S | abierto |
 | B3 | Outbox transaccional para eventos de venta (hoy el bus es en memoria y se pierde al reiniciar) | Reiniciar el proceso a mitad de una venta no pierde ni duplica el descuento de inventario. Consumidores idempotentes por `eventId` | L | abierto |
-| B4 | Caja y turnos en servidor (hoy el fondo vive en `localStorage` por dispositivo) | Dos dispositivos ven el mismo fondo y cierre. La auditoría `restaurant.cash_close` conserva la diferencia justificada | M | abierto |
+| B4 | Caja y turnos en servidor (hoy el fondo vive en `localStorage` por dispositivo) | Dos dispositivos ven el mismo fondo y cierre. La auditoría `restaurant.cash_close` conserva la diferencia justificada | M | código local (`cash-day` GET/PUT + persistencia en cierre); falta push, migración PG viva y prueba 2 dispositivos |
 | B5 | Catálogo único de planes (hoy: Starter/Growth/Pro, Free/Creator/Pro, Lite/Premium, 4,99 € vs 9/19 €) y precio piloto por escrito | Un documento con nombres y precios; Stripe lo refleja; `/precios` con un solo CTA | M | abierto |
 | B6 | Billing E2E en vivo: checkout, webhook 200, `billing.subscriptions` = `business.plan`, portal, renovación, cambio, cancelación, impago | Checklist de `billing-e2e.md` completo con un cobro real; degradar y restaurar probados | L | abierto |
 | B7 | Eventos Stripe que faltan: `invoice.payment_action_required` (3DS), `customer.subscription.trial_will_end`, disputas | Webhook los recibe y actúa; prueba con Stripe CLI | S | abierto |
