@@ -1,6 +1,6 @@
 # Dakinis · arquitectura de experiencia
 
-Contrato entre el Hub del ecosistema y los productos. El inventario de pantallas de Core está en [core-ux.md](core-ux.md).
+Contrato entre el Hub del ecosistema y los productos. El inventario de pantallas de Core está en [core-ux.md](core-ux.md). La cola de trabajo priorizada (riesgos, circuito comercial, puerta de seguridad, productos) está en [BACKLOG-priorizado.md](BACKLOG-priorizado.md); ningún ítem se da por cerrado sin los cuatro estados y evidencia.
 
 Hub y Core no compiten por ser el dashboard. El Hub dice qué ocurre en el ecosistema. Core opera un negocio. LifeFlow, StreamAutomator, AkoeNet y Tabletop siguen siendo productos propios, unidos por identidad, sesión y notificaciones.
 

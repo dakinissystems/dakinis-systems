@@ -176,6 +176,7 @@ Antes de push Hub: `.\scripts\sync-hub-des.ps1`.
 | Fiscal / VERI*FACTU (Core) | [`RUNBOOKS/fiscal-verifactu.md`](./RUNBOOKS/fiscal-verifactu.md) |
 | Billing E2E | [`RUNBOOKS/billing-e2e.md`](./RUNBOOKS/billing-e2e.md) |
 | Circuito comercial (piloto) | [`RUNBOOKS/circuito-comercial.md`](./RUNBOOKS/circuito-comercial.md) |
+| Backlog priorizado (14 nov 2026) | [`BACKLOG-priorizado.md`](./BACKLOG-priorizado.md) |
 | Railway workers | [`RUNBOOKS/railway-workers.md`](./RUNBOOKS/railway-workers.md) |
 | Dominios + Google Workspace | [`RUNBOOKS/google-workspace-domains.md`](./RUNBOOKS/google-workspace-domains.md) |
 | Incidencias | [`RUNBOOKS/incidents.md`](./RUNBOOKS/incidents.md) |
