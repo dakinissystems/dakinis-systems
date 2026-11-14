@@ -12,7 +12,11 @@ Logs de acceso → **stdout**, errores → **stderr** (adecuado para `docker log
 
 **502** hacia StreamAutomator/AkoeNet vía `:80` suele ser upstream inalcanzable o IP antigua tras recrear solo los servicios de aplicación. Este repo usa **`resolver 127.0.0.11`** y **`proxy_pass` con variables** para que Nginx vuelva a resolver los hostnames Docker en cada petición (tras cambios recarga el gateway: `docker compose up -d --force-recreate gateway` o `docker exec dakinis-gateway nginx -s reload`).
 
+<<<<<<< Updated upstream
 **Rate limiting:** zona `api_limit` (`10r/s`, burst 20); clave **`$sess_or_anon_key`** (huella `sess:` + 48 caracteres del JWT, o `anon:` + IP sin Bearer). Cuenta intentos **antes** de `auth_request` (incluye fallos). No sustituye cuotas por tenant en aplicación.
+=======
+**Rate limiting:** zona `api_limit` (`10r/s`, burst 20); clave **`$sess_or_anon_key`** (huella `sess:` + hasta 48 caracteres de la **firma** JWT — 3er segmento —, o `anon:` + IP sin Bearer). No usa los primeros caracteres del Bearer (el header JWT es compartido entre usuarios y colisionaba caché/rate). Cuenta intentos **antes** de `auth_request` (incluye fallos). No sustituye cuotas por tenant en aplicación. Login usa `auth_login` (`10r/m`). Registro usa `auth_register` (`5r/m`). La recuperación usa `auth_reset` (`5r/m`). El límite por cuenta está en Auth, no en Nginx. `/auth/` no envía `Access-Control-Allow-Credentials` junto a origen `*`.
+>>>>>>> Stashed changes
 
 **CORS:** `Access-Control-*` en `/auth/`, `/core/`, `/streamautomator/` (preflight `OPTIONS`), más `Allow-Credentials` (ver nota abajo).
 
@@ -39,7 +43,7 @@ Si un producto devuelve **502**: comprobar `Host` / SNI (`$u_*_host`) y health d
 
 **Contratos** (rutas y prefijos): [`../docs/contracts/`](../docs/contracts/). Reglas de cambio: [`../docs/rules.md`](../docs/rules.md).
 
-El subrequest **`/_auth_check`** usa **`proxy_cache`** con clave **`$sess_or_anon_key`** (no el JWT completo). TTL 15s para 200 — alinear con **access tokens cortos**; ver [`docs/rules.md`](../docs/rules.md).
+El subrequest **`/_auth_check`** usa **`proxy_cache`** con clave **`$sess_or_anon_key`** (firma JWT, no el JWT completo ni el header compartido). TTL 15s para 200 — alinear con **access tokens cortos**; ver [`docs/rules.md`](../docs/rules.md). Criterio A2: dos JWT distintos no comparten cubo ni entrada de caché.
 
 En Compose, `gateway` usa **`tmpfs`** en `/var/cache/nginx/auth` para `proxy_cache`.
 
