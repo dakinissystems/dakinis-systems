@@ -213,7 +213,7 @@ services:
     environment:
       # Align with Railway public target + gateway private upstream ($u_ai_port).
       PORT: "8080"
-      HOST: "0.0.0.0"
+      HOST: "::"
       LIFEFLOW_API_BASE_URL: ${LIFEFLOW_API_BASE_URL:-http://host.docker.internal:4100}
       CORE_API_BASE_URL: ${CORE_API_BASE_URL:-http://core-api:4001}
       DAKINIS_AI_SERVICE_KEY: ${DAKINIS_AI_SERVICE_KEY:-dev-ai-key-change-in-prod-32chars}

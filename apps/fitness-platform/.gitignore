@@ -1,0 +1,12 @@
+node_modules/
+dist/
+api/data/*.db
+api/data/*.db-journal
+api/prisma/data/*.db
+api/prisma/data/*.db-journal
+api/data/uploads/
+api/uploads/
+.env
+*.log
+*.db
+*.db-journal

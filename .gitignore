@@ -7,8 +7,9 @@
 
 # --- Proyectos locales fuera del control repo ---
 # Hub/AI viven bajo /platform/ (cubierto por /platform/)
-# Checkout legacy suelto de AI (I-05: canónico platform/ai/; archivar ai/ solo tras smoke prod):
+# Checkout legacy AI (I-05 PASS: canónico platform/ai/; legado en archive):
 /ai/
+/projects/archive/
 
 # --- Dakinis Studio Mobile (repo propio; APK, Android, node_modules) ---
 /projects/dakinis-studio-mobile/
@@ -56,6 +57,15 @@ Desktop.ini
 *.code-workspace
 # Tabletop vive en /apps/tabletop/ (cubierto por /apps/)
 
+# D-05 artifacts
+*.tsbuildinfo
+*.sqlite
+*.sqlite3
+
+# D-04 workbooks / dumps locales (evidencias fuera del código)
+*.xlsx
+**/_TEMP*
+**/_TEMP*/
 
 # WIP local scaffolds (no commitear probes)
 **/scripts/tmp-probe-*.cjs
