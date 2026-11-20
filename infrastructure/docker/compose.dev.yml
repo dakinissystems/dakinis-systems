@@ -35,7 +35,7 @@ services:
 
   ai:
     ports:
-      - "4020:4020"
+      - "8080:8080"
 
   billing:
     ports:

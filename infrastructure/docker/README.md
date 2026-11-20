@@ -21,7 +21,7 @@ docker compose -f compose.full.yml -f compose.prod.yml up --build
 
 Ejemplos: `http://localhost/auth/login`, `http://localhost/core/api/...` (con token), `http://localhost:4001/api/health` (puerto directo, sin JWT).
 
-Puertos directos al host: solo con overlay **`compose.dev.yml`** (`4000` auth, `4001` core, `4002` SA, `4003` akoenet, `4020` AI, `4080–4084` billing/notifications/search/internal/knowledge, `4090` fitness). En **`compose.prod.yml`** solo se publican `80`/`443` del gateway.
+Puertos directos al host: solo con overlay **`compose.dev.yml`** (`4000` auth, `4001` core, `4002` SA, `4003` akoenet, `8080` AI, `4080–4084` billing/notifications/search/internal/knowledge, `4090` fitness). En **`compose.prod.yml`** solo se publican `80`/`443` del gateway (el upstream privado a AI usa `ai.railway.internal:8080`; no confundir con el listener público 80).
 
 ## Troubleshooting
 

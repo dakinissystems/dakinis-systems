@@ -76,7 +76,7 @@ services:
       DB_DRIVER: ${DB_DRIVER_CORE:-sqlite}
       SQLITE_PATH: /app/data/dakinis.db
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
-      DAKINIS_AI_BASE_URL: ${DAKINIS_AI_BASE_URL:-http://ai:4020}
+      DAKINIS_AI_BASE_URL: ${DAKINIS_AI_BASE_URL:-http://ai:8080}
       DAKINIS_AI_SERVICE_KEY: ${DAKINIS_AI_SERVICE_KEY:-dev-ai-key-change-in-prod-32chars}
       # Mismo SPA Vite habitual; evita clash de FRONTEND_URL compartido vía env_file.
       FRONTEND_URL: http://localhost:5173
@@ -211,14 +211,16 @@ services:
     env_file:
       - .env.${ENV:-dev}
     environment:
-      PORT: "4020"
+      # Align with Railway public target + gateway private upstream ($u_ai_port).
+      PORT: "8080"
+      HOST: "0.0.0.0"
       LIFEFLOW_API_BASE_URL: ${LIFEFLOW_API_BASE_URL:-http://host.docker.internal:4100}
       CORE_API_BASE_URL: ${CORE_API_BASE_URL:-http://core-api:4001}
       DAKINIS_AI_SERVICE_KEY: ${DAKINIS_AI_SERVICE_KEY:-dev-ai-key-change-in-prod-32chars}
       DATABASE_URL: ${AI_DATABASE_URL:-postgres://dakinis:dakinis@postgres:5432/dakinis}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
     expose:
-      - "4020"
+      - "8080"
     depends_on:
       core-api:
         condition: service_healthy
@@ -227,7 +229,7 @@ services:
       redis:
         condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://127.0.0.1:4020/health"]
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8080/health"]
       interval: 10s
       timeout: 5s
       retries: 5
