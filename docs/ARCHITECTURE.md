@@ -869,9 +869,11 @@ Contratos HTTP: [`contracts/`](./contracts/)
 |------|--------------|---------------------------|
 | Orquestación | `dakinis-systems` | — |
 | Platform | auth, ai, hub, billing, notifications, search, shared | `platform/`, `billing/`, … |
-| Products | core, lifeflow, streamautomator, akoenet-*, tabletop, landing | `platform/core`, `apps/`, `finanzas/`, `DND/` |
+| Products | core, lifeflow, streamautomator, akoenet-*, tabletop, nexus-browser, landing | `platform/core`, `apps/` |
+| Platform | auth, hub, billing, internal, ai, search, notifications, knowledge, media | `platform/` |
+| Infra | docker, gateway | `infrastructure/docker`, `infrastructure/gateway` |
 
-Carpeta `DND/` = desarrollo local **Tabletop** (repo `dakinis-tabletop`). En documentación usar siempre **Tabletop**.
+Checkouts migrados 2026-11-20: products → `apps/` · platform services → `platform/` · docker/gateway → `infrastructure/`. **I-05 AI** aún dual (`ai/` vs `platform/ai/`).
 
 ---
 

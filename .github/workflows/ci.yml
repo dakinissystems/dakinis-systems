@@ -21,11 +21,11 @@ jobs:
 
       - name: Prepare compose env (stub)
         run: |
-          cp docker/.env.example docker/.env
-          cp docker/.env.dev.example docker/.env.dev
+          cp infrastructure/docker/.env.example infrastructure/docker/.env
+          cp infrastructure/docker/.env.dev.example infrastructure/docker/.env.dev
 
       - name: Validate docker compose
-        working-directory: docker
+        working-directory: infrastructure/docker
         run: docker compose -f compose.full.yml config
 
       - name: Lint nginx config
@@ -60,14 +60,14 @@ jobs:
             --add-host=streamautomator-api:127.0.0.1 \
             --add-host=akoenet-backend:127.0.0.1 \
             --add-host=fitness-platform-api:127.0.0.1 \
-            -v "${{ github.workspace }}/gateway/nginx.conf:/etc/nginx/nginx.conf:ro" \
-            -v "${{ github.workspace }}/gateway/routes:/etc/nginx/routes:ro" \
+            -v "${{ github.workspace }}/infrastructure/gateway/nginx.conf:/etc/nginx/nginx.conf:ro" \
+            -v "${{ github.workspace }}/infrastructure/gateway/routes:/etc/nginx/routes:ro" \
             "$NGINX_IMAGE" nginx -t
 
       - name: Build stack images (full workspace only)
-        working-directory: docker
+        working-directory: infrastructure/docker
         run: |
-          if [ -d ../platform/auth ] && [ -d ../apps/streamautomator ] && [ -d ../platform/core ]; then
+          if [ -d ../../platform/auth ] && [ -d ../../apps/streamautomator ] && [ -d ../../platform/core ]; then
             docker compose -f compose.full.yml build
           else
             echo 'Skipping docker compose build: platform/ and apps/ are not in this checkout (control-repo layout).'

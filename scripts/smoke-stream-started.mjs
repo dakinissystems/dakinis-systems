@@ -10,7 +10,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const require = createRequire(join(dirname(fileURLToPath(import.meta.url)), "../internal/package.json"));
+const require = createRequire(join(dirname(fileURLToPath(import.meta.url)), "../platform/internal/package.json"));
 const { Client } = require("pg");
 
 const serverId = String(process.env.AKOENET_SMOKE_SERVER_ID || "1");

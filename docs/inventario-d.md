@@ -18,9 +18,9 @@ Estas parejas son el mismo remoto y **no** se borraron: las historias no se cont
 | `apps\streamautomator` | `D:\dakinis-streamautomator` | La de dentro es del 10 oct; la de `D:\` es del 5 jul e incluye Hub SSO que no está en la otra |
 | `platform\shared` | `D:\dakinis-shared` | La de `D:\` es más nueva (9 jul) y está limpia. La de `platform\shared` es de mayo y tiene un cambio local |
 | `apps\akoenet` | `D:\AkoNet` | No es el mismo remoto. `D:\AkoNet` apunta a `ChristianDVillar/Akoenet` y tiene cambios sin commit |
-| `DND\` | `D:\DND` | El de dentro es `dakinis-tabletop`. `D:\DND` es el generador Flask, sin git |
+| `apps\tabletop` | `D:\DND` | El de dentro es `dakinis-tabletop`. `D:\DND` es el generador Flask, sin git |
 
-`billing\`, `notifications\`, `search\`, `internal\`, `knowledge\`, `hub\`, `finanzas\` y `platform\auth` aparecen una sola vez dentro de esta carpeta.
+`billing\`, `notifications\`, `search\`, `internal\`, `knowledge\`, `hub\`, `apps\lifeflow` y `platform\auth` aparecen una sola vez dentro de esta carpeta.
 
 La preparación técnica de la plataforma está en ~90 %. La comercial, en ~55 %, con 0 clientes de pago. Los juegos no sustituyen ese frente.
 
@@ -57,7 +57,7 @@ La preparación técnica de la plataforma está en ~90 %. La comercial, en ~55 %
 | LifeFlow | `D:\dakinis-systems\finanzas` | Node, React, Vite, SQLite, JWT. Raíz `api/` + `web/`. Producción en `finance.dakinissystems.com` | Desde `D:\dakinis-systems`, `cd finanzas` es la carpeta correcta. No migrar a Postgres hasta que haya datos reales. |
 | AkoeNet | `D:\AkoNet` y `D:\dakinis-systems\apps\akoenet` (`Client/`, `Server/`) | Vite, Capacitor, Tauri, Node, PostgreSQL, WebSockets | `apps\akoenet` no tiene `.git`. `D:\AkoNet\ESTRUCTURA_ACTUAL.md` ya marca `render.yaml` como histórico. Los Assistant siguen en scaffold. |
 | StreamAutomator | `D:\dakinis-streamautomator` y `D:\dakinis-systems\apps\streamautomator` | Express en `apps/api`, React en `apps/web` | Dos checkouts. Bajar el backlog de dependencias (aviso del 9 nov: 346 alertas, 10 críticas y 145 altas) antes de añadir cuotas. |
-| Tabletop | `D:\dakinis-systems\DND` y `D:\DND` | El de dentro del checkout tiene `api/`, `web/` y su propio `.git`. `D:\DND` es el generador Flask | Elegir un solo árbol. Los dos siguen en SQLite. |
+| Tabletop | `D:\dakinis-systems\apps\tabletop` y `D:\DND` | Checkout canónico bajo `apps/tabletop` con `api/`, `web/` y `.git`. `D:\DND` es el generador Flask | No confundir con el generador Flask en `D:\DND`. |
 | Dakinis Vault | `D:\Dakinis Vault` | pnpm 10, TypeScript, Vite, Vitest, Playwright, Dexie/IndexedDB, hash-wasm, TOTP | Revisión independiente del formato y prueba de recuperación en un dispositivo limpio. El README ya dice que los CSV no viven en esa carpeta. `*.csv` está en `.gitignore`. Passkeys y Steam Guard siguen en investigación. |
 | AI Studio | `D:\Dakinis AI Studio` | Python 3, Pillow, Express mínimo, Node 20 | P0 cerrado el 11 nov: pruebas del pipeline y export `mythos/{id}_idle.png` y `{id}_attack.png`. Lo siguiente es la interfaz React (P1), no más IA. |
 

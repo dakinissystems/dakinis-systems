@@ -11,7 +11,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const require = createRequire(join(dirname(fileURLToPath(import.meta.url)), "../internal/package.json"));
+const require = createRequire(join(dirname(fileURLToPath(import.meta.url)), "../platform/internal/package.json"));
 const { Client } = require("pg");
 
 const SLA_MS = Number(process.env.AI_ASK_SLA_MS || 30000);

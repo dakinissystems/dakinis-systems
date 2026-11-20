@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "audit": "node src/audit.mjs",
-    "audit:core": "node src/audit.mjs platform/core/web finanzas/web/src/styles"
+    "audit:core": "node src/audit.mjs platform/core/web apps/lifeflow/web/src/styles"
   },
   "exports": {
     ".": "./src/audit.mjs"

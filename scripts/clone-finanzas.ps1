@@ -1,13 +1,17 @@
-# Clone LifeFlow (finanzas) into finanzas/
+# Clone LifeFlow into apps/lifeflow/
 # Usage: .\scripts\clone-finanzas.ps1
 
 $ErrorActionPreference = "Stop"
 $Root = Split-Path $PSScriptRoot -Parent
-$Dest = Join-Path $Root "finanzas"
+$Dest = Join-Path $Root "apps\lifeflow"
 $Remote = "https://github.com/dakinissystems/lifeflow.git"
 
+if (-not (Test-Path (Join-Path $Root "apps"))) {
+  New-Item -ItemType Directory -Path (Join-Path $Root "apps") | Out-Null
+}
+
 if (Test-Path (Join-Path $Dest ".git")) {
-  Write-Host "OK finanzas (lifeflow) - already cloned: $Dest"
+  Write-Host "OK apps/lifeflow - already cloned: $Dest"
   Push-Location $Dest
   git fetch origin
   git status -sb | Select-Object -First 1
@@ -24,4 +28,4 @@ if (Test-Path $Dest) {
 
 Write-Host "Cloning $Remote -> $Dest"
 git clone $Remote $Dest
-Write-Host "Next: node scripts/sync-all-packages.mjs ; cd finanzas ; npm ci"
+Write-Host "Next: node scripts/sync-all-packages.mjs ; cd apps\lifeflow ; npm ci"

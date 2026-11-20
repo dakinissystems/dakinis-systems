@@ -1,10 +1,13 @@
 # --- Control repo: no versionar clones de producto / platform (tienen su propio remoto) ---
-/apps/
+# /apps/* ignorado salvo Fitness (P-08 B — versionado en meta hasta releases propios)
+/apps/*
+!/apps/fitness-platform/
+!/apps/fitness-platform/**
 /platform/
 
 # --- Proyectos locales fuera del control repo ---
-/finanzas/
-/hub/
+# Hub/AI viven bajo /platform/ (cubierto por /platform/)
+# Checkout legacy suelto de AI (I-05: canónico platform/ai/; archivar ai/ solo tras smoke prod):
 /ai/
 
 # --- Dakinis Studio Mobile (repo propio; APK, Android, node_modules) ---
@@ -16,9 +19,13 @@
 **/dakinis-studio-mobile/**
 
 # --- Secretos locales del stack Docker ---
+/infrastructure/docker/.env
+/infrastructure/docker/.env.dev
+/infrastructure/docker/.env.prod
 /docker/.env
 /docker/.env.dev
 /docker/.env.prod
+
 
 # --- Instagram carousel (assets generados, no versionar) ---
 /docs/company/assets/instagram-carousel/publish-6/
@@ -47,9 +54,7 @@ Desktop.ini
 # --- Ruido local (no versionar) ---
 /backups/
 *.code-workspace
-/DND/.github/
-/DND/.gitleaks.toml
-/DND/.pre-commit-config.yaml
+# Tabletop vive en /apps/tabletop/ (cubierto por /apps/)
 
 
 # WIP local scaffolds (no commitear probes)
@@ -65,3 +70,11 @@ Desktop.ini
 /internal/src/services/moderation-ai.js
 /internal/src/services/welcome-announce.js
 /internal/test/moderation-ai.test.js
+
+# Local secrets (never commit)
+supabase-recovery-codes.txt
+*.jks
+keystore.properties
+akoenet-signer.key
+.dakinis-keys.json
+

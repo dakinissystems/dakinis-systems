@@ -13,15 +13,15 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const packagesRoot = path.join(root, 'packages')
 
 const checks = [
-  { pkg: 'shared-brand', dests: ['finanzas/packages', 'hub/packages', 'platform/core/packages', 'apps/landing/packages'] },
-  { pkg: 'shared-layouts', dests: ['finanzas/packages', 'hub/packages', 'platform/core/packages', 'apps/landing/packages'] },
-  { pkg: 'shared-ux', dests: ['finanzas/packages', 'hub/packages', 'platform/core/packages'] },
-  { pkg: 'shared-loading', dests: ['finanzas/packages', 'hub/packages', 'platform/core/packages'] },
-  { pkg: 'shared-icons', dests: ['finanzas/packages', 'hub/packages', 'platform/core/packages'] },
-  { pkg: 'shared-illustrations', dests: ['finanzas/packages', 'hub/packages', 'platform/core/packages'] },
-  { pkg: 'shared-ai', dests: ['internal/packages', 'billing/packages', 'search/packages', 'notifications/packages', 'platform/core/packages'] },
-  { pkg: 'akoenet-orchestrator', dests: ['internal/packages'] },
-  { pkg: 'akoenet-modules', dests: ['internal/packages'] },
+  { pkg: 'shared-brand', dests: ['apps/lifeflow/packages', 'platform/hub/packages', 'platform/core/packages', 'apps/landing/packages'] },
+  { pkg: 'shared-layouts', dests: ['apps/lifeflow/packages', 'platform/hub/packages', 'platform/core/packages', 'apps/landing/packages'] },
+  { pkg: 'shared-ux', dests: ['apps/lifeflow/packages', 'platform/hub/packages', 'platform/core/packages'] },
+  { pkg: 'shared-loading', dests: ['apps/lifeflow/packages', 'platform/hub/packages', 'platform/core/packages'] },
+  { pkg: 'shared-icons', dests: ['apps/lifeflow/packages', 'platform/hub/packages', 'platform/core/packages'] },
+  { pkg: 'shared-illustrations', dests: ['apps/lifeflow/packages', 'platform/hub/packages', 'platform/core/packages'] },
+  { pkg: 'shared-ai', dests: ['platform/internal/packages', 'platform/billing/packages', 'platform/search/packages', 'platform/notifications/packages', 'platform/core/packages'] },
+  { pkg: 'akoenet-orchestrator', dests: ['platform/internal/packages'] },
+  { pkg: 'akoenet-modules', dests: ['platform/internal/packages'] },
 ]
 
 function hashTree(dir) {
