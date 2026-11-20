@@ -1,0 +1,31 @@
+name: Publish shared-error
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "shared-error-v*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/shared-error
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          registry-url: https://npm.pkg.github.com
+          scope: "@dakinis"
+
+      - name: Publish @dakinis/shared-error
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm publish
