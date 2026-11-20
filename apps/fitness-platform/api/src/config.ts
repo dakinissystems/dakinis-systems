@@ -10,4 +10,8 @@ export const config = {
     process.env.FITNESS_UPLOAD_ROOT ?? path.join(process.cwd(), "data", "uploads"),
   exerciseUploadMaxMb: Number(process.env.FITNESS_UPLOAD_MAX_MB ?? 80),
   mediaMountPath: "/api/media",
+  corsOrigins: (process.env.CORS_ORIGINS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
 };
