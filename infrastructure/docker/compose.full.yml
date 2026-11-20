@@ -1,0 +1,482 @@
+# Stack completo — desde docker/:
+#   docker compose -f compose.full.yml -f compose.dev.yml up --build
+#   (solo full) docker compose -f compose.full.yml up --build
+#
+# Rutas relativas a infrastructure/docker/ → ../../platform, ../../apps, ../gateway.
+# Interpolación: docker/.env debe definir ENV (dev|prod) para resolver env_file de servicios.
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: dakinis-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dakinis
+      POSTGRES_PASSWORD: dakinis
+      POSTGRES_DB: dakinis
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dakinis -d dakinis"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    networks: [dakinis]
+
+  redis:
+    image: redis:7
+    container_name: dakinis-redis
+    restart: unless-stopped
+    expose:
+      - "6379"
+    networks: [dakinis]
+
+  auth:
+    build:
+      context: ../../platform/auth
+      dockerfile: Dockerfile
+    container_name: dakinis-auth
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      DATABASE_URL: ${DATABASE_URL_AUTH:-postgres://dakinis:dakinis@postgres:5432/dakinis}
+      PORT: "4000"
+    expose:
+      - "4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:4000/auth/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-auth.railway.internal
+
+  core-api:
+    build:
+      context: ../../platform/core
+      dockerfile: Dockerfile.api
+    container_name: dakinis-core-api
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      PORT: "4001"
+      # PostgreSQL (recomendado prod): DATABASE_URL + DB_DRIVER=postgres
+      DATABASE_URL: ${DATABASE_URL_CORE:-}
+      DB_DRIVER: ${DB_DRIVER_CORE:-sqlite}
+      SQLITE_PATH: /app/data/dakinis.db
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      DAKINIS_AI_BASE_URL: ${DAKINIS_AI_BASE_URL:-http://ai:8080}
+      DAKINIS_AI_SERVICE_KEY: ${DAKINIS_AI_SERVICE_KEY:-dev-ai-key-change-in-prod-32chars}
+      # Mismo SPA Vite habitual; evita clash de FRONTEND_URL compartido vía env_file.
+      FRONTEND_URL: http://localhost:5173
+      CORS_ORIGIN: http://localhost:5173
+      DAKINIS_BILLING_URL: http://dakinis-billing.railway.internal:4080
+      DAKINIS_INTERNAL_SERVICE_KEY: ${INTERNAL_API_KEY:-dakinis-dev-internal-key}
+      DAKINIS_EVENTS_QUEUE: dakinis:events
+    expose:
+      - "4001"
+    volumes:
+      - core_sqlite:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:4001/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-core.railway.internal
+
+  streamautomator-api:
+    build:
+      context: ../../apps/streamautomator/apps/api
+      dockerfile: Dockerfile
+    container_name: dakinis-streamautomator-api
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      PORT: "4002"
+      DATABASE_URL: ${DATABASE_URL_STREAMAUTOMATOR:-postgres://dakinis:dakinis@postgres:5432/dakinis_stream}
+      # Postgres local (compose) no usa SSL; env_file prod/Supabase puede traer DATABASE_SSL=true
+      DATABASE_SSL: ${DATABASE_SSL_STREAMAUTOMATOR:-false}
+      REDIS_URL: redis://redis:6379
+      TRUST_GATEWAY_IDENTITY_HEADERS: "true"
+      FRONTEND_URL: http://localhost:3000
+      # Twitch del Scheduler (prioridad sobre TWITCH_* genéricos del env_file).
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID_STREAMAUTOMATOR:-${TWITCH_CLIENT_ID:-}}
+      TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET_STREAMAUTOMATOR:-${TWITCH_CLIENT_SECRET:-}}
+    expose:
+      - "4002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      auth:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:4002/api/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-streamautomator.railway.internal
+
+  akoenet-backend:
+    build:
+      context: ../../apps/akoenet/Server
+      dockerfile: Dockerfile
+    container_name: dakinis-akoenet-backend
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      PORT: "4003"
+      DATABASE_URL: ${DATABASE_URL_AKOENET:-postgres://dakinis:dakinis@postgres:5432/akoenet}
+      REDIS_URL: redis://redis:6379
+      PUBLIC_API_URL: http://localhost:4003
+      FRONTEND_URL: http://localhost:5173
+      # Server→server dentro de la red Docker (no usar localhost desde el contenedor).
+      SCHEDULER_API_BASE_URL: http://streamautomator-api:4002
+      # Twitch de AkoeNet (prioridad sobre TWITCH_* genéricos del env_file).
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID_AKOENET:-${TWITCH_CLIENT_ID:-}}
+      TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET_AKOENET:-${TWITCH_CLIENT_SECRET:-}}
+    expose:
+      - "4003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      auth:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:4003/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      dakinis:
+        aliases:
+          - akoenet-backend.railway.internal
+
+  fitness-platform-api:
+    build:
+      context: ../../apps/fitness-platform/api
+      dockerfile: Dockerfile
+    container_name: dakinis-fitness-platform-api
+    restart: unless-stopped
+    environment:
+      PORT: "4010"
+      DATABASE_URL: file:/app/data/dev.db
+      FITNESS_UPLOAD_ROOT: /app/data/uploads
+    expose:
+      - "4010"
+    volumes:
+      - fitness_sqlite:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:4010/api/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+    networks:
+      dakinis:
+        aliases:
+          - fitness-platform-api.railway.internal
+
+  ai:
+    build:
+      context: ../../platform/ai
+      dockerfile: Dockerfile
+    container_name: dakinis-ai
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      # Align with Railway public target + gateway private upstream ($u_ai_port).
+      PORT: "8080"
+      HOST: "::"
+      LIFEFLOW_API_BASE_URL: ${LIFEFLOW_API_BASE_URL:-http://host.docker.internal:4100}
+      CORE_API_BASE_URL: ${CORE_API_BASE_URL:-http://core-api:4001}
+      DAKINIS_AI_SERVICE_KEY: ${DAKINIS_AI_SERVICE_KEY:-dev-ai-key-change-in-prod-32chars}
+      DATABASE_URL: ${AI_DATABASE_URL:-postgres://dakinis:dakinis@postgres:5432/dakinis}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    expose:
+      - "8080"
+    depends_on:
+      core-api:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      dakinis:
+        aliases:
+          - ai.railway.internal
+
+  billing:
+    build:
+      context: ../../platform/billing
+      dockerfile: Dockerfile
+    container_name: dakinis-billing
+    restart: unless-stopped
+    env_file:
+      - .env.${ENV:-dev}
+    environment:
+      PORT: "4080"
+      DATABASE_URL: ${DATABASE_URL_BILLING:-postgres://dakinis:dakinis@postgres:5432/dakinis}
+      DATABASE_SSL: "false"
+      POSTGRES_SCHEMA: billing
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-dakinis-dev-internal-key}
+      FRONTEND_URL: http://localhost:5173
+    expose:
+      - "4080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-billing.railway.internal
+
+  notifications:
+    build:
+      context: ../../platform/notifications
+      dockerfile: Dockerfile
+    container_name: dakinis-notifications
+    restart: unless-stopped
+    environment:
+      PORT: "4081"
+      REDIS_URL: redis://redis:6379
+    expose:
+      - "4081"
+    depends_on:
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4081/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-notifications.railway.internal
+
+  notifications-worker:
+    build:
+      context: ../../platform/notifications
+      dockerfile: Dockerfile
+    container_name: dakinis-notifications-worker
+    restart: unless-stopped
+    command: ["node", "src/worker.js"]
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_started
+      notifications:
+        condition: service_healthy
+    networks: [dakinis]
+
+  search:
+    build:
+      context: ../../platform/search
+      dockerfile: Dockerfile
+    container_name: dakinis-search
+    restart: unless-stopped
+    environment:
+      PORT: "4082"
+      REDIS_URL: redis://redis:6379
+    expose:
+      - "4082"
+    depends_on:
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4082/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-search.railway.internal
+
+  search-worker:
+    build:
+      context: ../../platform/search
+      dockerfile: Dockerfile
+    container_name: dakinis-search-worker
+    restart: unless-stopped
+    command: ["node", "src/worker.js"]
+    environment:
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_started
+      search:
+        condition: service_healthy
+    networks: [dakinis]
+
+  knowledge:
+    build:
+      context: ../../platform/knowledge
+      dockerfile: Dockerfile
+    container_name: dakinis-knowledge-api
+    restart: unless-stopped
+    command: ["npm", "run", "start:api"]
+    environment:
+      PORT: "4084"
+      REDIS_URL: redis://redis:6379
+      DAKINIS_SEARCH_URL: http://dakinis-search.railway.internal:4082
+    expose:
+      - "4084"
+    depends_on:
+      redis:
+        condition: service_started
+      search:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4084/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-knowledge.railway.internal
+
+  knowledge-worker:
+    build:
+      context: ../../platform/knowledge
+      dockerfile: Dockerfile
+    container_name: dakinis-knowledge-worker
+    restart: unless-stopped
+    command: ["npm", "run", "worker"]
+    environment:
+      REDIS_URL: redis://redis:6379
+      KNOWLEDGE_INGEST_QUEUE: dakinis:knowledge:ingest
+      WORKER_TYPE: ingest
+    depends_on:
+      redis:
+        condition: service_started
+      knowledge:
+        condition: service_healthy
+    networks: [dakinis]
+
+  internal-api:
+    build:
+      context: ../../platform/internal
+      dockerfile: Dockerfile
+    container_name: dakinis-internal-api
+    restart: unless-stopped
+    environment:
+      PORT: "4083"
+      REDIS_URL: redis://redis:6379
+      DAKINIS_INTERNAL_SERVICE_KEY: ${DAKINIS_INTERNAL_SERVICE_KEY:-dev-internal-key-change-in-prod}
+      DAKINIS_NOTIFICATIONS_URL: http://dakinis-notifications.railway.internal:4081
+      DAKINIS_SEARCH_URL: http://dakinis-search.railway.internal:4082
+      DAKINIS_BILLING_URL: http://dakinis-billing.railway.internal:4080
+      DAKINIS_KNOWLEDGE_URL: http://dakinis-knowledge.railway.internal:4084
+    expose:
+      - "4083"
+    depends_on:
+      redis:
+        condition: service_started
+      notifications:
+        condition: service_healthy
+      search:
+        condition: service_healthy
+      knowledge:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4083/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      dakinis:
+        aliases:
+          - dakinis-internal-api.railway.internal
+
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: dakinis-gateway
+    restart: unless-stopped
+    expose:
+      - "80"
+    tmpfs:
+      - /var/cache/nginx/auth
+    volumes:
+      - ../gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../gateway/routes:/etc/nginx/routes:ro
+    depends_on:
+      auth:
+        condition: service_healthy
+      core-api:
+        condition: service_healthy
+      streamautomator-api:
+        condition: service_healthy
+      akoenet-backend:
+        condition: service_healthy
+      fitness-platform-api:
+        condition: service_healthy
+      ai:
+        condition: service_healthy
+      billing:
+        condition: service_healthy
+      notifications:
+        condition: service_healthy
+      search:
+        condition: service_healthy
+      knowledge:
+        condition: service_healthy
+      internal-api:
+        condition: service_healthy
+    networks: [dakinis]
+
+volumes:
+  postgres_data:
+  core_sqlite:
+  fitness_sqlite:
+
+networks:
+  dakinis:
+    driver: bridge

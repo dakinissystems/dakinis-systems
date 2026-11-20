@@ -1,0 +1,25 @@
+{
+  "name": "dakinis-fitness-platform",
+  "private": true,
+  "description": "Demo multi-tenant fitness SaaS (trainer admin + client app) — repo local bajo apps/ ignorado por el control repo",
+  "workspaces": [
+    "api",
+    "web",
+    "admin",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web,admin -c blue,green,magenta \"npm run dev -w api\" \"npm run dev -w web\" \"npm run dev -w admin\"",
+    "db:push": "npm run db:push -w api",
+    "db:seed": "npm run db:seed -w api",
+    "build": "npm run build -w shared && npm run build -w api && npm run build -w web && npm run build -w admin"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "overrides": {
+    "effect": "3.22.5",
+    "deepmerge-ts": "8.0.2",
+    "zod": "4.6.7"
+  }
+}

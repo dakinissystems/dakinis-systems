@@ -139,11 +139,20 @@ export class SearchClient extends PlatformClient {
   }
 }
 
+function workerHeader() {
+  const key = String(process.env.DAKINIS_WORKER_KEY || "").trim();
+  return key ? { "X-Dakinis-Worker": key } : {};
+}
+
 /** @extends PlatformClient */
 export class EventsClient extends PlatformClient {
   /** @param {{ event: string; payload: object; source?: string }} body */
   publish(body) {
-    return this.request("/events", { method: "POST", body: JSON.stringify(body) });
+    return this.request("/events", {
+      method: "POST",
+      headers: workerHeader(),
+      body: JSON.stringify(body),
+    });
   }
 }
 
@@ -185,6 +194,7 @@ export class TelemetryClient extends PlatformClient {
   track(body) {
     return this.request("/events", {
       method: "POST",
+      headers: workerHeader(),
       body: JSON.stringify({
         event: "telemetry.action",
         payload: body,

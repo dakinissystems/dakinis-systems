@@ -12,9 +12,9 @@ Vocabulario y plantillas: [`docs/DOC-STANDARDS.md`](./docs/DOC-STANDARDS.md) · 
 
 | Capa | Qué es | Dónde vive |
 |------|--------|------------|
-| **Edge / infra** | Cloudflare, Gateway, Docker | `gateway/`, `docker/`, `infrastructure/` |
-| **Plataforma** | Auth, Billing, Internal, AI, Search, Notifications, Knowledge, DES | repos propios + scaffolds aquí (`billing/`, `notifications/`, `search/`, …) |
-| **Productos** | One (Core), LifeFlow, StreamAutomator, AkoeNet, Hub, Landing | repos Git bajo `apps/`, `platform/`, `hub/`, `finanzas/` (checkouts locales; no siempre en el remoto de orquestación) |
+| **Edge / infra** | Cloudflare, Gateway, Docker | `infrastructure/` (`docker/`, `gateway/`, …) |
+| **Plataforma** | Auth, Billing, Hub, Internal, AI, Search, Notifications, Knowledge, DES | checkouts bajo `platform/` (repos propios; no siempre en el remoto de orquestación) |
+| **Productos** | One (Core), LifeFlow, StreamAutomator, AkoeNet, Tabletop, NEXUS, Landing | repos Git bajo `apps/` + `platform/core` |
 | **Paquetes** | DES / shared npm | `packages/` → canónico [`dakinis-shared`](https://github.com/dakinissystems/dakinis-shared) |
 
 ```text

@@ -16,8 +16,8 @@ Publicado a 2026-10: sociedades **antes del 2027-01-01**; resto **antes del 2027
 
 ## Provisioning
 
-1. Aplicar migración [`060_fiscal_invoicing_verifactu.sql`](../supabase/migrations/060_fiscal_invoicing_verifactu.sql) en schemas Core.
-2. Redeploy API Core.
+1. Migración [`060_fiscal_invoicing_verifactu.sql`](../supabase/migrations/060_fiscal_invoicing_verifactu.sql) aplicada en Supabase el 12 nov 2026.
+2. API Core en Railway desde las 19:03 CET, commit `1c67ec5`. No hace falta otro despliegue del mismo commit.
 3. En UI: **Config → Fiscal** — NIF emisor, serie, modalidad `no_verifactu` o `verifactu`, activar.
 
 SQLite local: tablas creadas en `dakinisMigrateHospitalityTables` (mismo migrate helper).

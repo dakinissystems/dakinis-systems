@@ -2,7 +2,7 @@
 
 ## Contexto
 
-Gestor D&D 5e requiere entrega rápida offline-first con sync opcional. Nombre público **Tabletop** (repo `dakinis-tabletop`); carpeta legacy `DND/` no se usa en docs cliente.
+Gestor D&D 5e requiere entrega rápida offline-first con sync opcional. Nombre público **Tabletop** (repo `dakinis-tabletop`); checkout local `apps/tabletop/` (legacy `DND/` migrado 2026-11-20).
 
 ## Decisión
 

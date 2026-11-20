@@ -1,7 +1,9 @@
 -- 060_fiscal_invoicing_verifactu.sql
+-- Aplicada en Supabase el 12 nov 2026.
 -- Módulo fiscal independiente (base VERI*FACTU): settings, facturas encadenadas, eventos.
 -- Idempotente. Solo schemas Core que ya tengan `business`.
 -- NO sustituye la declaración responsable AEAT ni la certificación del software.
+-- No hay migración inversa. Un DROP rompería la cadena de facturas. El retroceso es restaurar el backup anterior a aplicar este archivo.
 
 DO $$
 DECLARE

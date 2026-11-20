@@ -21,11 +21,11 @@ jobs:
 
       - name: Prepare compose env (stub)
         run: |
-          cp docker/.env.example docker/.env
-          cp docker/.env.dev.example docker/.env.dev
+          cp infrastructure/docker/.env.example infrastructure/docker/.env
+          cp infrastructure/docker/.env.dev.example infrastructure/docker/.env.dev
 
       - name: Validate docker compose
-        working-directory: docker
+        working-directory: infrastructure/docker
         run: docker compose -f compose.full.yml config
 
       - name: Lint nginx config
@@ -60,14 +60,14 @@ jobs:
             --add-host=streamautomator-api:127.0.0.1 \
             --add-host=akoenet-backend:127.0.0.1 \
             --add-host=fitness-platform-api:127.0.0.1 \
-            -v "${{ github.workspace }}/gateway/nginx.conf:/etc/nginx/nginx.conf:ro" \
-            -v "${{ github.workspace }}/gateway/routes:/etc/nginx/routes:ro" \
+            -v "${{ github.workspace }}/infrastructure/gateway/nginx.conf:/etc/nginx/nginx.conf:ro" \
+            -v "${{ github.workspace }}/infrastructure/gateway/routes:/etc/nginx/routes:ro" \
             "$NGINX_IMAGE" nginx -t
 
       - name: Build stack images (full workspace only)
-        working-directory: docker
+        working-directory: infrastructure/docker
         run: |
-          if [ -d ../platform/auth ] && [ -d ../apps/streamautomator ] && [ -d ../platform/core ]; then
+          if [ -d ../../platform/auth ] && [ -d ../../apps/streamautomator ] && [ -d ../../platform/core ]; then
             docker compose -f compose.full.yml build
           else
             echo 'Skipping docker compose build: platform/ and apps/ are not in this checkout (control-repo layout).'
@@ -115,11 +115,19 @@ jobs:
           node-version: "22"
       - name: Syntax check (${{ matrix.service }})
         run: |
+          # Nested platform clones are gitignored in the control repo; prefer platform/<svc>.
           svc="${{ matrix.service }}"
-          cd "$svc"
-          npm ci --omit=dev
-          node --check src/server.js
-          if [ -f src/worker.js ]; then node --check src/worker.js; fi
+          for cand in "platform/$svc" "$svc"; do
+            if [ -f "$cand/package.json" ]; then
+              cd "$cand"
+              npm ci --omit=dev
+              node --check src/server.js
+              if [ -f src/worker.js ]; then node --check src/worker.js; fi
+              exit 0
+            fi
+          done
+          echo "skip: $svc not present in this checkout (lives under platform/ nested remotes)."
+          exit 0
 
   security-audit:
     runs-on: ubuntu-latest
@@ -145,13 +153,17 @@ jobs:
             path: apps/streamautomator/apps/api
             optional: true
           - name: billing
-            path: billing
+            path: platform/billing
+            optional: true
           - name: internal-api
-            path: internal
+            path: platform/internal
+            optional: true
           - name: search
-            path: search
+            path: platform/search
+            optional: true
           - name: notifications
-            path: notifications
+            path: platform/notifications
+            optional: true
 
     steps:
       - uses: actions/checkout@v7
