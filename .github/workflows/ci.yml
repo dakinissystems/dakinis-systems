@@ -145,8 +145,6 @@ jobs:
             path: platform/core
           - name: fitness-platform
             path: apps/fitness-platform
-            # P-08: Prisma transitive highs (effect/deepmerge-ts); clear in follow-up.
-            optional: true
           - name: landing
             path: apps/landing
           - name: streamautomator-web
