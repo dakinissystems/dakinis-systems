@@ -30,12 +30,12 @@ Si un producto devuelve **502**: comprobar `Host` / SNI (`$u_*_host`) y health d
 
 ### Imagen Docker (Railway y similares)
 
-- [`Dockerfile`](./Dockerfile) — copia `nginx.conf` y `routes/` a `/etc/nginx/`. Compatible con Railway cuando el **Root directory** del servicio es `gateway/`.
+- [`Dockerfile`](./Dockerfile) — copia `nginx.conf` y `routes/` a `/etc/nginx/`. En Railway el **Root Directory** del servicio `dakinis-gateway` debe ser **`infrastructure/gateway`** (antes `gateway/`; un Root Directory viejo falla el build con `directory …/gateway does not exist`).
 - **`resolver 127.0.0.11`** en [`routes/default.conf`](./routes/default.conf) es el DNS embebido de **Docker Compose**. Si despliegas **solo** el gateway fuera de Compose (Railway standalone), ese resolver no existe → las peticiones con `proxy_pass` por variable pueden fallar al resolver upstreams (`auth`, `core-api`, etc.). Opciones coherentes:
   - apuntar Nginx a hostnames DNS reales (`*.railway.internal`, dominios públicos de cada backend) mediante un override de config o templating (`envsubst`);
   - o usar un resolver alcanzable en esa red (`resolver` público sólo como último recurso; mejor DNS interno del proveedor).
 - Los **`set $u_auth` / `$u_core` / …** son nombres de servicio Compose; en Railway deben coincidir con los **hosts** donde expongas auth/core/streamautomator/… (red privada o URLs).
-- Contrucción local de la misma imagen: `docker build -t dakinis-gateway ./gateway` (desde la raíz del repo).
+- Construcción local de la misma imagen: `docker build -t dakinis-gateway ./infrastructure/gateway` (desde la raíz del repo).
 
 **Contratos** (rutas y prefijos): [`../docs/contracts/`](../docs/contracts/). Reglas de cambio: [`../docs/rules.md`](../docs/rules.md).
 
