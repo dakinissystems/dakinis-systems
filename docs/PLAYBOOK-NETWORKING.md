@@ -2,7 +2,7 @@
 
 > **Canónico** · julio 2026 · mapa comercial + kit de evento  
 > **Regla:** no vendas arquitectura; vende **ahorro de tiempo**, **menos herramientas** y **procesos simples**.  
-> Mensaje de marca → [`company/MESSAGING.md`](./company/MESSAGING.md) · Estrategia CEO → [`company/STRATEGY.md`](./company/STRATEGY.md) · Demo local → [`company/sales/DEMO.md`](./company/sales/DEMO.md)
+> Mensaje de marca → [`company/MESSAGING.md`](./company/MESSAGING.md) · Kit local → [`company/sales/README.md`](./company/sales/README.md)
 
 > **La mejor conversación es aquella en la que la otra persona habla más que tú.**
 
@@ -22,7 +22,6 @@
 | `sales/STRATEGY.md` | Hipótesis de validación GTM | **Local** — no sustituye `company/STRATEGY.md` |
 
 Detalle del kit local → [`company/sales/README.md`](./company/sales/README.md).
-
 
 ---
 
@@ -126,14 +125,14 @@ NETWORKING → permiso → DEMO → piloto → cliente
 |---------------|----------------|
 | Excel para casi todo | Sin dolor real |
 | Varios programas que no se hablan | Solo curiosidad / “mándame PDF” |
-| WhatsApp del comercial | Busca ERP grande → [`COMPETITORS.md`](./company/sales/COMPETITORS.md) |
+| WhatsApp del comercial | Busca ERP grande → [`COMPETITORS.md`](./company/sales/README.md#competidores) |
 | “No encontramos la info” | Solo precio sin dolor |
 
 **Nivel 4 (mensaje CORE):**
 
 > “Trabajamos con empresas que gestionan el negocio **entre varias herramientas**. Con Dakinis CORE unifican clientes, ventas e inventario para **más orden**.”
 
-**Interés:** 🟢 demo · 🟡 seguimiento · 🔴 descartar → [`POST_EVENT.md`](./company/sales/POST_EVENT.md)
+**Interés:** 🟢 demo · 🟡 seguimiento · 🔴 descartar → [`POST_EVENT.md`](./company/sales/README.md#post-evento)
 
 ### Qué NO explicar
 
@@ -157,7 +156,7 @@ Registrar fila en Sheet. Sync: `node scripts/sync-sales-crm.mjs --fetch`
 
 # V — Demo y ciclo
 
-→ [`sales/DEMO.md`](./company/sales/DEMO.md) · **5·10·5** · un dolor · un flujo · Hub → Mi día → producto relevante → feedback
+→ [`sales/DEMO.md`](./company/sales/README.md#demo) · **5·10·5** · un dolor · un flujo · Hub → Mi día → producto relevante → feedback
 
 ---
 
@@ -169,7 +168,7 @@ Registrar fila en Sheet. Sync: `node scripts/sync-sales-crm.mjs --fetch`
 | ¿Comprarán? | **Por validar** |
 | Posicionamiento | Varias tools → control sin ERP pesado |
 
-Detalle → [`company/STRATEGY.md`](./company/STRATEGY.md) · hipótesis de campo → `company/sales/STRATEGY.md` (local)
+Detalle → [`sales/STRATEGY.md`](./company/sales/README.md#estrategia)
 
 ---
 

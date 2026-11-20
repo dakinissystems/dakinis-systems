@@ -16,7 +16,7 @@ Definidos en Billing platform · Stripe Live · Dakinis One `/precios` (repo `co
 | Growth | Primer cliente de pago objetivo |
 | Pro | Módulos avanzados · WhatsApp · más seats |
 
-Precios concretos: Stripe Dashboard + `docs/supabase/seeds/billing.sql` · no duplicar cifras aquí (cambian en Stripe).
+Precios concretos: Stripe Dashboard + `docs/supabase/seeds/billing.sql` · no duplicar cifras aquí (cambian en Stripe). El checklist para cobrar de verdad está en [`RUNBOOKS/billing-e2e.md`](../RUNBOOKS/billing-e2e.md) y en STATUS.
 
 ## Reglas
 

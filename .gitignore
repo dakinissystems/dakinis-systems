@@ -55,7 +55,7 @@ Desktop.ini
 # --- Ruido local (no versionar) ---
 /backups/
 *.code-workspace
-# Tabletop vive en /apps/tabletop/ (cubierto por /apps/)
+# Tabletop vive en /apps/tabletop/ (cubierto por /apps/; ya no se trackea /DND/)
 
 # D-05 artifacts
 *.tsbuildinfo
@@ -87,4 +87,3 @@ supabase-recovery-codes.txt
 keystore.properties
 akoenet-signer.key
 .dakinis-keys.json
-

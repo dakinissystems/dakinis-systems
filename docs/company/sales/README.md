@@ -1,30 +1,59 @@
 # Sales — kit GTM (local)
 
-> **No versionado** (salvo este README). Carpeta `docs/company/sales/` está en `.gitignore`.  
+> **En GitHub solo se renderiza este índice.** El resto de la carpeta está en `.gitignore`.  
 > Networking canónico → [`../../PLAYBOOK-NETWORKING.md`](../../PLAYBOOK-NETWORKING.md)
 
-## Fuentes de verdad (repo)
+Las notas largas viven en el disco, junto a este archivo. No forman parte del repo público.
 
-| Tema | Doc versionado |
-|------|----------------|
-| Estrategia / competencia CEO | [`../STRATEGY.md`](../STRATEGY.md) |
-| Mensaje de marca | [`../MESSAGING.md`](../MESSAGING.md) |
-| Pricing plataforma | [`../PRICING-STRATEGY.md`](../PRICING-STRATEGY.md) |
-| Playbook evento | [`../../PLAYBOOK-NETWORKING.md`](../../PLAYBOOK-NETWORKING.md) |
+| Archivo local | Para qué |
+|---------------|----------|
+| [Demo](#demo) | `DEMO.md` — demo y ciclo post-demo |
+| [Post-evento](#post-evento) | `POST_EVENT.md` — notas, semáforo, champion |
+| [Sheet CRM](#sheet-crm) | `SHEET-CRM.md` — Google Sheet y sync |
+| [ICP](#icp) | `ICP.md` — tiers y descalificación |
+| [Competidores](#competidores) | `COMPETITORS.md` — cuándo ganar y cuándo no |
+| [Objeciones](#objeciones) | `OBJECTIONS.md` |
+| [Discovery](#discovery) | `DISCOVERY.md` — preguntas y validación |
+| [Casos](#casos) | `CASE_STORIES.md` — narrativas por sector |
+| [Estrategia](#estrategia) | `STRATEGY.md` — hipótesis y pricing |
+| [Filosofía de producto](#filosofia-de-producto) | `PRODUCT_PHILOSOPHY.md` |
 
-## Archivos locales (crear/mantener en tu máquina)
+## Demo
 
-| Archivo | Contenido |
-|---------|-----------|
-| `DEMO.md` | Demo 5·10·5 + ciclo post-demo |
-| `POST_EVENT.md` | Notas · Champion · pipeline |
-| `SHEET-CRM.md` | Google Sheet + sync |
-| `DISCOVERY.md` | Preguntas discovery |
-| `ICP.md` | Tiers + descalificación |
-| `COMPETITORS.md` | Cuándo competir |
-| `OBJECTIONS.md` | Catálogo |
-| `CASE_STORIES.md` | Narrativas por sector |
-| `PRODUCT_PHILOSOPHY.md` | Reglas producto ↔ ventas |
-| `STRATEGY.md` | Hipótesis GTM / KPIs de validación (**no** sustituye `company/STRATEGY.md`) |
+Guion de demo y qué hacer después. Archivo local: `DEMO.md`.
 
-Si un hallazgo de ventas debe vivir en el repo, fusiónalo en `company/STRATEGY.md` o `MESSAGING.md` y deja aquí solo el proceso de campo.
+## Post-evento
+
+Notas de la conversación, semáforo 🟢🟡🔴 y champion. Archivo local: `POST_EVENT.md`.
+
+## Sheet CRM
+
+Columnas del Google Sheet y cómo sincronizarlas. Archivo local: `SHEET-CRM.md`.
+
+## ICP
+
+A quién perseguir y a quién soltar. Archivo local: `ICP.md`.
+
+## Competidores
+
+Cuándo competir y cuándo apartarse (ERP grande, suite ya implantada). Archivo local: `COMPETITORS.md`.
+
+## Objeciones
+
+Respuestas cortas. Archivo local: `OBJECTIONS.md`.
+
+## Discovery
+
+Preguntas de validación. Archivo local: `DISCOVERY.md`.
+
+## Casos
+
+Narrativas por sector. Archivo local: `CASE_STORIES.md`.
+
+## Estrategia
+
+Hipótesis de mercado y pricing del kit comercial. No es [`../STRATEGY.md`](../STRATEGY.md) (estrategia de compañía). Archivo local: `STRATEGY.md`.
+
+## Filosofia de producto
+
+Cómo se habla del producto en una venta. Archivo local: `PRODUCT_PHILOSOPHY.md`.

@@ -1,4 +1,8 @@
-# Dakinis Media Player — Add-on AkoeNet
+# Dakinis Media Player — diseño anterior
+
+Este árbol no es la fuente de verdad. El addon vigente está en [`projects/media-player`](../media-player/README.md). Lo que sigue es el diseño anterior y no se mantiene.
+
+## Diseño anterior — Add-on AkoeNet
 
 > Reproductor inspirado en Winamp (estética retro, UX moderna) · módulo instalable del ecosistema Dakinis.
 
