@@ -2,7 +2,12 @@
   "name": "dakinis-fitness-platform",
   "private": true,
   "description": "Demo multi-tenant fitness SaaS (trainer admin + client app) — repo local bajo apps/ ignorado por el control repo",
-  "workspaces": ["api", "web", "admin", "shared"],
+  "workspaces": [
+    "api",
+    "web",
+    "admin",
+    "shared"
+  ],
   "scripts": {
     "dev": "concurrently -n api,web,admin -c blue,green,magenta \"npm run dev -w api\" \"npm run dev -w web\" \"npm run dev -w admin\"",
     "db:push": "npm run db:push -w api",
