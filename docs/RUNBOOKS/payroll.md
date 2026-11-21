@@ -23,7 +23,7 @@ Un concepto con `jurisdiction_code` vacío aplica a todos los mercados de esa em
 ## Provisioning
 
 1. Aplicar [`061`](../supabase/migrations/061_payroll.sql) en los schemas Core que ya tengan `business`.
-2. El API de Core (`api/src/modules/payroll`) todavía no está en este repo. El contrato de rutas es [`payroll.json`](../contracts/payroll.json).
+2. El API vive en `dakinis-core` (`api/src/modules/payroll`, merge [#10](https://github.com/dakinissystems/dakinis-core/pull/10)). El contrato de rutas es [`payroll.json`](../contracts/payroll.json) (GETs en [#92](https://github.com/dakinissystems/dakinis-systems/pull/92)).
 3. Activar el módulo en ajustes (`enabled`) y en los módulos del plan (`payroll`). No entra solo por ser hospitality.
 
 ## Cálculo de un periodo
