@@ -10,6 +10,9 @@
     "./AppShell.css": "./src/AppShell.css",
     "./dashboard-template": "./src/dashboard-template.js"
   },
+  "dependencies": {
+    "@dakinissystems/shared-brand": "file:../shared-brand"
+  },
   "peerDependencies": {
     "react": ">=18"
   }

@@ -13,5 +13,9 @@
     "./charts": "./src/charts/index.js",
     "./branding": "./src/branding/index.js",
     "./ai": "./src/ai/index.js"
+  },
+  "dependencies": {
+    "@dakinissystems/shared-brand": "file:../shared-brand",
+    "@dakinissystems/shared-icons": "file:../shared-icons"
   }
 }
