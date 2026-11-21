@@ -1,10 +1,22 @@
 {
-  "name": "@dakinis/shared-icons",
+  "name": "@dakinissystems/shared-icons",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "Convención Lucide — nombres canónicos Dakinis",
   "exports": {
     ".": "./src/index.js"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-icons"
+  },
+  "license": "UNLICENSED"
 }

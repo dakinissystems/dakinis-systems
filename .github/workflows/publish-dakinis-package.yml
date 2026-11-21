@@ -20,6 +20,8 @@ on:
       - "shared-platform-v*"
       - "shared-ai-v*"
       - "shared-feature-flags-v*"
+      - "shared-brand-v*"
+      - "shared-icons-v*"
 
 permissions:
   contents: read
