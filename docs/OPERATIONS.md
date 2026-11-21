@@ -98,9 +98,10 @@ Smokes: `.\scripts\smoke-prod-suite.ps1` · `smoke-billing.ps1` · `smoke-hub.ps
 
 ---
 
-## npm `@dakinis/*` (GitHub Packages)
+## npm `@dakinissystems/*` (GitHub Packages)
 
 - Runbook: [`RUNBOOKS/npm-github-packages.md`](./RUNBOOKS/npm-github-packages.md)
+- Scope = org GitHub (`@dakinissystems`, no `@dakinis`)
 - Consumers: secreto `NODE_AUTH_TOKEN` (`read:packages`) + [`packages/.npmrc.example`](../packages/.npmrc.example)
 - Publish: Actions → **Publish Dakinis package**
 
