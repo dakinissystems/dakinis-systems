@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/sdk-events",
+  "name": "@dakinissystems/sdk-events",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.js"
@@ -12,5 +11,19 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/sdk-events"
+  },
+  "license": "UNLICENSED",
+  "description": "Dakinis package @dakinissystems/sdk-events"
 }

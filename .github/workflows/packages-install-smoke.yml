@@ -39,8 +39,11 @@ jobs:
             @dakinissystems/shared-feature-flags@0.1.0 \
             @dakinissystems/shared-brand@1.0.1 \
             @dakinissystems/shared-icons@0.1.0 \
-            @dakinissystems/sdk-auth@0.1.0
+            @dakinissystems/sdk-auth@0.1.0 \
+            @dakinissystems/sdk-billing@0.1.0 \
+            @dakinissystems/sdk-events@0.1.0 \
+            @dakinissystems/sdk-workspace@0.1.0
           node -e "require('@dakinissystems/shared-error'); console.log('shared-error ok')"
-          for pkg in shared-validation domain shared-loading shared-db sdk-metrics shared-auth shared-ai shared-platform shared-feature-flags shared-brand shared-icons sdk-auth; do
+          for pkg in shared-validation domain shared-loading shared-db sdk-metrics shared-auth shared-ai shared-platform shared-feature-flags shared-brand shared-icons sdk-auth sdk-billing sdk-events sdk-workspace; do
             node --input-type=module -e "import('@dakinissystems/' + process.argv[1]).then(()=>console.log(process.argv[1] + ' ok'))" "$pkg"
           done

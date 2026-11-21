@@ -16,10 +16,10 @@
   },
   "dependencies": {
     "@dakinissystems/sdk-auth": "file:../sdk-auth",
-    "@dakinis/sdk-billing": "file:../sdk-billing",
-    "@dakinis/sdk-events": "file:../sdk-events",
+    "@dakinissystems/sdk-billing": "file:../sdk-billing",
+    "@dakinissystems/sdk-events": "file:../sdk-events",
     "@dakinissystems/sdk-metrics": "file:../sdk-metrics",
-    "@dakinis/sdk-workspace": "file:../sdk-workspace",
+    "@dakinissystems/sdk-workspace": "file:../sdk-workspace",
     "@dakinissystems/shared-platform": "file:../shared-platform"
   },
   "scripts": {
