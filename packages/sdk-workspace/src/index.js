@@ -1,4 +1,4 @@
-import { createInternalClient } from "@dakinis/sdk-auth";
+import { createInternalClient } from "@dakinissystems/sdk-auth";
 
 /**
  * @param {{ baseUrl?: string; apiKey?: string; fetch?: typeof fetch }} [opts]

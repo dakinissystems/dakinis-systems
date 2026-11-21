@@ -22,6 +22,7 @@ on:
       - "shared-feature-flags-v*"
       - "shared-brand-v*"
       - "shared-icons-v*"
+      - "sdk-auth-v*"
 
 permissions:
   contents: read

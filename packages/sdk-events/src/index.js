@@ -1,4 +1,4 @@
-import { createInternalClient } from "@dakinis/sdk-auth";
+import { createInternalClient } from "@dakinissystems/sdk-auth";
 
 function workerHeader() {
   const key = String(process.env.DAKINIS_WORKER_KEY || "").trim();

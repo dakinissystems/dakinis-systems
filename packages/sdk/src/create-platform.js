@@ -1,8 +1,8 @@
-import { createAuthModule } from "@dakinis/sdk-auth";
+import { createAuthModule } from "@dakinissystems/sdk-auth";
 import { createWorkspaceModule } from "@dakinis/sdk-workspace";
 import { createBillingModule } from "@dakinis/sdk-billing";
 import { createEventsModule } from "@dakinis/sdk-events";
-import { createMetricsModule } from "@dakinis/sdk-metrics";
+import { createMetricsModule } from "@dakinissystems/sdk-metrics";
 import { loadContractClient } from "./clients/contract-client.js";
 import {
   HubClient,

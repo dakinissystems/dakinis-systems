@@ -15,7 +15,7 @@
     "./metrics": "../sdk-metrics/src/index.js"
   },
   "dependencies": {
-    "@dakinis/sdk-auth": "file:../sdk-auth",
+    "@dakinissystems/sdk-auth": "file:../sdk-auth",
     "@dakinis/sdk-billing": "file:../sdk-billing",
     "@dakinis/sdk-events": "file:../sdk-events",
     "@dakinissystems/sdk-metrics": "file:../sdk-metrics",
