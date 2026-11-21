@@ -1,18 +1,18 @@
 {
-  "name": "@dakinis/sdk",
+  "name": "@dakinissystems/sdk",
   "version": "0.2.0",
-  "private": true,
   "type": "module",
+  "description": "Dakinis package @dakinissystems/sdk",
   "exports": {
     ".": "./src/index.js",
     "./ai": "./src/modules/ai.js",
     "./platform": "./src/modules/platform.js",
     "./create-platform": "./src/create-platform.js",
-    "./auth": "../sdk-auth/src/index.js",
-    "./workspace": "../sdk-workspace/src/index.js",
-    "./billing": "../sdk-billing/src/index.js",
-    "./events": "../sdk-events/src/index.js",
-    "./metrics": "../sdk-metrics/src/index.js"
+    "./auth": "./src/exports/auth.js",
+    "./workspace": "./src/exports/workspace.js",
+    "./billing": "./src/exports/billing.js",
+    "./events": "./src/exports/events.js",
+    "./metrics": "./src/exports/metrics.js"
   },
   "dependencies": {
     "@dakinissystems/sdk-auth": "file:../sdk-auth",
@@ -25,5 +25,18 @@
   "scripts": {
     "test": "node --test test/*.test.js",
     "generate-dto": "node ../../scripts/generate-dto.mjs --contract internal-api"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/sdk"
+  },
+  "license": "UNLICENSED"
 }
