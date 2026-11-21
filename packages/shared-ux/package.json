@@ -1,6 +1,6 @@
 {
   "name": "@dakinissystems/shared-ux",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -16,6 +16,13 @@
     "./hub-widget-actions": "./src/hub-widget-actions.js",
     "./hub-i18n": "./src/hub-i18n.js",
     "./hub-attention": "./src/hub-attention.js",
+    "./react/Button.jsx": "./src/react/Button.jsx",
+    "./react/Badge.jsx": "./src/react/Badge.jsx",
+    "./react/Card.jsx": "./src/react/Card.jsx",
+    "./react/ColorModeControl.jsx": "./src/react/ColorModeControl.jsx",
+    "./react/Input.jsx": "./src/react/Input.jsx",
+    "./react/Dialog.jsx": "./src/react/Dialog.jsx",
+    "./react/Table.jsx": "./src/react/Table.jsx",
     "./react/EmptyState.jsx": "./src/react/EmptyState.jsx",
     "./react/CommandPalette.jsx": "./src/react/CommandPalette.jsx",
     "./react/HubWidgetGrid.jsx": "./src/react/HubWidgetGrid.jsx",

@@ -1,6 +1,6 @@
 {
   "name": "@dakinissystems/shared-brand",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "Marca, URLs, productos y Hub — consumido por Landing y Core",
   "scripts": {
@@ -18,6 +18,7 @@
     "./semantic-colors": "./src/semantic-colors.js",
     "./elevation": "./src/elevation.js",
     "./themes": "./src/themes.js",
+    "./theme-engine": "./src/theme-engine.js",
     "./accessibility": "./src/accessibility.js",
     "./responsive": "./src/responsive.js",
     "./tokens.css": "./src/tokens.css",
