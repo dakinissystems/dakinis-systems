@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createDakinisPlatform } from "../src/create-platform.js";
-import { createEventsModule } from "@dakinis/sdk-events";
+import { createEventsModule } from "@dakinissystems/sdk-events";
 import { createMetricsModule } from "@dakinis/sdk-metrics";
 
 test("createDakinisPlatform lazy-loads modules", () => {

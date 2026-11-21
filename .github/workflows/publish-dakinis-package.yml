@@ -23,6 +23,9 @@ on:
       - "shared-brand-v*"
       - "shared-icons-v*"
       - "sdk-auth-v*"
+      - "sdk-billing-v*"
+      - "sdk-events-v*"
+      - "sdk-workspace-v*"
 
 permissions:
   contents: read
