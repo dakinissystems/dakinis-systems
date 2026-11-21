@@ -1,4 +1,4 @@
-import { createFeatureFlagRepository } from "@dakinis/shared-db";
+import { createFeatureFlagRepository } from "@dakinissystems/shared-db";
 
 
 

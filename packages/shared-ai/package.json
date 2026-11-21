@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/shared-ai",
+  "name": "@dakinissystems/shared-ai",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -14,5 +13,19 @@
   "optionalDependencies": {
     "redis": "^6.2.1",
     "bullmq": "^6.3.8"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-ai"
+  },
+  "license": "UNLICENSED",
+  "description": "Dakinis package @dakinissystems/shared-ai"
 }

@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/shared-feature-flags",
+  "name": "@dakinissystems/shared-feature-flags",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -10,15 +9,31 @@
     "./keys": "./src/keys.js"
   },
   "dependencies": {
-    "@dakinis/shared-db": "file:../shared-db"
+    "@dakinissystems/shared-db": "file:../shared-db"
   },
   "peerDependencies": {
     "react": ">=18"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true }
+    "react": {
+      "optional": true
+    }
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-feature-flags"
+  },
+  "license": "UNLICENSED",
+  "description": "Dakinis package @dakinissystems/shared-feature-flags"
 }

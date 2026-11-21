@@ -1,4 +1,4 @@
-import { GatewayClient } from "@dakinis/shared-platform/gateway-client";
+import { GatewayClient } from "@dakinissystems/shared-platform/gateway-client";
 
 /**
  * @param {{ baseUrl?: string; apiKey?: string; fetch?: typeof fetch; timeoutMs?: number; retries?: number }} [opts]

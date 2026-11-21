@@ -13,11 +13,11 @@ import {
   FeatureFlagsClient,
   TelemetryClient,
 } from "./modules/platform.js";
-import { CommandBus } from "@dakinis/shared-platform/command-bus";
-import { QueryBus } from "@dakinis/shared-platform/query-bus";
-import { CacheService } from "@dakinis/shared-platform/cache";
-import { createPlatformContext } from "@dakinis/shared-platform/platform-context";
-import { platformCapabilities } from "@dakinis/shared-platform/capabilities";
+import { CommandBus } from "@dakinissystems/shared-platform/command-bus";
+import { QueryBus } from "@dakinissystems/shared-platform/query-bus";
+import { CacheService } from "@dakinissystems/shared-platform/cache";
+import { createPlatformContext } from "@dakinissystems/shared-platform/platform-context";
+import { platformCapabilities } from "@dakinissystems/shared-platform/capabilities";
 
 /**
  * Modular platform facade — lazy getters, no God Object.

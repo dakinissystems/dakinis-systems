@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { GatewayClient } from "@dakinis/shared-platform/gateway-client";
+import { GatewayClient } from "@dakinissystems/shared-platform/gateway-client";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

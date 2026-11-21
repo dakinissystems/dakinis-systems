@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/shared-platform",
+  "name": "@dakinissystems/shared-platform",
   "version": "0.2.0",
-  "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.js",
@@ -24,12 +23,26 @@
     "./gateway-client": "./src/gateway-client.js"
   },
   "dependencies": {
-    "@dakinis/shared-validation": "file:../shared-validation"
+    "@dakinissystems/shared-validation": "file:../shared-validation"
   },
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "test": "node --test test/*.test.js"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-platform"
+  },
+  "license": "UNLICENSED",
+  "description": "Dakinis package @dakinissystems/shared-platform"
 }
