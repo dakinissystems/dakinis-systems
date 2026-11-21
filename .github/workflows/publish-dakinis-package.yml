@@ -1,0 +1,52 @@
+name: Publish Dakinis package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Directory under packages/ (e.g. shared-error, shared-validation)"
+        required: true
+        type: string
+        default: shared-error
+  push:
+    tags:
+      - "shared-error-v*"
+      - "shared-validation-v*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Resolve package directory
+        id: pkg
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            DIR="${{ inputs.package }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+            DIR="${TAG%-v*}"
+          fi
+          if [ ! -f "packages/$DIR/package.json" ]; then
+            echo "Missing packages/$DIR/package.json"
+            exit 1
+          fi
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+          echo "Publishing packages/$DIR"
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          registry-url: https://npm.pkg.github.com
+          scope: "@dakinis"
+
+      - name: Publish @dakinis/${{ steps.pkg.outputs.dir }}
+        working-directory: packages/${{ steps.pkg.outputs.dir }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm publish

@@ -91,9 +91,18 @@ Smokes: `.\scripts\smoke-prod-suite.ps1` · `smoke-billing.ps1` · `smoke-hub.ps
 
 ## Gateway
 
-- Config: [`gateway/routes/default.conf`](../gateway/routes/default.conf)
-- Cabeceras: [`gateway/routes/security-headers.conf`](../gateway/routes/security-headers.conf)
+- Config: [`infrastructure/gateway/routes/default.conf`](../infrastructure/gateway/routes/default.conf)
+- Cabeceras: [`infrastructure/gateway/routes/security-headers.conf`](../infrastructure/gateway/routes/security-headers.conf)
 - Reglas cambio: [`rules.md`](./rules.md)
+- Railway Root Directory: `infrastructure/gateway`
+
+---
+
+## npm `@dakinis/*` (GitHub Packages)
+
+- Runbook: [`RUNBOOKS/npm-github-packages.md`](./RUNBOOKS/npm-github-packages.md)
+- Consumers: secreto `NODE_AUTH_TOKEN` (`read:packages`) + [`packages/.npmrc.example`](../packages/.npmrc.example)
+- Publish: Actions → **Publish Dakinis package**
 
 ---
 
