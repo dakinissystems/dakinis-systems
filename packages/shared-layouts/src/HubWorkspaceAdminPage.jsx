@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   dakinisWorkspaceAddonField,
   dakinisWorkspaceAddonsByCategory,
-} from "../../shared-brand/src/workspace-addons.js";
+} from "@dakinissystems/shared-brand/workspace-addons";
 import { dakinisHubT } from "../../shared-ux/src/hub-i18n.js";
 
 /**

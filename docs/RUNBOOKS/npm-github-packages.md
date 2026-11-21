@@ -7,7 +7,7 @@ Registry privado para packages del meta (`packages/`).
 **Ola 1 publicada (17):** `shared-error`, `shared-validation`, `domain`, `shared-loading`, `shared-db`, `shared-auth`, `shared-ai`, `shared-platform`, `shared-feature-flags`, `shared-brand`, `shared-icons`, `sdk-metrics`, `sdk-auth`, `sdk-billing`, `sdk-events`, `sdk-workspace`, `sdk`.  
 Smoke: workflow **Packages install smoke**.
 
-**No publicar aún:** DES acoplados (`shared-des`, `shared-ux`, `shared-layouts`, `shared-charts`, `design-system`, `design-audit`) — imports relativos entre carpetas; reescribir a `@dakinissystems/*` primero.  
+**DES ola 2 (en curso):** consumers de `shared-brand` / `shared-icons` ya usan `@dakinissystems/*` (file: local). Siguen relativos: `shared-ux`↔`shared-illustrations`, `shared-layouts`↔`shared-ux`, `shared-des`↔`shared-layouts`, `design-system`↔`shared-des`, `shared-charts`.  
 **Fuera del registry global:** `akoenet-*` (K-07).
 
 ## Auth lectura (CI + Railway + local)

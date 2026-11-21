@@ -9,5 +9,8 @@
   },
   "exports": {
     ".": "./src/audit.mjs"
+  },
+  "dependencies": {
+    "@dakinissystems/shared-brand": "file:../shared-brand"
   }
 }

@@ -8,8 +8,8 @@ import {
 import { getWidgetsForSection } from "../../shared-ux/src/widgets.js";
 import { getWidgetDisplay } from "../../shared-ux/src/hub-widget-values.js";
 import { dakinisResolveHubWidgetOpen, dakinisRunHubWidgetAction, dakinisRunHubRecommendedAction } from "../../shared-ux/src/hub-widget-actions.js";
-import { dakinisHubProductEnabled } from "../../shared-brand/src/hub-product-access.js";
-import { dakinisWorkspaceAddonField } from "../../shared-brand/src/workspace-addons.js";
+import { dakinisHubProductEnabled } from "@dakinissystems/shared-brand";
+import { dakinisWorkspaceAddonField } from "@dakinissystems/shared-brand/workspace-addons";
 import { HubProductIcon } from "../../shared-ux/src/HubProductIcon.jsx";
 import HubActionsPanel from "../../shared-ux/src/react/HubActionsPanel.jsx";
 import HubAttentionPanel from "../../shared-ux/src/react/HubAttentionPanel.jsx";
