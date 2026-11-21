@@ -3,7 +3,7 @@ import {
   dakinisWorkspaceAddonField,
   dakinisWorkspaceAddonsByCategory,
 } from "@dakinissystems/shared-brand/workspace-addons";
-import { dakinisHubT } from "../../shared-ux/src/hub-i18n.js";
+import { dakinisHubT } from "@dakinissystems/shared-ux/hub-i18n";
 
 /**
  * Admin UI — toggles workspace addons (Internal API via BFF in dakinis-hub).

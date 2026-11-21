@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/design-system",
+  "name": "@dakinissystems/design-system",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "description": "Dakinis Design System (DES) — versioned entry for tokens, themes, components, layouts, patterns",
   "exports": {
@@ -15,9 +14,22 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@dakinis/shared-des": "file:../shared-des"
+    "@dakinissystems/shared-des": "file:../shared-des"
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/design-system"
+  },
+  "license": "UNLICENSED"
 }

@@ -42,5 +42,5 @@ export {
   ILLUSTRATION_KEYS,
   ILLUSTRATION_CATALOG,
   illustrationStylesheet,
-} from "../../shared-illustrations/src/index.js";
+} from "@dakinissystems/shared-illustrations";
 export { default as NotificationsCenter } from "./react/NotificationsCenter.jsx";

@@ -1,5 +1,5 @@
 import AppShell from "./AppShell.jsx";
-import { HUB_DASHBOARD_SECTIONS } from "../../shared-ux/src/hub-dashboard.js";
+import { HUB_DASHBOARD_SECTIONS } from "@dakinissystems/shared-ux/hub-dashboard";
 
 /**
  * AppShell preconfigurado para Dakinis Hub — producto hub, secciones Mi día primero.

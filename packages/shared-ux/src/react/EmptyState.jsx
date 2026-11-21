@@ -1,5 +1,5 @@
 import { getEmptyState } from "../empty-states.js";
-import { getIllustration, ILLUSTRATION_KEYS } from "../../../shared-illustrations/src/index.js";
+import { getIllustration, ILLUSTRATION_KEYS } from "@dakinissystems/shared-illustrations";
 
 /**
  * Estado vacío Dakinis — ilustración + copy emocional + CTAs.

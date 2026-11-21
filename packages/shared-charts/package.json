@@ -1,10 +1,26 @@
 {
-  "name": "@dakinis/shared-charts",
+  "name": "@dakinissystems/shared-charts",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "Visualización de datos DES — catálogo y helpers",
   "exports": {
     ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-charts"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@dakinissystems/shared-des": "file:../shared-des",
+    "@dakinissystems/shared-ux": "file:../shared-ux"
   }
 }

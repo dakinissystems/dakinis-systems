@@ -27,6 +27,13 @@ on:
       - "sdk-events-v*"
       - "sdk-workspace-v*"
       - "sdk-v*"
+      - "shared-illustrations-v*"
+      - "shared-ux-v*"
+      - "shared-layouts-v*"
+      - "shared-des-v*"
+      - "shared-charts-v*"
+      - "design-system-v*"
+      - "design-audit-v*"
 
 permissions:
   contents: read
