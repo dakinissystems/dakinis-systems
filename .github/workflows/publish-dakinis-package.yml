@@ -53,33 +53,9 @@ jobs:
           registry-url: https://npm.pkg.github.com
           scope: "@dakinissystems"
 
-      - name: Rewrite file: deps to sibling versions
+      - name: Rewrite sibling file deps to versions
         working-directory: packages/${{ steps.pkg.outputs.dir }}
-        run: |
-          node <<'EOF'
-          const fs = require("node:fs");
-          const path = require("node:path");
-          const pkgPath = "package.json";
-          const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-          function rewrite(deps) {
-            if (!deps) return;
-            for (const [name, ver] of Object.entries(deps)) {
-              if (typeof ver !== "string" || !ver.startsWith("file:")) continue;
-              const rel = ver.replace(/^file:/, "");
-              const siblingPkg = path.resolve(rel, "package.json");
-              const sibling = JSON.parse(fs.readFileSync(siblingPkg, "utf8"));
-              if (sibling.name !== name) {
-                console.warn(`warn: dep key ${name} != sibling name ${sibling.name}`);
-              }
-              deps[name] = sibling.version;
-              console.log(`rewrite ${name}: ${ver} -> ${sibling.version}`);
-            }
-          }
-          rewrite(pkg.dependencies);
-          rewrite(pkg.optionalDependencies);
-          rewrite(pkg.devDependencies);
-          fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
-          EOF
+        run: node ../../scripts/rewrite-file-deps-for-publish.mjs
 
       - name: Publish @dakinissystems/${{ steps.pkg.outputs.dir }}
         working-directory: packages/${{ steps.pkg.outputs.dir }}
