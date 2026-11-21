@@ -21,9 +21,12 @@
     "POST /api/tenant/payroll/components": "Create a component and optional marginal brackets",
     "GET /api/tenant/payroll/engagements": "List worker engagements",
     "POST /api/tenant/payroll/engagements": "Create salary, hourly, daily, or piece engagement",
+    "GET /api/tenant/payroll/periods": "List pay periods (payroll.view)",
     "POST /api/tenant/payroll/periods": "Open a pay period",
     "POST /api/tenant/payroll/runs": "Calculate slips with @dakinis/payroll. Refuses locked slips.",
+    "GET /api/tenant/payroll/runs/:id": "Get a run and its slips (payroll.view)",
     "POST /api/tenant/payroll/runs/:id/approve": "Lock the run (payroll.approve)",
+    "GET /api/tenant/payroll/slips": "List slips; optional ?run_id= (payroll.view)",
     "POST /api/tenant/payroll/slips/:id/pay": "Record a payment instruction, not a bank file (payroll.pay)"
   },
   "permissions": [
