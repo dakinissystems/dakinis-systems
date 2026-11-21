@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@dakinis/sdk-auth": "file:../sdk-auth",
-    "@dakinis/shared-platform": "file:../shared-platform"
+    "@dakinissystems/shared-platform": "file:../shared-platform"
   },
   "engines": {
     "node": ">=20"

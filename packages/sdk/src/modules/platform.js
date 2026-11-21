@@ -1,4 +1,4 @@
-import { GatewayClient } from "@dakinis/shared-platform/gateway-client";
+import { GatewayClient } from "@dakinissystems/shared-platform/gateway-client";
 
 /**
  * Cliente base para servicios platform (Internal API).

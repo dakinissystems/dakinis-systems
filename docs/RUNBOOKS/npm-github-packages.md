@@ -4,16 +4,17 @@ Registry privado para packages del meta (`packages/`).
 
 **Scope = org GitHub** (`dakinissystems`). `GITHUB_TOKEN` del repo **no** puede publicar `@dakinis/*` (esa instalación no existe) → error `The requested installation does not exist`.
 
-Piloto: `@dakinissystems/shared-error` · siguiente: `@dakinissystems/shared-validation`.
+Publicados: `shared-error`, `shared-validation`, `domain`, `shared-loading`, `shared-db`, `sdk-metrics` (+ batch3 tras merge).
 
 ## Auth lectura (CI + Railway + local)
 
-1. PAT con **`read:packages`** (y `repo` si el paquete es privado).
-2. Secreto (nunca en Git):
+1. PAT con **`read:packages`** (y `repo` si el paquete es privado) — obligatorio en **Railway**.
+2. En Actions, el smoke usa `secrets.NODE_AUTH_TOKEN` o, si falta, `github.token` (`packages: read`).
+3. Secreto (nunca en Git):
 
 | Sitio | Nombre | Uso |
 |-------|--------|-----|
-| GitHub Actions | `NODE_AUTH_TOKEN` | install de consumers |
+| GitHub Actions | `NODE_AUTH_TOKEN` (opcional) | override del token de lectura |
 | Railway | `NODE_AUTH_TOKEN` | build/install |
 
 3. `.npmrc` del consumer:

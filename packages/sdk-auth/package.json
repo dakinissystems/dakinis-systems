@@ -7,7 +7,7 @@
     ".": "./src/index.js"
   },
   "dependencies": {
-    "@dakinis/shared-platform": "file:../shared-platform"
+    "@dakinissystems/shared-platform": "file:../shared-platform"
   },
   "engines": {
     "node": ">=20"

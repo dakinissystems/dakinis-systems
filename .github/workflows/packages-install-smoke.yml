@@ -21,14 +21,21 @@ jobs:
 
       - name: Install published packages
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          # Prefer dedicated read PAT; fall back to GITHUB_TOKEN (same-org packages:read).
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN || github.token }}
         run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "NODE_AUTH_TOKEN not set — skip (create org/repo secret with read:packages)."
-            exit 0
-          fi
           mkdir -p /tmp/dakinis-pkg-smoke && cd /tmp/dakinis-pkg-smoke
           npm init -y
-          npm install @dakinissystems/shared-error@0.1.0 @dakinissystems/shared-validation@0.1.0
+          npm install \
+            @dakinissystems/shared-error@0.1.0 \
+            @dakinissystems/shared-validation@0.1.0 \
+            @dakinissystems/domain@0.1.0 \
+            @dakinissystems/shared-loading@0.1.0 \
+            @dakinissystems/shared-db@0.1.0 \
+            @dakinissystems/sdk-metrics@0.1.0
           node -e "require('@dakinissystems/shared-error'); console.log('shared-error ok')"
           node --input-type=module -e "import('@dakinissystems/shared-validation').then(()=>console.log('shared-validation ok'))"
+          node --input-type=module -e "import('@dakinissystems/domain').then(()=>console.log('domain ok'))"
+          node --input-type=module -e "import('@dakinissystems/shared-loading').then(()=>console.log('shared-loading ok'))"
+          node --input-type=module -e "import('@dakinissystems/shared-db').then(()=>console.log('shared-db ok'))"
+          node --input-type=module -e "import('@dakinissystems/sdk-metrics').then(()=>console.log('sdk-metrics ok'))"
