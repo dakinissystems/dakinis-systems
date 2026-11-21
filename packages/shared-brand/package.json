@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/shared-brand",
+  "name": "@dakinissystems/shared-brand",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "description": "Marca, URLs, productos y Hub — consumido por Landing y Core",
   "scripts": {
@@ -38,5 +37,18 @@
     "./hub-modules.json": "./src/hub-modules.json",
     "./workspace-addons.json": "./src/workspace-addons.json",
     "./workspace-widgets.json": "./src/workspace-widgets.json"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-brand"
+  },
+  "license": "UNLICENSED"
 }
