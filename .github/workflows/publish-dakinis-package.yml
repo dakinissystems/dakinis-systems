@@ -26,6 +26,7 @@ on:
       - "sdk-billing-v*"
       - "sdk-events-v*"
       - "sdk-workspace-v*"
+      - "sdk-v*"
 
 permissions:
   contents: read
