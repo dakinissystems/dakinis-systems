@@ -6,7 +6,7 @@
 
 export const DES_VERSION = "1.0.0";
 
-export * from "../../shared-des/src/index.js";
+export * from "@dakinissystems/shared-des";
 export { DES_TOKENS_META } from "./tokens.js";
 export { DES_THEMES_META } from "./themes.js";
 export { DES_PLATFORM_UI, DES_PRODUCT_UI } from "./components.js";

@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/shared-layouts",
+  "name": "@dakinissystems/shared-layouts",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "description": "Shell y layouts oficiales DES — AppShell, dashboard template",
   "exports": {
@@ -11,9 +10,23 @@
     "./dashboard-template": "./src/dashboard-template.js"
   },
   "dependencies": {
-    "@dakinissystems/shared-brand": "file:../shared-brand"
+    "@dakinissystems/shared-brand": "file:../shared-brand",
+    "@dakinissystems/shared-ux": "file:../shared-ux"
   },
   "peerDependencies": {
     "react": ">=18"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-layouts"
+  },
+  "license": "UNLICENSED"
 }

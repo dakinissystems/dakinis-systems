@@ -1,23 +1,25 @@
 import HubShell from "./HubShell.jsx";
-import { DashboardCard } from "../../shared-ux/src/DashboardCard.jsx";
 import {
+  DashboardCard,
+  dashboardCardStyles,
   HUB_DASHBOARD_SECTIONS,
   HUB_SECTION_WIDGETS,
   getHubSectionsBeforeApps,
-} from "../../shared-ux/src/hub-dashboard.js";
-import { getWidgetsForSection } from "../../shared-ux/src/widgets.js";
-import { getWidgetDisplay } from "../../shared-ux/src/hub-widget-values.js";
-import { dakinisResolveHubWidgetOpen, dakinisRunHubWidgetAction, dakinisRunHubRecommendedAction } from "../../shared-ux/src/hub-widget-actions.js";
+  getWidgetsForSection,
+  getWidgetDisplay,
+  dakinisResolveHubWidgetOpen,
+  dakinisRunHubWidgetAction,
+  dakinisRunHubRecommendedAction,
+  HubProductIcon,
+  dakinisHubT,
+  deriveHubAttention,
+} from "@dakinissystems/shared-ux";
 import { dakinisHubProductEnabled } from "@dakinissystems/shared-brand";
 import { dakinisWorkspaceAddonField } from "@dakinissystems/shared-brand/workspace-addons";
-import { HubProductIcon } from "../../shared-ux/src/HubProductIcon.jsx";
-import HubActionsPanel from "../../shared-ux/src/react/HubActionsPanel.jsx";
-import HubAttentionPanel from "../../shared-ux/src/react/HubAttentionPanel.jsx";
-import NotificationsCenter from "../../shared-ux/src/react/NotificationsCenter.jsx";
-import ActivityTimeline, { mapHubTimelineEvents } from "../../shared-ux/src/react/ActivityTimeline.jsx";
-import { dakinisHubT } from "../../shared-ux/src/hub-i18n.js";
-import { deriveHubAttention } from "../../shared-ux/src/hub-attention.js";
-import { dashboardCardStyles } from "../../shared-ux/src/DashboardCard.jsx";
+import HubActionsPanel from "@dakinissystems/shared-ux/react/HubActionsPanel.jsx";
+import HubAttentionPanel from "@dakinissystems/shared-ux/react/HubAttentionPanel.jsx";
+import NotificationsCenter from "@dakinissystems/shared-ux/react/NotificationsCenter.jsx";
+import ActivityTimeline, { mapHubTimelineEvents } from "@dakinissystems/shared-ux/react/ActivityTimeline.jsx";
 
 /**
  * Página referencia Hub «Mi día primero» — copiar/adaptar en repo dakinis-hub.

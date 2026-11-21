@@ -1,4 +1,4 @@
-export { DashboardCard as KpiCard, dashboardCardStyles } from "../../shared-ux/src/DashboardCard.jsx";
+export { DashboardCard as KpiCard, dashboardCardStyles } from "@dakinissystems/shared-ux";
 
 /** Paleta para series de gráficos DES. */
 export const CHART_SERIES_COLORS = [

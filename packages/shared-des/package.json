@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/shared-des",
+  "name": "@dakinissystems/shared-des",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "description": "Dakinis Experience System — plataforma de experiencia unificada",
   "exports": {
@@ -16,6 +15,20 @@
   },
   "dependencies": {
     "@dakinissystems/shared-brand": "file:../shared-brand",
-    "@dakinissystems/shared-icons": "file:../shared-icons"
-  }
+    "@dakinissystems/shared-icons": "file:../shared-icons",
+    "@dakinissystems/shared-layouts": "file:../shared-layouts"
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-des"
+  },
+  "license": "UNLICENSED"
 }

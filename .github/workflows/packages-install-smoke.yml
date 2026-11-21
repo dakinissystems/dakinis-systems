@@ -43,8 +43,16 @@ jobs:
             @dakinissystems/sdk-billing@0.1.0 \
             @dakinissystems/sdk-events@0.1.0 \
             @dakinissystems/sdk-workspace@0.1.0 \
-            @dakinissystems/sdk@0.2.0
+            @dakinissystems/sdk@0.2.0 \
+            @dakinissystems/shared-illustrations@0.1.0 \
+            @dakinissystems/shared-ux@0.2.0 \
+            @dakinissystems/shared-layouts@1.0.0 \
+            @dakinissystems/shared-des@1.0.0 \
+            @dakinissystems/shared-charts@0.1.0 \
+            @dakinissystems/design-system@1.0.0 \
+            @dakinissystems/design-audit@0.1.0
           node -e "require('@dakinissystems/shared-error'); console.log('shared-error ok')"
-          for pkg in shared-validation domain shared-loading shared-db sdk-metrics shared-auth shared-ai shared-platform shared-feature-flags shared-brand shared-icons sdk-auth sdk-billing sdk-events sdk-workspace sdk; do
+          for pkg in shared-validation domain shared-loading shared-db sdk-metrics shared-auth shared-ai shared-platform shared-feature-flags shared-brand shared-icons sdk-auth sdk-billing sdk-events sdk-workspace sdk shared-illustrations shared-ux shared-layouts shared-des shared-charts design-system; do
             node --input-type=module -e "import('@dakinissystems/' + process.argv[1]).then(()=>console.log(process.argv[1] + ' ok'))" "$pkg"
           done
+          node --input-type=module -e "import('@dakinissystems/design-audit').then(()=>console.log('design-audit ok')).catch((e)=>{console.error(e); process.exit(1)})"

@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/design-audit",
+  "name": "@dakinissystems/design-audit",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "scripts": {
     "audit": "node src/audit.mjs",
@@ -12,5 +11,19 @@
   },
   "dependencies": {
     "@dakinissystems/shared-brand": "file:../shared-brand"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/design-audit"
+  },
+  "license": "UNLICENSED",
+  "description": "Dakinis package @dakinissystems/design-audit"
 }

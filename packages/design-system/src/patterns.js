@@ -1,4 +1,4 @@
-import { DES_PATTERNS } from "../../shared-des/src/patterns/index.js";
+import { DES_PATTERNS } from "@dakinissystems/shared-des/patterns";
 
 export const DES_PATTERNS_EXTENDED = Object.freeze({
   ...DES_PATTERNS,
