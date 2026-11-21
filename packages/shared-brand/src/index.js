@@ -9,6 +9,7 @@ export * from "./surfaces.js";
 export * from "./semantic-colors.js";
 export * from "./elevation.js";
 export * from "./themes.js";
+export * from "./theme-engine.js";
 export * from "./accessibility.js";
 export * from "./responsive.js";
 export * from "./typography.js";
