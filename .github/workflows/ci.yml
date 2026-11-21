@@ -129,8 +129,13 @@ jobs:
           echo "skip: $svc not present in this checkout (lives under platform/ nested remotes)."
           exit 0
 
+  # Landing registry consumer CI lives in dakinissystems/dakinis-landing (apps/landing is gitignored here).
+
   security-audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     strategy:
       fail-fast: false
       matrix:
@@ -174,6 +179,8 @@ jobs:
 
       - name: npm audit (${{ matrix.name }})
         continue-on-error: ${{ matrix.optional == true }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN || github.token }}
         run: |
           # apps/ and platform/ are not in the control-repo checkout (.gitignore); skip missing paths.
           if [ ! -f "${{ matrix.path }}/package.json" ]; then
