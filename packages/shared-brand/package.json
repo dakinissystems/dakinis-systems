@@ -1,6 +1,6 @@
 {
   "name": "@dakinissystems/shared-brand",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Marca, URLs, productos y Hub — consumido por Landing y Core",
   "scripts": {
@@ -39,7 +39,8 @@
     "./workspace-widgets.json": "./src/workspace-widgets.json"
   },
   "files": [
-    "src"
+    "src",
+    "assets"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",

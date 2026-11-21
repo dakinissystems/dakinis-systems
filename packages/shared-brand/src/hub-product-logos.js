@@ -1,8 +1,8 @@
-import coreLogo from "../assets/hub-logos/core.png";
-import lifeflowLogo from "../assets/hub-logos/lifeflow.png";
-import streamautomatorLogo from "../assets/hub-logos/streamautomator.png";
-import akoenetLogo from "../assets/hub-logos/akoenet.png";
-import tabletopLogo from "../assets/hub-logos/tabletop.png";
+const coreLogo = new URL("../assets/hub-logos/core.png", import.meta.url).href;
+const lifeflowLogo = new URL("../assets/hub-logos/lifeflow.png", import.meta.url).href;
+const streamautomatorLogo = new URL("../assets/hub-logos/streamautomator.png", import.meta.url).href;
+const akoenetLogo = new URL("../assets/hub-logos/akoenet.png", import.meta.url).href;
+const tabletopLogo = new URL("../assets/hub-logos/tabletop.png", import.meta.url).href;
 
 /** @type {Record<string, { src: string; alt: string; objectPosition?: string; scale?: number }>} */
 export const HUB_PRODUCT_LOGOS = {
