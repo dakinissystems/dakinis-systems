@@ -4,7 +4,7 @@ Registry privado para packages del meta (`packages/`).
 
 **Scope = org GitHub** (`dakinissystems`). `GITHUB_TOKEN` del repo **no** puede publicar `@dakinis/*` (esa instalación no existe) → error `The requested installation does not exist`.
 
-Publicados: `shared-error`, `shared-validation`, `domain`, `shared-loading`, `shared-db`, `sdk-metrics` (+ batch3 tras merge).
+Publicados: lote 1–2 + `shared-auth` / `shared-ai`; `shared-platform` / `shared-feature-flags` tras rewrite de deps `file:` en publish.
 
 ## Auth lectura (CI + Railway + local)
 
