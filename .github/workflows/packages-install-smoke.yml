@@ -53,11 +53,11 @@ jobs:
             @dakinissystems/design-audit@0.1.0
           node -e "require('@dakinissystems/shared-error'); console.log('shared-error ok')"
           # Node-native ESM packages (no JSX)
-          for pkg in shared-validation domain shared-loading shared-db sdk-metrics shared-auth shared-ai shared-platform shared-feature-flags shared-brand shared-icons sdk-auth sdk-billing sdk-events sdk-workspace sdk shared-illustrations shared-des shared-charts; do
+          for pkg in shared-validation domain shared-loading shared-db sdk-metrics shared-auth shared-ai shared-platform shared-feature-flags shared-brand shared-icons sdk-auth sdk-billing sdk-events sdk-workspace sdk shared-illustrations shared-des; do
             node --input-type=module -e "import('@dakinissystems/' + process.argv[1]).then(()=>console.log(process.argv[1] + ' ok'))" "$pkg"
           done
           # React/JSX packages: install-only check (Node cannot load .jsx without a bundler)
-          for pkg in shared-ux shared-layouts design-system design-audit; do
+          for pkg in shared-ux shared-layouts shared-charts design-system design-audit; do
             node -e "require('fs').accessSync('node_modules/@dakinissystems/' + process.argv[1] + '/package.json'); console.log(process.argv[1] + ' installed')" "$pkg"
           done
           node --input-type=module -e "import('@dakinissystems/shared-ux/motion').then(()=>console.log('shared-ux/motion ok'))"
