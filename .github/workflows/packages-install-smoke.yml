@@ -52,7 +52,14 @@ jobs:
             @dakinissystems/design-system@1.0.0 \
             @dakinissystems/design-audit@0.1.0
           node -e "require('@dakinissystems/shared-error'); console.log('shared-error ok')"
-          for pkg in shared-validation domain shared-loading shared-db sdk-metrics shared-auth shared-ai shared-platform shared-feature-flags shared-brand shared-icons sdk-auth sdk-billing sdk-events sdk-workspace sdk shared-illustrations shared-ux shared-layouts shared-des shared-charts design-system; do
+          # Node-native ESM packages (no JSX)
+          for pkg in shared-validation domain shared-loading shared-db sdk-metrics shared-auth shared-ai shared-platform shared-feature-flags shared-brand shared-icons sdk-auth sdk-billing sdk-events sdk-workspace sdk shared-illustrations shared-des shared-charts; do
             node --input-type=module -e "import('@dakinissystems/' + process.argv[1]).then(()=>console.log(process.argv[1] + ' ok'))" "$pkg"
           done
-          node --input-type=module -e "import('@dakinissystems/design-audit').then(()=>console.log('design-audit ok')).catch((e)=>{console.error(e); process.exit(1)})"
+          # React/JSX packages: install-only check (Node cannot load .jsx without a bundler)
+          for pkg in shared-ux shared-layouts design-system design-audit; do
+            node -e "require('fs').accessSync('node_modules/@dakinissystems/' + process.argv[1] + '/package.json'); console.log(process.argv[1] + ' installed')" "$pkg"
+          done
+          node --input-type=module -e "import('@dakinissystems/shared-ux/motion').then(()=>console.log('shared-ux/motion ok'))"
+          node --input-type=module -e "import('@dakinissystems/shared-layouts/dashboard-template').then(()=>console.log('shared-layouts/dashboard-template ok'))"
+          node --input-type=module -e "import('@dakinissystems/design-system/ui-states').then(()=>console.log('design-system/ui-states ok'))"
