@@ -87,6 +87,12 @@ Doc: [`AKOENET-ASSISTANT.md`](../../AKOENET-ASSISTANT.md) · contrato [`akoenet-
 | 60 | [`060_fiscal_invoicing_verifactu.sql`](./060_fiscal_invoicing_verifactu.sql) | ✅ 12 nov 2026 — settings + facturas encadenadas + eventos ([runbook](../../RUNBOOKS/fiscal-verifactu.md)) |
 | 62 | [`062_audit_logs_append_only.sql`](./062_audit_logs_append_only.sql) | ✅ 12 nov 2026. La `061` de nómina ya estaba aplicada, así que `062` conserva el número. Trigger append-only en `meta.audit_logs` |
 
+## Fase F++++++ — Nómina (061)
+
+| # | Archivo | Prod |
+|---|---------|------|
+| 61 | [`061_payroll.sql`](./061_payroll.sql) | ✅ SQL aplicado en Supabase (9 nov 2026) · motor en el PR, no en `main` ([runbook](../../RUNBOOKS/payroll.md)) |
+
 Seed opcional (sin dominios): [`../scripts/provision_la_calle_brava_armala.sql`](../scripts/provision_la_calle_brava_armala.sql)  
 Dominios solo tras verificar: [`../scripts/provision_org_domains_candidates.sql`](../scripts/provision_org_domains_candidates.sql)  
 Runbook: [`../../RUNBOOKS/google-workspace-domains.md`](../../RUNBOOKS/google-workspace-domains.md)

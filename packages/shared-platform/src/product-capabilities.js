@@ -3,7 +3,7 @@
  * Distinct from workspace addon CapabilityRegistry runtime IDs.
  */
 
-/** @typedef {'crm'|'sales'|'inventory'|'hospitality'|'whatsapp'|'reports'|'billing'|'ai'|'hub'} ProductCapability */
+/** @typedef {'crm'|'sales'|'inventory'|'hospitality'|'whatsapp'|'reports'|'billing'|'ai'|'hub'|'payroll'} ProductCapability */
 
 /** @type {Record<ProductCapability, { id: ProductCapability; label: string; nav: { path: string; label: string; children?: { path: string; label: string }[] }[] }>} */
 export const PRODUCT_CAPABILITIES = {
@@ -63,6 +63,21 @@ export const PRODUCT_CAPABILITIES = {
     label: "Hub",
     nav: [{ path: "/", label: "Mi día" }],
   },
+  payroll: {
+    id: "payroll",
+    label: "Nómina",
+    nav: [
+      {
+        path: "/app/nominas",
+        label: "Nómina",
+        children: [
+          { path: "/app/nominas", label: "Periodos" },
+          { path: "/app/nominas/trabajadores", label: "Personas" },
+          { path: "/app/nominas/conceptos", label: "Conceptos" },
+        ],
+      },
+    ],
+  },
 };
 
 /** Plan API module keys → product capabilities */
@@ -81,6 +96,9 @@ export const MODULE_TO_CAPABILITY = Object.freeze({
   booking: "hospitality",
   ia: "ai",
   ai: "ai",
+  payroll: "payroll",
+  nomina: "payroll",
+  nominas: "payroll",
 });
 
 /**
