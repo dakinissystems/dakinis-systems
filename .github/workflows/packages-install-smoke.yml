@@ -1,0 +1,34 @@
+name: Packages install smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          registry-url: https://npm.pkg.github.com
+          scope: "@dakinissystems"
+
+      - name: Install published packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "NODE_AUTH_TOKEN not set — skip (create org/repo secret with read:packages)."
+            exit 0
+          fi
+          mkdir -p /tmp/dakinis-pkg-smoke && cd /tmp/dakinis-pkg-smoke
+          npm init -y
+          npm install @dakinissystems/shared-error@0.1.0 @dakinissystems/shared-validation@0.1.0
+          node -e "require('@dakinissystems/shared-error'); console.log('shared-error ok')"
+          node --input-type=module -e "import('@dakinissystems/shared-validation').then(()=>console.log('shared-validation ok'))"

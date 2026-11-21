@@ -1,9 +1,22 @@
 {
-  "name": "@dakinis/shared-loading",
+  "name": "@dakinissystems/shared-loading",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.js"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-loading"
+  },
+  "license": "UNLICENSED",
+  "description": "Dakinis package @dakinissystems/shared-loading"
 }

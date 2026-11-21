@@ -35,10 +35,17 @@ No uses el token de publish en Railway.
 
 ## Publicar un paquete
 
-1. `package.json`: `"name": "@dakinissystems/<pkg>"`, sin `private`, con `publishConfig` + `files` + `repository.directory`.
+1. Preparar metadata (o script):
+
+```powershell
+node scripts/prepare-dakinissystems-package.mjs <dir> [<dir>...]
+```
+
 2. Merge a `main`.
 3. Actions → **Publish Dakinis package** → `package=<dir>`.
 4. Comprobar en GitHub → Packages (org `dakinissystems`).
+
+Install smoke (opcional): workflow **Packages install smoke** (usa secreto `NODE_AUTH_TOKEN`).
 
 ## Consumers
 
