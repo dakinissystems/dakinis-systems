@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/shared-foundation",
+  "name": "@dakinissystems/shared-foundation",
   "version": "1.0.0",
-  "private": true,
   "type": "module",
   "description": "Dakinis Foundation — spacing, typography, radius, motion, surfaces, elevation (no product accents)",
   "exports": {
@@ -19,5 +18,18 @@
     "./semantic-colors": "./src/semantic-colors.js",
     "./accessibility": "./src/accessibility.js",
     "./responsive": "./src/responsive.js"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/shared-foundation"
+  },
+  "license": "UNLICENSED"
 }
