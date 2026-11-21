@@ -1,5 +1,6 @@
 name: Publish shared-error
 
+# Kept as a thin alias; prefer "Publish Dakinis package".
 on:
   workflow_dispatch:
   push:
