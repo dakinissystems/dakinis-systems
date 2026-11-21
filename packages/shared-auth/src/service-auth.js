@@ -1,5 +1,5 @@
-# Verificación de service keys (Bearer / X-Internal-Api-Key).
-# Soporta rotación dual: KEY + KEY_PREVIOUS (o comma-separated en la principal).
+// Verificación de service keys (Bearer / X-Internal-Api-Key).
+// Soporta rotación dual: KEY + KEY_PREVIOUS (o comma-separated en la principal).
 
 /**
  * @param {string | undefined | null} primary

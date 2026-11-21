@@ -33,7 +33,7 @@ jobs:
             @dakinissystems/shared-loading@0.1.0 \
             @dakinissystems/shared-db@0.1.0 \
             @dakinissystems/sdk-metrics@0.1.0 \
-            @dakinissystems/shared-auth@1.0.0 \
+            @dakinissystems/shared-auth@1.0.1 \
             @dakinissystems/shared-ai@0.1.0 \
             @dakinissystems/shared-platform@0.2.0 \
             @dakinissystems/shared-feature-flags@0.1.0
