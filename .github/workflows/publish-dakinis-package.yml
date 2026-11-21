@@ -21,6 +21,7 @@ on:
       - "shared-ai-v*"
       - "shared-feature-flags-v*"
       - "shared-brand-v*"
+      - "shared-foundation-v*"
       - "shared-icons-v*"
       - "sdk-auth-v*"
       - "sdk-billing-v*"
