@@ -12,13 +12,32 @@ if (dirs.length === 0) {
   process.exit(1);
 }
 
+const readmeBody = (name, version) =>
+  [
+    `# \`${name}\``,
+    "",
+    "Published via GitHub Packages. See `docs/RUNBOOKS/npm-github-packages.md`.",
+    "",
+    "```bash",
+    `npm install ${name}@${version}`,
+    "```",
+    "",
+  ].join("\n");
+
 for (const dir of dirs) {
   const pkgPath = path.join("packages", dir, "package.json");
-  if (!fs.existsSync(pkgPath)) {
-    console.error("missing", pkgPath);
-    process.exit(1);
+  let raw;
+  try {
+    raw = fs.readFileSync(pkgPath, "utf8");
+  } catch (err) {
+    if (err && err.code === "ENOENT") {
+      console.error("missing", pkgPath);
+      process.exit(1);
+    }
+    throw err;
   }
-  const j = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+
+  const j = JSON.parse(raw);
   const name = `@dakinissystems/${dir}`;
   delete j.private;
   j.name = name;
@@ -34,23 +53,19 @@ for (const dir of dirs) {
   };
   j.license = j.license || "UNLICENSED";
   if (!j.description) j.description = `Dakinis package ${name}`;
-  fs.writeFileSync(pkgPath, `${JSON.stringify(j, null, 2)}\n`);
+
+  // Atomic replace: write temp then rename (avoids existsSync→write TOCTOU).
+  const tmpPkg = `${pkgPath}.${process.pid}.tmp`;
+  fs.writeFileSync(tmpPkg, `${JSON.stringify(j, null, 2)}\n`);
+  fs.renameSync(tmpPkg, pkgPath);
 
   const readme = path.join("packages", dir, "README.md");
-  if (!fs.existsSync(readme)) {
-    fs.writeFileSync(
-      readme,
-      [
-        `# \`${name}\``,
-        "",
-        "Published via GitHub Packages. See `docs/RUNBOOKS/npm-github-packages.md`.",
-        "",
-        "```bash",
-        `npm install ${name}@${j.version}`,
-        "```",
-        "",
-      ].join("\n"),
-    );
+  try {
+    // 'wx' fails if the file already exists — no existsSync race.
+    fs.writeFileSync(readme, readmeBody(name, j.version), { flag: "wx" });
+  } catch (err) {
+    if (!err || err.code !== "EEXIST") throw err;
   }
+
   console.log("ready", name, j.version);
 }
