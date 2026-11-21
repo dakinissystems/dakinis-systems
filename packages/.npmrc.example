@@ -1,4 +1,5 @@
-# Copy to ~/.npmrc (or a local .npmrc that is gitignored) for @dakinis/* installs.
+# GitHub Packages scope must match the GitHub org that owns the repo.
+# Org: dakinissystems → packages @dakinissystems/*
 # Do not commit tokens.
-@dakinis:registry=https://npm.pkg.github.com
+@dakinissystems:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}

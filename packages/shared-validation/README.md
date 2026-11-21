@@ -1,14 +1,14 @@
-# `@dakinis/shared-validation`
+# `@dakinissystems/shared-validation`
 
 Esquemas Zod compartidos (workspace, stream, billing, akoenet, core, events, addon).
 
 ## Install
 
 ```bash
-npm install @dakinis/shared-validation@0.1.0
+npm install @dakinissystems/shared-validation@0.1.0
 ```
 
-Requiere `@dakinis` → GitHub Packages y `NODE_AUTH_TOKEN` (`read:packages`). Ver [`docs/RUNBOOKS/npm-github-packages.md`](../../docs/RUNBOOKS/npm-github-packages.md).
+Requiere scope `@dakinissystems` → GitHub Packages y `NODE_AUTH_TOKEN` (`read:packages`). Ver [`docs/RUNBOOKS/npm-github-packages.md`](../../docs/RUNBOOKS/npm-github-packages.md).
 
 ## Publish
 

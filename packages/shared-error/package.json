@@ -1,5 +1,5 @@
 {
-  "name": "@dakinis/shared-error",
+  "name": "@dakinissystems/shared-error",
   "version": "0.1.0",
   "description": "Operational AppError helpers and Express error mapping for Dakinis services",
   "type": "commonjs",

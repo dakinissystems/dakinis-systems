@@ -1,5 +1,5 @@
 {
-  "name": "@dakinis/shared-validation",
+  "name": "@dakinissystems/shared-validation",
   "version": "0.1.0",
   "description": "Zod schemas and validators shared across Dakinis platform services",
   "type": "module",
