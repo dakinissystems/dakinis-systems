@@ -4,8 +4,11 @@ Registry privado para packages del meta (`packages/`).
 
 **Scope = org GitHub** (`dakinissystems`). `GITHUB_TOKEN` del repo **no** puede publicar `@dakinis/*` (esa instalación no existe) → error `The requested installation does not exist`.
 
-Publicados: platform lote + `shared-brand` / `shared-icons`.  
-DES acoplados (`shared-des`, `shared-ux`, `shared-layouts`, `design-system`, …) usan imports relativos entre carpetas — **no publicar** hasta reescribir a `@dakinissystems/*`.
+**Ola 1 publicada (17):** `shared-error`, `shared-validation`, `domain`, `shared-loading`, `shared-db`, `shared-auth`, `shared-ai`, `shared-platform`, `shared-feature-flags`, `shared-brand`, `shared-icons`, `sdk-metrics`, `sdk-auth`, `sdk-billing`, `sdk-events`, `sdk-workspace`, `sdk`.  
+Smoke: workflow **Packages install smoke**.
+
+**No publicar aún:** DES acoplados (`shared-des`, `shared-ux`, `shared-layouts`, `shared-charts`, `design-system`, `design-audit`) — imports relativos entre carpetas; reescribir a `@dakinissystems/*` primero.  
+**Fuera del registry global:** `akoenet-*` (K-07).
 
 ## Auth lectura (CI + Railway + local)
 
