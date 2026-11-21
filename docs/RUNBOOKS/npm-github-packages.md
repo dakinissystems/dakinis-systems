@@ -54,8 +54,10 @@ Install smoke (opcional): workflow **Packages install smoke** (usa secreto `NODE
 
 ## Consumers
 
+- **Piloto:** `apps/landing` → `@dakinissystems/shared-brand@1.0.1` (`.npmrc` + job CI `landing-registry-consumer`).
 - Migración gradual. LifeFlow packages locales **intactos** hasta que consuman registry.
 - K-08 solo tras publish SemVer + install CI/Railway + diff exports OK.
+- Railway: PAT `read:packages` como `NODE_AUTH_TOKEN` (ver ops `tmp/K-consumer-railway-checklist.md`).
 
 ## Troubleshooting
 

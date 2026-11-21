@@ -129,8 +129,38 @@ jobs:
           echo "skip: $svc not present in this checkout (lives under platform/ nested remotes)."
           exit 0
 
+  landing-registry-consumer:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          registry-url: https://npm.pkg.github.com
+          scope: "@dakinissystems"
+
+      - name: Install + build landing from GitHub Packages
+        working-directory: apps/landing
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN || github.token }}
+        run: |
+          # Landing is product repo dakinis-landing (apps/landing ignored in meta).
+          if [ ! -f package.json ]; then
+            echo "skip: apps/landing not present — consumer CI lives in dakinissystems/dakinis-landing"
+            exit 0
+          fi
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm run build
+
   security-audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     strategy:
       fail-fast: false
       matrix:
@@ -174,6 +204,8 @@ jobs:
 
       - name: npm audit (${{ matrix.name }})
         continue-on-error: ${{ matrix.optional == true }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN || github.token }}
         run: |
           # apps/ and platform/ are not in the control-repo checkout (.gitignore); skip missing paths.
           if [ ! -f "${{ matrix.path }}/package.json" ]; then
