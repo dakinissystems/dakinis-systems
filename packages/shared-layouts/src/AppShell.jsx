@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { applyDesTheme } from "../../shared-brand/src/themes.js";
+import { applyDesTheme } from "@dakinissystems/shared-brand/themes";
 import "./AppShell.css";
 
 /**

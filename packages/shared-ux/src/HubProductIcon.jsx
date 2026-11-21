@@ -1,5 +1,5 @@
-import { DAKINIS_PRODUCT_THEMES } from "../../shared-brand/src/colors.js";
-import { getHubProductLogo } from "../../shared-brand/src/hub-product-logos.js";
+import { DAKINIS_PRODUCT_THEMES } from "@dakinissystems/shared-brand/colors";
+import { getHubProductLogo } from "@dakinissystems/shared-brand/hub-product-logos";
 import { LucideIcon } from "./LucideIcon.jsx";
 import { HUB_APP_ICONS } from "./hub-dashboard.js";
 import "./HubProductIcon.css";

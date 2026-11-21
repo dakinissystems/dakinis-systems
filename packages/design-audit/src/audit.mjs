@@ -7,9 +7,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DAKINIS_SURFACES } from "../../shared-brand/src/surfaces.js";
-import { DAKINIS_AI_ACCENT, DAKINIS_PRODUCT_THEMES } from "../../shared-brand/src/colors.js";
-import { DAKINIS_SPACING_ALLOWED } from "../../shared-brand/src/spacing.js";
+import { DAKINIS_SURFACES } from "@dakinissystems/shared-brand/surfaces";
+import { DAKINIS_AI_ACCENT, DAKINIS_PRODUCT_THEMES } from "@dakinissystems/shared-brand/colors";
+import { DAKINIS_SPACING_ALLOWED } from "@dakinissystems/shared-brand/spacing";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../../..");

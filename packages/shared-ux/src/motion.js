@@ -1,4 +1,4 @@
-export { DAKINIS_MOTION, DAKINIS_MOTION_USAGE } from "../../shared-brand/src/motion.js";
+export { DAKINIS_MOTION, DAKINIS_MOTION_USAGE } from "@dakinissystems/shared-brand/motion";
 
 /** Clases utilitarias para animaciones consistentes. */
 export const DAKINIS_MOTION_CLASSES = {

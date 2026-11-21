@@ -29,6 +29,9 @@
     "./react/AiAction.jsx": "./src/react/AiAction.jsx",
     "./react/AiTimeline.jsx": "./src/react/AiTimeline.jsx"
   },
+  "dependencies": {
+    "@dakinissystems/shared-brand": "file:../shared-brand"
+  },
   "peerDependencies": {
     "react": ">=18"
   }
