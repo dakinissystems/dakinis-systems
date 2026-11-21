@@ -1,7 +1,6 @@
 {
-  "name": "@dakinis/domain",
+  "name": "@dakinissystems/domain",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "Dakinis domain layer — aggregates, value objects, policies, domain events",
   "exports": {
@@ -16,5 +15,18 @@
   },
   "scripts": {
     "test": "node --test test/**/*.test.js"
-  }
+  },
+  "files": [
+    "src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dakinissystems/dakinis-systems.git",
+    "directory": "packages/domain"
+  },
+  "license": "UNLICENSED"
 }
