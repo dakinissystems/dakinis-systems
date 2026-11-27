@@ -1,6 +1,22 @@
 # Runbook — incidencias comunes
 
-Estado → [`../STATUS.md`](../STATUS.md).
+Estado → [`../STATUS.md`](../STATUS.md).  
+Infra / ocho condiciones → [`infra-desarrollador.md`](./infra-desarrollador.md).
+
+## Severidad (condición 8)
+
+| Nivel | Significa | Respuesta |
+|-------|-----------|-----------|
+| **P0** | Servicio de identidad, cobro o datos de negocio caídos o filtración probable | Contener ya; comunicar en ≤ 1 h; post-mortem en 72 h si hay datos personales |
+| **P1** | Circuito comercial degradado (Hub vacío, webhook a reintentos, un vertical caído) | Mitigar el mismo día; evidencia en `docs/evidence/` |
+| **P2** | Fallo acotado con workaround | Issue + smoke; no bloquea piloto |
+| **P3** | Cosmético / deuda / solo desarrollo | Backlog |
+
+**Responsable P0:** operador (Christian David Villar Colodro).  
+**Suplente:** ⬜ nombrar antes del segundo negocio (ejecuta runbooks sin decidir producto).  
+**Deuda cobro:** B6 / Stripe live / SA pago real — aparcados; no bloquean el resto del circuito.
+
+Break-glass: rotar `JWT_SECRET` / `DAKINIS_INTERNAL_SERVICE_KEY` según inventario de secretos; revocar familias de refresh; Stripe Dashboard → webhooks; Railway redeploy. Sin improvisar fuera de este documento y de [`infra-desarrollador.md`](./infra-desarrollador.md).
 
 ## Webhook Stripe falla (Billing)
 

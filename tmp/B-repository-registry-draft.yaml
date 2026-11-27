@@ -1,0 +1,182 @@
+# Draft REPOSITORY-REGISTRY — 2026-11-27
+# proposed | not yet canonical. Complete after audit.
+ecosystem:
+  name: Dakinis Systems
+  architecture: polyrepo
+  org: dakinissystems
+  notes: "1 visible member · ~26 repos · orchestration = dakinis-systems"
+
+components:
+  - id: dakinis-systems
+    type: orchestration
+    repository: dakinissystems/dakinis-systems
+    local: [D:/dakinis-systems, D:/dakinis-systems-wt-ops, D:/dakinis-systems-wt-theme]
+    status: active
+    sot: true
+
+  - id: dakinis-core
+    type: product
+    product: Dakinis One
+    category: business
+    repository: dakinissystems/dakinis-core
+    local: [D:/dakinis-systems/platform/core]
+    status: active
+    dependencies: [dakinis-auth, dakinis-billing, dakinis-shared]
+
+  - id: dakinis-auth
+    type: platform-service
+    repository: dakinissystems/dakinis-auth
+    local: [D:/dakinis-systems/platform/auth]
+    status: active
+
+  - id: dakinis-billing
+    type: platform-service
+    repository: dakinissystems/dakinis-billing
+    local: [D:/dakinis-systems/platform/billing]
+    status: active
+    commercial: internal  # 0 paying customers
+
+  - id: dakinis-hub
+    type: experience
+    repository: dakinissystems/dakinis-hub
+    local: [D:/dakinis-systems/platform/hub]
+    status: active
+
+  - id: dakinis-internal-api
+    type: platform-service
+    repository: dakinissystems/dakinis-internal-api
+    local: [D:/dakinis-systems/platform/internal]
+    status: active
+
+  - id: dakinis-ai
+    type: platform-service
+    repository: dakinissystems/dakinis-ai
+    local: [D:/dakinis-systems/platform/ai]
+    status: active
+    risk: possible_duplicate_checkout
+
+  - id: dakinis-search
+    type: platform-service
+    repository: dakinissystems/dakinis-search
+    local: [D:/dakinis-systems/platform/search]
+    status: active
+
+  - id: dakinis-notifications
+    type: platform-service
+    repository: dakinissystems/dakinis-notifications
+    local: [D:/dakinis-systems/platform/notifications]
+    status: active
+
+  - id: dakinis-knowledge
+    type: platform-service
+    repository: dakinissystems/dakinis-knowledge
+    local: [D:/dakinis-systems/platform/knowledge]
+    status: active
+
+  - id: dakinis-shared
+    type: shared-packages
+    repository: dakinissystems/dakinis-shared
+    local: [D:/dakinis-shared, D:/dakinis-systems/packages]
+    status: active
+    sot_candidate: dakinis-shared
+    risk: three_trees
+
+  - id: lifeflow
+    type: product
+    category: business
+    repository: dakinissystems/lifeflow
+    local: [D:/dakinis-systems/apps/lifeflow]
+    status: active
+    policy: selective_evolution
+
+  - id: dakinis-streamautomator
+    type: product
+    category: creators
+    repository: dakinissystems/dakinis-streamautomator
+    local: [D:/dakinis-systems/apps/streamautomator, D:/dakinis-streamautomator]
+    status: active
+    risk: divergent_checkouts
+
+  - id: akoenet-client
+    type: product
+    category: creators
+    repository: dakinissystems/akoenet-client
+    local: [D:/dakinis-systems/apps/akoenet/Client]
+    status: active
+    risk: apps_akoenet_no_git
+
+  - id: akoenet-backend
+    type: product
+    category: creators
+    repository: dakinissystems/akoenet-backend
+    local: [D:/dakinis-systems/apps/akoenet/Server]
+    status: active
+    risk: apps_akoenet_no_git
+
+  - id: dakinis-chat
+    type: product
+    category: creators
+    repository: dakinissystems/dakinis-chat
+    local: [D:/dakinis-systems/apps/messenger]
+    status: review  # overlap AkoeNet
+    alias_local: messenger
+
+  - id: dakinis-landing
+    type: experience
+    repository: dakinissystems/dakinis-landing
+    local: [D:/dakinis-systems/apps/landing]
+    status: active
+
+  - id: dakinis-os
+    type: device
+    repository: dakinissystems/dakinis-os
+    local: [D:/dakinis-systems/dakinis-os]
+    status: milestones
+
+  - id: dakinis-desktop
+    type: device
+    repository: dakinissystems/dakinis-desktop
+    local: [D:/dakinis-systems/dakinis-desktop]
+    status: milestones
+
+  - id: dakinis-device-agent
+    type: device
+    repository: dakinissystems/dakinis-device-agent
+    local: [D:/dakinis-systems/dakinis-device-agent]
+    status: milestones
+
+  - id: NEXUS-Browser
+    type: device
+    repository: dakinissystems/NEXUS-Browser
+    local: [D:/dakinis-systems/apps/nexus-browser]
+    status: freeze_features
+    alias_local: nexus-browser
+
+  - id: dakinis-tabletop
+    type: labs
+    repository: dakinissystems/dakinis-tabletop
+    local: [D:/dakinis-systems/apps/tabletop]
+    status: low_priority
+
+  - id: mythos-regenesis
+    type: labs
+    repository: dakinissystems/mythos-regenesis  # confirm exact name
+    local: [D:/Simil Pokemon/mythos_regenesis]
+    status: milestones
+
+  - id: DAKINIS-SETTLEMENT-DIRECTIVE
+    type: labs
+    repository: dakinissystems/DAKINIS-SETTLEMENT-DIRECTIVE
+    local: [D:/dakinis-systems/apps/settlement-directive]
+    status: playtest
+
+  - id: DAKINIS-ASHEN-PATH
+    type: labs
+    repository: dakinissystems/DAKINIS-ASHEN-PATH
+    local: [D:/dakinis-systems/apps/ashen-path]
+    status: playtest
+
+  - id: github-profile
+    type: institutional
+    repository: dakinissystems/.github
+    status: active
