@@ -25,7 +25,7 @@ Commercial  █████░░░░░  55%
 | Hub | 90% tech | Attention operable · narrativa Landing |
 | Core | 92% tech | Piloto Copérnico feedback · multi-location demo |
 | AI | 95% tech | Cuotas workspace · tool-calling gated |
-| Ops / Security | 99% / 8 | Secrets fuera de docs ✅ · MFA CF ⬜ · staging ⬜ |
+| Ops / Security | 99% / 8 | Secrets fuera de docs ✅ · MFA CF ✅ · Railway prod Online ✅ · staging ⏸ |
 
 **Piloto:** 🟡 Heladería Copérnico (gratis) · **0 de pago**  
 **Golden Path:** Landing → Hub → Dakinis One → valor → Billing (ver WHAT-IS-DAKINIS).
@@ -66,10 +66,18 @@ Changelog → [`architecture/changelog/hospitality-2026-08.md`](./architecture/c
 | Merge docs ADRs / STATUS → `main` (PR) | ✅ |
 | Org → Venture → Location (ADR-016 / mig 058) | ✅ SQL prod · código Hub/Internal pushed · seed Calle Brava ⬜ |
 | Dominios CF + Google Workspace (Calle Brava / Ármala) | ❌ no contratado · **verificar disponibilidad primero** → [`RUNBOOKS/google-workspace-domains.md`](./RUNBOOKS/google-workspace-domains.md) |
-| Billing E2E live (Stripe) | ⬜ cuando haya pago real |
-| Invite piloto + demo Copérnico | ⬜ ops |
+| Billing E2E live (Stripe) | ⏸ **deuda** B6 — no tocar hasta desaparcar cobro |
+| Onboarding B10 (checklist + CSV carta) | ✅ Core [#15](https://github.com/dakinissystems/dakinis-core/pull/15) · [#16](https://github.com/dakinissystems/dakinis-core/pull/16) |
+| Invite piloto + demo Copérnico | ✅ browser (`tmp/B1-browser-copernico-evidencia.md`) |
 | Redeploy SA API (`getPlatform` + security) | ✅ Railway |
-| MFA Cloudflare (perfil) | ⬜ [`SECURITY.md`](./SECURITY.md) |
+| MFA Cloudflare (perfil) | ✅ 2026-11-27 · `tmp/B-mfa-cloudflare-checklist.md` |
+| Auth / request-id / live-ready / cond3 | ✅ Auth [#1](https://github.com/dakinissystems/dakinis-auth/pull/1)–[#4](https://github.com/dakinissystems/dakinis-auth/pull/4) · Railway 🟢 |
+| Billing / Internal / Hub request-id | ✅ Billing [#4](https://github.com/dakinissystems/dakinis-billing/pull/4) · Internal [#3](https://github.com/dakinissystems/dakinis-internal-api/pull/3) · Hub [#6](https://github.com/dakinissystems/dakinis-hub/pull/6) |
+| Circuit health smoke (prod) | ✅ `scripts/smoke-circuit-health.ps1` 10/10 |
+| Cond 4 dual-key · Cond 6 restore | ✅ Internal [#4](https://github.com/dakinissystems/dakinis-internal-api/pull/4) · `tmp/B-cond6-restore-checklist.md` |
+| Cond 5 UNIQUE | 🟡 código+tests · SQL vivo ⬜ · `tmp/B-cond5-webhook-unique-evidencia.md` |
+| Hub Mi día | ✅ tests · browser ⬜ `tmp/B9-hub-midia-browser-checklist.md` |
+| Residual puerta 2º negocio | ⬜ live + suplente · `tmp/B-residual-board.md` |
 
 ---
 

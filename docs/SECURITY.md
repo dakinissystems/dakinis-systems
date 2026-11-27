@@ -11,7 +11,7 @@
 | Control | Estado | Notas |
 |---------|--------|-------|
 | MFA GitHub / Railway / Supabase / Stripe | [x] | ✅ 23 jul |
-| MFA Cloudflare | [ ] | Confirmar 2FA perfil |
+| MFA Cloudflare | [x] | ✅ 27 nov 2026 · TOTP Active · `tmp/B-mfa-cloudflare-checklist.md` |
 | Backups diarios (`BACKUP_DATABASE_URL`) | [x] | Workflow #61 · 22 jul |
 | Restore test | [x] | ✅ 22 jul · 79 tablas `public` |
 | DR documentado | [x] | Ver § DR abajo |
